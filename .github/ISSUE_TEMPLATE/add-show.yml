@@ -1,0 +1,46 @@
+name: Add a show
+description: Add a show to The Show Shack (only Luke's submissions are published)
+title: "Add: "
+labels: ["add-show"]
+body:
+  - type: input
+    id: show
+    attributes: {label: Artist or event}
+    validations: {required: true}
+  - type: input
+    id: date
+    attributes: {label: Date (YYYY-MM-DD)}
+    validations: {required: true}
+  - type: input
+    id: time
+    attributes: {label: Time, placeholder: "8:00 PM"}
+  - type: input
+    id: venue
+    attributes: {label: Venue}
+    validations: {required: true}
+  - type: input
+    id: city
+    attributes: {label: City}
+    validations: {required: true}
+  - type: dropdown
+    id: kind
+    attributes:
+      label: Type
+      options: [concert, club, comedy, theater, festival, openmic, dance, contact, sound, drum]
+  - type: dropdown
+    id: genre
+    attributes:
+      label: Genre
+      options: ["", electronic, hiphop, indie, reggae, latin, pop]
+  - type: input
+    id: price
+    attributes: {label: Lowest price $ (0 = free)}
+  - type: input
+    id: url
+    attributes: {label: Link}
+  - type: input
+    id: lat
+    attributes: {label: Latitude (auto)}
+  - type: input
+    id: lon
+    attributes: {label: Longitude (auto)}

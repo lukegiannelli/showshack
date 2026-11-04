@@ -1,0 +1,37 @@
+name: Add a show
+on:
+  issues:
+    types: [opened, labeled]
+permissions:
+  contents: write
+  issues: write
+concurrency: { group: events-json, cancel-in-progress: false }
+jobs:
+  add:
+    # Only the repo owner's issues labeled add-show get published.
+    if: github.event.issue.user.login == github.repository_owner && contains(github.event.issue.labels.*.name, 'add-show')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - id: run
+        env:
+          ISSUE_BODY: ${{ github.event.issue.body }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+        run: |
+          python3 scripts/add_show.py > out.txt 2>&1 && echo "ok=1" >> "$GITHUB_OUTPUT" || echo "ok=0" >> "$GITHUB_OUTPUT"
+          cat out.txt
+      - if: steps.run.outputs.ok == '1'
+        run: |
+          git config user.name "show-shack-bot"
+          git config user.email "show-shack-bot@users.noreply.github.com"
+          git add events.json
+          git commit -m "Add show from #${{ github.event.issue.number }}" || exit 0
+          for i in 1 2 3; do git pull --rebase origin main && git push && break; sleep 5; done
+      - if: always()
+        env: { GH_TOKEN: "${{ github.token }}" }
+        run: |
+          if [ "${{ steps.run.outputs.ok }}" = "1" ]; then
+            gh issue close ${{ github.event.issue.number }} -R ${{ github.repository }} -c "✅ $(cat out.txt) Live on https://lukegiannelli.github.io/showshack/ in about a minute."
+          else
+            gh issue comment ${{ github.event.issue.number }} -R ${{ github.repository }} -b "❌ Couldn't add it: $(cat out.txt). Edit the issue and re-add the add-show label to retry."
+          fi
