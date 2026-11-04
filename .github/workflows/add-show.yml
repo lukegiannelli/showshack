@@ -1,7 +1,7 @@
 name: Add a show
 on:
   issues:
-    types: [opened, labeled]
+    types: [opened, edited, labeled]
 permissions:
   contents: write
   issues: write
@@ -9,7 +9,7 @@ concurrency: { group: events-json, cancel-in-progress: false }
 jobs:
   add:
     # Only the repo owner's issues labeled add-show get published.
-    if: github.event.issue.user.login == github.repository_owner && contains(github.event.issue.labels.*.name, 'add-show')
+    if: github.event.issue.user.login == github.repository_owner && (startsWith(github.event.issue.title, 'Add:') || contains(github.event.issue.labels.*.name, 'add-show'))
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -33,5 +33,5 @@ jobs:
           if [ "${{ steps.run.outputs.ok }}" = "1" ]; then
             gh issue close ${{ github.event.issue.number }} -R ${{ github.repository }} -c "✅ $(cat out.txt) Live on https://lukegiannelli.github.io/showshack/ in about a minute."
           else
-            gh issue comment ${{ github.event.issue.number }} -R ${{ github.repository }} -b "❌ Couldn't add it: $(cat out.txt). Edit the issue and re-add the add-show label to retry."
+            gh issue comment ${{ github.event.issue.number }} -R ${{ github.repository }} -b "❌ Couldn't add it: $(cat out.txt). Edit the issue to fix it and it will retry."
           fi
