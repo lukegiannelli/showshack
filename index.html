@@ -282,7 +282,7 @@ h1 .logo{height:1.05em;width:1.05em;border-radius:22%;vertical-align:-0.12em;mar
   background:url(header.jpg?v=3) center/100% 100% no-repeat;perspective:900px}
 .hutbtn{position:absolute;left:18.59%;top:14.55%;width:64.39%;height:73.34%;padding:0;border:0;background:none;cursor:pointer;
   -webkit-tap-highlight-color:transparent;transform-style:preserve-3d;outline-offset:4px}
-.hutbtn img{width:100%;height:100%;display:block;will-change:transform;transform-origin:50% 60%;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;pointer-events:none}
+.hutbtn img{width:100%;height:100%;display:block;will-change:transform;transform-origin:50% 50%;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;pointer-events:none}
 .hutbtn:active img{filter:brightness(1.08)}
 
 /* ===== cozy pass ===== */
@@ -1067,17 +1067,17 @@ async function copyOut(text,btn){
   }
   function set(on){playing=on;btn.setAttribute("aria-pressed",String(on));btn.setAttribute("aria-label",on?"Stop the Shack song":"Play the Shack song");if(!still)kick();}
   btn.addEventListener("click",()=>{playing?stop():start();});
-  // spin: ease up to ~5 s per turn while playing; on stop, glide to a stop facing front
+  // spin like a vinyl record: spin up to 33⅓ rpm while playing, brake to upright on stop
   let ang=0, vel=0, raf=0, last=0, target=null, dec=0;
   function kick(){target=null;if(!raf){last=performance.now();raf=requestAnimationFrame(tick);}}
   function tick(now){const dt=Math.min(0.05,(now-last)/1000);last=now;
-    if(playing){vel+=(72-vel)*Math.min(1,dt*1.5);ang+=vel*dt;}
-    else{ // the hut is symmetric, so it can come to rest facing front or back (whichever is nearer)
-      if(target===null)target=Math.ceil((ang+vel*vel/140+0.5)/180)*180;
-      const dist=target-ang; vel=Math.min(Math.max(vel,12),Math.sqrt(2*70*Math.max(dist,0))+4); ang=Math.min(target,ang+vel*dt);
-      if(target-ang<0.25){ang=target%360;vel=0;target=null;img.style.transform=ang?`rotateY(${ang}deg)`:"";raf=0;return;}}
+    if(playing){vel+=(200-vel)*Math.min(1,dt*2.2);ang+=vel*dt;} // 33⅓ rpm = 200°/s, like a record
+    else{ // brake like a turntable and come to rest upright
+      if(target===null)target=Math.ceil((ang+vel*vel/500+0.5)/360)*360;
+      const dist=target-ang; vel=Math.min(Math.max(vel,20),Math.sqrt(2*250*Math.max(dist,0))+6); ang=Math.min(target,ang+vel*dt);
+      if(target-ang<0.25){ang=0;vel=0;target=null;img.style.transform="";raf=0;return;}}
     ang%=360*1000;
-    img.style.transform=`rotateY(${ang.toFixed(2)}deg)`;
+    img.style.transform=`rotate(${ang.toFixed(2)}deg)`;
     raf=requestAnimationFrame(tick);}
 })();
 document.getElementById("shareApp").addEventListener("click",ev=>{
