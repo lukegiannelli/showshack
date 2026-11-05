@@ -297,6 +297,8 @@ h1 .logo{height:1.05em;width:1.05em;border-radius:22%;vertical-align:-0.12em;mar
 .ntot b{font:900 30px var(--display);color:var(--accent)}
 .ntot .each{font:600 14px var(--mono);color:var(--drive)}
 .nfoot{margin:0;font-size:12px;color:var(--muted)}
+.splitbtn{font:inherit;font-weight:700;font-size:13px;padding:8px 12px;border-radius:999px;border:1px solid var(--accent);background:transparent;color:var(--accent);cursor:pointer;display:inline-flex;gap:6px;align-items:center}
+.splitbtn .ni{width:16px;height:16px}
 .nfoot a{color:var(--accent);font-weight:600;text-decoration:none}
 .songcredit{margin:-8px 0 0;text-align:center;font-size:11px;color:var(--muted)}.songcredit[hidden]{display:none}.songcredit a{color:inherit}
 .facts .wx{color:var(--ink);font-weight:500}.facts .wx:empty{display:none}
@@ -416,7 +418,7 @@ h1 .logo{height:1.05em;width:1.05em;border-radius:22%;vertical-align:-0.12em;mar
 .links a.tix{background:linear-gradient(180deg,#FBE3A8,#E9B76A);color:var(--thatch-ink);border-color:#8a5a22;box-shadow:0 2px 0 #6b3f12}
 .listen[open] summary{background:color-mix(in srgb,var(--thatch) 22%,transparent)}
 /* night / day flip buttons sit centered at the bottom of each face */
-.flipbar{grid-column:1/-1;display:flex;justify-content:center;margin-top:auto;padding-top:8px}
+.flipbar{grid-column:1/-1;display:flex;justify-content:center;gap:8px;flex-wrap:wrap;margin-top:auto;padding-top:8px}
 .nightbtn,.daybtn{font:700 14px var(--body);border-radius:999px;padding:9px 20px;cursor:pointer;letter-spacing:.2px;transition:transform .08s}
 .nightbtn{background:linear-gradient(180deg,#3a2a6e,#22174a);color:#FFE6A8;border:1.5px solid #E9B76A;box-shadow:0 3px 0 #120b2a,0 0 14px rgba(150,110,255,.25)}
 .nightbtn b{font-family:var(--mono);font-weight:600;margin-left:4px}
@@ -1015,8 +1017,20 @@ function backHtml(e,nc,fl){
     <div class="nlist">${tix}${gas}${park}${food}${drk}</div>
     <div class="ntot"><span>Total${nc.partial?" so far":""}</span><b>${$(nc.total)}${nc.partial?"+":""}</b>${nc.n>1?`<span class="each">${$(nc.each)}${nc.partial?"+":""} each</span>`:""}</div>
     <p class="nfoot">Estimates · ${nc.home==="drive"?"gas & parking split across the car":nc.home==="ride"?"rides split across the group":"fares are per person"} · <a href="${esc(eatLink(e))}" target="_blank" rel="noopener">food near the venue ↗</a></p>
-    <div class="flipbar"><button type="button" class="daybtn" data-flip="1">${ni("sun")} Back to day</button></div>
+    <div class="flipbar">${nc.n>1?`<button type="button" class="splitbtn" data-split="${esc(splitText(e,nc))}">${ni("car")} Send the split</button>`:""}<button type="button" class="daybtn" data-flip="1">${ni("sun")} Back to day</button></div>
   </div>`;
+}
+function splitText(e,nc){
+  const $=v=>"$"+Math.round(v), lb=leaveBy(e), d=parseDay(String(e.start).slice(0,10));
+  const day=d?d.toLocaleDateString("en-US",{weekday:"short",month:"short",day:"numeric"}):"";
+  const parts=[];
+  if(nc.tixEach!=null&&nc.tixEach>0)parts.push("tickets "+$(nc.tixEach));
+  const mv=nc.home==="drive"?(nc.gas??0)+(nc.park??0):nc.home==="ride"?(nc.ride??0):(nc.transit??0);
+  if(mv)parts.push((nc.home==="drive"?"gas & parking ":nc.home==="ride"?"rides ":"transit ")+$(mv/nc.n));
+  return [`${e.title} @ ${e.venue||""}${e.city?", "+e.city:""}`,[day,e.time].filter(Boolean).join(" · "),
+    lb?`Leaving by ${lb} (no-traffic estimate)`:"",
+    `Split for ${nc.n}: about ${$(nc.tixEach!=null?nc.each:nc.each)} each${parts.length?" ("+parts.join(" + ")+" — food & drinks extra)":""}`,
+    e.url?e.url:""].filter(Boolean).join("\n");
 }
 function surpriseMe(){
   state.surprise=null; state.venue="all"; state.view="list"; [vL,vM,vI,vV].forEach(b=>b.setAttribute("aria-pressed",String(b===vL)));
@@ -1041,7 +1055,11 @@ function flipCard(card){if(!card)return;const on=!card.classList.contains("flipp
 const listEl=document.getElementById("list");
 listEl.addEventListener("click",ev=>{const b=ev.target.closest("[data-listen]");if(!b)return;
   const m=b.closest(".face").querySelector(".listenmenu");if(!m)return;m.hidden=!m.hidden;b.setAttribute("aria-expanded",String(!m.hidden));b.classList.toggle("on",!m.hidden);});
-listEl.addEventListener("click",ev=>{const b=ev.target.closest("[data-flip]");if(!b)return;flipCard(b.closest(".card"));});
+listEl.addEventListener("click",ev=>{const sp=ev.target.closest("[data-split]");if(sp){const t=sp.dataset.split;
+  if(navigator.share){navigator.share({text:t}).catch(()=>{});}
+  else if(navigator.clipboard){navigator.clipboard.writeText(t).then(()=>{const o=sp.innerHTML;sp.textContent="Copied ✓";setTimeout(()=>sp.innerHTML=o,1500);});}
+  return;}
+  const b=ev.target.closest("[data-flip]");if(!b)return;flipCard(b.closest(".card"));});
 
 /* ---- views: list / map / insights ---- */
 const vL=document.getElementById("vList"),vM=document.getElementById("vMap"),vI=document.getElementById("vIns"),vV=document.getElementById("vVen");
