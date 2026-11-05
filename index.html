@@ -604,7 +604,7 @@ function skey(e){return (e.added?"p:":"e:")+e.id;}
 function saveStars(){try{localStorage.setItem("radar-stars",JSON.stringify([...state.stars]));}catch(e){} clearTimeout(starT); starT=setTimeout(flushStars,500);}
 async function flushStars(){if(!starRef)return; if(starBusy){starAgain=true;return;} starBusy=true; try{await starRef.set({ids:[...state.stars]});}catch(e){if(e&&e.code==="invalid_argument")starRef=null;} starBusy=false; if(starAgain){starAgain=false;flushStars();}}
 function updateStarChip(){const c=document.getElementById("kindRow-starred");if(c)c.textContent="★ Starred"+(starCount>0?" · "+starCount:"");}
-try{const s=JSON.parse(localStorage.getItem("radar-prefs")||"{}");Object.assign(state,{kind:s.kind||"all",genre:s.genre||"all",maxDrive:s.maxDrive||180,sort:s.sort||"date",venue:"all",hideTBA:!!s.hideTBA,when:s.when||"any",flags:s.flags||{},car:s.car||1,mpg:+s.mpg>0?+s.mpg:25,gas:+s.gas>0?+s.gas:5.85,food:s.food!=null?+s.food:30,drinks:s.drinks!=null?+s.drinks:2,home:s.home||"drive",budget:+s.budget>0?+s.budget:0,pinV:Array.isArray(s.pinV)?s.pinV:[]});}catch(e){}
+try{const s=JSON.parse(localStorage.getItem("radar-prefs")||"{}");Object.assign(state,{kind:s.kind||"all",genre:s.genre||"all",maxDrive:s.maxDrive||180,sort:s.sort||"date",venue:"all",hideTBA:!!s.hideTBA,when:s.when||"any",flags:s.flags||{},car:s.car||1,mpg:+s.mpg>0?+s.mpg:25,gas:+s.gas>0?+s.gas:5.85,food:s.food!=null?+s.food:0,drinks:s.drinks!=null?+s.drinks:0,home:s.home||"drive",budget:+s.budget>0?+s.budget:0,pinV:Array.isArray(s.pinV)?s.pinV:[]});}catch(e){}
 function savePrefs(){try{localStorage.setItem("radar-prefs",JSON.stringify({kind:state.kind,genre:state.genre,maxDrive:state.maxDrive,sort:state.sort,venue:state.venue,hideTBA:!!state.hideTBA,when:state.when,flags:state.flags,car:state.car,mpg:state.mpg,gas:state.gas,food:state.food,drinks:state.drinks,home:state.home,budget:state.budget,pinV:state.pinV}));}catch(e){}}
 
 function driveEstimate(lat,lon){
@@ -722,9 +722,9 @@ const RIDE={base:1.65,mile:1.35,min:0.26,fee:3};
 const TRANSIT_RT={"Metro rail":3.5,"Metrolink":19,"Coaster train":14,"SD Trolley":6};
 const DRINK={"Arena / stadium":17,"Festival":16,"Amphitheater":16,"Mid-size (1–3k)":14,"Theater / arts hall":14,"Comedy club":12,"Small / DIY":9,"Other":12};
 function nightCost(e,pi){
-  const n=state.car||1, mpg=state.mpg||25, gal=state.gas||5.85, food=state.food??30;
+  const n=state.car||1, mpg=state.mpg||25, gal=state.gas||5.85, food=state.food??0;
   const t=tier(e), dPrice=DRINK[t]??12, minTwo=t==="Comedy club";
-  const dCount=CONS.has(e.kind)?0:Math.max(state.drinks??2, minTwo?2:0), drinks=dCount*dPrice*n;
+  const dCount=CONS.has(e.kind)?0:Math.max(state.drinks??0, minTwo?2:0), drinks=dCount*dPrice*n;
   const tixEach = pi.sold||pi.none||pi.lo==null ? null : pi.lo;
   const miles = e._drive ? e._drive.miles*2 : null;
   // Getting home: sober driver (gas + parking), rideshare (round trip, one car per 4 people), or transit (per person).
@@ -1009,7 +1009,7 @@ function backHtml(e,nc,fl){
   }
   const food = line(ni("food"),"Food",nc.food?`${$(nc.food)} × ${nc.n} · typical SoCal spend`:"skipped",$(nc.eat));
   const drk = nc.sober ? line(ni("drink"),"Drinks","usually a sober space","$0")
-    : line(ni("drink"),"Drinks",nc.dCount?`${nc.dCount} × ~${$(nc.dPrice)}${nc.n>1?" × "+nc.n:""}${nc.minTwo&&(state.drinks??2)<2?" · 2-item minimum":""}`:"none",$(nc.drinks));
+    : line(ni("drink"),"Drinks",nc.dCount?`${nc.dCount} × ~${$(nc.dPrice)}${nc.n>1?" × "+nc.n:""}${nc.minTwo&&(state.drinks??0)<2?" · 2-item minimum":""}`:"none",$(nc.drinks));
   return `<div class="ev face back"${fl?"":' aria-hidden="true"'}>
     <div class="bh"><span class="sl">${ni("moon")} Night cost · ${who}</span></div>
     <div class="nlist">${tix}${gas}${park}${food}${drk}</div>
@@ -1050,12 +1050,13 @@ vV.onclick=()=>{state.surprise=null;state.venue="all";savePrefs();setView("venue
 vL.onclick=()=>{state.surprise=null;if(state.venue!=="all"){state.venue="all";savePrefs();}setView("list");};vM.onclick=()=>setView("map");vI.onclick=()=>setView("ins");
 const carSel=document.getElementById("carSel");carSel.value=String(state.car||1);carSel.onchange=()=>{state.car=+carSel.value;savePrefs();render();};
 const mpgIn=document.getElementById("mpgIn"),gasIn=document.getElementById("gasIn"),foodSel=document.getElementById("foodSel");
-mpgIn.value=state.mpg||25;gasIn.value=(state.gas||5.85).toFixed(2);foodSel.value=String(state.food??30);
-let costT;function costChange(){clearTimeout(costT);costT=setTimeout(()=>{if(document.activeElement===mpgIn||document.activeElement===gasIn){const v=+document.activeElement.value;if(!v)return;}const m=+mpgIn.value,g=+gasIn.value;
-  if(m>=5&&m<=150)state.mpg=m; if(g>=1&&g<=15)state.gas=g; state.food=+foodSel.value; savePrefs();render();},250);}
+mpgIn.value=state.mpg||25;gasIn.value=(state.gas||5.85).toFixed(2);foodSel.value=String(state.food??0);
+function costCommit(){const m=+mpgIn.value,g=+gasIn.value;
+  if(m>=5&&m<=150)state.mpg=m; if(g>=1&&g<=15)state.gas=g; state.food=+foodSel.value; savePrefs();}
+let costT;function costChange(){costCommit();clearTimeout(costT);costT=setTimeout(render,150);}
 // Typing stays instant: the 900+ cards only recalc when you finish (tap Done / leave the box / pause typing).
 let costTyping;[mpgIn,gasIn].forEach(i=>{
-  i.addEventListener("input",()=>{clearTimeout(costTyping);costTyping=setTimeout(costChange,1200);});
+  i.addEventListener("input",()=>{costCommit();clearTimeout(costTyping);costTyping=setTimeout(costChange,1200);});
   i.addEventListener("change",()=>{clearTimeout(costTyping);costChange();});
   i.addEventListener("keydown",e=>{if(e.key==="Enter")i.blur();});});
 foodSel.onchange=costChange;
@@ -1065,8 +1066,8 @@ budgetIn.value=state.budget||"";
 budgetIn.addEventListener("change",()=>{state.budget=Math.max(0,Math.round(+budgetIn.value||0));budgetIn.value=state.budget||"";savePrefs();updateBudget();});
 budgetIn.addEventListener("keydown",e=>{if(e.key==="Enter")budgetIn.blur();});
 document.getElementById("budgetBar").onclick=()=>{state.kind="starred";state.when="any";document.querySelectorAll("#kindRow .chip").forEach(c=>c.setAttribute("aria-pressed",String(c.id==="kindRow-starred")));document.querySelectorAll("#whenRow .chip").forEach(c=>c.setAttribute("aria-pressed",String(c.id==="whenRow-any")));savePrefs();setView("list");document.getElementById("viewBar").scrollIntoView({behavior:"smooth"});};
-const drinkSel=document.getElementById("drinkSel");drinkSel.value=String(state.drinks??2);drinkSel.onchange=()=>{state.drinks=+drinkSel.value;savePrefs();render();};
-[mpgIn,gasIn].forEach(i=>i.addEventListener("blur",()=>{mpgIn.value=state.mpg;gasIn.value=state.gas.toFixed(2);}));
+const drinkSel=document.getElementById("drinkSel");drinkSel.value=String(state.drinks??0);drinkSel.onchange=()=>{state.drinks=+drinkSel.value;savePrefs();render();};
+[mpgIn,gasIn].forEach(i=>i.addEventListener("blur",()=>{costCommit();mpgIn.value=state.mpg;gasIn.value=state.gas.toFixed(2);}));
 /* alerts on starred shows */
 function updateAlertBar(){const bar=document.getElementById("alertBar");
   const hits=[...state.events,...state.picks.map(p=>({...p,added:true}))].filter(e=>state.stars.has(skey(e))&&alertOf(e).length&&(e.end||e.start)>=todayStr());
