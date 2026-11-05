@@ -433,7 +433,7 @@ h1 .logo{height:1.05em;width:1.05em;border-radius:22%;vertical-align:-0.12em;mar
     <div class="empty"><strong>Loading shows…</strong>The list fills in from the daily refresh. Each row shows the date, venue, starting price and drive time from home.</div>
   </main>
 
-  <p class="foot">Drive times are estimates without traffic, based on distance from your start point. Tap <b>Directions</b> for live traffic. Prices are the lowest listed price when found; resale prices change often, so check before buying. Refreshed automatically every day.</p>
+  <p class="foot">Drive times are estimates without traffic, based on distance from your start point. Tap <b>Directions</b> for live traffic. Prices are the lowest listed price when found; resale prices change often, so check before buying. Refreshed automatically every day. Shack song: “Brain Dance” Kevin MacLeod (incompetech.com), licensed under <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">Creative Commons: By Attribution 4.0</a>.</p>
 </div>
 
 <script>
@@ -1039,7 +1039,7 @@ async function copyOut(text,btn){
 (function(){
   // To change the song: drop the file in, set its tempo (bpm) and where the first downbeat lands (offset, seconds).
   // gapless:true decodes the whole song for a seamless loop (keep that for short loops); long songs use a normal player.
-  const SONG={src:"shack-song.mp3?v=1", bpm:84, offset:0, beatsPerTurn:4, gapless:true};
+  const SONG={src:"brain-dance.mp3?v=1", bpm:123, offset:0.46, beatsPerTurn:4, gapless:false}; // "Brain Dance" by Kevin MacLeod, measured at 123 bpm
   const btn=document.getElementById("hutBtn"), img=btn.querySelector("img");
   const still=matchMedia("(prefers-reduced-motion: reduce)").matches;
   let ctx=null, buf=null, src=null, gain=null, el=null, playing=false, loading=false, t0=0;
