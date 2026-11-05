@@ -300,7 +300,7 @@ h1 .logo{height:1.05em;width:1.05em;border-radius:22%;vertical-align:-0.12em;mar
 .songcredit{margin:-8px 0 0;text-align:center;font-size:11px;color:var(--muted)}.songcredit[hidden]{display:none}.songcredit a{color:inherit}
 .facts .wx{color:var(--ink);font-weight:500}.facts .wx:empty{display:none}
 /* disco-ball Surprise me */
-.disco{margin:26px 0 34px;text-align:center}
+.disco{margin:10px 0 24px;padding:46px 0;text-align:center;touch-action:pan-y;user-select:none;-webkit-user-select:none;cursor:grab}
 .dstage{position:relative;width:170px;margin:0 auto}
 #dcv{position:absolute;left:50%;top:50%;width:320px;height:320px;margin:-160px 0 0 -160px;pointer-events:none}
 .dball{position:relative;width:156px;height:156px;margin:0 auto;border-radius:50%;cursor:grab;touch-action:pan-y;user-select:none;-webkit-user-select:none;background:transparent;box-shadow:0 0 26px rgba(150,130,255,.5),0 0 60px rgba(255,110,200,.22);transition:box-shadow .3s}
@@ -1701,7 +1701,7 @@ void main(){
     }
   }
   function frame(now){raf=requestAnimationFrame(frame);if(!last)last=now;const dt=Math.min(50,now-last);last=now;const k=dt/16.7;   // time-based so it stays smooth at any frame rate
-    const base=BASE[Math.min(lv,2)];spin=base+(spin-base)*Math.pow(.94,k);th+=dir*spin*k;
+    const base=BASE[Math.min(lv,2)];spin=base+(spin-base)*Math.pow(.955,k);th+=dir*spin*k;
     draw();
     if(lv>0&&!busy&&performance.now()-idle>7000)setLv(0);}
   const run=()=>{if(!still&&vis&&!document.hidden&&!raf){last=0;raf=requestAnimationFrame(frame);}},stop=()=>{if(raf){cancelAnimationFrame(raf);raf=0;}};
@@ -1746,14 +1746,18 @@ void main(){
       setTimeout(()=>ball.classList.remove("fresh"),700);if(still)draw();},1700);}
   let tx=.0,ty=.0;
   function mark(e){const rc=ball.getBoundingClientRect();tx=(e.clientX-rc.left-rc.width/2)/(rc.width/2);ty=-(e.clientY-rc.top-rc.height/2)/(rc.height/2);}
-  function swipe(d){if(busy)return;whoosh();dir=d||dir;idle=performance.now();spin=.05;
+  function swipe(d,sp){if(busy)return;whoosh();dir=d||dir;idle=performance.now();spin=sp||.12;
     if(still){th+=dir*.7;draw();}
     if(lv<3){addCracks(tx,ty,lv===2?2:1);setLv(lv+1);tick(lv);buzz(12*(lv+1));}else crack();}
-  ball.addEventListener("pointerdown",e=>{if(busy)return;audio();x0=e.clientX;xs=x0;moved=0;mark(e);try{ball.setPointerCapture(e.pointerId);}catch(_){}ball.style.cursor="grabbing";});
-  ball.addEventListener("pointermove",e=>{if(x0==null)return;const dx=e.clientX-x0;moved=Math.max(moved,Math.abs(e.clientX-xs));
-    th+=dx*.018;x0=e.clientX;mark(e);if(dx)dir=dx>0?1:-1;if(still)draw();});
-  const end=()=>{if(x0==null)return;x0=null;audio();ball.style.cursor="";if(moved>=28)swipe(dir);};
-  ball.addEventListener("pointerup",end);ball.addEventListener("pointercancel",()=>{x0=null;});
+  // the whole disco area is the swipe zone (not just the ball); the ball keeps your finger's speed when you let go
+  let trk=[];
+  box.addEventListener("pointerdown",e=>{if(busy)return;audio();x0=e.clientX;xs=x0;moved=0;trk=[[e.clientX,performance.now()]];mark(e);try{box.setPointerCapture(e.pointerId);}catch(_){}});
+  box.addEventListener("pointermove",e=>{if(x0==null)return;const dx=e.clientX-x0;moved=Math.max(moved,Math.abs(e.clientX-xs));
+    th+=dx*.0128;x0=e.clientX;if(dx)dir=dx>0?1:-1;mark(e);const n=performance.now();trk.push([e.clientX,n]);while(trk.length>2&&n-trk[0][1]>90)trk.shift();spin=0;if(still)draw();});
+  const end=()=>{if(x0==null)return;x0=null;audio();
+    if(moved>=24){const a=trk[0],z=trk[trk.length-1],dtm=Math.max(16,z[1]-a[1]),v=(z[0]-a[0])/dtm;   // px per ms
+      if(Math.abs(v)>.05)dir=v>0?1:-1;swipe(dir,Math.min(.6,Math.max(.05,Math.abs(v)*.214)));}};   // .0128 rad per px * 16.7 ms = .214 rad per frame per px/ms
+  box.addEventListener("pointerup",end);box.addEventListener("pointercancel",()=>{x0=null;});
   ball.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();tx=(Math.random()-.5)*1.1;ty=(Math.random()-.5)*1.1;swipe(1);}});
 })();
 </script>
