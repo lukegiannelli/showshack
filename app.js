@@ -11,6 +11,7 @@ const REGIONS = ["Orange County","Los Angeles","Inland Empire","San Diego","Dese
 function region(e){const la=e.lat,lo=e.lon;if(typeof la!=="number"||typeof lo!=="number")return "Other";if(lo>-116.75)return "Desert";if(la<33.38)return "San Diego";if(lo<-118.65)return "Ventura";if(la<=33.95&&lo>=-118.12&&lo<=-117.41)return "Orange County";if(lo<=-117.65)return "Los Angeles";return "Inland Empire";}
 function ymd(d){return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");}
 function nextOccurrence(r){
+  if(r&&Array.isArray(r.weekdays)&&r.weekdays.length){const o=r.weekdays.map(w=>nextOccurrence({...r,weekdays:null,weekday:w})).filter(Boolean).sort();return o[0]||null;}
   if(!r||typeof r.weekday!=="number")return null;
   const t=new Date();t.setHours(0,0,0,0);
   if(r.freq==="monthly"&&r.nth){
