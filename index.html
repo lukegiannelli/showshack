@@ -325,7 +325,7 @@ h1 .logo{height:1.05em;width:1.05em;border-radius:22%;vertical-align:-0.12em;mar
 .vlegend{margin:0 0 8px;padding:7px 12px;border-radius:8px;background:var(--surface);border:1px solid var(--line);font-size:12.5px;color:var(--muted)}.vlegend b{color:var(--ink);font-weight:600}
 .vcard{position:relative;display:block;perspective:900px}
 .vf,.vb{border:1px solid var(--line);border-radius:12px}
-.vf{display:flex;align-items:stretch;gap:2px;background:linear-gradient(90deg,var(--lc,transparent) 0%,var(--lc,transparent) 28%,var(--rc,transparent) 72%,var(--rc,transparent) 100%),var(--surface)}
+.vf{display:flex;align-items:stretch;gap:2px;background:var(--surface)}
 .vb{display:none;background:linear-gradient(135deg,#1b1030,#2a1744);color:#f3ecff;padding:11px 14px;flex-direction:column;gap:6px;box-shadow:inset -5px 0 0 var(--fc,#888),0 0 18px color-mix(in srgb,var(--fc,#888) 35%,transparent)}
 .vcard.flipped .vf{display:none}.vcard.flipped .vb{display:flex}
 .vcard.turn>div{animation:vturn .38s ease-out}
@@ -945,20 +945,12 @@ function renderVenues(){
   const infos=keys.map(venueInfo);
   const sortV=(a,b)=>origin?((a.drive?.mins??1e9)-(b.drive?.mins??1e9))||a.name.localeCompare(b.name):a.name.localeCompare(b.name);
   const card=v=>{const n=v.next,nd=n?parseDay(n.start).toLocaleDateString("en-US",{weekday:"short",month:"short",day:"numeric"}):"";
-    const lc=v.drive?band(v.drive.mins,D_STEPS):"transparent";
-    const sf=safetyOf(v.name),fc=sf?sf.col:"#8a8396",rc2=sf?sf.tint:"transparent";
-    const fire=`<button type="button" class="vfire${sf?"":" none"}" data-vflip="1" aria-label="Safety details for ${esc(v.name)}">${ni("flame")}</button>`;
-    const back=sf?`<h3>${ni("flame")} Getting there & home <span class="sc">${sf.s}/5 · ${sf.label}</span></h3>
-      <p><b>Parking & entry:</b> ${esc(sf.w[0])}</p><p><b>Getting home:</b> ${esc(sf.w[1])}</p>
-      <small>General guidance from memory, not official or live. Check the venue and your own judgment; a missing rating does not mean safe or unsafe.</small>`
-      :`<h3>${ni("flame")} No rating yet</h3><p>I haven't scored this venue.</p>`;
-    return `<div class="vcard" style="--lc:${lc};--rc:${rc2};--fc:${fc}"><div class="vf"><button type="button" class="vopen" data-venue="${esc(v.k)}"><b>${esc(v.name)}</b>
+    return `<div class="vcard"><div class="vf"><button type="button" class="vopen" data-venue="${esc(v.k)}"><b>${esc(v.name)}</b>
       <span>${esc(v.city)}${v.drive?` · ~${fmtMins(v.drive.mins)}`:""}${v.year?` · opened ${v.year}`:""}</span>
       <small>${v.evs.length} show${v.evs.length===1?"":"s"}${n?` · next ${esc(nd)}: ${esc(n.title)}`:""}</small></button>
-      <button type="button" class="vpin${isPinned(v.k)?" on":""}" data-pinv="${esc(v.k)}" aria-pressed="${isPinned(v.k)}" aria-label="${isPinned(v.k)?"Unpin":"Pin"} ${esc(v.name)}">${ni("pin")}</button>${fire}</div>
-      <div class="vb">${back}<button type="button" class="vback" data-vflip="1">Back</button></div></div>`;};
+      <button type="button" class="vpin${isPinned(v.k)?" on":""}" data-pinv="${esc(v.k)}" aria-pressed="${isPinned(v.k)}" aria-label="${isPinned(v.k)?"Unpin":"Pin"} ${esc(v.name)}">${ni("pin")}</button></div></div>`;};
   const pinned=infos.filter(v=>isPinned(v.k)).sort((a,b)=>(state.pinV.indexOf(a.k))-(state.pinV.indexOf(b.k)));
-  let html=`<div class="venues"><p class="vlegend"><b>Left tint</b> = how far (green close → red far) · <b>Right tint + flame</b> = getting there &amp; home (green easier → red tougher). Tap the flame for why.</p>`;
+  let html=`<div class="venues">`;
   html+=`<h2 class="month pickh">${ni("pin")} Your venues</h2>`+(pinned.length?pinned.map(card).join(""):`<div class="empty"><strong>Pin your favorite spots</strong>Tap the pin on any venue and it stays at the top here.</div>`);
   const regionOf=k=>{const e=(state._up||[]).find(x=>venueKey(x)===k);return e?region(e):"Other";};
   for(const r of REGIONS){const vs=infos.filter(v=>!isPinned(v.k)&&regionOf(v.k)===r).sort(sortV);if(!vs.length)continue;
