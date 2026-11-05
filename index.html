@@ -785,9 +785,14 @@ vL.onclick=()=>{state.surprise=null;setView("list");};document.getElementById("v
 const carSel=document.getElementById("carSel");carSel.value=String(state.car||1);carSel.onchange=()=>{state.car=+carSel.value;savePrefs();render();};
 const mpgIn=document.getElementById("mpgIn"),gasIn=document.getElementById("gasIn"),foodSel=document.getElementById("foodSel");
 mpgIn.value=state.mpg||25;gasIn.value=(state.gas||5.85).toFixed(2);foodSel.value=String(state.food??30);
-let costT;function costChange(){clearTimeout(costT);costT=setTimeout(()=>{const m=+mpgIn.value,g=+gasIn.value;
+let costT;function costChange(){clearTimeout(costT);costT=setTimeout(()=>{if(document.activeElement===mpgIn||document.activeElement===gasIn){const v=+document.activeElement.value;if(!v)return;}const m=+mpgIn.value,g=+gasIn.value;
   if(m>=5&&m<=150)state.mpg=m; if(g>=1&&g<=15)state.gas=g; state.food=+foodSel.value; savePrefs();render();},250);}
-mpgIn.oninput=costChange;gasIn.oninput=costChange;foodSel.onchange=costChange;
+// Typing stays instant: the 900+ cards only recalc when you finish (tap Done / leave the box / pause typing).
+let costTyping;[mpgIn,gasIn].forEach(i=>{
+  i.addEventListener("input",()=>{clearTimeout(costTyping);costTyping=setTimeout(costChange,1200);});
+  i.addEventListener("change",()=>{clearTimeout(costTyping);costChange();});
+  i.addEventListener("keydown",e=>{if(e.key==="Enter")i.blur();});});
+foodSel.onchange=costChange;
 const drinkSel=document.getElementById("drinkSel");drinkSel.value=String(state.drinks??2);drinkSel.onchange=()=>{state.drinks=+drinkSel.value;savePrefs();render();};
 [mpgIn,gasIn].forEach(i=>i.addEventListener("blur",()=>{mpgIn.value=state.mpg;gasIn.value=state.gas.toFixed(2);}));
 /* alerts on starred shows */
