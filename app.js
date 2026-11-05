@@ -690,8 +690,9 @@ function renderMap(evs){const list=document.getElementById("list");
   let poolPins="",poolList="";
   if(state.poolOn&&POOL.length){
     const pr=7.5*scale;
-    poolPins=POOL.map((p,i)=>`<g class="ppin ${p.c}" data-pool="${i}"><circle cx="${X(p.lon)}" cy="${Y(p.lat)}" r="${pr.toFixed(1)}"/><circle class="eye" cx="${X(p.lon)}" cy="${Y(p.lat)}" r="${(pr*.45).toFixed(1)}"/><title>${esc(p.n)}</title></g>`).join("");
-    const withD=POOL.map((p,i)=>({p,i,d:driveEstimate(p.lat,p.lon)})).sort((x,y)=>(x.d?.mins??1e9)-(y.d?.mins??1e9)||x.p.n.localeCompare(y.p.n));
+    poolPins=POOL.map((p,i)=>(p.lat<bb[0]||p.lat>bb[2]||p.lon<bb[1]||p.lon>bb[3])?"":`<g class="ppin ${p.c}" data-pool="${i}"><circle cx="${X(p.lon)}" cy="${Y(p.lat)}" r="${pr.toFixed(1)}"/><circle class="eye" cx="${X(p.lon)}" cy="${Y(p.lat)}" r="${(pr*.45).toFixed(1)}"/><title>${esc(p.n)}</title></g>`).join("");
+    const inView=p=>state.mapView==="all"||(p.lat>=bb[0]&&p.lat<=bb[2]&&p.lon>=bb[1]&&p.lon<=bb[3]);
+    const withD=POOL.map((p,i)=>({p,i,d:driveEstimate(p.lat,p.lon)})).filter(x=>inView(x.p)).sort((x,y)=>(x.d?.mins??1e9)-(y.d?.mins??1e9)||x.p.n.localeCompare(y.p.n));
     const row=({p,i,d})=>{const dest=encodeURIComponent(p.n+", "+p.a+", "+p.city+", CA");
       return `<div class="prow" id="pool-${i}"><span class="pdot ${p.c}"></span><div class="pmain"><b>${esc(p.n)}</b><span>${esc(p.city)}${d?" · ~"+fmtMins(d.mins):""}</span>${(p.t||[]).length?`<span class="ptags">${p.t.map(t=>`<i>${esc(t)}</i>`).join("")}</span>`:""}</div><div class="plinks"><a href="https://www.google.com/maps/dir/?api=1&destination=${dest}" target="_blank" rel="noopener">Directions</a><a href="https://www.google.com/maps/search/?api=1&query=${dest}" target="_blank" rel="noopener">Hours</a></div></div>`;};
     const grp=(c,title)=>{const r=withD.filter(x=>x.p.c===c);return r.length?`<h3 class="ph"><span class="pdot ${c}"></span>${title} · ${r.length}</h3>${r.map(row).join("")}`:"";};
@@ -699,7 +700,7 @@ function renderMap(evs){const list=document.getElementById("list");
   }
   list.innerHTML=`<div class="map"><div class="row">${btns}</div><svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Map of ${evs.length} shows"><rect class="sea" x="0" y="0" width="${W}" height="${H}"/><polygon class="land" points="${land}"/><line class="border" x1="${X(-117.12)}" y1="${Y(32.54)}" x2="${X(-114.9)}" y2="${Y(32.72)}"/>${cities}${home}${state.poolOn&&POOL.length?"":pins}${poolPins}</svg>${state.poolOn&&POOL.length?"":`<p class="mhint">Dots are venues; bigger = more shows, color = cheapest show there (same scale as the cards). Tap a dot to list that venue's shows. Map is a simple outline, not to street level.</p>`}</div>${poolList}`;
   list.querySelectorAll("[data-mv]").forEach(b=>b.onclick=()=>{state.mapView=b.dataset.mv;render();});
-  const pt=list.querySelector("[data-pool-toggle]");if(pt)pt.onclick=()=>{state.poolOn=!state.poolOn;if(state.poolOn&&state.mapView==="all")state.mapView="oc";savePrefs();render();};
+  const pt=list.querySelector("[data-pool-toggle]");if(pt)pt.onclick=()=>{state.poolOn=!state.poolOn;savePrefs();render();};
   list.querySelectorAll("g[data-pool]").forEach(g=>g.onclick=ev=>{ev.stopPropagation();const r=document.getElementById("pool-"+g.dataset.pool);if(!r)return;
     list.querySelectorAll(".prow.on").forEach(x=>x.classList.remove("on"));r.classList.add("on");r.scrollIntoView({behavior:"smooth",block:"center"});});
   list.querySelectorAll("g[data-v]").forEach(g=>g.onclick=()=>{state.venue=g.dataset.v;savePrefs();setView("list");window.scrollTo({top:document.getElementById("viewBar").offsetTop-8,behavior:"smooth"});});}
@@ -1092,7 +1093,7 @@ try{if(location.hash==="#owner"){localStorage.setItem("shack-owner","1");history
   if(localStorage.getItem("shack-owner")==="1")document.getElementById("addOpen").hidden=false;}catch(e){}
 if("serviceWorker" in navigator&&location.protocol==="https:")navigator.serviceWorker.register("sw.js").catch(()=>{});
 // Shows come from events.json (works for everyone, no login). The database is only a fallback.
-let POOL=[];fetch("pool.json?v=1").then(r=>r.ok?r.json():{}).then(j=>{POOL=((j||{}).places||[]).filter(p=>typeof p.lat==="number");if(state.view==="map"&&state.poolOn)render();}).catch(()=>{});
+let POOL=[];fetch("pool.json?v=2").then(r=>r.ok?r.json():{}).then(j=>{POOL=((j||{}).places||[]).filter(p=>typeof p.lat==="number");if(state.view==="map"&&state.poolOn)render();}).catch(()=>{});
 let VOPEN={};fetch("venues.json").then(r=>r.ok?r.json():{}).then(j=>{VOPEN=j||{};if(state.view==="venues"||state.venue!=="all")render();}).catch(()=>{});
 let fileLoaded=false;
 (async()=>{

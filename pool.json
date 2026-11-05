@@ -212,7 +212,7 @@
 "a": "15025 Imperial Hwy"
 },
 {
-"n": "Campus Billiards & Sports Bar",
+"n": "HT Billiard & Bar (formerly Campus Billiards)",
 "c": "bar",
 "city": "Cypress",
 "zip": "90630",
@@ -275,6 +275,267 @@
 "lon": -118.15252,
 "geo": "place",
 "a": "3348 E Broadway"
+},
+{
+"n": "Q's Billiard Club",
+"c": "bar",
+"a": "11835 Wilshire Blvd",
+"city": "Los Angeles",
+"zip": "90025",
+"t": [
+"21+",
+"Trivia Wednesdays"
+]
+},
+{
+"n": "House of Billiards",
+"c": "hall",
+"a": "14662 Ventura Blvd",
+"city": "Sherman Oaks",
+"zip": "91403",
+"t": [
+"~20 tables",
+"Craft beer"
+]
+},
+{
+"n": "Highland Park Billiards",
+"c": "hall",
+"a": "5043 York Blvd",
+"city": "Los Angeles",
+"zip": "90042",
+"t": [
+"17 tables"
+]
+},
+{
+"n": "Mr. Lucky's Billiards",
+"c": "hall",
+"a": "21020 Hawthorne Blvd",
+"city": "Torrance",
+"zip": "90503",
+"t": [
+"League nights"
+]
+},
+{
+"n": "Crown City Billiards & Lounge",
+"c": "hall",
+"a": "1312 N Lake Ave",
+"city": "Pasadena",
+"zip": "91104",
+"t": [
+"League nights"
+]
+},
+{
+"n": "Embassy Billiards Club",
+"c": "hall",
+"a": "220 S San Gabriel Blvd",
+"city": "San Gabriel",
+"zip": "91776",
+"t": [
+"Snooker"
+]
+},
+{
+"n": "Vermont Karaoke & Billiards",
+"c": "bar",
+"a": "191 S Vermont Ave",
+"city": "Los Angeles",
+"zip": "90004",
+"t": [
+"Karaoke"
+]
+},
+{
+"n": "Shooters Billiards",
+"c": "hall",
+"a": "24450 Lyons Ave",
+"city": "Santa Clarita",
+"zip": "91321",
+"t": []
+},
+{
+"n": "Big D's Billiards",
+"c": "hall",
+"a": "2674 E Garvey Ave S",
+"city": "West Covina",
+"zip": "91791",
+"t": []
+},
+{
+"n": "Cue-Time Family Billiards",
+"c": "hall",
+"a": "19706 Arrow Hwy",
+"city": "Covina",
+"zip": "91724",
+"t": [
+"All ages"
+]
+},
+{
+"n": "College Billiards",
+"c": "hall",
+"a": "5303 El Cajon Blvd",
+"city": "San Diego",
+"zip": "92115",
+"t": [
+"Snooker",
+"Carom"
+]
+},
+{
+"n": "Society PB",
+"c": "bar",
+"a": "1051 Garnet Ave",
+"city": "San Diego",
+"zip": "92109",
+"t": []
+},
+{
+"n": "Pockets Billiards & Brew",
+"c": "hall",
+"a": "5610 Kearny Mesa Rd",
+"city": "San Diego",
+"zip": "92111",
+"t": [
+"14 tables"
+]
+},
+{
+"n": "On Cue Billiards",
+"c": "hall",
+"a": "8308 Parkway Dr",
+"city": "La Mesa",
+"zip": "91942",
+"t": []
+},
+{
+"n": "California Billiards",
+"c": "hall",
+"a": "651 Palomar St",
+"city": "Chula Vista",
+"zip": "91911",
+"t": [
+"Snooker"
+]
+},
+{
+"n": "Que Billiard",
+"c": "hall",
+"a": "4428 Convoy St",
+"city": "San Diego",
+"zip": "92111",
+"t": []
+},
+{
+"n": "Parkway Family Billiards",
+"c": "hall",
+"a": "1280 Fletcher Pkwy",
+"city": "El Cajon",
+"zip": "92020",
+"t": [
+"All ages"
+]
+},
+{
+"n": "Nice Rack",
+"c": "hall",
+"a": "1246 E Main St",
+"city": "El Cajon",
+"zip": "92021",
+"t": []
+},
+{
+"n": "Shooters Sports & Grill",
+"c": "hall",
+"a": "10226 Indiana Ave",
+"city": "Riverside",
+"zip": "92503",
+"t": [
+"Snooker"
+]
+},
+{
+"n": "High Society Billiard & Dart",
+"c": "hall",
+"a": "34405 Waltham Pl",
+"city": "Winchester",
+"zip": "92596",
+"t": []
+},
+{
+"n": "Stiix Billiards",
+"c": "hall",
+"a": "2520 E Main St",
+"city": "Ventura",
+"zip": "93003",
+"t": []
+},
+{
+"n": "Q Club",
+"c": "bar",
+"a": "2362 Oxnard Blvd",
+"city": "Oxnard",
+"zip": "93036",
+"t": []
+},
+{
+"n": "Corner Pocket Billiards",
+"c": "hall",
+"a": "658 S A St",
+"city": "Oxnard",
+"zip": "93030",
+"t": []
+},
+{
+"n": "Champion Billiards & Arcade",
+"c": "hall",
+"a": "1475 S Oxnard Blvd",
+"city": "Oxnard",
+"zip": "93030",
+"t": []
+},
+{
+"n": "Fireside Lounge",
+"c": "bar",
+"a": "Fireside Lounge",
+"city": "Palm Springs",
+"zip": "",
+"t": [
+"Shuffleboard"
+]
+},
+{
+"n": "Pappy & Harriet's",
+"c": "bar",
+"a": "53688 Pioneertown Rd",
+"city": "Pioneertown",
+"zip": "92268",
+"t": [
+"Live music"
+]
+},
+{
+"n": "Bigshot's Billiards Bar & Grill",
+"c": "bar",
+"a": "23512 El Toro Rd",
+"city": "Lake Forest",
+"zip": "92630",
+"t": [
+"Country nights"
+]
+},
+{
+"n": "Goody's Tavern",
+"c": "bar",
+"a": "206 S El Camino Real",
+"city": "San Clemente",
+"zip": "92672",
+"t": [
+"Karaoke"
+]
 }
 ]
 }
