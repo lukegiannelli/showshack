@@ -277,6 +277,32 @@ h1 .logo{height:1.05em;width:1.05em;border-radius:22%;vertical-align:-0.12em;mar
 .ntot .each{font:600 14px var(--mono);color:var(--drive)}
 .nfoot{margin:0;font-size:12px;color:var(--muted)}
 .nfoot a{color:var(--accent);font-weight:600;text-decoration:none}
+/* ---- get-the-app banner + install sheet ---- */
+.getapp{display:flex;align-items:center;gap:10px;background:var(--surface);border:1px solid var(--bamboo);border-radius:14px;padding:10px 10px 10px 12px}
+.getapp[hidden]{display:none}
+.getapp img{border-radius:10px;flex:none}
+.getapp span{flex:1;min-width:0;display:flex;flex-direction:column;line-height:1.25}
+.getapp b{font-size:14.5px}.getapp small{font-size:12px;color:var(--muted)}
+.getbtn{font:800 14px var(--body);color:var(--thatch-ink);padding:8px 18px;border-radius:999px;cursor:pointer;background:linear-gradient(180deg,#FBE3A8,#E9B76A);border:1.5px solid #8a5a22;box-shadow:0 2px 0 #6b3f12}
+.getx{border:0;background:none;color:var(--muted);font-size:16px;padding:6px;cursor:pointer}
+.sheetbg{position:fixed;inset:0;z-index:60;background:rgba(10,4,20,.55);-webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px)}
+.sheetbg[hidden],.sheet[hidden]{display:none}
+.sheet{position:fixed;left:0;right:0;bottom:0;z-index:61;background:var(--surface);border-top:1px solid var(--bamboo);border-radius:22px 22px 0 0;
+  padding:10px 20px calc(20px + env(safe-area-inset-bottom,0px));max-width:560px;margin:0 auto;display:flex;flex-direction:column;gap:14px;animation:sheetUp .28s cubic-bezier(.2,.8,.3,1)}
+@keyframes sheetUp{from{transform:translateY(100%)}to{transform:none}}
+.grab{width:40px;height:5px;border-radius:3px;background:var(--line);align-self:center}
+.sheethead{display:flex;gap:12px;align-items:center}.sheethead img{border-radius:13px}
+.sheethead h2{margin:0;font:900 24px var(--display);text-transform:uppercase;letter-spacing:.04em;color:var(--lbl)}
+.sheethead p{margin:2px 0 0;color:var(--muted);font-size:13.5px}
+.step{display:grid;grid-template-columns:34px 1fr;gap:10px;align-items:center;font-size:15px}
+.step .n{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font:800 14px var(--body);color:var(--thatch-ink);background:linear-gradient(180deg,#FBE3A8,#E9B76A)}
+.step kbd{font:600 13px var(--body);background:var(--chip);border:1px solid var(--line);border-radius:7px;padding:2px 7px;white-space:nowrap}
+.sheet .note{font-size:12.5px;color:var(--muted);margin:0}
+.sheetdone{font:700 15px var(--body);padding:12px;border-radius:12px;border:1px solid var(--line);background:var(--chip);color:var(--ink);cursor:pointer}
+.pointer{position:fixed;z-index:62;right:22px;bottom:calc(8px + env(safe-area-inset-bottom,0px));font-size:30px;pointer-events:none;animation:bob 1s ease-in-out infinite;filter:drop-shadow(0 2px 4px rgba(0,0,0,.5))}
+@keyframes bob{50%{transform:translateY(8px)}}
+@media (prefers-reduced-motion:reduce){.sheet,.pointer{animation:none}}
+.morecards{height:1px}
 /* header art: same geometry the old background used (center 96% / auto 106%), so nothing moves */
 .hutart{position:absolute;z-index:-1;height:106%;aspect-ratio:952/1024;left:50%;top:-5.76%;transform:translateX(-50%);
   background:url(header.jpg?v=4) center/100% 100% no-repeat;perspective:900px}
@@ -352,6 +378,19 @@ h1 .logo{height:1.05em;width:1.05em;border-radius:22%;vertical-align:-0.12em;mar
     <h1 class="shack-title">The Show Shack</h1>
     <button type="button" class="shack-share" id="shareApp">🌴 Share the Shack</button>
   </header>
+  <div class="getapp" id="getApp" hidden>
+    <img src="apple-touch-icon.png?v=2" alt="" width="40" height="40">
+    <span><b>The Show Shack app</b><small>Free · opens full screen from your home screen</small></span>
+    <button type="button" class="getbtn" id="getBtn">Get</button>
+    <button type="button" class="getx" id="getX" aria-label="Not now">✕</button>
+  </div>
+  <div class="sheetbg" id="sheetBg" hidden></div>
+  <div class="sheet" id="sheet" role="dialog" aria-modal="true" aria-labelledby="sheetTitle" hidden>
+    <div class="grab"></div>
+    <div class="sheethead"><img src="apple-touch-icon.png?v=2" alt="" width="56" height="56"><div><h2 id="sheetTitle">Get The Show Shack</h2><p>Free. No App Store, no login.</p></div></div>
+    <div id="sheetBody"></div>
+    <button type="button" class="sheetdone" id="sheetDone">Got it</button>
+  </div>
   <div class="shack-meta">
     <p class="tagline">Concerts, raves, clubs, comedy, theater &amp; festivals across Southern California</p>
     <p class="stats"><span id="refreshed">Loading…</span><span class="dot">·</span><span id="count"></span></p>
@@ -615,6 +654,7 @@ function alertOf(e){const out=[];
   if(recent(e.onSaleAt,7))out.push({c:"sale",t:"🎟 Just went on sale"});
   return out;}
 const pMid=pi=>pi.lo==null?null:(pi.hi!=null?(pi.lo+pi.hi)/2:pi.lo*1.3);
+let listObs=null;
 function render(){
   const list=document.getElementById("list");
   if(!state.loaded) return;
@@ -659,7 +699,9 @@ function render(){
   const pinned=evs.filter(e=>e.added), rest=evs.filter(e=>!e.added);
   let html=surpriseHtml, lastMonth="", restStarted=false;
   if(pinned.length) html+='<h2 class="month pickh">＋ Added by you &amp; friends</h2>';
-  for(const e of [...pinned,...rest]){
+  // Cards are built in batches as you scroll (building all ~900 at once is what made the app feel heavy).
+  const all=[...pinned,...rest]; let idx=0;
+  const more=n=>{let html="";const stop=Math.min(all.length,idx+n);for(;idx<stop;idx++){const e=all[idx];
     const isPin=!!e.added;
     const d=parseDay(e.start), end=parseDay(e.end);
     const monthKey = state.sort==="date" && !isPin ? d.toLocaleDateString("en-US",{month:"long",year:"numeric"}) : "";
@@ -725,7 +767,15 @@ function render(){
       <div class="sides"><div class="side l"><span class="sl">Price</span>${priceHtml}</div><div class="side r"><span class="sl">Drive</span>${drv}</div></div>${nightHtml}</div>
       ${backHtml(e,nc,fl)}</div></article>`;
   }
-  list.innerHTML=html;
+  return html;};
+  if(listObs)listObs.disconnect();
+  list.innerHTML=html+more(24)+(idx<all.length?'<div id="moreCards" class="morecards" aria-hidden="true"></div>':"");
+  state._more=()=>{if(idx>=all.length)return false;const s=document.getElementById("moreCards");if(!s)return false;
+    s.insertAdjacentHTML("beforebegin",more(40));if(idx>=all.length){s.remove();if(listObs)listObs.disconnect();}return true;};
+  const sent=document.getElementById("moreCards");
+  if(sent&&"IntersectionObserver" in window){const fill=()=>{const el=document.getElementById("moreCards");if(el&&el.getBoundingClientRect().top<innerHeight+1600&&state._more())requestAnimationFrame(fill);};
+    listObs=new IntersectionObserver(es=>{if(es.some(x=>x.isIntersecting))fill();},{rootMargin:"1600px 0px"});listObs.observe(sent);}
+  else if(sent){while(state._more());}
   jumpToHash();
   const sa=document.getElementById("spAgain"),sd=document.getElementById("spDone");
   if(sa)sa.onclick=surpriseMe; if(sd)sd.onclick=()=>{state.surprise=null;render();};
@@ -1034,7 +1084,7 @@ document.getElementById("list").addEventListener("click",async ev=>{
 const APP_URL="https://lukegiannelli.github.io/showshack/";
 function hid(e){return (e.added?"p-":"e-")+String(e.id).toLowerCase().replace(/[^a-z0-9-]/g,"-").slice(0,80);}
 let hashDone="";
-function jumpToHash(){const h=(location.hash||"").slice(1);if(!h||h===hashDone)return;const el=document.getElementById(h);if(!el)return;hashDone=h;el.scrollIntoView({behavior:"smooth",block:"center"});el.classList.add("hl");setTimeout(()=>el.classList.remove("hl"),4000);}
+function jumpToHash(){const h=(location.hash||"").slice(1);if(!h||h===hashDone)return;let el=document.getElementById(h);while(!el&&state._more&&state._more())el=document.getElementById(h);if(!el)return;hashDone=h;el.scrollIntoView({behavior:"smooth",block:"center"});el.classList.add("hl");setTimeout(()=>el.classList.remove("hl"),4000);}
 let shownDay=todayStr();
 function dayCheck(){if(todayStr()!==shownDay){shownDay=todayStr();render();}}
 document.addEventListener("visibilitychange",()=>{if(!document.hidden)dayCheck();});
@@ -1104,8 +1154,48 @@ async function copyOut(text,btn){
       brake.onfinish=()=>{if(brake){brake.cancel();brake=null;}};
     }}
 })();
+/* ---- Get the app: one-tap install on Android, a short guide on iPhone ---- */
+(function(){
+  const bar=document.getElementById("getApp"),bg=document.getElementById("sheetBg"),sh=document.getElementById("sheet"),body=document.getElementById("sheetBody");
+  const ua=navigator.userAgent;
+  const installed=matchMedia("(display-mode: standalone)").matches||navigator.standalone===true;
+  const iOS=/iPhone|iPad|iPod/.test(ua)||(navigator.platform==="MacIntel"&&navigator.maxTouchPoints>1);
+  const inApp=/Instagram|FBAN|FBAV|FB_IAB|TikTok|Line\/|Snapchat|LinkedInApp|Twitter/i.test(ua);
+  let deferred=null, pointer=null;
+  if(installed)return;
+  const snoozed=()=>{try{return +localStorage.getItem("shack-getapp-x")>Date.now();}catch(e){return false;}};
+  function showBar(){if(!snoozed())bar.hidden=false;}
+  window.addEventListener("beforeinstallprompt",e=>{e.preventDefault();deferred=e;showBar();});   // Android / desktop Chrome
+  window.addEventListener("appinstalled",()=>{bar.hidden=true;close();});
+  if(iOS)showBar();
+  document.getElementById("getX").onclick=()=>{bar.hidden=true;try{localStorage.setItem("shack-getapp-x",String(Date.now()+14*864e5));}catch(e){}};
+  function close(){sh.hidden=true;bg.hidden=true;if(pointer){pointer.remove();pointer=null;}}
+  bg.onclick=close;document.getElementById("sheetDone").onclick=close;
+  function open(){
+    if(deferred){deferred.prompt();deferred.userChoice.finally(()=>{deferred=null;});return;}
+    const step=(n,h)=>`<div class="step"><span class="n">${n}</span><span>${h}</span></div>`;
+    if(inApp){
+      body.innerHTML=step(1,"This app's built-in browser can't install it. Tap <kbd>⋯</kbd> or <kbd>Share</kbd> and choose <b>Open in Safari</b> (or your browser).")+
+        step(2,"Then tap <b>Get</b> again from there.");
+    }else if(iOS){
+      body.innerHTML=step(1,"Tap <kbd>⋯</kbd> at the bottom right of Safari, then <kbd>Share&nbsp;⬆</kbd>. <span class='note'>(Older iPhones: the <kbd>⬆</kbd> button is right on the bottom bar.)</span>")+
+        step(2,"Scroll down and tap <kbd>Add to Home Screen</kbd>.")+
+        step(3,"Make sure <b>Open as Web App</b> is on, then tap <kbd>Add</kbd>. 🛖")+
+        `<p class="note">The Shack lands on your home screen and opens full screen, like any app.</p>`;
+      pointer=document.createElement("div");pointer.className="pointer";pointer.textContent="👇";document.body.appendChild(pointer);
+    }else{
+      body.innerHTML=step(1,"Open your browser menu <kbd>⋮</kbd>.")+step(2,"Tap <kbd>Install app</kbd> or <kbd>Add to Home screen</kbd>.");
+    }
+    sh.hidden=false;bg.hidden=false;
+  }
+  document.getElementById("getBtn").onclick=open;
+  window.shackGetApp=open;
+  if(/[?&]get=1/.test(location.search)){showBar();setTimeout(open,700);}   // links from "Share the Shack" / the QR code
+})();
 document.getElementById("shareApp").addEventListener("click",ev=>{
-  copyOut("🛖 The Show Shack: SoCal shows, raves, comedy, open mics, ecstatic dance & more, with prices and drive times. No login needed.\n"+APP_URL,ev.currentTarget);
+  const url=APP_URL+"?get=1", text="🛖 The Show Shack: SoCal shows, raves, comedy, open mics & more, with prices, drive times and what your night will cost. Free, no login. Tap to get it:";
+  if(navigator.share){navigator.share({title:"The Show Shack",text,url}).catch(()=>{});return;}
+  copyOut(text+"\n"+url,ev.currentTarget);
 });
 // Owner mode: open the site once with #owner to show the Add button on this device.
 try{if(location.hash==="#owner"){localStorage.setItem("shack-owner","1");history.replaceState(null,"",location.pathname);}
