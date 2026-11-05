@@ -532,6 +532,6 @@ body.neb.nebok .vcard .vf .vpin{opacity:.7}
 
 /* max drive v3: the car is its own element; the real thumb is invisible but keeps its touch size */
 .range .rw{position:relative;display:inline-block;line-height:0;--W:76px}
-.range .rw .car{position:absolute;top:50%;left:calc(var(--f,1) * (100% - var(--W)));width:var(--W);height:32px;margin-top:-19px;background:url("car.svg?v=3") center/contain no-repeat;pointer-events:none}
+.range .rw .car{position:absolute;top:50%;left:calc(var(--f,1) * (100% - var(--W)));width:var(--W);height:21px;margin-top:-14px;background:url("car.svg?v=4") center/contain no-repeat;pointer-events:none}
 .range input#maxDrive::-webkit-slider-thumb{background:none!important;background-color:transparent!important;width:76px;height:32px;margin-top:-13px;box-shadow:none;border:0}
 .range input#maxDrive::-moz-range-thumb{background:none!important;width:76px;height:32px;border:0}

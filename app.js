@@ -903,8 +903,16 @@ if(!location.hash)addEventListener("pageshow",ev=>{if(!ev.persisted)scrollTo(0,0
 (function(){const q=new URLSearchParams(location.search),n=Math.round(+q.get("n"));
   if(n>=1&&n<=5)state.carLink=n;
   if(q.get("night")==="1"&&location.hash.length>1)state.flipped.add(location.hash.slice(1));})();
-function jumpToHash(id){const h=id||(location.hash||"").slice(1);if(!h||(!id&&h===hashDone))return;let el=document.getElementById(h);while(!el&&state._more&&state._more())el=document.getElementById(h);if(!el)return;hashDone=h;el.scrollIntoView({behavior:"smooth",block:"center"});el.classList.add("hl");setTimeout(()=>el.classList.remove("hl"),4000);
-  if(location.hash||location.search.indexOf("night")>-1)try{history.replaceState(null,"",location.pathname);}catch(e){}}  // one-shot: relaunching this tab later starts at the top
+// Show links (#show-id) jump once. A link we've already jumped to, or a page reload / tab restore,
+// never jumps again, so reopening the app always starts at the top.
+const NAVT=(()=>{try{return performance.getEntriesByType("navigation")[0].type;}catch(e){return "navigate";}})();
+function jumped(){try{return JSON.parse(localStorage.getItem("radar-jumped")||"[]");}catch(e){return [];}}
+function jumpToHash(id){const h=id||(location.hash||"").slice(1);if(!h||(!id&&h===hashDone))return;
+  if(!id){const seen=jumped();
+    if(location.hash||location.search)try{history.replaceState(null,"",location.pathname);}catch(e){}
+    if(NAVT!=="navigate"||seen.includes(h)){hashDone=h;return;}
+    try{localStorage.setItem("radar-jumped",JSON.stringify([h,...seen].slice(0,30)));}catch(e){}}
+  let el=document.getElementById(h);while(!el&&state._more&&state._more())el=document.getElementById(h);if(!el)return;hashDone=h;el.scrollIntoView({behavior:"smooth",block:"center"});el.classList.add("hl");setTimeout(()=>el.classList.remove("hl"),4000);}
 let shownDay=todayStr();
 function dayCheck(){if(todayStr()!==shownDay){shownDay=todayStr();render();}}
 document.addEventListener("visibilitychange",()=>{if(!document.hidden)dayCheck();});
