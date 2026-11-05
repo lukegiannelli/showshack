@@ -341,8 +341,9 @@ function render(){
   if(!evs.length&&!state.surprise){list.innerHTML = vHead + (state.venue!=="all"&&(state._up||[]).some(e=>venueKey(e)===state.venue)?'<div class="empty"><strong>Filters are hiding this venue\'s shows</strong>Set Show and Genre to All, and When to Any day.</div>':""); if(state.venue!=="all")return; list.innerHTML = state.kind==="starred" ? '<div class="empty"><strong>Nothing starred yet</strong>Tap ☆ on any show to keep an eye on it. Your stars are private to you.</div>' : state.kind==="picks" ? '<div class="empty"><strong>No added shows yet</strong>Tap ＋ Add a show to pin a gig you heard about. It shows up here and at the top of the full list.</div>' : (state.q ? `<div class="empty"><strong>No shows match “${esc(sq.value.trim())}”</strong>Check the spelling, try part of the name, or set the filters above to All.</div>` : '<div class="empty"><strong>Nothing matches these filters</strong>Try a longer max drive or set Genre to All.</div>');return;}
   let surpriseHtml="";
   if(state.surprise){const pick=(state._up||evs).find(e=>skey(e)===state.surprise);
-    if(pick){evs=[pick];surpriseHtml=`<div class="surprise">${ni("dice")} <b>Your pick</b><span>${esc(state.surpriseWhy||"")}</span><button type="button" class="chip" id="spAgain">Another</button><button type="button" class="chip" id="spDone">Show all</button></div>`;}
-    else state.surprise=null;}
+    // Disco pick: no banner, the picked show just lands on top of the normal list (one-shot).
+    if(pick)evs=[pick,...evs.filter(e=>skey(e)!==state.surprise)];
+    state.surprise=null;}
   const pinned=evs.filter(e=>e.added), rest=evs.filter(e=>!e.added);
   let html=vHead+surpriseHtml+weekendDigest(evs), lastMonth="", restStarted=false;
   if(pinned.length) html+='<h2 class="month pickh">＋ Added by you &amp; friends</h2>';
@@ -615,7 +616,7 @@ function surpriseMe(){
   state._lastSurprise=skey(pick);state.surprise=skey(pick);
   state.surpriseWhy=`Random pick from all ${pool.length} upcoming shows, filters ignored.`;
   render();
-  const c=document.querySelector("#list .card");
+  const c=document.getElementById(hid(pick))||document.querySelector("#list .card");
   if(c){c.classList.add("emerge");c.scrollIntoView({block:"center",behavior:"smooth"});}
 }
 
