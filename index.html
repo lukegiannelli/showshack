@@ -299,6 +299,23 @@ h1 .logo{height:1.05em;width:1.05em;border-radius:22%;vertical-align:-0.12em;mar
 .daybtn{background:linear-gradient(180deg,#FBE3A8,#E9B76A);color:var(--thatch-ink);border:1.5px solid #8a5a22;box-shadow:0 3px 0 #6b3f12}
 .nightbtn:active,.daybtn:active{transform:translateY(2px)}
 .face.front{grid-template-rows:1fr auto auto}
+/* layout: tickets under the date, add-to-calendar under star + category, the rest in a tidy 2x2 */
+.ev{grid-template-columns:64px 1fr}
+.stubtix{display:block;width:100%;margin-top:12px;text-align:center;font:700 12px/1.15 var(--body);padding:8px 2px;border-radius:10px;text-decoration:none;
+  background:linear-gradient(180deg,#FBE3A8,#E9B76A);color:var(--thatch-ink);border:1px solid #8a5a22;box-shadow:0 2px 0 #6b3f12;overflow-wrap:normal;word-break:keep-all;hyphens:none}
+.stub{padding-right:2px}
+.stubtix{font-size:11.5px;padding:8px 0}
+.stubtix:active{transform:translateY(2px);box-shadow:none}
+.tr{flex:none;display:flex;flex-direction:column;align-items:flex-end;gap:6px}
+.trr{display:flex;align-items:flex-start;gap:8px}
+.addcal{font:600 11.5px var(--body);white-space:nowrap;text-decoration:none;color:var(--ink);padding:4px 10px;border-radius:999px;border:1px solid var(--bamboo);background:color-mix(in srgb,var(--thatch) 9%,transparent)}
+.links{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:4px}
+.links>a,.links>button,.links .listen summary{display:block;text-align:center;width:100%}
+.links .listen[open]{grid-column:1/-1;order:0}
+.links .listen .lm{justify-content:center}
+.links button.rm{grid-column:1/-1}
+.links>:last-child:nth-child(odd){grid-column:1/-1}
+@media (max-width:420px){.ev{grid-template-columns:62px 1fr}}
 .month{color:var(--ink);text-shadow:0 2px 0 rgba(0,0,0,.45),0 0 14px rgba(0,0,0,.5)}
 .back .nl{padding:4px 0}
 </style>
@@ -661,10 +678,10 @@ function render(){
     const canRm = isPin && (amOwner || (myUid && e.createdBy===myUid));
     const fl=state.flipped.has(hid(e));
     html+=`<article id="${hid(e)}" class="card${fl?" flipped":""}"><div class="flip"><div class="ev face front${isPin?" pick":""}" style="--lc:${lc};--rc:${rc}"${fl?' aria-hidden="true"':""}>
-      <div class="stub"><span class="dow">${dow}</span><span class="day">${d.getDate()}</span><span class="mon">${mon}</span>${thru}</div>
+      <div class="stub"><span class="dow">${dow}</span><span class="day">${d.getDate()}</span><span class="mon">${mon}</span>${thru}${tix?`<a class="tix stubtix" href="${esc(tix)}" target="_blank" rel="noopener">${tixLabel}</a>`:""}</div>
       <div class="body">
         ${isPin?`<span class="who">＋ Luke's pick</span>`:""}
-        <div class="top"><h3>${esc(e.title)}</h3><span class="kind ${CONS.has(e.kind)?"dance":e.kind==="festival"?"fest":mic?"mic":e.kind==="club"?"club":e.kind==="comedy"?"comedy":e.kind==="theater"?"theater":""}">${CONS.has(e.kind)?({dance:"Dance",contact:"Contact",sound:"Sound",drum:"Drums"})[e.kind]:e.kind==="festival"?"Fest":mic?"Open mic":e.kind==="club"?"Club":e.kind==="comedy"?"Comedy":e.kind==="theater"?"Theater":"Show"}</span><button type="button" class="starbtn" data-star="${esc(skey(e))}" aria-pressed="${state.stars.has(skey(e))}" aria-label="Star ${esc(e.title)}">${state.stars.has(skey(e))?"★":"☆"}</button></div>
+        <div class="top"><h3>${esc(e.title)}</h3><div class="tr"><div class="trr"><span class="kind ${CONS.has(e.kind)?"dance":e.kind==="festival"?"fest":mic?"mic":e.kind==="club"?"club":e.kind==="comedy"?"comedy":e.kind==="theater"?"theater":""}">${CONS.has(e.kind)?({dance:"Dance",contact:"Contact",sound:"Sound",drum:"Drums"})[e.kind]:e.kind==="festival"?"Fest":mic?"Open mic":e.kind==="club"?"Club":e.kind==="comedy"?"Comedy":e.kind==="theater"?"Theater":"Show"}</span><button type="button" class="starbtn" data-star="${esc(skey(e))}" aria-pressed="${state.stars.has(skey(e))}" aria-label="Star ${esc(e.title)}">${state.stars.has(skey(e))?"★":"☆"}</button></div>${e.start?`<a class="addcal" href="${esc(calLink(e))}" target="_blank" rel="noopener">＋ Add to calendar</a>`:""}</div></div>
         ${e.artists?`<div class="where">${esc(e.artists)}</div>`:""}
         <div class="where">${esc(e.venue)} · ${esc(e.city)}</div>
         ${al?`<div class="row">${al}</div>`:""}
@@ -673,7 +690,7 @@ function render(){
         ${e.note?`<div class="note">${esc(e.note)}</div>`:""}
         ${(tags||extraTags)?`<div class="tags">${extraTags}${tags}</div>`:""}
         ${volHtml(e)}
-        <div class="links">${tix?`<a class="tix" href="${esc(tix)}" target="_blank" rel="noopener">${tixLabel}</a>`:""}${listen}<a href="${maps}" target="_blank" rel="noopener">Directions</a>${e.start?`<a href="${esc(calLink(e))}" target="_blank" rel="noopener">Calendar</a>`:""}<a href="${esc(eatLink(e))}" target="_blank" rel="noopener">Eat nearby</a><button type="button" class="share" data-share="${esc(skey(e))}">Share</button>${canRm?`<button type="button" class="rm" data-rm="${esc(e.id)}">Remove</button>`:""}</div>
+        <div class="links"><a href="${maps}" target="_blank" rel="noopener">Directions</a><a href="${esc(eatLink(e))}" target="_blank" rel="noopener">Eat nearby</a><button type="button" class="share" data-share="${esc(skey(e))}">Share</button>${listen}${canRm?`<button type="button" class="rm" data-rm="${esc(e.id)}">Remove</button>`:""}</div>
       </div>
       <div class="sides"><div class="side l"><span class="sl">Price</span>${priceHtml}</div><div class="side r"><span class="sl">Drive</span>${drv}</div></div>${nightHtml}</div>
       ${backHtml(e,nc,fl)}</div></article>`;
