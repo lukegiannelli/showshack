@@ -62,7 +62,7 @@ buildChips("kindRow",KINDS,"kind");
     b.dataset.f=k;row.insertBefore(b,first);});})();buildChips("genreRow",GENRES,"genre");
 const md=document.getElementById("maxDrive"), mdo=document.getElementById("maxDriveOut"), sb=document.getElementById("sortBy");
 md.value=state.maxDrive; sb.value=state.sort;
-function syncDrive(){mdo.textContent = +md.value>=180 ? "Any" : "≤ "+fmtMins(+md.value);md.style.setProperty("--p",((+md.value-+md.min)/(+md.max-+md.min)*100)+"%");}
+function syncDrive(){mdo.textContent = +md.value>=180 ? "Any" : "≤ "+fmtMins(+md.value);const fr=(+md.value-+md.min)/(+md.max-+md.min);md.style.setProperty("--p",fr*100+"%");md.parentNode.style.setProperty("--f",fr);}
 syncDrive();
 md.oninput=()=>{state.maxDrive=+md.value;syncDrive();savePrefs();render();};
 
@@ -296,7 +296,7 @@ function wkCommit(card,dir){
     if(a==="skip")wkCommit(top,"l");else if(a==="star")wkCommit(top,"r");else if(a==="open")wkOpen(top);
     else if(a==="reset"&&state._wk){wkSave(state._wk.w,new Set());render();}});
 })();
-function wkOpen(c){if(!c)return;hashDone="";history.replaceState(null,"","#"+c.dataset.h);jumpToHash();}
+function wkOpen(c){if(!c)return;jumpToHash(c.dataset.h);}
 function render(){
   const list=document.getElementById("list");
   if(!state.loaded) return;
@@ -898,10 +898,13 @@ document.getElementById("list").addEventListener("click",async ev=>{
 const APP_URL="https://lukegiannelli.github.io/showshack/";
 function hid(e){return (e.added?"p-":"e-")+String(e.id).toLowerCase().replace(/[^a-z0-9-]/g,"-").slice(0,80);}
 let hashDone="";
+try{history.scrollRestoration="manual";}catch(e){}
+if(!location.hash)addEventListener("pageshow",ev=>{if(!ev.persisted)scrollTo(0,0);});
 (function(){const q=new URLSearchParams(location.search),n=Math.round(+q.get("n"));
   if(n>=1&&n<=5)state.carLink=n;
   if(q.get("night")==="1"&&location.hash.length>1)state.flipped.add(location.hash.slice(1));})();
-function jumpToHash(){const h=(location.hash||"").slice(1);if(!h||h===hashDone)return;let el=document.getElementById(h);while(!el&&state._more&&state._more())el=document.getElementById(h);if(!el)return;hashDone=h;el.scrollIntoView({behavior:"smooth",block:"center"});el.classList.add("hl");setTimeout(()=>el.classList.remove("hl"),4000);}
+function jumpToHash(id){const h=id||(location.hash||"").slice(1);if(!h||(!id&&h===hashDone))return;let el=document.getElementById(h);while(!el&&state._more&&state._more())el=document.getElementById(h);if(!el)return;hashDone=h;el.scrollIntoView({behavior:"smooth",block:"center"});el.classList.add("hl");setTimeout(()=>el.classList.remove("hl"),4000);
+  if(location.hash||location.search.indexOf("night")>-1)try{history.replaceState(null,"",location.pathname);}catch(e){}}  // one-shot: relaunching this tab later starts at the top
 let shownDay=todayStr();
 function dayCheck(){if(todayStr()!==shownDay){shownDay=todayStr();render();}}
 document.addEventListener("visibilitychange",()=>{if(!document.hidden)dayCheck();});
