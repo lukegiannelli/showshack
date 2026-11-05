@@ -1,0 +1,10 @@
+name: OSM pool discovery
+# Prints every billiards place OpenStreetMap has in the app's radius (read the log). Changes nothing.
+on: { workflow_dispatch: {} }
+permissions: { contents: read }
+jobs:
+  discover:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: python3 scripts/osm_pool.py
