@@ -425,7 +425,7 @@ h1 .logo{height:1.05em;width:1.05em;border-radius:22%;vertical-align:-0.12em;mar
   <header>
     <div class="hutart" aria-hidden="false"><button type="button" class="hutbtn" id="hutBtn" aria-label="Play the Shack song" aria-pressed="false"><img src="hut.webp?v=2" alt="" draggable="false"></button></div>
     <h1 class="shack-title">The Show Shack</h1>
-    <button type="button" class="shack-share" id="shareApp"><svg class="ni ni-palm" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-palm"/></svg> Share the Shack</button>
+    <button type="button" class="shack-share" id="shareApp">🌴 Share the Shack</button>
   </header>
   <p class="songcredit" id="songCredit" hidden>♪ “Brain Dance” Kevin MacLeod (incompetech.com) · <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a></p>
   <div class="getapp" id="getApp" hidden>
@@ -791,7 +791,7 @@ function render(){
     else priceHtml=`<span class="price">From ${$r(pi.lo)}</span><span class="pn">cheapest seat</span>`;
     if(!pi.est&&!pi.sold&&!pi.free&&!pi.none&&e.priceAsOf) priceHtml=priceHtml.replace(/<\/span>$/,` · checked ${fmtShort(e.priceAsOf)}</span>`);
     const nc=nightCost(e,pi), lb=leaveBy(e);
-    const nightHtml = `<div class="flipbar"><button type="button" class="nightbtn" data-flip="1">${ni("moon")} Night out <b>≈ $${nc.n>1?nc.each+" each":nc.total}${nc.partial?"+":""}</b></button></div>`;
+    const nightHtml = `<div class="flipbar"><button type="button" class="nightbtn" data-flip="1">🌙 Night out <b>≈ $${nc.n>1?nc.each+" each":nc.total}${nc.partial?"+":""}</b></button></div>`;
     const leaveHtml = lb ? `<span class="leave">Leave by ${lb}</span>` : "";
     const al = alertOf(e).map(a=>`<span class="badge ${a.c}">${a.c==="sale"?ni("ticket")+" ":""}${a.t}</span>`).join("");
     const ag = ageOf(e); const extraTags = (isSmall(e)?'<span class="tag local">${ni("home")} Small &amp; local</span>':"")+(ag?`<span class="tag age">${ag==="all"?"All ages":ag}</span>`:"")+(transitOf(e)?`<span class="tag transit">${ni("sprout")} ${transitOf(e)}</span>`:"");
@@ -1544,7 +1544,7 @@ void main(){
   vec2 uv=(f-.5)*sc+.5;
   vec2 p=uv*vec2(7.,10.);
   float ph0=fract(t*.07),ph1=fract(t*.07+.5);
-  float w0=abs(1.-2.*ph0),w1=abs(1.-2.*ph1);
+  float w0=1.-abs(1.-2.*ph0),w1=1.-abs(1.-2.*ph1);
   vec2 d=(ripple(p,ph0)*w0+ripple(p+3.7,ph1)*w1)/(w0+w1+1e-3);
   vec2 d2=vec2(n(p*2.6+vec2(t*.22,-t*.55)),n(p*2.6+vec2(9.,3.)+vec2(-t*.17,-t*.5)))-.5;
   // swash: the whole sheet of water surges up the beach, then slides back
