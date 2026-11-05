@@ -285,7 +285,10 @@
 "t": [
 "21+",
 "Trivia Wednesdays"
-]
+],
+"lat": 34.0473,
+"lon": -118.46367,
+"geo": "place"
 },
 {
 "n": "House of Billiards",
@@ -296,7 +299,10 @@
 "t": [
 "~20 tables",
 "Craft beer"
-]
+],
+"lat": 34.15131,
+"lon": -118.4531,
+"geo": "building"
 },
 {
 "n": "Highland Park Billiards",
@@ -306,7 +312,10 @@
 "zip": "90042",
 "t": [
 "17 tables"
-]
+],
+"lat": 34.12138,
+"lon": -118.20593,
+"geo": "place"
 },
 {
 "n": "Mr. Lucky's Billiards",
@@ -316,7 +325,10 @@
 "zip": "90503",
 "t": [
 "League nights"
-]
+],
+"lat": 33.83928,
+"lon": -118.35351,
+"geo": "place"
 },
 {
 "n": "Crown City Billiards & Lounge",
@@ -326,7 +338,10 @@
 "zip": "91104",
 "t": [
 "League nights"
-]
+],
+"lat": 34.16926,
+"lon": -118.13212,
+"geo": "place"
 },
 {
 "n": "Embassy Billiards Club",
@@ -336,7 +351,10 @@
 "zip": "91776",
 "t": [
 "Snooker"
-]
+],
+"lat": 34.10056,
+"lon": -118.09086,
+"geo": "place"
 },
 {
 "n": "Vermont Karaoke & Billiards",
@@ -346,7 +364,10 @@
 "zip": "90004",
 "t": [
 "Karaoke"
-]
+],
+"lat": 34.07045,
+"lon": -118.29201,
+"geo": "amenity"
 },
 {
 "n": "Shooters Billiards",
@@ -354,7 +375,10 @@
 "a": "24450 Lyons Ave",
 "city": "Santa Clarita",
 "zip": "91321",
-"t": []
+"t": [],
+"lat": 34.37822,
+"lon": -118.56186,
+"geo": "place"
 },
 {
 "n": "Big D's Billiards",
@@ -362,7 +386,10 @@
 "a": "2674 E Garvey Ave S",
 "city": "West Covina",
 "zip": "91791",
-"t": []
+"t": [],
+"lat": 34.07097,
+"lon": -117.8887,
+"geo": "place"
 },
 {
 "n": "Cue-Time Family Billiards",
@@ -372,7 +399,10 @@
 "zip": "91724",
 "t": [
 "All ages"
-]
+],
+"lat": 34.10651,
+"lon": -117.86721,
+"geo": "place"
 },
 {
 "n": "College Billiards",
@@ -383,7 +413,10 @@
 "t": [
 "Snooker",
 "Carom"
-]
+],
+"lat": 32.75717,
+"lon": -117.08157,
+"geo": "place"
 },
 {
 "n": "Society PB",
@@ -391,7 +424,10 @@
 "a": "1051 Garnet Ave",
 "city": "San Diego",
 "zip": "92109",
-"t": []
+"t": [],
+"lat": 32.79741,
+"lon": -117.25061,
+"geo": "place"
 },
 {
 "n": "Pockets Billiards & Brew",
@@ -401,7 +437,10 @@
 "zip": "92111",
 "t": [
 "14 tables"
-]
+],
+"lat": 32.83636,
+"lon": -117.13942,
+"geo": "amenity"
 },
 {
 "n": "On Cue Billiards",
@@ -409,7 +448,10 @@
 "a": "8308 Parkway Dr",
 "city": "La Mesa",
 "zip": "91942",
-"t": []
+"t": [],
+"lat": 32.77879,
+"lon": -117.01762,
+"geo": "club"
 },
 {
 "n": "California Billiards",
@@ -419,7 +461,10 @@
 "zip": "91911",
 "t": [
 "Snooker"
-]
+],
+"lat": 32.60391,
+"lon": -117.08248,
+"geo": "place"
 },
 {
 "n": "Que Billiard",
@@ -427,7 +472,10 @@
 "a": "4428 Convoy St",
 "city": "San Diego",
 "zip": "92111",
-"t": []
+"t": [],
+"lat": 32.82023,
+"lon": -117.15534,
+"geo": "amenity"
 },
 {
 "n": "Parkway Family Billiards",
@@ -437,7 +485,10 @@
 "zip": "92020",
 "t": [
 "All ages"
-]
+],
+"lat": 32.80822,
+"lon": -116.97871,
+"geo": "place"
 },
 {
 "n": "Nice Rack",
@@ -445,7 +496,10 @@
 "a": "1246 E Main St",
 "city": "El Cajon",
 "zip": "92021",
-"t": []
+"t": [],
+"lat": 32.795,
+"lon": -116.93856,
+"geo": "place"
 },
 {
 "n": "Shooters Sports & Grill",
@@ -455,7 +509,10 @@
 "zip": "92503",
 "t": [
 "Snooker"
-]
+],
+"lat": 33.90643,
+"lon": -117.45476,
+"geo": "place"
 },
 {
 "n": "High Society Billiard & Dart",
@@ -471,7 +528,10 @@
 "a": "2520 E Main St",
 "city": "Ventura",
 "zip": "93003",
-"t": []
+"t": [],
+"lat": 34.27519,
+"lon": -119.26263,
+"geo": "place"
 },
 {
 "n": "Q Club",
@@ -479,7 +539,10 @@
 "a": "2362 Oxnard Blvd",
 "city": "Oxnard",
 "zip": "93036",
-"t": []
+"t": [],
+"lat": 34.22847,
+"lon": -119.17735,
+"geo": "place"
 },
 {
 "n": "Corner Pocket Billiards",
@@ -487,7 +550,10 @@
 "a": "658 S A St",
 "city": "Oxnard",
 "zip": "93030",
-"t": []
+"t": [],
+"lat": 34.19559,
+"lon": -119.17849,
+"geo": "place"
 },
 {
 "n": "Champion Billiards & Arcade",
@@ -495,7 +561,10 @@
 "a": "1475 S Oxnard Blvd",
 "city": "Oxnard",
 "zip": "93030",
-"t": []
+"t": [],
+"lat": 34.18523,
+"lon": -119.17182,
+"geo": "place"
 },
 {
 "n": "Fireside Lounge",
@@ -515,7 +584,10 @@
 "zip": "92268",
 "t": [
 "Live music"
-]
+],
+"lat": 34.1564,
+"lon": -116.49305,
+"geo": "amenity"
 },
 {
 "n": "Bigshot's Billiards Bar & Grill",
@@ -525,7 +597,10 @@
 "zip": "92630",
 "t": [
 "Country nights"
-]
+],
+"lat": 33.62142,
+"lon": -117.69881,
+"geo": "craft"
 },
 {
 "n": "Goody's Tavern",
@@ -535,7 +610,10 @@
 "zip": "92672",
 "t": [
 "Karaoke"
-]
+],
+"lat": 33.42666,
+"lon": -117.61213,
+"geo": "amenity"
 }
 ]
 }
