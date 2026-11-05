@@ -12,7 +12,8 @@
 ],
 "lat": 33.80477,
 "lon": -117.86699,
-"geo": "place"
+"geo": "place",
+"a": "1096 N Main St"
 },
 {
 "n": "The Classic Q",
@@ -24,7 +25,8 @@
 ],
 "lat": 33.66509,
 "lon": -117.8644,
-"geo": "amenity"
+"geo": "amenity",
+"a": "4251 MacArthur Blvd"
 },
 {
 "n": "CueZone Billiards & Snooker Club",
@@ -37,7 +39,8 @@
 ],
 "lat": 33.6672,
 "lon": -117.86801,
-"geo": "building"
+"geo": "building",
+"a": "4229 Birch St"
 },
 {
 "n": "Aloha Family Billiards",
@@ -49,7 +52,8 @@
 ],
 "lat": 33.8588,
 "lon": -118.00536,
-"geo": "place"
+"geo": "place",
+"a": "7311 Orangethorpe Ave"
 },
 {
 "n": "International Billiards",
@@ -59,7 +63,8 @@
 "t": [],
 "lat": 33.75889,
 "lon": -118.01752,
-"geo": "place"
+"geo": "place",
+"a": "6328 Westminster Blvd"
 },
 {
 "n": "Rack Cue Billiards",
@@ -69,7 +74,8 @@
 "t": [],
 "lat": 33.80298,
 "lon": -118.00088,
-"geo": "place"
+"geo": "place",
+"a": "7520 Katella Ave"
 },
 {
 "n": "King Billiards",
@@ -79,7 +85,8 @@
 "t": [],
 "lat": 33.77403,
 "lon": -117.98646,
-"geo": "place"
+"geo": "place",
+"a": "8345 Garden Grove Blvd"
 },
 {
 "n": "2000 Points Billiards",
@@ -89,7 +96,8 @@
 "t": [],
 "lat": 33.7742,
 "lon": -117.96105,
-"geo": "place"
+"geo": "place",
+"a": "9786 Garden Grove Blvd"
 },
 {
 "n": "Billiard Thanh Tam",
@@ -99,7 +107,8 @@
 "t": [],
 "lat": 33.75955,
 "lon": -117.93891,
-"geo": "place"
+"geo": "place",
+"a": "10902 Westminster Ave"
 },
 {
 "n": "Thanh Tam 2 Billiards",
@@ -109,7 +118,8 @@
 "t": [],
 "lat": 33.77381,
 "lon": -117.97816,
-"geo": "place"
+"geo": "place",
+"a": "8851 Garden Grove Blvd"
 },
 {
 "n": "Billiards Phi Hong",
@@ -119,7 +129,8 @@
 "t": [],
 "lat": 33.76105,
 "lon": -117.92036,
-"geo": "place"
+"geo": "place",
+"a": "13919 Harbor Blvd"
 },
 {
 "n": "Kym Billiard Cafe",
@@ -129,7 +140,8 @@
 "t": [],
 "lat": 33.77429,
 "lon": -117.94725,
-"geo": "place"
+"geo": "place",
+"a": "10706 Garden Grove Blvd"
 },
 {
 "n": "Hidalgo's Pool Hall",
@@ -139,7 +151,8 @@
 "t": [],
 "lat": 33.74757,
 "lon": -117.89367,
-"geo": "building"
+"geo": "building",
+"a": "1808 W 4th St"
 },
 {
 "n": "The Bobkin",
@@ -149,7 +162,8 @@
 "t": [],
 "lat": 33.71284,
 "lon": -117.86732,
-"geo": "amenity"
+"geo": "amenity",
+"a": "2531 S Main St"
 },
 {
 "n": "Good Times Billiards",
@@ -159,7 +173,8 @@
 "t": [],
 "lat": 33.83271,
 "lon": -118.16003,
-"geo": "place"
+"geo": "place",
+"a": "4125 Paramount Blvd"
 },
 {
 "n": "Long Beach Port Pool Billiard",
@@ -169,7 +184,8 @@
 "t": [],
 "lat": 33.76938,
 "lon": -118.19425,
-"geo": "place"
+"geo": "place",
+"a": "145 W Broadway"
 },
 {
 "n": "The 8 Pool & Coffee Room",
@@ -181,7 +197,8 @@
 ],
 "lat": 33.76779,
 "lon": -118.17115,
-"geo": "place"
+"geo": "place",
+"a": "1711 E Broadway"
 },
 {
 "n": "Scratch Billiards",
@@ -191,7 +208,8 @@
 "t": [],
 "lat": 33.91703,
 "lon": -118.01099,
-"geo": "place"
+"geo": "place",
+"a": "15025 Imperial Hwy"
 },
 {
 "n": "Campus Billiards & Sports Bar",
@@ -201,7 +219,8 @@
 "t": [],
 "lat": 33.8305,
 "lon": -118.02924,
-"geo": "building"
+"geo": "building",
+"a": "9111 Valley View St"
 },
 {
 "n": "Shooters",
@@ -211,14 +230,16 @@
 "t": [],
 "lat": 33.69269,
 "lon": -117.98744,
-"geo": "building"
+"geo": "building",
+"a": "18582 Beach Blvd"
 },
 {
 "n": "Corner Pocket",
 "c": "bar",
 "city": "Stanton",
 "zip": "90680",
-"t": []
+"t": [],
+"a": "10781 Dale Ave"
 },
 {
 "n": "The Wharf",
@@ -230,7 +251,8 @@
 ],
 "lat": 33.77473,
 "lon": -117.94127,
-"geo": "amenity"
+"geo": "amenity",
+"a": "12941 Main St"
 },
 {
 "n": "Mulligans",
@@ -240,7 +262,8 @@
 "t": [],
 "lat": 33.43277,
 "lon": -117.62353,
-"geo": "amenity"
+"geo": "amenity",
+"a": "1401 Calle Valle"
 },
 {
 "n": "Baddeley's Pourhouse",
@@ -250,7 +273,8 @@
 "t": [],
 "lat": 33.76441,
 "lon": -118.15252,
-"geo": "place"
+"geo": "place",
+"a": "3348 E Broadway"
 }
 ]
 }

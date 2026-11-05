@@ -55,8 +55,9 @@ def run(PATH):
             done += 1; print("ok  ", p.get("n") or p.get("title"), p["lat"], p["lon"], p["geo"])
         else:
             miss += 1; print("MISS", p.get("n") or p.get("title"))
-    for e in items:
-        e.pop("a", None)
+    if "events" in data:          # "a" was only a temporary alias of addr on events; pool places keep theirs
+        for e in items:
+            e.pop("a", None)
     if "events" in data:
         txt = json.dumps(data, ensure_ascii=False, separators=(",", ":"))
     else:
