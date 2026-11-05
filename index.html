@@ -1657,12 +1657,10 @@ void main(){
   function pt(lat,lon,th){const cl=Math.cos(lat),x=cl*Math.sin(lon+th),y0=Math.sin(lat),z0=cl*Math.cos(lon+th);return[x,y0*ct-z0*stl,y0*stl+z0*ct];}
   // cracks live on the ball's surface (they turn with it): a main fault, side branches, then hairlines at the burst
   function walk(lat,lon,hd,n,st){const p=[[lat,lon]];for(let i=0;i<n;i++){hd+=(Math.random()-.5)*1.3;lat+=Math.sin(hd)*st;lon+=Math.cos(hd)*st/Math.max(.3,Math.cos(lat));p.push([lat,lon]);}return p;}
-  const main=walk(.95,0,-Math.PI/2,13,.15),CR=[{p:main,lv:1,w:1}];
-  [[3,.9],[6,-.8],[9,.7]].forEach(([i,h],k)=>CR.push({p:walk(main[i][0],main[i][1],k%2?Math.PI-h:h,5,.13),lv:2,w:.7}));
-  [[2,2.4],[5,-2.2],[8,2.6],[11,-2.5]].forEach(([i,h])=>CR.push({p:walk(main[i][0],main[i][1],h,4,.11),lv:3,w:.5}));
-  const LC=main.reduce((a,q)=>a+q[1],0)/main.length;
+  let CR=[];   // cracks start where your finger lands, one or two per swipe
+  const LC=0;
   let th=-.05,spin=0,lv=0,busy=false,raf=0,vis=false,idle=0,x0=null,xs=0,moved=0,dir=1,last=0,burstT=0;
-  const BASE=[.0035,.012,.03];
+  const BASE=[.0035,.005,.007];
   function draw(){
     const now=performance.now(),bp=burstT?Math.min(1,(now-burstT)/750):0;
     g.clearRect(0,0,SZ,SZ);
@@ -1690,7 +1688,7 @@ void main(){
       const gr=g.createRadialGradient(c-r*.3,c-r*.4,2,c,c,r);gr.addColorStop(0,"rgba(255,255,255,.28)");gr.addColorStop(.3,"rgba(255,255,255,0)");gr.addColorStop(.8,"rgba(4,2,16,0)");gr.addColorStop(1,"rgba(4,2,16,.6)");
       g.globalAlpha=1-bp;g.fillStyle=gr;g.beginPath();g.arc(c,c,r,0,6.2832);g.fill();g.globalAlpha=1;
       const pulse=.75+.25*Math.sin(now/90);
-      for(const k of CR){if(k.lv>show)continue;
+      for(const k of CR){
         const pts=k.p.map(q=>pt(q[0],q[1],th));
         const path=()=>{g.beginPath();let on=false;for(const q of pts){if(q[2]<.08){on=false;continue;}const x=c+q[0]*r,y=c-q[1]*r;on?g.lineTo(x,y):g.moveTo(x,y);on=true;}};
         g.lineCap="round";g.lineJoin="round";g.globalAlpha=1-bp;
@@ -1703,14 +1701,13 @@ void main(){
   }
   function frame(now){raf=requestAnimationFrame(frame);const dt=now-last;if(dt<30)return;last=now;
     const base=BASE[Math.min(lv,2)];spin=base+(spin-base)*.94;th+=dir*spin*(dt/16.7);
-    if(lv>0&&!busy&&spin<.05){let d=(-LC-th)%6.2832;if(d>3.1416)d-=6.2832;if(d<-3.1416)d+=6.2832;th+=d*.07;}   // after the spin-up, settle with the crack facing you
     draw();
     if(lv>0&&!busy&&performance.now()-idle>7000)setLv(0);}
   const run=()=>{if(!still&&vis&&!document.hidden&&!raf){last=0;raf=requestAnimationFrame(frame);}},stop=()=>{if(raf){cancelAnimationFrame(raf);raf=0;}};
   if("IntersectionObserver" in window)new IntersectionObserver(es=>{vis=es[0].isIntersecting;vis?run():stop();}).observe(box);
   document.addEventListener("visibilitychange",()=>{document.hidden?stop():run();});
   spin=BASE[0];draw();
-  function setLv(n){lv=n;ball.classList.remove("lv1","lv2");if(n===1)ball.classList.add("lv1");if(n>=2)ball.classList.add("lv2");}
+  function setLv(n){lv=n;if(!n)CR=[];ball.classList.remove("lv1","lv2");if(n===1)ball.classList.add("lv1");if(n>=2)ball.classList.add("lv2");}
   // sound: tuned to the shack song ("Brain Dance", F minor, 123 bpm): sparkle notes land on its 16th-note grid
   const F=[1396.9,1661.2,2093,2489,2793.8],STEP=60/123/4;let ac=null;
   function tone(freq,at,len,vol,type){const o=ac.createOscillator(),gn=ac.createGain();o.type=type||"sine";o.frequency.value=freq;
@@ -1722,7 +1719,15 @@ void main(){
     gn.gain.setValueAtTime(.2,t);gn.gain.exponentialRampToValueAtTime(.0001,t+.45);o.connect(gn);gn.connect(ac.destination);o.start(t);o.stop(t+.5);
     [0,1,2,3,4,3,4,2,3,4].forEach((k,i)=>tone(F[k],t+.06+i*STEP,.55,.045+i*.002,"triangle"));}
   function buzz(p){try{navigator.vibrate&&navigator.vibrate(p);}catch(e){}}
-  function crack(){busy=true;ball.classList.remove("lv1","lv2");burstT=performance.now();if(still)draw();
+  // finger spot -> point on the sphere (undo the tilt and the current turn), then a jagged fault both ways from it
+  function hit(px,py){const d=px*px+py*py;if(d>.96){px*=.97/Math.sqrt(d);py*=.97/Math.sqrt(d);}
+    const x=px,y=py,z=Math.sqrt(Math.max(0,1-x*x-y*y)),y0=y*ct+z*stl,z0=-y*stl+z*ct;
+    return[Math.asin(Math.max(-1,Math.min(1,y0))),Math.atan2(x,z0)-th];}
+  function addCracks(px,py,n){for(let i=0;i<n;i++){const[la,lo]=hit(px+(i?(Math.random()-.5)*.35:0),py+(i?(Math.random()-.5)*.35:0)),h=Math.random()*6.283;
+    const f=walk(la,lo,h,6+(Math.random()*3|0),.13),bk=walk(la,lo,h+Math.PI,5+(Math.random()*3|0),.13);
+    CR.push({p:bk.reverse().concat(f.slice(1)),w:i?.75:1});
+    const m=f[3]||f[1];CR.push({p:walk(m[0],m[1],h+(Math.random()<.5?1:-1)*(.8+Math.random()*.6),4,.11),w:.55});}}
+  function crack(){CR.forEach(k=>{const m=k.p[k.p.length>>1];CR.push({p:walk(m[0],m[1],Math.random()*6.283,3,.1),w:.4});});busy=true;ball.classList.remove("lv1","lv2");burstT=performance.now();if(still)draw();
     buzz([40,30,90]);boom();
     flash.classList.remove("go");void flash.offsetWidth;flash.classList.add("go");
     sparks.innerHTML="";for(let i=0;i<30;i++){const a=Math.random()*6.283,rr=60+Math.random()*130,e=document.createElement("i");e.className="dsp";
@@ -1731,15 +1736,17 @@ void main(){
     setTimeout(()=>{surpriseMe();},420);
     setTimeout(()=>{burstT=0;setLv(0);spin=BASE[0];ball.classList.add("fresh");sparks.innerHTML="";busy=false;
       setTimeout(()=>ball.classList.remove("fresh"),700);if(still)draw();},1700);}
-  function swipe(d){if(busy)return;dir=d||dir;idle=performance.now();spin=.28;
+  let tx=.0,ty=.0;
+  function mark(e){const rc=ball.getBoundingClientRect();tx=(e.clientX-rc.left-rc.width/2)/(rc.width/2);ty=-(e.clientY-rc.top-rc.height/2)/(rc.height/2);}
+  function swipe(d){if(busy)return;dir=d||dir;idle=performance.now();spin=.05;
     if(still){th+=dir*.7;draw();}
-    if(lv<2){setLv(lv+1);tick(lv);buzz(12*(lv+1));}else crack();}
-  ball.addEventListener("pointerdown",e=>{if(busy)return;audio();x0=e.clientX;xs=x0;moved=0;try{ball.setPointerCapture(e.pointerId);}catch(_){}ball.style.cursor="grabbing";});
+    if(lv<3){addCracks(tx,ty,lv===2?2:1);setLv(lv+1);tick(lv);buzz(12*(lv+1));}else crack();}
+  ball.addEventListener("pointerdown",e=>{if(busy)return;audio();x0=e.clientX;xs=x0;moved=0;mark(e);try{ball.setPointerCapture(e.pointerId);}catch(_){}ball.style.cursor="grabbing";});
   ball.addEventListener("pointermove",e=>{if(x0==null)return;const dx=e.clientX-x0;moved=Math.max(moved,Math.abs(e.clientX-xs));
-    th+=dx*.018;x0=e.clientX;if(dx)dir=dx>0?1:-1;if(still)draw();});
+    th+=dx*.018;x0=e.clientX;mark(e);if(dx)dir=dx>0?1:-1;if(still)draw();});
   const end=()=>{if(x0==null)return;x0=null;ball.style.cursor="";if(moved>=28)swipe(dir);};
   ball.addEventListener("pointerup",end);ball.addEventListener("pointercancel",()=>{x0=null;});
-  ball.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();swipe(1);}});
+  ball.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();tx=(Math.random()-.5)*1.1;ty=(Math.random()-.5)*1.1;swipe(1);}});
 })();
 </script>
 </body></html>
