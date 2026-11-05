@@ -282,7 +282,7 @@ h1 .logo{height:1.05em;width:1.05em;border-radius:22%;vertical-align:-0.12em;mar
   background:url(header.jpg?v=3) center/100% 100% no-repeat;perspective:900px}
 .hutbtn{position:absolute;left:18.59%;top:14.55%;width:64.39%;height:73.34%;padding:0;border:0;background:none;cursor:pointer;
   -webkit-tap-highlight-color:transparent;transform-style:preserve-3d;outline-offset:4px}
-.hutbtn img{width:100%;height:100%;display:block;will-change:transform;transform-origin:50% 50%;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;pointer-events:none}
+.hutbtn img{width:100%;height:100%;display:block;will-change:transform;transform-origin:47.8% 57.4%;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;pointer-events:none}
 .hutbtn:active img{filter:brightness(1.08)}
 
 /* ===== cozy pass ===== */
@@ -1035,28 +1035,29 @@ async function copyOut(text,btn){
   if(!box){box=document.createElement("div");box.id="copybox";box.className="copybox";box.innerHTML='<textarea readonly></textarea><button type="button" class="sharebtn">Done</button>';document.body.appendChild(box);box.querySelector("button").onclick=()=>box.remove();}
   const ta=box.querySelector("textarea");ta.value=text;ta.focus();ta.select();
 }
-/* Easter egg: tap the shack to play the Shack song; the hut spins while it plays. */
+/* Easter egg: tap the shack to play the Shack song; the hut spins like a record, locked to the beat. */
 (function(){
-  const SONG="shack-song.mp3?v=1";          // swap this file to change the song
+  // To change the song: drop the file in, set its tempo (bpm) and where the first downbeat lands (offset, seconds).
+  // gapless:true decodes the whole song for a seamless loop (keep that for short loops); long songs use a normal player.
+  const SONG={src:"shack-song.mp3?v=1", bpm:84, offset:0, beatsPerTurn:4, gapless:true};
   const btn=document.getElementById("hutBtn"), img=btn.querySelector("img");
   const still=matchMedia("(prefers-reduced-motion: reduce)").matches;
-  let ctx=null, buf=null, src=null, gain=null, el=null, playing=false, loading=false;
+  let ctx=null, buf=null, src=null, gain=null, el=null, playing=false, loading=false, t0=0;
   try{if(navigator.audioSession)navigator.audioSession.type="playback";}catch(e){} // iPhone: play even with the silent switch on
   async function start(){
     if(loading)return; loading=true;
     try{
-      // Web Audio = gapless loop. Falls back to a plain <audio loop> if anything fails.
       const AC=window.AudioContext||window.webkitAudioContext;
-      if(!ctx&&AC){ctx=new AC();gain=ctx.createGain();gain.connect(ctx.destination);}
-      if(ctx){await ctx.resume();
-        if(!buf){const r=await fetch(SONG);buf=await ctx.decodeAudioData(await r.arrayBuffer());}
-        src=ctx.createBufferSource();src.buffer=buf;src.loop=true;src.connect(gain);
-        gain.gain.cancelScheduledValues(ctx.currentTime);gain.gain.setValueAtTime(0,ctx.currentTime);gain.gain.linearRampToValueAtTime(1,ctx.currentTime+0.6);
-        src.start();
-      }else throw 0;
+      if(!SONG.gapless||!AC)throw 0;
+      if(!ctx){ctx=new AC();gain=ctx.createGain();gain.connect(ctx.destination);}
+      await ctx.resume();
+      if(!buf){const r=await fetch(SONG.src);buf=await ctx.decodeAudioData(await r.arrayBuffer());}
+      src=ctx.createBufferSource();src.buffer=buf;src.loop=true;src.connect(gain);
+      gain.gain.cancelScheduledValues(ctx.currentTime);gain.gain.setValueAtTime(0,ctx.currentTime);gain.gain.linearRampToValueAtTime(1,ctx.currentTime+0.3);
+      t0=ctx.currentTime+0.05; src.start(t0);
     }catch(e){
-      if(!el){el=new Audio(SONG);el.loop=true;}
-      try{await el.play();}catch(_){loading=false;return;}
+      src=null; if(!el){el=new Audio(SONG.src);el.loop=true;el.preload="auto";}
+      try{el.currentTime=0;await el.play();}catch(_){loading=false;return;}
     }
     loading=false; set(true);
   }
@@ -1065,19 +1066,32 @@ async function copyOut(text,btn){
     if(el)el.pause();
     set(false);
   }
-  function set(on){playing=on;btn.setAttribute("aria-pressed",String(on));btn.setAttribute("aria-label",on?"Stop the Shack song":"Play the Shack song");if(!still)kick();}
+  function set(on){playing=on;loops=0;lastT=0;btn.setAttribute("aria-pressed",String(on));btn.setAttribute("aria-label",on?"Stop the Shack song":"Play the Shack song");if(!still)kick();}
   btn.addEventListener("click",()=>{playing?stop():start();});
-  // spin like a vinyl record: spin up to 33⅓ rpm while playing, brake to upright on stop
-  let ang=0, vel=0, raf=0, last=0, target=null, dec=0;
-  function kick(){target=null;if(!raf){last=performance.now();raf=requestAnimationFrame(tick);}}
-  function tick(now){const dt=Math.min(0.05,(now-last)/1000);last=now;
-    if(playing){vel+=(200-vel)*Math.min(1,dt*2.2);ang+=vel*dt;} // 33⅓ rpm = 200°/s, like a record
+
+  // Beat-locked spin: one full turn per bar, with a little shove on every beat (like a DJ nudging the record).
+  const K=0.6, TAU=Math.PI*2;
+  const shape=b=>{const n=Math.floor(b),x=b-n;return 360/SONG.beatsPerTurn*(n+x+K*Math.sin(TAU*x)/TAU);};
+  const angleAt=t=>shape(Math.max(0,(t-SONG.offset)*SONG.bpm/60));
+  let loops=0,lastT=0;
+  function songTime(){
+    let t=null,dur=0;
+    if(src&&ctx){dur=buf.duration;const raw=ctx.currentTime-t0;if(raw<0)return 0;loops=Math.floor(raw/dur);return {t:raw-loops*dur,dur};}
+    if(el){dur=el.duration||0;t=el.currentTime;if(t<lastT-1)loops++;lastT=t;return {t,dur};}
+    return null;}
+  function musicAngle(){const s=songTime();if(!s||s.t===undefined)return 0;
+    const perLoop=s.dur?angleAt(s.dur):0;               // keep spinning forward smoothly when the song loops
+    return angleAt(s.t)+loops*perLoop;}
+
+  let ang=0, vel=0, raf=0, last=0, target=null, base=0;
+  function kick(){target=null;if(playing)base=0;if(!raf){last=performance.now();raf=requestAnimationFrame(tick);}}
+  function tick(now){const dt=Math.max(0.001,Math.min(0.05,(now-last)/1000));last=now;
+    if(playing){const a=musicAngle();vel=(a-ang)/dt;ang=a;}
     else{ // brake like a turntable and come to rest upright
-      if(target===null)target=Math.ceil((ang+vel*vel/500+0.5)/360)*360;
+      if(target===null){vel=Math.max(0,Math.min(vel,400));target=Math.ceil((ang+vel*vel/500+0.5)/360)*360;}
       const dist=target-ang; vel=Math.min(Math.max(vel,20),Math.sqrt(2*250*Math.max(dist,0))+6); ang=Math.min(target,ang+vel*dt);
       if(target-ang<0.25){ang=0;vel=0;target=null;img.style.transform="";raf=0;return;}}
-    ang%=360*1000;
-    img.style.transform=`rotate(${ang.toFixed(2)}deg)`;
+    img.style.transform=`rotate(${(ang%360).toFixed(2)}deg)`;
     raf=requestAnimationFrame(tick);}
 })();
 document.getElementById("shareApp").addEventListener("click",ev=>{
