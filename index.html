@@ -296,6 +296,7 @@ h1 .logo{height:1.05em;width:1.05em;border-radius:22%;vertical-align:-0.12em;mar
         <label class="cf" for="mpgIn"><span class="label">⛽ Driver MPG</span><input id="mpgIn" type="number" inputmode="decimal" min="5" max="150" step="1"></label>
         <label class="cf" for="gasIn"><span class="label">$/gal</span><input id="gasIn" type="number" inputmode="decimal" min="1" max="15" step="0.05"></label>
         <label class="cf" for="foodSel"><span class="label">🍽 Food</span><select id="foodSel"><option value="0">Skip</option><option value="15">Quick bite ~$15</option><option value="30">Sit-down ~$30</option><option value="60">Nice dinner ~$60</option></select></label>
+        <label class="cf" for="drinkSel"><span class="label">🍹 Drinks each</span><select id="drinkSel"><option value="0">None</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4+</option></select></label>
       </div>
     </div>
     <form class="start-form" id="startForm" hidden>
@@ -394,8 +395,8 @@ function skey(e){return (e.added?"p:":"e:")+e.id;}
 function saveStars(){try{localStorage.setItem("radar-stars",JSON.stringify([...state.stars]));}catch(e){} clearTimeout(starT); starT=setTimeout(flushStars,500);}
 async function flushStars(){if(!starRef)return; if(starBusy){starAgain=true;return;} starBusy=true; try{await starRef.set({ids:[...state.stars]});}catch(e){if(e&&e.code==="invalid_argument")starRef=null;} starBusy=false; if(starAgain){starAgain=false;flushStars();}}
 function updateStarChip(){const c=document.getElementById("kindRow-starred");if(c)c.textContent="★ Starred"+(starCount>0?" · "+starCount:"");}
-try{const s=JSON.parse(localStorage.getItem("radar-prefs")||"{}");Object.assign(state,{kind:s.kind||"all",genre:s.genre||"all",maxDrive:s.maxDrive||180,sort:s.sort||"date",venue:s.venue||"all",hideTBA:!!s.hideTBA,when:s.when||"any",flags:s.flags||{},car:s.car||1,mpg:+s.mpg>0?+s.mpg:25,gas:+s.gas>0?+s.gas:5.85,food:s.food!=null?+s.food:30});}catch(e){}
-function savePrefs(){try{localStorage.setItem("radar-prefs",JSON.stringify({kind:state.kind,genre:state.genre,maxDrive:state.maxDrive,sort:state.sort,venue:state.venue,hideTBA:!!state.hideTBA,when:state.when,flags:state.flags,car:state.car,mpg:state.mpg,gas:state.gas,food:state.food}));}catch(e){}}
+try{const s=JSON.parse(localStorage.getItem("radar-prefs")||"{}");Object.assign(state,{kind:s.kind||"all",genre:s.genre||"all",maxDrive:s.maxDrive||180,sort:s.sort||"date",venue:s.venue||"all",hideTBA:!!s.hideTBA,when:s.when||"any",flags:s.flags||{},car:s.car||1,mpg:+s.mpg>0?+s.mpg:25,gas:+s.gas>0?+s.gas:5.85,food:s.food!=null?+s.food:30,drinks:s.drinks!=null?+s.drinks:2});}catch(e){}
+function savePrefs(){try{localStorage.setItem("radar-prefs",JSON.stringify({kind:state.kind,genre:state.genre,maxDrive:state.maxDrive,sort:state.sort,venue:state.venue,hideTBA:!!state.hideTBA,when:state.when,flags:state.flags,car:state.car,mpg:state.mpg,gas:state.gas,food:state.food,drinks:state.drinks}));}catch(e){}}
 
 function driveEstimate(lat,lon){
   if(!origin||typeof origin.lat!=="number"||typeof lat!=="number"||typeof lon!=="number") return null;
@@ -507,15 +508,18 @@ function tier(e){const v=String(e.venue||"");
   return "Other";}
 const PARK={"Festival":40,"Arena / stadium":35,"Amphitheater":25,"Theater / arts hall":20,"Mid-size (1–3k)":15,"Comedy club":10,"Small / DIY":5,"Other":15};
 // Gas default = AAA Orange County regular average, early Nov 2026 (~$5.83). Food = typical SoCal per-person spend incl. tax & tip.
+const DRINK={"Arena / stadium":17,"Festival":16,"Amphitheater":16,"Mid-size (1–3k)":14,"Theater / arts hall":14,"Comedy club":12,"Small / DIY":9,"Other":12};
 function nightCost(e,pi){
   const n=state.car||1, mpg=state.mpg||25, gal=state.gas||5.85, food=state.food??30;
+  const t=tier(e), dPrice=DRINK[t]??12, minTwo=t==="Comedy club";
+  const dCount=CONS.has(e.kind)?0:Math.max(state.drinks??2, minTwo?2:0), drinks=dCount*dPrice*n;
   const tixEach = pi.sold||pi.none||pi.lo==null ? null : pi.lo;
   const miles = e._drive ? e._drive.miles*2 : null;
   const gas = miles!=null ? miles/mpg*gal : null;
   const park = e._drive ? (e.kind==="openmic"?0:(PARK[tier(e)]??15)) : null;
   const eat = food*n;
-  const total = (tixEach??0)*n + (gas??0) + (park??0) + eat;
-  return {n,mpg,gal,food,tixEach,tixEst:!!pi.est,miles,gas,park,eat,total:Math.round(total),each:Math.round(total/n),
+  const total = (tixEach??0)*n + (gas??0) + (park??0) + eat + drinks;
+  return {n,mpg,gal,food,dCount,dPrice,drinks,minTwo,sober:CONS.has(e.kind),tixEach,tixEst:!!pi.est,miles,gas,park,eat,total:Math.round(total),each:Math.round(total/n),
     partial: tixEach==null || gas==null};
 }
 function ageOf(e){if(e.ages)return e.ages;const t=[e.title,e.artists,e.note,e.priceNote].join(" ");
@@ -664,12 +668,14 @@ function backHtml(e,nc,fl){
   const park = nc.park==null ? line("🅿️","Parking","set a start point","?")
     : line("🅿️","Parking",nc.park===0?"usually free":`typical for ${tier(e).toLowerCase()}`,$(nc.park));
   const food = line("🍽","Food",nc.food?`${$(nc.food)} × ${nc.n} · typical SoCal spend`:"skipped",$(nc.eat));
+  const drk = nc.sober ? line("🍹","Drinks","usually a sober space","$0")
+    : line("🍹","Drinks",nc.dCount?`${nc.dCount} × ~${$(nc.dPrice)}${nc.n>1?" × "+nc.n:""}${nc.minTwo&&(state.drinks??2)<2?" · 2-item minimum":""}`:"none",$(nc.drinks));
   return `<div class="ev face back"${fl?"":' aria-hidden="true"'}>
     <div class="bh"><span class="sl">🌙 Night cost · ${who}</span><button type="button" class="flipbtn" data-flip="1" aria-label="Flip back">↩</button></div>
     <h3>${esc(e.title)}</h3>
-    <div class="nlist">${tix}${gas}${park}${food}</div>
+    <div class="nlist">${tix}${gas}${park}${food}${drk}</div>
     <div class="ntot"><span>Total${nc.partial?" so far":""}</span><b>${$(nc.total)}${nc.partial?"+":""}</b>${nc.n>1?`<span class="each">${$(nc.each)}${nc.partial?"+":""} each</span>`:""}</div>
-    <p class="nfoot">Estimates. Gas ${nc.gas!=null?"splits":"would split"} across the car; food & tickets are per person. Change MPG, gas price and food up top by Carpool. <a href="${esc(eatLink(e))}" target="_blank" rel="noopener">🍜 See food near the venue ↗</a></p>
+    <p class="nfoot">Estimates. Gas ${nc.gas!=null?"splits":"would split"} across the car; food, drinks & tickets are per person. Drink prices are typical for this kind of venue. Change MPG, gas price and food up top by Carpool. <a href="${esc(eatLink(e))}" target="_blank" rel="noopener">🍜 See food near the venue ↗</a></p>
     <p class="nfoot">Double-tap the card to flip back.</p>
   </div>`;
 }
@@ -724,6 +730,7 @@ mpgIn.value=state.mpg||25;gasIn.value=(state.gas||5.85).toFixed(2);foodSel.value
 let costT;function costChange(){clearTimeout(costT);costT=setTimeout(()=>{const m=+mpgIn.value,g=+gasIn.value;
   if(m>=5&&m<=150)state.mpg=m; if(g>=1&&g<=15)state.gas=g; state.food=+foodSel.value; savePrefs();render();},250);}
 mpgIn.oninput=costChange;gasIn.oninput=costChange;foodSel.onchange=costChange;
+const drinkSel=document.getElementById("drinkSel");drinkSel.value=String(state.drinks??2);drinkSel.onchange=()=>{state.drinks=+drinkSel.value;savePrefs();render();};
 [mpgIn,gasIn].forEach(i=>i.addEventListener("blur",()=>{mpgIn.value=state.mpg;gasIn.value=state.gas.toFixed(2);}));
 /* alerts on starred shows */
 function updateAlertBar(){const bar=document.getElementById("alertBar");
