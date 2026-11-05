@@ -277,6 +277,33 @@ h1 .logo{height:1.05em;width:1.05em;border-radius:22%;vertical-align:-0.12em;mar
 .ntot .each{font:600 14px var(--mono);color:var(--drive)}
 .nfoot{margin:0;font-size:12px;color:var(--muted)}
 .nfoot a{color:var(--accent);font-weight:600;text-decoration:none}
+.facts .wx{color:var(--ink);font-weight:500}.facts .wx:empty{display:none}
+/* venues */
+.vlink{all:unset;cursor:pointer;color:inherit;text-decoration:underline;text-decoration-color:var(--bamboo);text-underline-offset:3px}
+.venues{display:flex;flex-direction:column;gap:8px}
+.vcard{display:flex;align-items:stretch;gap:6px;background:var(--surface);border:1px solid var(--line);border-radius:12px}
+.vopen{all:unset;flex:1;min-width:0;cursor:pointer;padding:11px 12px;display:flex;flex-direction:column;gap:2px}
+.vopen b{font-size:16px}.vopen span{font-size:13px;color:var(--muted)}.vopen small{font-size:12px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.vpin{border:0;background:none;font-size:18px;padding:0 14px;cursor:pointer;filter:grayscale(1);opacity:.45}
+.vpin.on{filter:none;opacity:1}
+.vhead .vpin{border:1px solid var(--bamboo);border-radius:999px;padding:6px 14px;font:600 13px var(--body);color:var(--ink);filter:none;opacity:1}
+.vhead .vpin.on{background:color-mix(in srgb,var(--thatch) 24%,transparent)}
+.vhead{background:var(--surface);border:1px solid var(--bamboo);border-radius:14px;padding:12px 14px;display:flex;flex-direction:column;gap:6px}
+.vtop{display:flex;justify-content:space-between;align-items:center}
+.vhead h2{margin:4px 0 0;font:900 28px var(--display);text-transform:uppercase;letter-spacing:.03em;color:var(--lbl)}
+.vcity{margin:0 0 4px;color:var(--muted);font-size:13.5px}
+.vrow{display:grid;grid-template-columns:76px 1fr;gap:8px;font-size:14px}
+.vrow .k{font:600 10.5px var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--muted);padding-top:3px}
+.vlinks{display:flex;flex-wrap:wrap;gap:8px;margin-top:4px}
+.vlinks a{font:600 13px var(--body);text-decoration:none;color:var(--ink);padding:6px 13px;border-radius:999px;border:1px solid var(--bamboo)}
+.vnote{margin:0;font-size:11.5px;color:var(--muted)}
+/* budget meter */
+.budget{width:100%;margin-top:10px;display:flex;flex-direction:column;gap:6px;text-align:left;background:var(--chip);border:1px solid var(--line);border-radius:10px;padding:9px 11px;color:var(--ink);cursor:pointer;font:inherit}
+.budget[hidden]{display:none}
+.budget .bt{display:flex;flex-direction:column;line-height:1.3}.budget b{font-size:14px}.budget small{font-size:12px;color:var(--muted)}
+.budget .bm{height:8px;border-radius:4px;background:rgba(255,255,255,.08);overflow:hidden}
+.budget .bm i{display:block;height:100%;border-radius:4px;background:linear-gradient(90deg,#4FC7B6,#E9B76A)}
+.budget.over .bm i{background:linear-gradient(90deg,#E9B76A,#FF7A4D)}.budget.over b{color:var(--accent)}
 /* ---- get-the-app banner + install sheet ---- */
 .getapp{display:flex;align-items:center;gap:10px;background:var(--surface);border:1px solid var(--bamboo);border-radius:14px;padding:10px 10px 10px 12px}
 .getapp[hidden]{display:none}
@@ -408,7 +435,11 @@ h1 .logo{height:1.05em;width:1.05em;border-radius:22%;vertical-align:-0.12em;mar
         <label class="cf" for="gasIn"><span class="label">$/gal</span><input id="gasIn" type="number" inputmode="decimal" min="1" max="15" step="0.05"></label>
         <label class="cf" for="foodSel"><span class="label">🍽 Food</span><select id="foodSel"><option value="0">Skip</option><option value="15">Quick bite ~$15</option><option value="30">Sit-down ~$30</option><option value="60">Nice dinner ~$60</option></select></label>
         <label class="cf" for="drinkSel"><span class="label">🍹 Drinks each</span><select id="drinkSel"><option value="0">None</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4+</option></select></label>
+        <label class="cf" for="homeSel"><span class="label">🏠 Getting home</span><select id="homeSel"><option value="drive">Sober driver</option><option value="ride">Rideshare</option><option value="transit">Transit</option></select></label>
+        <label class="cf" for="budgetIn"><span class="label">💰 Monthly fun budget $</span><input id="budgetIn" type="number" inputmode="numeric" min="0" step="10" placeholder="none"></label>
       </div>
+      <button type="button" class="budget" id="budgetBar" hidden></button>
+      
     </div>
     <form class="start-form" id="startForm" hidden>
       <label for="startAddr" class="label">Your address or city</label>
@@ -465,6 +496,7 @@ h1 .logo{height:1.05em;width:1.05em;border-radius:22%;vertical-align:-0.12em;mar
   <div class="viewbar" id="viewBar"><span class="label">View</span>
     <button type="button" class="chip" id="vList" aria-pressed="true">☰ List</button>
     <button type="button" class="chip" id="vMap" aria-pressed="false">🗺 Map</button>
+    <button type="button" class="chip" id="vVen" aria-pressed="false">🏟 Venues</button>
     <button type="button" class="chip save" id="vSurprise">🎲 Surprise me</button>
     <button type="button" class="chip" id="vIns" aria-pressed="false" hidden>📊 Hivemind808 insights</button>
   </div>
@@ -505,8 +537,8 @@ function skey(e){return (e.added?"p:":"e:")+e.id;}
 function saveStars(){try{localStorage.setItem("radar-stars",JSON.stringify([...state.stars]));}catch(e){} clearTimeout(starT); starT=setTimeout(flushStars,500);}
 async function flushStars(){if(!starRef)return; if(starBusy){starAgain=true;return;} starBusy=true; try{await starRef.set({ids:[...state.stars]});}catch(e){if(e&&e.code==="invalid_argument")starRef=null;} starBusy=false; if(starAgain){starAgain=false;flushStars();}}
 function updateStarChip(){const c=document.getElementById("kindRow-starred");if(c)c.textContent="★ Starred"+(starCount>0?" · "+starCount:"");}
-try{const s=JSON.parse(localStorage.getItem("radar-prefs")||"{}");Object.assign(state,{kind:s.kind||"all",genre:s.genre||"all",maxDrive:s.maxDrive||180,sort:s.sort||"date",venue:s.venue||"all",hideTBA:!!s.hideTBA,when:s.when||"any",flags:s.flags||{},car:s.car||1,mpg:+s.mpg>0?+s.mpg:25,gas:+s.gas>0?+s.gas:5.85,food:s.food!=null?+s.food:30,drinks:s.drinks!=null?+s.drinks:2});}catch(e){}
-function savePrefs(){try{localStorage.setItem("radar-prefs",JSON.stringify({kind:state.kind,genre:state.genre,maxDrive:state.maxDrive,sort:state.sort,venue:state.venue,hideTBA:!!state.hideTBA,when:state.when,flags:state.flags,car:state.car,mpg:state.mpg,gas:state.gas,food:state.food,drinks:state.drinks}));}catch(e){}}
+try{const s=JSON.parse(localStorage.getItem("radar-prefs")||"{}");Object.assign(state,{kind:s.kind||"all",genre:s.genre||"all",maxDrive:s.maxDrive||180,sort:s.sort||"date",venue:"all",hideTBA:!!s.hideTBA,when:s.when||"any",flags:s.flags||{},car:s.car||1,mpg:+s.mpg>0?+s.mpg:25,gas:+s.gas>0?+s.gas:5.85,food:s.food!=null?+s.food:30,drinks:s.drinks!=null?+s.drinks:2,home:s.home||"drive",budget:+s.budget>0?+s.budget:0,pinV:Array.isArray(s.pinV)?s.pinV:[]});}catch(e){}
+function savePrefs(){try{localStorage.setItem("radar-prefs",JSON.stringify({kind:state.kind,genre:state.genre,maxDrive:state.maxDrive,sort:state.sort,venue:state.venue,hideTBA:!!state.hideTBA,when:state.when,flags:state.flags,car:state.car,mpg:state.mpg,gas:state.gas,food:state.food,drinks:state.drinks,home:state.home,budget:state.budget,pinV:state.pinV}));}catch(e){}}
 
 function driveEstimate(lat,lon){
   if(!origin||typeof origin.lat!=="number"||typeof lat!=="number"||typeof lon!=="number") return null;
@@ -559,7 +591,7 @@ function venueKey(e){return (e.venue||"")+" · "+(e.city||"");}
 function buildVenues(upcoming){
   const keys=new Set(upcoming.map(venueKey));
   if(state.venue!=="all"&&!keys.has(state.venue)) state.venue="all";
-  vChip.hidden=state.venue==="all";
+  vChip.hidden=true; // the venue page header (with ← All venues) replaces this chip
   vChip.textContent=state.venue==="all"?"":"📍 "+state.venue.split(" · ")[0]+"  ✕";
   vChip.setAttribute("aria-label","Showing one venue: "+state.venue+". Tap to show all venues");
   return keys.size;
@@ -617,6 +649,10 @@ function tier(e){const v=String(e.venue||"");
   return "Other";}
 const PARK={"Festival":40,"Arena / stadium":35,"Amphitheater":25,"Theater / arts hall":20,"Mid-size (1–3k)":15,"Comedy club":10,"Small / DIY":5,"Other":15};
 // Gas default = AAA Orange County regular average, early Nov 2026 (~$5.83). Food = typical SoCal per-person spend incl. tax & tip.
+// UberX Los Angeles rate card (RideWise, July 2026): $1.65 base + $1.35/mi + $0.26/min, plus a ~$3 booking fee. Before surge and tip.
+const RIDE={base:1.65,mile:1.35,min:0.26,fee:3};
+// Round-trip transit fare per person: LA Metro $1.75 each way; Metrolink day pass $19 weekday ($12 weekends); SD MTS $3 each way (Oct 2026); Coaster rough estimate.
+const TRANSIT_RT={"Metro rail":3.5,"Metrolink":19,"Coaster train":14,"SD Trolley":6};
 const DRINK={"Arena / stadium":17,"Festival":16,"Amphitheater":16,"Mid-size (1–3k)":14,"Theater / arts hall":14,"Comedy club":12,"Small / DIY":9,"Other":12};
 function nightCost(e,pi){
   const n=state.car||1, mpg=state.mpg||25, gal=state.gas||5.85, food=state.food??30;
@@ -624,12 +660,19 @@ function nightCost(e,pi){
   const dCount=CONS.has(e.kind)?0:Math.max(state.drinks??2, minTwo?2:0), drinks=dCount*dPrice*n;
   const tixEach = pi.sold||pi.none||pi.lo==null ? null : pi.lo;
   const miles = e._drive ? e._drive.miles*2 : null;
-  const gas = miles!=null ? miles/mpg*gal : null;
-  const park = e._drive ? (e.kind==="openmic"?0:(PARK[tier(e)]??15)) : null;
+  // Getting home: sober driver (gas + parking), rideshare (round trip, one car per 4 people), or transit (per person).
+  let home=state.home||"drive", tr=transitOf(e), fell=false;
+  if(home==="transit"&&!tr){home="ride";fell=true;}
+  let gas=null, park=null, ride=null, transit=null, cars=Math.ceil(n/4);
+  if(home==="drive"){gas = miles!=null ? miles/mpg*gal : null; park = e._drive ? (e.kind==="openmic"?0:(PARK[tier(e)]??15)) : null;}
+  else if(home==="ride"&&e._drive){const oneWay=RIDE.base+RIDE.mile*e._drive.miles+RIDE.min*e._drive.mins+RIDE.fee; ride=oneWay*2*cars;}
+  else if(home==="transit"){transit=(TRANSIT_RT[tr]??8)*n;}
+  const move = home==="drive" ? (gas??0)+(park??0) : home==="ride" ? (ride??0) : (transit??0);
   const eat = food*n;
-  const total = (tixEach??0)*n + (gas??0) + (park??0) + eat + drinks;
-  return {n,mpg,gal,food,dCount,dPrice,drinks,minTwo,sober:CONS.has(e.kind),tixEach,tixEst:!!pi.est,miles,gas,park,eat,total:Math.round(total),each:Math.round(total/n),
-    partial: tixEach==null || gas==null};
+  const total = (tixEach??0)*n + move + eat + drinks;
+  return {n,mpg,gal,food,dCount,dPrice,drinks,minTwo,sober:CONS.has(e.kind),tixEach,tixEst:!!pi.est,miles,gas,park,eat,home,fell,tr,ride,transit,cars,
+    total:Math.round(total),each:Math.round(total/n),
+    partial: tixEach==null || (home!=="transit" && !e._drive)};
 }
 function ageOf(e){if(e.ages)return e.ages;const t=[e.title,e.artists,e.note,e.priceNote].join(" ");
   if(/21\s*\+/.test(t))return "21+";if(/18\s*\+/.test(t))return "18+";if(/all[- ]ages/i.test(t))return "all";return null;}
@@ -666,8 +709,8 @@ function render(){
       else if(e.end&&e.start&&e.start<today&&e.end>=today){x.runStart=e.start;x.start=today;}
       return x;})
     .filter(e=>e.start&&(e.end||e.start)>=today);
-  const upcoming=evs.length;
-  starCount=evs.filter(e=>state.stars.has(skey(e))).length; updateStarChip();
+  const upcoming=evs.length; state._up=evs;
+  starCount=evs.filter(e=>state.stars.has(skey(e))).length; updateStarChip(); updateBudget();
   const venueCount=buildVenues(evs);
   const qw = state.q ? state.q.split(/\s+/) : null;
   evs=evs.filter(e=>!qw||(h=>qw.every(w=>h.includes(w)))(norm([e.title,e.artists,e.venue,e.city].join(" "))))
@@ -690,14 +733,16 @@ function render(){
   updateAlertBar();
   if(state.view==="map"){renderMap(evs);return;}
   if(state.view==="ins"){renderInsights();return;}
+  if(state.view==="venues"){renderVenues();return;}
+  const vHead=state.venue!=="all"?venueHeader(state.venue):"";
   if(!state.events.length){list.innerHTML='<div class="empty"><strong>No shows yet</strong>The daily refresh adds concerts and festivals here with dates, prices and drive times. Check back after the next run.</div>';return;}
-  if(!evs.length){list.innerHTML = state.kind==="starred" ? '<div class="empty"><strong>Nothing starred yet</strong>Tap ☆ on any show to keep an eye on it. Your stars are private to you.</div>' : state.kind==="picks" ? '<div class="empty"><strong>No added shows yet</strong>Tap ＋ Add a show to pin a gig you heard about. It shows up here and at the top of the full list.</div>' : (state.q ? `<div class="empty"><strong>No shows match “${esc(sq.value.trim())}”</strong>Check the spelling, try part of the name, or set the filters above to All.</div>` : '<div class="empty"><strong>Nothing matches these filters</strong>Try a longer max drive or set Genre to All.</div>');return;}
+  if(!evs.length){list.innerHTML = vHead + (state.venue!=="all"&&(state._up||[]).some(e=>venueKey(e)===state.venue)?'<div class="empty"><strong>Filters are hiding this venue\'s shows</strong>Set Show and Genre to All, and When to Any day.</div>':""); if(state.venue!=="all")return; list.innerHTML = state.kind==="starred" ? '<div class="empty"><strong>Nothing starred yet</strong>Tap ☆ on any show to keep an eye on it. Your stars are private to you.</div>' : state.kind==="picks" ? '<div class="empty"><strong>No added shows yet</strong>Tap ＋ Add a show to pin a gig you heard about. It shows up here and at the top of the full list.</div>' : (state.q ? `<div class="empty"><strong>No shows match “${esc(sq.value.trim())}”</strong>Check the spelling, try part of the name, or set the filters above to All.</div>` : '<div class="empty"><strong>Nothing matches these filters</strong>Try a longer max drive or set Genre to All.</div>');return;}
   let surpriseHtml="";
   if(state.surprise){const pick=evs.find(e=>skey(e)===state.surprise);
     if(pick){evs=[pick];surpriseHtml=`<div class="surprise">🎲 <b>Your pick</b><span>${esc(state.surpriseWhy||"")}</span><button type="button" class="chip" id="spAgain">Another</button><button type="button" class="chip" id="spDone">Show all</button></div>`;}
     else state.surprise=null;}
   const pinned=evs.filter(e=>e.added), rest=evs.filter(e=>!e.added);
-  let html=surpriseHtml, lastMonth="", restStarted=false;
+  let html=vHead+surpriseHtml, lastMonth="", restStarted=false;
   if(pinned.length) html+='<h2 class="month pickh">＋ Added by you &amp; friends</h2>';
   // Cards are built in batches as you scroll (building all ~900 at once is what made the app feel heavy).
   const all=[...pinned,...rest]; let idx=0;
@@ -755,9 +800,9 @@ function render(){
         ${isPin?`<span class="who">＋ Luke's pick</span>`:""}
         <div class="top"><h3>${esc(e.title)}</h3><div class="tr"><div class="trr"><span class="kind ${CONS.has(e.kind)?"dance":e.kind==="festival"?"fest":mic?"mic":e.kind==="club"?"club":e.kind==="comedy"?"comedy":e.kind==="theater"?"theater":""}">${CONS.has(e.kind)?({dance:"Dance",contact:"Contact",sound:"Sound",drum:"Drums"})[e.kind]:e.kind==="festival"?"Fest":mic?"Open mic":e.kind==="club"?"Club":e.kind==="comedy"?"Comedy":e.kind==="theater"?"Theater":"Show"}</span><button type="button" class="starbtn" data-star="${esc(skey(e))}" aria-pressed="${state.stars.has(skey(e))}" aria-label="Star ${esc(e.title)}">${state.stars.has(skey(e))?"★":"☆"}</button></div>${e.start?`<a class="addcal" href="${esc(calLink(e))}" target="_blank" rel="noopener">＋ Add to calendar</a>`:""}</div></div>
         ${e.artists?`<div class="where">${esc(e.artists)}</div>`:""}
-        <div class="where">${esc(e.venue)} · ${esc(e.city)}</div>
+        <div class="where"><button type="button" class="vlink" data-venue="${esc(venueKey(e))}">${esc(e.venue)}</button> · ${esc(e.city)}</div>
         ${al?`<div class="row">${al}</div>`:""}
-        <div class="facts">${time}${leaveHtml}</div>
+        <div class="facts">${time}${leaveHtml}${wxSpan(e)}</div>
         ${e.priceNote?`<div class="note">${esc(e.priceNote)}</div>`:""}
         ${e.note?`<div class="note">${esc(e.note)}</div>`:""}
         ${(tags||extraTags)?`<div class="tags">${extraTags}${tags}</div>`:""}
@@ -771,24 +816,122 @@ function render(){
   if(listObs)listObs.disconnect();
   list.innerHTML=html+more(24)+(idx<all.length?'<div id="moreCards" class="morecards" aria-hidden="true"></div>':"");
   state._more=()=>{if(idx>=all.length)return false;const s=document.getElementById("moreCards");if(!s)return false;
-    s.insertAdjacentHTML("beforebegin",more(40));if(idx>=all.length){s.remove();if(listObs)listObs.disconnect();}return true;};
+    s.insertAdjacentHTML("beforebegin",more(40));fillWx();if(idx>=all.length){s.remove();if(listObs)listObs.disconnect();}return true;};
   const sent=document.getElementById("moreCards");
   if(sent&&"IntersectionObserver" in window){const fill=()=>{const el=document.getElementById("moreCards");if(el&&el.getBoundingClientRect().top<innerHeight+1600&&state._more())requestAnimationFrame(fill);};
     listObs=new IntersectionObserver(es=>{if(es.some(x=>x.isIntersecting))fill();},{rootMargin:"1600px 0px"});listObs.observe(sent);}
   else if(sent){while(state._more());}
+  fillWx();
   jumpToHash();
   const sa=document.getElementById("spAgain"),sd=document.getElementById("spDone");
   if(sa)sa.onclick=surpriseMe; if(sd)sd.onclick=()=>{state.surprise=null;render();};
 }
+function updateBudget(){
+  const bar=document.getElementById("budgetBar"); if(!bar)return;
+  const B=state.budget||0; if(!B){bar.hidden=true;return;}
+  const now=new Date(), ym=ymd(now).slice(0,7), today=todayStr();
+  let spent=0,count=0,partial=false;
+  [...state.events,...state.picks.map(p=>({...p,added:true}))].forEach(e0=>{
+    if(!state.stars.has(skey(e0)))return;
+    const e={...e0,_drive:driveEstimate(e0.lat,e0.lon)};
+    if(isRec(e0)){e.start=nextOccurrence(e0.recurrence);e.end=null;}
+    else if(e.end&&e.start&&e.start<today&&e.end>=today)e.start=today;
+    if(!e.start||e.start.slice(0,7)!==ym||(e.end||e.start)<today)return;
+    const nc=nightCost(e,priceInfo(e)); spent+=nc.each; count++; if(nc.partial)partial=true;});
+  const pct=Math.min(100,Math.round(spent/B*100)), over=spent>B;
+  const mon=now.toLocaleDateString("en-US",{month:"long"});
+  bar.hidden=false; bar.classList.toggle("over",over);
+  bar.innerHTML=`<span class="bt"><b>${mon}: $${Math.round(spent)}${partial?"+":""} of $${B}</b><small>${count} starred show${count===1?"":"s"} left this month · your share${over?" · over budget":""}</small></span><span class="bm"><i style="width:${pct}%"></i></span>`;
+}
+/* ---- venues: directory (pinned favorites on top) + venue page header ---- */
+function isPinned(k){return (state.pinV||[]).includes(k);}
+function togglePin(k){const a=state.pinV=state.pinV||[];const i=a.indexOf(k);if(i>=0)a.splice(i,1);else a.push(k);savePrefs();}
+function venueInfo(k){
+  const evs=(state._up||[]).filter(e=>venueKey(e)===k).sort((a,b)=>a.start.localeCompare(b.start));
+  const e=evs[0]||{}, name=k.split(" · ")[0], city=k.split(" · ")[1]||"";
+  return {k,name,city,evs,next:evs[0],drive:e._drive||driveEstimate(e.lat,e.lon),tier:e.venue?tier(e):"Other",transit:e.venue?transitOf(e):null,lat:e.lat,lon:e.lon,cap:(SCOUT[e.venue]||{}).cap};
+}
+function venueHeader(k){
+  const v=venueInfo(k), pin=isPinned(k), park=PARK[v.tier]??15;
+  const dest=encodeURIComponent(v.name+", "+v.city);
+  const maps=`https://www.google.com/maps/dir/?api=1${origin&&origin.address?"&origin="+encodeURIComponent(origin.address):""}&destination=${dest}&travelmode=driving`;
+  const g=q=>"https://www.google.com/search?q="+encodeURIComponent(v.name+" "+v.city+" "+q);
+  const row=(k2,val)=>`<div class="vrow"><span class="k">${k2}</span><span>${val}</span></div>`;
+  return `<section class="vhead">
+    <div class="vtop"><button type="button" class="chip" data-allven="1">← All venues</button>
+      <button type="button" class="vpin${pin?" on":""}" data-pinv="${esc(k)}" aria-pressed="${pin}">${pin?"📌 Pinned":"📌 Pin"}</button></div>
+    <h2>${esc(v.name)}</h2><p class="vcity">${esc(v.city)} · ${v.evs.length} upcoming show${v.evs.length===1?"":"s"}</p>
+    ${row("Drive",v.drive?`~${fmtMins(v.drive.mins)} · ${v.drive.miles} mi`:"set a start point")}
+    ${row("Size",esc(v.tier)+(v.cap?` · ~${v.cap} people`:""))}
+    ${row("Parking",v.tier==="Small / DIY"?"usually street or small lots · ~$"+park:"typically ~$"+park+" · lots fill up before big shows")}
+    ${row("Transit",v.transit?"🌱 "+esc(v.transit)+" nearby":"best by car or rideshare")}
+    <div class="vlinks"><a href="${maps}" target="_blank" rel="noopener">Directions</a><a href="${g("parking")}" target="_blank" rel="noopener">Parking ↗</a><a href="${g("bag policy")}" target="_blank" rel="noopener">Bag policy ↗</a></div>
+    <p class="vnote">Parking prices are typical for this size of venue. Check the venue for tonight's actual rules.</p>
+  </section>`;
+}
+function renderVenues(){
+  const list=document.getElementById("list");
+  const keys=[...new Set((state._up||[]).map(venueKey))];
+  const infos=keys.map(venueInfo);
+  const sortV=(a,b)=>origin?((a.drive?.mins??1e9)-(b.drive?.mins??1e9))||a.name.localeCompare(b.name):a.name.localeCompare(b.name);
+  const card=v=>{const n=v.next,nd=n?parseDay(n.start).toLocaleDateString("en-US",{weekday:"short",month:"short",day:"numeric"}):"";
+    return `<div class="vcard"><button type="button" class="vopen" data-venue="${esc(v.k)}"><b>${esc(v.name)}</b>
+      <span>${esc(v.city)}${v.drive?` · ~${fmtMins(v.drive.mins)}`:""}</span>
+      <small>${v.evs.length} show${v.evs.length===1?"":"s"}${n?` · next ${esc(nd)}: ${esc(n.title)}`:""}</small></button>
+      <button type="button" class="vpin${isPinned(v.k)?" on":""}" data-pinv="${esc(v.k)}" aria-pressed="${isPinned(v.k)}" aria-label="${isPinned(v.k)?"Unpin":"Pin"} ${esc(v.name)}">📌</button></div>`;};
+  const pinned=infos.filter(v=>isPinned(v.k)).sort((a,b)=>(state.pinV.indexOf(a.k))-(state.pinV.indexOf(b.k)));
+  let html=`<div class="venues">`;
+  html+=`<h2 class="month pickh">📌 Your venues</h2>`+(pinned.length?pinned.map(card).join(""):`<div class="empty"><strong>Pin your favorite spots</strong>Tap 📌 on any venue and it stays at the top here.</div>`);
+  const regionOf=k=>{const e=(state._up||[]).find(x=>venueKey(x)===k);return e?region(e):"Other";};
+  for(const r of REGIONS){const vs=infos.filter(v=>!isPinned(v.k)&&regionOf(v.k)===r).sort(sortV);if(!vs.length)continue;
+    html+=`<h2 class="month">${esc(r)}</h2>`+vs.map(card).join("");}
+  list.innerHTML=html+`</div>`;
+}
+document.getElementById("list").addEventListener("click",ev=>{
+  const pin=ev.target.closest("[data-pinv]");
+  if(pin){togglePin(pin.dataset.pinv);render();return;}
+  const all=ev.target.closest("[data-allven]");
+  if(all){state.venue="all";savePrefs();setView("venues");window.scrollTo({top:document.getElementById("viewBar").offsetTop-8,behavior:"smooth"});return;}
+  const v=ev.target.closest("[data-venue]");
+  if(v){state.venue=v.dataset.venue;state.surprise=null;savePrefs();setView("list");window.scrollTo({top:document.getElementById("viewBar").offsetTop-8,behavior:"smooth"});}
+});
+/* ---- weather for outdoor shows in the next 10 days (Open-Meteo, free, no key) ---- */
+const OUTDOOR=/hollywood bowl|greek theat|amphithea|rady shell|humphreys|hollywood forever|ford theat|glen helen|frontwave|cal coast|dodger stadium|petco park|snapdragon|rose bowl|bmo stadium|grand park|marina green|city beach|aliso beach|state beach|\bpier\b|outdoor|lawn/i;
+function isOutdoor(e){return OUTDOOR.test(e.venue||"")||e.kind==="festival"||e.kind==="drum";}
+function wxSpan(e){
+  if(!isOutdoor(e)||typeof e.lat!=="number"||!e.start)return "";
+  const days=(parseDay(e.start)-parseDay(todayStr()))/864e5; if(days<0||days>10)return "";
+  return `<span class="wx" data-wx="${e.lat.toFixed(2)},${e.lon.toFixed(2)}" data-day="${e.start}"></span>`;}
+const wxCache={}, wxIcon=c=>c===0?"☀️":c<=2?"🌤️":c===3?"☁️":c<=48?"🌫️":c<=67?"🌧️":c<=77?"🌨️":c<=82?"🌦️":"⛈️";
+function wxGet(key){
+  if(wxCache[key])return wxCache[key];
+  try{const c=JSON.parse(sessionStorage.getItem("wx:"+key)||"null");if(c&&Date.now()-c.t<3*36e5)return wxCache[key]=Promise.resolve(c.d);}catch(e){}
+  const [la,lo]=key.split(",");
+  const u=`https://api.open-meteo.com/v1/forecast?latitude=${la}&longitude=${lo}&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max&temperature_unit=fahrenheit&timezone=America%2FLos_Angeles&forecast_days=12`;
+  return wxCache[key]=fetch(u).then(r=>r.ok?r.json():null).then(j=>{const d=j&&j.daily;if(d){try{sessionStorage.setItem("wx:"+key,JSON.stringify({t:Date.now(),d}));}catch(e){}}return d;}).catch(()=>null);}
+function fillWx(){
+  document.querySelectorAll(".wx:not([data-done])").forEach(sp=>{sp.dataset.done="1";
+    wxGet(sp.dataset.wx).then(d=>{if(!d||!sp.isConnected)return;const i=d.time.indexOf(sp.dataset.day);if(i<0)return;
+      const hi=Math.round(d.temperature_2m_max[i]),lo=Math.round(d.temperature_2m_min[i]),rain=d.precipitation_probability_max[i];
+      sp.textContent=`${wxIcon(d.weather_code[i])} ${hi}°/${lo}°${rain>=20?` · ${rain}% rain`:""}${lo<60?" · bring a layer":""}`;
+      sp.title="Forecast for the venue on show day";});});}
 function backHtml(e,nc,fl){
   const $=v=>"$"+Math.round(v), who=nc.n>1?`${nc.n} people`:"just you";
   const line=(ic,k,how,v)=>`<div class="nl"><span class="nk">${ic} ${k}</span><span class="nh">${how}</span><span class="nv">${v}</span></div>`;
   const tix = nc.tixEach==null ? line("🎟","Tickets","price not listed yet","?")
     : line("🎟","Tickets",`${nc.tixEach===0?"free":(nc.tixEst?"≈":"")+$(nc.tixEach)}${nc.n>1?" × "+nc.n:""}${nc.tixEst?" · typical, not listed":""}`,$(nc.tixEach*nc.n));
-  const gas = nc.gas==null ? line("⛽","Gas","set a start point","?")
-    : line("⛽","Gas",`${nc.miles} mi round trip ÷ ${nc.mpg} mpg × $${nc.gal.toFixed(2)}`,$(nc.gas));
-  const park = nc.park==null ? line("🅿️","Parking","set a start point","?")
-    : line("🅿️","Parking",nc.park===0?"usually free":`typical for ${tier(e).toLowerCase()}`,$(nc.park));
+  let gas="", park="";
+  if(nc.home==="drive"){
+    gas = nc.gas==null ? line("⛽","Gas","set a start point","?")
+      : line("⛽","Gas",`${nc.miles} mi round trip ÷ ${nc.mpg} mpg × $${nc.gal.toFixed(2)} · sober driver`,$(nc.gas));
+    park = nc.park==null ? line("🅿️","Parking","set a start point","?")
+      : line("🅿️","Parking",nc.park===0?"usually free":`typical for ${tier(e).toLowerCase()}`,$(nc.park));
+  }else if(nc.home==="ride"){
+    gas = nc.ride==null ? line("🚕","Rideshare","set a start point","?")
+      : line("🚕","Rideshare",`round trip${nc.cars>1?` · ${nc.cars} cars`:""} · before surge & tip${nc.fell?" · no easy transit here":""}`,$(nc.ride));
+  }else{
+    gas = line("🚆","Transit",`${esc(nc.tr)} round trip${nc.n>1?" × "+nc.n:""} · check the last ride home`,$(nc.transit));
+  }
   const food = line("🍽","Food",nc.food?`${$(nc.food)} × ${nc.n} · typical SoCal spend`:"skipped",$(nc.eat));
   const drk = nc.sober ? line("🍹","Drinks","usually a sober space","$0")
     : line("🍹","Drinks",nc.dCount?`${nc.dCount} × ~${$(nc.dPrice)}${nc.n>1?" × "+nc.n:""}${nc.minTwo&&(state.drinks??2)<2?" · 2-item minimum":""}`:"none",$(nc.drinks));
@@ -796,12 +939,12 @@ function backHtml(e,nc,fl){
     <div class="bh"><span class="sl">🌙 Night cost · ${who}</span></div>
     <div class="nlist">${tix}${gas}${park}${food}${drk}</div>
     <div class="ntot"><span>Total${nc.partial?" so far":""}</span><b>${$(nc.total)}${nc.partial?"+":""}</b>${nc.n>1?`<span class="each">${$(nc.each)}${nc.partial?"+":""} each</span>`:""}</div>
-    <p class="nfoot">Estimates · gas & parking split across the car · <a href="${esc(eatLink(e))}" target="_blank" rel="noopener">food near the venue ↗</a></p>
+    <p class="nfoot">Estimates · ${nc.home==="drive"?"gas & parking split across the car":nc.home==="ride"?"rides split across the group":"fares are per person"} · <a href="${esc(eatLink(e))}" target="_blank" rel="noopener">food near the venue ↗</a></p>
     <div class="flipbar"><button type="button" class="daybtn" data-flip="1">☀️ Back to day</button></div>
   </div>`;
 }
 function surpriseMe(){
-  state.surprise=null; state.view="list"; [vL,vM,vI].forEach(b=>b.setAttribute("aria-pressed",String(b===vL)));
+  state.surprise=null; state.view="list"; [vL,vM,vI,vV].forEach(b=>b.setAttribute("aria-pressed",String(b===vL)));
   render(); // fills state._shown with current filters
   const pool=(state._shown||[]).filter(e=>{const pi=priceInfo(e);return !pi.sold;});
   const tries=[["tonight","tonight"],["weekend","this weekend"],[null,"in the next 2 weeks"]];
@@ -829,9 +972,10 @@ listEl.addEventListener("click",ev=>{const b=ev.target.closest("[data-listen]");
 listEl.addEventListener("click",ev=>{const b=ev.target.closest("[data-flip]");if(!b)return;flipCard(b.closest(".card"));});
 
 /* ---- views: list / map / insights ---- */
-const vL=document.getElementById("vList"),vM=document.getElementById("vMap"),vI=document.getElementById("vIns");
-function setView(v){state.view=v;[vL,vM,vI].forEach(b=>b.setAttribute("aria-pressed",String(b.id===({list:"vList",map:"vMap",ins:"vIns"})[v])));render();}
-vL.onclick=()=>{state.surprise=null;setView("list");};document.getElementById("vSurprise").onclick=()=>surpriseMe();vM.onclick=()=>setView("map");vI.onclick=()=>setView("ins");
+const vL=document.getElementById("vList"),vM=document.getElementById("vMap"),vI=document.getElementById("vIns"),vV=document.getElementById("vVen");
+function setView(v){state.view=v;[vL,vM,vI,vV].forEach(b=>b.setAttribute("aria-pressed",String(b.id===({list:"vList",map:"vMap",ins:"vIns",venues:"vVen"})[v])));render();}
+vV.onclick=()=>{state.surprise=null;state.venue="all";savePrefs();setView("venues");};
+vL.onclick=()=>{state.surprise=null;if(state.venue!=="all"){state.venue="all";savePrefs();}setView("list");};document.getElementById("vSurprise").onclick=()=>surpriseMe();vM.onclick=()=>setView("map");vI.onclick=()=>setView("ins");
 const carSel=document.getElementById("carSel");carSel.value=String(state.car||1);carSel.onchange=()=>{state.car=+carSel.value;savePrefs();render();};
 const mpgIn=document.getElementById("mpgIn"),gasIn=document.getElementById("gasIn"),foodSel=document.getElementById("foodSel");
 mpgIn.value=state.mpg||25;gasIn.value=(state.gas||5.85).toFixed(2);foodSel.value=String(state.food??30);
@@ -843,6 +987,12 @@ let costTyping;[mpgIn,gasIn].forEach(i=>{
   i.addEventListener("change",()=>{clearTimeout(costTyping);costChange();});
   i.addEventListener("keydown",e=>{if(e.key==="Enter")i.blur();});});
 foodSel.onchange=costChange;
+const homeSel=document.getElementById("homeSel"),budgetIn=document.getElementById("budgetIn");
+homeSel.value=state.home||"drive";homeSel.onchange=()=>{state.home=homeSel.value;savePrefs();render();};
+budgetIn.value=state.budget||"";
+budgetIn.addEventListener("change",()=>{state.budget=Math.max(0,Math.round(+budgetIn.value||0));budgetIn.value=state.budget||"";savePrefs();updateBudget();});
+budgetIn.addEventListener("keydown",e=>{if(e.key==="Enter")budgetIn.blur();});
+document.getElementById("budgetBar").onclick=()=>{state.kind="starred";state.when="any";document.querySelectorAll("#kindRow .chip").forEach(c=>c.setAttribute("aria-pressed",String(c.id==="kindRow-starred")));document.querySelectorAll("#whenRow .chip").forEach(c=>c.setAttribute("aria-pressed",String(c.id==="whenRow-any")));savePrefs();setView("list");document.getElementById("viewBar").scrollIntoView({behavior:"smooth"});};
 const drinkSel=document.getElementById("drinkSel");drinkSel.value=String(state.drinks??2);drinkSel.onchange=()=>{state.drinks=+drinkSel.value;savePrefs();render();};
 [mpgIn,gasIn].forEach(i=>i.addEventListener("blur",()=>{mpgIn.value=state.mpg;gasIn.value=state.gas.toFixed(2);}));
 /* alerts on starred shows */
@@ -1060,7 +1210,7 @@ document.getElementById("list").addEventListener("click",ev=>{
   const k=b.dataset.star, on=!state.stars.has(k);
   if(on)state.stars.add(k); else state.stars.delete(k);
   b.setAttribute("aria-pressed",String(on)); b.textContent=on?"★":"☆";
-  starCount+=on?1:-1; updateStarChip(); saveStars();
+  starCount+=on?1:-1; updateStarChip(); saveStars(); updateBudget();
   if(state.kind==="starred")render();
 });
 document.getElementById("list").addEventListener("click",async ev=>{
