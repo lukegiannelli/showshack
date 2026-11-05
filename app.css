@@ -508,3 +508,11 @@ body.fx #bgfx{display:block}
 .wkdone span{color:var(--muted)}
 .wkstack:has(.wkdone) .wkdeck{height:150px}
 @media (prefers-reduced-motion:reduce){.wkc{transition:none}}
+
+/* venues: Chowder-style windows into a pinned, drifting nebula (nebula.js) */
+#nebfx{position:fixed;inset:0;width:100%;height:100%;z-index:-1;pointer-events:none;display:none}
+body.neb.nebok #nebfx{display:block}
+body.neb.nebok .vcard .vf{background:linear-gradient(180deg,rgba(8,6,22,.18),rgba(8,6,22,.5));border-color:rgba(205,180,255,.5);color:#F5F0FF;box-shadow:0 0 14px rgba(150,100,255,.18)}
+body.neb.nebok .vcard .vf .vopen b{text-shadow:0 1px 3px rgba(0,0,0,.85),0 0 10px rgba(0,0,0,.4)}
+body.neb.nebok .vcard .vf .vopen span,body.neb.nebok .vcard .vf .vopen small{color:#DCD2F2;text-shadow:0 1px 2px rgba(0,0,0,.9)}
+body.neb.nebok .vcard .vf .vpin{opacity:.7}

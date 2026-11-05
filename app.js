@@ -301,6 +301,7 @@ function wkOpen(c){if(!c)return;hashDone="";history.replaceState(null,"","#"+c.d
 function render(){
   const list=document.getElementById("list");
   if(!state.loaded) return;
+  document.body.classList.toggle("neb",state.view==="venues");
   const dsc=document.getElementById("disco");if(dsc)dsc.hidden=!(state.view==="list"||state.view==="venues");
   const today=todayStr();
   let evs=[...state.events, ...state.picks.map(p=>({...p,added:true}))].map(e=>{
