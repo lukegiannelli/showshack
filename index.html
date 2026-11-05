@@ -269,6 +269,7 @@ h1 .logo{height:1.05em;width:1.05em;border-radius:22%;vertical-align:-0.12em;mar
 .costbar{flex-basis:100%;display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;padding-top:4px}
 /* even spacing around the search bar: drop the empty add-a-show slot, 18px above and below */
 .add:has(> #addOpen[hidden]):has(> #addForm[hidden]){display:none}
+.add{display:none!important}   /* "Add a show" is switched off for now */
 .controls{margin-top:-10px}
 .controls .search{margin-bottom:8px}
 .cf{display:flex;align-items:center;gap:6px}
@@ -539,6 +540,12 @@ h1 .logo{height:1.05em;width:1.05em;border-radius:22%;vertical-align:-0.12em;mar
       <input id="q" type="text" inputmode="search" enterkeyhint="search" autocomplete="off" placeholder="Search artist, venue or city" aria-label="Search artist, venue or city">
       <button type="button" id="qClear" hidden>Clear</button>
     </label>
+    <div class="viewbar" id="viewBar"><span class="label">View</span>
+      <button type="button" class="chip" id="vList" aria-pressed="true"><svg class="ni ni-list" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-list"/></svg> List</button>
+      <button type="button" class="chip" id="vMap" aria-pressed="false"><svg class="ni ni-map" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-map"/></svg> Map</button>
+      <button type="button" class="chip" id="vVen" aria-pressed="false"><svg class="ni ni-venue" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-venue"/></svg> Venues</button>
+      <button type="button" class="chip" id="vIns" aria-pressed="false" hidden><svg class="ni ni-chart" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-chart"/></svg> Hivemind808 insights</button>
+    </div>
     <div class="row" id="whenRow"><span class="label">When</span></div>
     <div class="row" id="kindRow"><span class="label">Show</span></div>
     <div class="row" id="genreRow"><span class="label">Genre</span></div>
@@ -554,12 +561,6 @@ h1 .logo{height:1.05em;width:1.05em;border-radius:22%;vertical-align:-0.12em;mar
     </div>
   </div>
 
-  <div class="viewbar" id="viewBar"><span class="label">View</span>
-    <button type="button" class="chip" id="vList" aria-pressed="true"><svg class="ni ni-list" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-list"/></svg> List</button>
-    <button type="button" class="chip" id="vMap" aria-pressed="false"><svg class="ni ni-map" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-map"/></svg> Map</button>
-    <button type="button" class="chip" id="vVen" aria-pressed="false"><svg class="ni ni-venue" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-venue"/></svg> Venues</button>
-    <button type="button" class="chip" id="vIns" aria-pressed="false" hidden><svg class="ni ni-chart" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-chart"/></svg> Hivemind808 insights</button>
-  </div>
   <button type="button" class="alertbar" id="alertBar" hidden></button>
   <main id="list" class="list" aria-live="polite">
     <div class="empty"><strong>Loading shows…</strong>The list fills in from the daily refresh. Each row shows the date, venue, starting price and drive time from home.</div>
