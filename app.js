@@ -1,9 +1,10 @@
 let origin = null; // {address, lat, lon, label} — per viewer, never shared
 const CITIES = {"santa ana":[33.7455,-117.8677],"anaheim":[33.8366,-117.9143],"irvine":[33.6846,-117.8265],"costa mesa":[33.6411,-117.9187],"huntington beach":[33.6603,-117.9992],"garden grove":[33.7739,-117.9414],"fullerton":[33.8704,-117.9242],"orange":[33.7879,-117.8531],"tustin":[33.7458,-117.8262],"westminster":[33.7513,-117.9940],"fountain valley":[33.7092,-117.9537],"newport beach":[33.6189,-117.9289],"laguna beach":[33.5427,-117.7854],"mission viejo":[33.6000,-117.6720],"lake forest":[33.6469,-117.6892],"san clemente":[33.4270,-117.6120],"dana point":[33.4672,-117.6981],"san juan capistrano":[33.5017,-117.6625],"long beach":[33.7701,-118.1937],"los angeles":[34.0522,-118.2437],"hollywood":[34.0928,-118.3287],"pasadena":[34.1478,-118.1445],"santa monica":[34.0195,-118.4912],"inglewood":[33.9617,-118.3531],"torrance":[33.8358,-118.3406],"riverside":[33.9806,-117.3755],"san bernardino":[34.1083,-117.2898],"ontario":[34.0633,-117.6509],"corona":[33.8753,-117.5664],"temecula":[33.4936,-117.1484],"san diego":[32.7157,-117.1611],"oceanside":[33.1959,-117.3795],"palm springs":[33.8303,-116.5453],"ventura":[34.2746,-119.2290],"whittier":[33.9792,-118.0328],"buena park":[33.8675,-117.9981],"cypress":[33.8170,-118.0373],"yorba linda":[33.8886,-117.8131],"brea":[33.9167,-117.9001]};
 function cityGuess(text){const t=text.toLowerCase();let best=null;for(const k in CITIES){if(t.includes(k)&&(!best||k.length>best.length))best=k;}return best?{lat:CITIES[best][0],lon:CITIES[best][1],approx:true}:null;}
-const KINDS = [["all","All"],["starred","★ Starred"],["rave","Raves & DJs"],["festival","Festivals"],["concert","Concerts"],["comedy","Comedy"],["theater","Theater & arts"],["openmic","Open mics"],["dance","Ecstatic dance"],["contact","Contact improv"],["sound","Sound baths"],["drum","Drum circles"]];
+const KINDS = [["all","All"],["starred","★ Starred"],["rave","Raves & DJs"],["festival","Festivals"],["concert","Concerts"],["comedy","Comedy"],["theater","Theater & arts"],["openmic","Open mics"],["dance","Ecstatic dance"],["contact","Contact improv"],["sound","Sound baths"],["drum","Drum circles"],["social","Dance socials"],["art","Art walks & markets"],["volunteer","Volunteer"]];
 const CONS=new Set(["dance","contact","sound","drum"]);
-function isRec(e){return e.kind==="openmic"||(CONS.has(e.kind)&&!!e.recurrence);}
+const COMM=new Set(["social","art","volunteer"]);
+function isRec(e){return e.kind==="openmic"||((CONS.has(e.kind)||COMM.has(e.kind))&&!!e.recurrence);}
 function isRave(e){return e.kind==="club"||(e.genres||[]).includes("electronic");}
 let myUid=null, amOwner=false, dbRef=null;
 const REGIONS = ["Orange County","Los Angeles","Inland Empire","San Diego","Desert","Ventura","Other"];
@@ -26,8 +27,8 @@ function skey(e){return (e.added?"p:":"e:")+e.id;}
 function saveStars(){try{localStorage.setItem("radar-stars",JSON.stringify([...state.stars]));}catch(e){} clearTimeout(starT); starT=setTimeout(flushStars,500);}
 async function flushStars(){if(!starRef)return; if(starBusy){starAgain=true;return;} starBusy=true; try{await starRef.set({ids:[...state.stars]});}catch(e){if(e&&e.code==="invalid_argument")starRef=null;} starBusy=false; if(starAgain){starAgain=false;flushStars();}}
 function updateStarChip(){const c=document.getElementById("kindRow-starred");if(c)c.textContent="★ Starred"+(starCount>0?" · "+starCount:"");}
-try{const s=JSON.parse(localStorage.getItem("radar-prefs")||"{}");Object.assign(state,{kind:s.kind||"all",genre:s.genre||"all",maxDrive:s.maxDrive||180,sort:s.sort||"date",venue:"all",hideTBA:!!s.hideTBA,when:s.when||"any",flags:s.flags||{},car:s.car||1,mpg:+s.mpg>0?+s.mpg:25,gas:+s.gas>0?+s.gas:5.85,food:s.food!=null?+s.food:0,drinks:s.drinks!=null?+s.drinks:0,home:s.home||"drive",budget:+s.budget>0?+s.budget:0,pinV:Array.isArray(s.pinV)?s.pinV:[]});}catch(e){}
-function savePrefs(){try{localStorage.setItem("radar-prefs",JSON.stringify({kind:state.kind,genre:state.genre,maxDrive:state.maxDrive,sort:state.sort,venue:state.venue,hideTBA:!!state.hideTBA,when:state.when,flags:state.flags,car:state.car,mpg:state.mpg,gas:state.gas,food:state.food,drinks:state.drinks,home:state.home,budget:state.budget,pinV:state.pinV}));}catch(e){}}
+try{const s=JSON.parse(localStorage.getItem("radar-prefs")||"{}");Object.assign(state,{kind:s.kind||"all",genre:s.genre||"all",maxDrive:s.maxDrive||180,sort:s.sort||"date",venue:"all",hideTBA:!!s.hideTBA,when:s.when||"any",flags:s.flags||{},car:s.car||1,mpg:+s.mpg>0?+s.mpg:25,gas:+s.gas>0?+s.gas:5.85,food:s.food!=null?+s.food:0,drinks:s.drinks!=null?+s.drinks:0,home:s.home||"drive",budget:+s.budget>0?+s.budget:0,pinV:Array.isArray(s.pinV)?s.pinV:[],poolOn:!!s.poolOn});}catch(e){}
+function savePrefs(){try{localStorage.setItem("radar-prefs",JSON.stringify({kind:state.kind,genre:state.genre,maxDrive:state.maxDrive,sort:state.sort,venue:state.venue,hideTBA:!!state.hideTBA,when:state.when,flags:state.flags,car:state.car,mpg:state.mpg,gas:state.gas,food:state.food,drinks:state.drinks,home:state.home,budget:state.budget,pinV:state.pinV,poolOn:!!state.poolOn}));}catch(e){}}
 
 function driveEstimate(lat,lon){
   if(!origin||typeof origin.lat!=="number"||typeof lat!=="number"||typeof lon!=="number") return null;
@@ -87,6 +88,7 @@ function syncBeen(up){const today=new Date().toISOString().slice(0,10);let ch=fa
     if(o.d<today&&state.stars.has(k)&&!BEEN.has(o.v)){BEEN.add(o.v);ch=true;}}
   if(ch)saveBeen();}
 function buildVenues(upcoming){
+  upcoming=upcoming.filter(e=>e.kind!=="art"&&e.kind!=="volunteer");
   const keys=new Set(upcoming.map(venueKey));
   if(state.venue!=="all"&&!keys.has(state.venue)) state.venue="all";
   vChip.hidden=true; // the venue page header (with ← All venues) replaces this chip
@@ -402,7 +404,7 @@ function render(){
       <div class="stub"><span class="dow">${dow}</span><span class="day">${d.getDate()}</span><span class="mon">${mon}</span>${thru}${tix?`<a class="tix stubtix" href="${esc(tix)}" target="_blank" rel="noopener">${tixLabel}</a>`:""}</div>
       <div class="body">
         ${isPin?`<span class="who">＋ Luke's pick</span>`:""}
-        <div class="top"><h3>${esc(e.title)}</h3><div class="tr"><div class="trr"><span class="kind ${CONS.has(e.kind)?"dance":e.kind==="festival"?"fest":mic?"mic":e.kind==="club"?"club":e.kind==="comedy"?"comedy":e.kind==="theater"?"theater":""}">${CONS.has(e.kind)?({dance:"Dance",contact:"Contact",sound:"Sound",drum:"Drums"})[e.kind]:e.kind==="festival"?"Fest":mic?"Open mic":e.kind==="club"?"Club":e.kind==="comedy"?"Comedy":e.kind==="theater"?"Theater":"Show"}</span><button type="button" class="starbtn" data-star="${esc(skey(e))}" aria-pressed="${state.stars.has(skey(e))}" aria-label="Star ${esc(e.title)}">${state.stars.has(skey(e))?"★":"☆"}</button></div>${e.start?`<a class="addcal" href="${esc(calLink(e))}" target="_blank" rel="noopener">＋ Add to calendar</a>`:""}</div></div>
+        <div class="top"><h3>${esc(e.title)}</h3><div class="tr"><div class="trr"><span class="kind ${e.kind==="social"?"social":e.kind==="art"?"art":e.kind==="volunteer"?"vol":CONS.has(e.kind)?"dance":e.kind==="festival"?"fest":mic?"mic":e.kind==="club"?"club":e.kind==="comedy"?"comedy":e.kind==="theater"?"theater":""}">${COMM.has(e.kind)?({social:"Dance social",art:"Art walk",volunteer:"Volunteer"})[e.kind]:CONS.has(e.kind)?({dance:"Dance",contact:"Contact",sound:"Sound",drum:"Drums"})[e.kind]:e.kind==="festival"?"Fest":mic?"Open mic":e.kind==="club"?"Club":e.kind==="comedy"?"Comedy":e.kind==="theater"?"Theater":"Show"}</span><button type="button" class="starbtn" data-star="${esc(skey(e))}" aria-pressed="${state.stars.has(skey(e))}" aria-label="Star ${esc(e.title)}">${state.stars.has(skey(e))?"★":"☆"}</button></div>${e.start?`<a class="addcal" href="${esc(calLink(e))}" target="_blank" rel="noopener">＋ Add to calendar</a>`:""}</div></div>
         ${e.artists?`<div class="where">${esc(e.artists)}</div>`:""}
         <div class="where"><button type="button" class="vlink" data-venue="${esc(venueKey(e))}">${esc(e.venue)}</button> · ${esc(e.city)}</div>
         ${al?`<div class="row">${al}</div>`:""}
@@ -481,7 +483,7 @@ function venueHeader(k){
 }
 function renderVenues(){
   const list=document.getElementById("list");
-  const keys=[...new Set((state._up||[]).map(venueKey))];
+  const keys=[...new Set((state._up||[]).filter(e=>e.kind!=="art"&&e.kind!=="volunteer").map(venueKey))];
   const infos=keys.map(venueInfo);
   const sortV=(a,b)=>origin?((a.drive?.mins??1e9)-(b.drive?.mins??1e9))||a.name.localeCompare(b.name):a.name.localeCompare(b.name);
   const card=v=>{const n=v.next,nd=n?parseDay(n.start).toLocaleDateString("en-US",{weekday:"short",month:"short",day:"numeric"}):"";
@@ -669,7 +671,7 @@ function updateAlertBar(){const bar=document.getElementById("alertBar");
 /* map */
 const COAST=[[35.1,-119.6],[34.39,-119.52],[34.27,-119.29],[34.15,-119.21],[34.08,-119.06],[34.03,-118.78],[34.01,-118.5],[33.98,-118.47],[33.84,-118.39],[33.74,-118.41],[33.71,-118.29],[33.76,-118.19],[33.74,-118.1],[33.65,-118.0],[33.6,-117.88],[33.54,-117.78],[33.46,-117.7],[33.42,-117.61],[33.37,-117.56],[33.19,-117.38],[33.16,-117.35],[33.04,-117.29],[32.96,-117.27],[32.85,-117.27],[32.79,-117.26],[32.75,-117.25],[32.67,-117.24],[32.71,-117.17],[32.68,-117.18],[32.58,-117.13],[32.53,-117.12],[32.2,-117.05],[32.2,-114.9],[35.1,-114.9]];
 const MAPCITIES=[["Ventura",34.27,-119.23],["Los Angeles",34.05,-118.24],["Long Beach",33.77,-118.19],["Pasadena",34.15,-118.14],["Santa Ana",33.75,-117.87],["Riverside",33.98,-117.38],["San Bernardino",34.11,-117.29],["Temecula",33.49,-117.15],["Oceanside",33.2,-117.38],["San Diego",32.72,-117.16],["Palm Springs",33.83,-116.55],["Indio",33.72,-116.22]];
-const MAPVIEWS=[["all","All",[32.45,-119.4,34.5,-116.0]],["oc","OC",[33.38,-118.15,34.0,-117.55]],["la","LA",[33.7,-118.6,34.3,-117.9]],["ie","Inland",[33.4,-117.8,34.25,-116.9]],["sd","San Diego",[32.55,-117.45,33.3,-116.9]],["desert","Desert",[33.5,-116.75,34.3,-116.0]]];
+const MAPVIEWS=[["all","All",[32.45,-119.4,34.5,-116.0]],["oc","OC",[33.38,-118.25,34.0,-117.55]],["la","LA",[33.7,-118.6,34.3,-117.9]],["ie","Inland",[33.4,-117.8,34.25,-116.9]],["sd","San Diego",[32.55,-117.45,33.3,-116.9]],["desert","Desert",[33.5,-116.75,34.3,-116.0]]];
 state.mapView=state.mapView||"all";
 function renderMap(evs){const list=document.getElementById("list");
   const bb=(MAPVIEWS.find(m=>m[0]===state.mapView)||MAPVIEWS[0])[2];const k=Math.cos(33.8*Math.PI/180);const W=1000;
@@ -683,9 +685,23 @@ function renderMap(evs){const list=document.getElementById("list");
   const land=COAST.map(([la,lo])=>X(lo)+","+Y(la)).join(" ");
   const cities=MAPCITIES.map(([n,la,lo])=>`<text class="city" x="${X(lo)}" y="${Y(la)}" ${+X(lo)>W*0.78?'dx="-8" text-anchor="end"':'dx="8"'} dy="-8" style="font-size:${(12*scale).toFixed(0)}px">${n}</text>`).join("");
   const home=origin?`<circle class="home" cx="${X(origin.lon)}" cy="${Y(origin.lat)}" r="${(7*scale).toFixed(1)}"><title>Your start point</title></circle>`:"";
-  const btns=MAPVIEWS.map(([id,l])=>`<button type="button" class="chip" data-mv="${id}" aria-pressed="${state.mapView===id}">${l}</button>`).join("");
-  list.innerHTML=`<div class="map"><div class="row">${btns}</div><svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Map of ${evs.length} shows"><rect class="sea" x="0" y="0" width="${W}" height="${H}"/><polygon class="land" points="${land}"/><line class="border" x1="${X(-117.12)}" y1="${Y(32.54)}" x2="${X(-114.9)}" y2="${Y(32.72)}"/>${cities}${home}${pins}</svg><p class="mhint">Dots are venues; bigger = more shows, color = cheapest show there (same scale as the cards). Tap a dot to list that venue's shows. Map is a simple outline, not to street level.</p></div>`;
+  const btns=MAPVIEWS.map(([id,l])=>`<button type="button" class="chip" data-mv="${id}" aria-pressed="${state.mapView===id}">${l}</button>`).join("")
+    +`<button type="button" class="chip poolchip" data-pool-toggle="1" aria-pressed="${!!state.poolOn}">🎱 Pool</button>`;
+  let poolPins="",poolList="";
+  if(state.poolOn&&POOL.length){
+    const pr=7.5*scale;
+    poolPins=POOL.map((p,i)=>`<g class="ppin ${p.c}" data-pool="${i}"><circle cx="${X(p.lon)}" cy="${Y(p.lat)}" r="${pr.toFixed(1)}"/><circle class="eye" cx="${X(p.lon)}" cy="${Y(p.lat)}" r="${(pr*.45).toFixed(1)}"/><title>${esc(p.n)}</title></g>`).join("");
+    const withD=POOL.map((p,i)=>({p,i,d:driveEstimate(p.lat,p.lon)})).sort((x,y)=>(x.d?.mins??1e9)-(y.d?.mins??1e9)||x.p.n.localeCompare(y.p.n));
+    const row=({p,i,d})=>{const dest=encodeURIComponent(p.n+", "+p.a+", "+p.city+", CA");
+      return `<div class="prow" id="pool-${i}"><span class="pdot ${p.c}"></span><div class="pmain"><b>${esc(p.n)}</b><span>${esc(p.city)}${d?" · ~"+fmtMins(d.mins):""}</span>${(p.t||[]).length?`<span class="ptags">${p.t.map(t=>`<i>${esc(t)}</i>`).join("")}</span>`:""}</div><div class="plinks"><a href="https://www.google.com/maps/dir/?api=1&destination=${dest}" target="_blank" rel="noopener">Directions</a><a href="https://www.google.com/maps/search/?api=1&query=${dest}" target="_blank" rel="noopener">Hours</a></div></div>`;};
+    const grp=(c,title)=>{const r=withD.filter(x=>x.p.c===c);return r.length?`<h3 class="ph"><span class="pdot ${c}"></span>${title} · ${r.length}</h3>${r.map(row).join("")}`:"";};
+    poolList=`<div class="pool">${grp("hall","Pool halls")}${grp("bar","Bars with pool")}</div>`;
+  }
+  list.innerHTML=`<div class="map"><div class="row">${btns}</div><svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Map of ${evs.length} shows"><rect class="sea" x="0" y="0" width="${W}" height="${H}"/><polygon class="land" points="${land}"/><line class="border" x1="${X(-117.12)}" y1="${Y(32.54)}" x2="${X(-114.9)}" y2="${Y(32.72)}"/>${cities}${home}${state.poolOn&&POOL.length?"":pins}${poolPins}</svg>${state.poolOn&&POOL.length?"":`<p class="mhint">Dots are venues; bigger = more shows, color = cheapest show there (same scale as the cards). Tap a dot to list that venue's shows. Map is a simple outline, not to street level.</p>`}</div>${poolList}`;
   list.querySelectorAll("[data-mv]").forEach(b=>b.onclick=()=>{state.mapView=b.dataset.mv;render();});
+  const pt=list.querySelector("[data-pool-toggle]");if(pt)pt.onclick=()=>{state.poolOn=!state.poolOn;if(state.poolOn&&state.mapView==="all")state.mapView="oc";savePrefs();render();};
+  list.querySelectorAll("g[data-pool]").forEach(g=>g.onclick=ev=>{ev.stopPropagation();const r=document.getElementById("pool-"+g.dataset.pool);if(!r)return;
+    list.querySelectorAll(".prow.on").forEach(x=>x.classList.remove("on"));r.classList.add("on");r.scrollIntoView({behavior:"smooth",block:"center"});});
   list.querySelectorAll("g[data-v]").forEach(g=>g.onclick=()=>{state.venue=g.dataset.v;savePrefs();setView("list");window.scrollTo({top:document.getElementById("viewBar").offsetTop-8,behavior:"smooth"});});}
 /* Hivemind808 insights (owner only) */
 function median(a){if(!a.length)return null;const s=[...a].sort((x,y)=>x-y),m=s.length>>1;return s.length%2?s[m]:(s[m-1]+s[m])/2;}
@@ -1076,6 +1092,7 @@ try{if(location.hash==="#owner"){localStorage.setItem("shack-owner","1");history
   if(localStorage.getItem("shack-owner")==="1")document.getElementById("addOpen").hidden=false;}catch(e){}
 if("serviceWorker" in navigator&&location.protocol==="https:")navigator.serviceWorker.register("sw.js").catch(()=>{});
 // Shows come from events.json (works for everyone, no login). The database is only a fallback.
+let POOL=[];fetch("pool.json?v=1").then(r=>r.ok?r.json():{}).then(j=>{POOL=((j||{}).places||[]).filter(p=>typeof p.lat==="number");if(state.view==="map"&&state.poolOn)render();}).catch(()=>{});
 let VOPEN={};fetch("venues.json").then(r=>r.ok?r.json():{}).then(j=>{VOPEN=j||{};if(state.view==="venues"||state.venue!=="all")render();}).catch(()=>{});
 let fileLoaded=false;
 (async()=>{

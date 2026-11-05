@@ -535,3 +535,29 @@ body.neb.nebok .vcard .vf .vpin{opacity:.7}
 .range .rw .car{position:absolute;top:50%;left:calc(var(--f,1) * (100% - var(--W) + 8px) - 4px);width:var(--W);height:21px;margin-top:-14px;background:url("car.svg?v=5") center/contain no-repeat;pointer-events:none}
 .range input#maxDrive::-webkit-slider-thumb{background:none!important;background-color:transparent!important;width:76px;height:32px;margin-top:-13px;box-shadow:none;border:0}
 .range input#maxDrive::-moz-range-thumb{background:none!important;width:76px;height:32px;border:0}
+
+/* pool layer on the map */
+.map .ppin{cursor:pointer}
+.map .ppin circle{stroke:#fff;stroke-width:2.5}
+.map .ppin.hall circle:first-child{fill:#111}
+.map .ppin.bar circle:first-child{fill:#E8A23A}
+.map .ppin .eye{fill:#fff;stroke:none}
+.map .ppin.bar .eye{fill:#2a1a08}
+.pool{display:flex;flex-direction:column;gap:6px;margin-top:4px}
+.pool .ph{display:flex;align-items:center;gap:8px;margin:10px 0 2px;font-family:var(--display);text-transform:uppercase;letter-spacing:.05em;font-size:18px}
+.pdot{width:14px;height:14px;border-radius:50%;flex:none;border:2px solid #fff;box-shadow:0 0 0 1px rgba(0,0,0,.25)}
+.pdot.hall{background:radial-gradient(circle,#fff 0 30%,#111 32%)}
+.pdot.bar{background:radial-gradient(circle,#2a1a08 0 30%,#E8A23A 32%)}
+.prow{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:10px;background:var(--surface);border:1px solid var(--line)}
+.prow.on{border-color:var(--accent);box-shadow:0 0 0 2px color-mix(in srgb,var(--accent) 40%,transparent)}
+.pmain{flex:1;min-width:0;display:flex;flex-direction:column;gap:1px}
+.pmain b{font-size:15px}.pmain>span{font-size:12.5px;color:var(--muted)}
+.ptags{display:flex;flex-wrap:wrap;gap:4px;margin-top:3px}
+.ptags i{font-style:normal;font-size:11px;padding:2px 7px;border-radius:999px;border:1px solid var(--line);color:var(--ink)}
+.plinks{display:flex;flex-direction:column;gap:4px;align-items:flex-end}
+.plinks a{font-size:12.5px;font-weight:700;color:var(--accent);text-decoration:none;white-space:nowrap}
+.poolchip[aria-pressed="true"]{border-color:#E8A23A}
+
+.kind.social{background:#FF4FD8;color:#1a0718}
+.kind.art{background:transparent;color:#9B8CFF;border:1px solid #9B8CFF}
+.kind.vol{background:#4FC7B6;color:#06201c}

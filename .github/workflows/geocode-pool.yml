@@ -7,17 +7,17 @@ on:
     paths: [pool.json]
 permissions:
   contents: write
-concurrency: { group: pool-json, cancel-in-progress: false }
+concurrency: { group: events-json, cancel-in-progress: false }   # same group as the Ticketmaster job, so they never collide
 jobs:
   geocode:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - run: python3 scripts/geocode_pool.py pool.json
+      - run: python3 scripts/geocode_pool.py pool.json events.json
       - run: |
-          git diff --quiet pool.json && { echo "Nothing new."; exit 0; }
+          git diff --quiet pool.json events.json && { echo "Nothing new."; exit 0; }
           git config user.name "show-shack-bot"
           git config user.email "show-shack-bot@users.noreply.github.com"
-          git add pool.json
-          git commit -m "Pool halls: coordinates from OpenStreetMap"
+          git add pool.json events.json
+          git commit -m "Coordinates from OpenStreetMap (pool halls / seeded events)"
           for i in 1 2 3; do git pull --rebase origin main && git push && break; sleep 5; done
