@@ -4,7 +4,6 @@
 {
 "n": "Danny K's Billiards & Sports Bar",
 "c": "bar",
-"a": "1096 N Main St",
 "city": "Orange",
 "zip": "92867",
 "t": [
@@ -18,7 +17,6 @@
 {
 "n": "The Classic Q",
 "c": "bar",
-"a": "4251 MacArthur Blvd",
 "city": "Newport Beach",
 "zip": "92660",
 "t": [
@@ -31,7 +29,6 @@
 {
 "n": "CueZone Billiards & Snooker Club",
 "c": "hall",
-"a": "4229 Birch St",
 "city": "Newport Beach",
 "zip": "92660",
 "t": [
@@ -45,7 +42,6 @@
 {
 "n": "Aloha Family Billiards",
 "c": "hall",
-"a": "7311 Orangethorpe Ave",
 "city": "Buena Park",
 "zip": "90621",
 "t": [
@@ -58,7 +54,6 @@
 {
 "n": "International Billiards",
 "c": "hall",
-"a": "6328 Westminster Blvd",
 "city": "Westminster",
 "zip": "92683",
 "t": [],
@@ -69,7 +64,6 @@
 {
 "n": "Rack Cue Billiards",
 "c": "hall",
-"a": "7520 Katella Ave",
 "city": "Stanton",
 "zip": "90680",
 "t": [],
@@ -80,7 +74,6 @@
 {
 "n": "King Billiards",
 "c": "hall",
-"a": "8345 Garden Grove Blvd",
 "city": "Garden Grove",
 "zip": "92844",
 "t": [],
@@ -91,7 +84,6 @@
 {
 "n": "2000 Points Billiards",
 "c": "hall",
-"a": "9786 Garden Grove Blvd",
 "city": "Garden Grove",
 "zip": "92844",
 "t": [],
@@ -102,7 +94,6 @@
 {
 "n": "Billiard Thanh Tam",
 "c": "hall",
-"a": "10902 Westminster Ave",
 "city": "Garden Grove",
 "zip": "92843",
 "t": [],
@@ -113,7 +104,6 @@
 {
 "n": "Thanh Tam 2 Billiards",
 "c": "hall",
-"a": "8851 Garden Grove Blvd",
 "city": "Garden Grove",
 "zip": "92844",
 "t": [],
@@ -124,7 +114,6 @@
 {
 "n": "Billiards Phi Hong",
 "c": "hall",
-"a": "13919 Harbor Blvd",
 "city": "Garden Grove",
 "zip": "92843",
 "t": [],
@@ -135,7 +124,6 @@
 {
 "n": "Kym Billiard Cafe",
 "c": "hall",
-"a": "10706 Garden Grove Blvd",
 "city": "Garden Grove",
 "zip": "92843",
 "t": [],
@@ -146,7 +134,6 @@
 {
 "n": "Hidalgo's Pool Hall",
 "c": "hall",
-"a": "1808 W 4th St",
 "city": "Santa Ana",
 "zip": "92703",
 "t": [],
@@ -157,7 +144,6 @@
 {
 "n": "The Bobkin",
 "c": "hall",
-"a": "2531 S Main St",
 "city": "Santa Ana",
 "zip": "92707",
 "t": [],
@@ -168,7 +154,6 @@
 {
 "n": "Good Times Billiards",
 "c": "hall",
-"a": "4125 Paramount Blvd",
 "city": "Lakewood",
 "zip": "90712",
 "t": [],
@@ -179,7 +164,6 @@
 {
 "n": "Long Beach Port Pool Billiard",
 "c": "hall",
-"a": "145 W Broadway",
 "city": "Long Beach",
 "zip": "90802",
 "t": [],
@@ -190,7 +174,6 @@
 {
 "n": "The 8 Pool & Coffee Room",
 "c": "hall",
-"a": "1711 E Broadway",
 "city": "Long Beach",
 "zip": "90802",
 "t": [
@@ -203,7 +186,6 @@
 {
 "n": "Scratch Billiards",
 "c": "hall",
-"a": "15025 Imperial Hwy",
 "city": "La Mirada",
 "zip": "90638",
 "t": [],
@@ -214,7 +196,6 @@
 {
 "n": "Campus Billiards & Sports Bar",
 "c": "bar",
-"a": "9111 Valley View St",
 "city": "Cypress",
 "zip": "90630",
 "t": [],
@@ -225,7 +206,6 @@
 {
 "n": "Shooters",
 "c": "bar",
-"a": "18582 Beach Blvd",
 "city": "Huntington Beach",
 "zip": "92648",
 "t": [],
@@ -236,7 +216,6 @@
 {
 "n": "Corner Pocket",
 "c": "bar",
-"a": "10781 Dale Ave",
 "city": "Stanton",
 "zip": "90680",
 "t": []
@@ -244,7 +223,6 @@
 {
 "n": "The Wharf",
 "c": "bar",
-"a": "12941 Main St",
 "city": "Garden Grove",
 "zip": "92840",
 "t": [
@@ -257,7 +235,6 @@
 {
 "n": "Mulligans",
 "c": "bar",
-"a": "1401 Calle Valle",
 "city": "San Clemente",
 "zip": "92672",
 "t": [],
@@ -268,7 +245,6 @@
 {
 "n": "Baddeley's Pourhouse",
 "c": "bar",
-"a": "3348 E Broadway",
 "city": "Long Beach",
 "zip": "90803",
 "t": [],
