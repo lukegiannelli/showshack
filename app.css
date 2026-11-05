@@ -339,7 +339,7 @@ h1 .logo{height:1.05em;width:1.05em;border-radius:22%;vertical-align:-0.12em;mar
 .vsec ul{margin:4px 0 0;padding-left:18px;font-size:13.5px;line-height:1.45}
 .vsec li.mut{color:var(--muted);list-style:none;margin-left:-18px}
 .vmore .vlinks{display:flex;flex-wrap:wrap;gap:8px}
-.vmore .vlinks a,.vmore .vall{font:inherit;font-size:13px;font-weight:700;display:inline-flex;align-items:center;gap:5px;padding:7px 11px;border-radius:999px;border:1px solid var(--line);color:var(--ink);background:transparent;text-decoration:none;cursor:pointer}
+.vmore .vlinks a,.vmore .vall,.vmore .vbeen{font:inherit;font-size:13px;font-weight:700;display:inline-flex;align-items:center;gap:5px;padding:7px 11px;border-radius:999px;border:1px solid var(--line);color:var(--ink);background:transparent;text-decoration:none;cursor:pointer}
 .vmore .vall{border-color:var(--accent);color:var(--accent);margin-left:auto}
 .vmore .ni{width:15px;height:15px}
 .vhead .vpin{border:1px solid var(--bamboo);border-radius:999px;padding:6px 14px;font:600 13px var(--body);color:var(--ink);filter:none;opacity:1}
@@ -463,3 +463,8 @@ body.fx #bgfx{display:block}
 .signup{display:inline-flex;align-items:center;gap:5px;font-weight:700;color:var(--accent)}
 .signup.none{font-weight:600;color:var(--muted)}
 .signup .ni{width:15px;height:15px}
+.vacc{margin:4px 0 0;font-size:13.5px;line-height:1.45}
+.vsec a{color:var(--accent);text-decoration:none;font-weight:700}
+.vsec li a b{color:var(--ink)}
+.vmore .vbeen.on{border-color:hsl(150 60% 45%);color:hsl(150 60% 55%)}
+.tag.been{border-color:hsl(150 60% 45%);color:hsl(150 60% 55%)}

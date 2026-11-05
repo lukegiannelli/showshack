@@ -77,6 +77,15 @@ sq.addEventListener("keydown",ev=>{if(ev.key==="Enter")sq.blur();if(ev.key==="Es
 sqc.onclick=()=>{sq.value="";setQ("");sq.focus();};
 
 function venueKey(e){return (e.venue||"")+" · "+(e.city||"");}
+// "Been here": venues you've marked, plus venues of starred shows whose date has passed (remembered when you star them).
+const BEEN=new Set(); let starVen={};
+try{(JSON.parse(localStorage.getItem("radar-been")||"[]")).forEach(k=>BEEN.add(k));starVen=JSON.parse(localStorage.getItem("radar-starven")||"{}")||{};}catch(e){}
+function saveBeen(){try{localStorage.setItem("radar-been",JSON.stringify([...BEEN]));localStorage.setItem("radar-starven",JSON.stringify(starVen));}catch(e){}}
+function syncBeen(up){const today=new Date().toISOString().slice(0,10);let ch=false;
+  for(const e of up||[]){const k=skey(e);if(state.stars.has(k)&&!starVen[k]){starVen[k]={v:venueKey(e),d:String(e.end||e.start).slice(0,10)};ch=true;}}
+  for(const [k,o] of Object.entries(starVen)){if(!state.stars.has(k)&&o.d>=today){delete starVen[k];ch=true;continue;}
+    if(o.d<today&&state.stars.has(k)&&!BEEN.has(o.v)){BEEN.add(o.v);ch=true;}}
+  if(ch)saveBeen();}
 function buildVenues(upcoming){
   const keys=new Set(upcoming.map(venueKey));
   if(state.venue!=="all"&&!keys.has(state.venue)) state.venue="all";
@@ -211,7 +220,7 @@ function render(){
       else if(e.end&&e.start&&e.start<today&&e.end>=today){x.runStart=e.start;x.start=today;}
       return x;})
     .filter(e=>e.start&&(e.end||e.start)>=today);
-  const upcoming=evs.length; state._up=evs;
+  const upcoming=evs.length; state._up=evs; syncBeen(evs);
   starCount=evs.filter(e=>state.stars.has(skey(e))).length; updateStarChip(); updateBudget();
   const venueCount=buildVenues(evs);
   const qw = state.q ? state.q.split(/\s+/) : null;
@@ -387,20 +396,24 @@ function renderVenues(){
     const lo=prices.length?Math.min(...prices):null;
     const ages=v.evs.map(ageOf).filter(Boolean), allAges=ages.length&&ages.every(a=>a==="all"), over21=ages.length&&ages.every(a=>a==="21+");
     const small=v.evs.length&&v.evs.some(isSmall), outdoor=v.evs.some(isOutdoor);
-    const tags=[small?`<span class="tag local">${ni("home")} Small &amp; local</span>`:"",
+    const been=BEEN.has(v.k);
+    const tags=[been?`<span class="tag been">✓ Been here</span>`:"",small?`<span class="tag local">${ni("home")} Small &amp; local</span>`:"",
       allAges?`<span class="tag age">All ages</span>`:over21?`<span class="tag age">21+</span>`:"",
       v.transit?`<span class="tag transit">${ni("sprout")} ${esc(v.transit)}</span>`:"",
       outdoor?`<span class="tag">Outdoor</span>`:"",
       v.cap?`<span class="tag">~${Number(v.cap).toLocaleString()} cap</span>`:"",
       lo!=null?`<span class="tag">${lo===0?"Free shows":"Shows from $"+Math.round(lo)}</span>`:""].filter(Boolean).join("");
-    const tips=((VOPEN[v.name]||{}).w||[]);
+    const vo=VOPEN[v.name]||{}, tips=vo.w||[], eats=vo.e||[], acc=vo.a||null;
+    const eatQ=u=>"https://www.google.com/maps/search/?api=1&query="+encodeURIComponent(u+" near "+v.name+", "+v.city);
     const dest=encodeURIComponent(v.name+", "+v.city), org=origin&&origin.address?"&origin="+encodeURIComponent(origin.address):"";
     const maps=`https://www.google.com/maps/dir/?api=1${org}&destination=${dest}&travelmode=driving`;
     const fmt=e=>parseDay(e.start).toLocaleDateString("en-US",{weekday:"short",month:"short",day:"numeric"});
     const more=`<div class="vmore" hidden>
         ${tips.length?`<div class="vsec"><span class="sl">${ni("car")} Getting there</span><ul>${tips.map(t=>`<li>${esc(t)}</li>`).join("")}</ul></div>`:""}
+        ${eats.length?`<div class="vsec"><span class="sl">${ni("food")} Local eats</span><ul>${eats.map(x=>`<li><a href="${eatQ(x.n)}" target="_blank" rel="noopener"><b>${esc(x.n)}</b></a> · ${esc(x.d)}</li>`).join("")}</ul></div>`:""}
+        ${acc?`<div class="vsec"><span class="sl">${ni("hand")} Accessibility</span><p class="vacc">${esc(acc.t)}${acc.u?` <a href="${esc(acc.u)}" target="_blank" rel="noopener">Venue's access page ↗</a>`:""}</p></div>`:""}
         <div class="vsec"><span class="sl">${ni("ticket")} Coming up</span><ul>${v.evs.slice(0,3).map(e=>`<li><b>${esc(fmt(e))}</b> ${esc(e.title)}</li>`).join("")}${v.evs.length>3?`<li class="mut">+${v.evs.length-3} more</li>`:""}</ul></div>
-        <div class="vlinks"><a href="${maps}" target="_blank" rel="noopener">${ni("car")} Directions</a><a href="${maps.replace("travelmode=driving","travelmode=transit")}" target="_blank" rel="noopener">${ni("train")} Transit</a><button type="button" class="vall" data-venue="${esc(v.k)}">All ${v.evs.length} show${v.evs.length===1?"":"s"} →</button></div>
+        <div class="vlinks"><a href="${maps}" target="_blank" rel="noopener">${ni("car")} Directions</a><a href="${maps.replace("travelmode=driving","travelmode=transit")}" target="_blank" rel="noopener">${ni("train")} Transit</a><button type="button" class="vbeen${been?" on":""}" data-been="${esc(v.k)}" aria-pressed="${been}">${been?"✓ Been here":"I've been here"}</button><button type="button" class="vall" data-venue="${esc(v.k)}">All ${v.evs.length} show${v.evs.length===1?"":"s"} →</button></div>
       </div>`;
     return `<div class="vcard"><div class="vf"><button type="button" class="vopen" data-vmore="1" aria-expanded="false"><b>${esc(v.name)}</b>
       <span>${esc(v.city)}${v.drive?` · ~${fmtMins(v.drive.mins)}`:""}${v.year?` · since ${v.year}`:""}</span>
@@ -420,6 +433,10 @@ document.getElementById("list").addEventListener("click",ev=>{
   if(vm){const c=vm.closest(".vcard"),m=c.querySelector(".vmore"),open=m.hidden;m.hidden=!open;vm.setAttribute("aria-expanded",String(open));c.classList.toggle("open",open);return;}
   const vf=ev.target.closest("[data-vflip]");
   if(vf){const c=vf.closest(".vcard");c.classList.remove("turn");c.classList.toggle("flipped");void c.offsetWidth;c.classList.add("turn");return;}
+  const bn=ev.target.closest("[data-been]");
+  if(bn){const k=bn.dataset.been;BEEN.has(k)?BEEN.delete(k):BEEN.add(k);saveBeen();const c=bn.closest(".vcard");render();
+    const again=[...document.querySelectorAll(".vcard")].find(x=>x.querySelector(`[data-been="${CSS.escape(k)}"]`));
+    if(again){again.querySelector(".vmore").hidden=false;again.classList.add("open");again.querySelector("[data-vmore]").setAttribute("aria-expanded","true");}return;}
   const pin=ev.target.closest("[data-pinv]");
   if(pin){togglePin(pin.dataset.pinv);render();return;}
   const all=ev.target.closest("[data-allven]");
