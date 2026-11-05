@@ -277,6 +277,7 @@ h1 .logo{height:1.05em;width:1.05em;border-radius:22%;vertical-align:-0.12em;mar
 .ntot .each{font:600 14px var(--mono);color:var(--drive)}
 .nfoot{margin:0;font-size:12px;color:var(--muted)}
 .nfoot a{color:var(--accent);font-weight:600;text-decoration:none}
+.songcredit{margin:-8px 0 0;text-align:center;font-size:11px;color:var(--muted)}.songcredit[hidden]{display:none}.songcredit a{color:inherit}
 .facts .wx{color:var(--ink);font-weight:500}.facts .wx:empty{display:none}
 /* venues */
 .vlink{all:unset;cursor:pointer;color:inherit;text-decoration:underline;text-decoration-color:var(--bamboo);text-underline-offset:3px}
@@ -405,6 +406,7 @@ h1 .logo{height:1.05em;width:1.05em;border-radius:22%;vertical-align:-0.12em;mar
     <h1 class="shack-title">The Show Shack</h1>
     <button type="button" class="shack-share" id="shareApp">🌴 Share the Shack</button>
   </header>
+  <p class="songcredit" id="songCredit" hidden>♪ “Brain Dance” Kevin MacLeod (incompetech.com) · <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a></p>
   <div class="getapp" id="getApp" hidden>
     <img src="apple-touch-icon.png?v=2" alt="" width="40" height="40">
     <span><b>The Show Shack app</b><small>Free · opens full screen from your home screen</small></span>
@@ -505,7 +507,6 @@ h1 .logo{height:1.05em;width:1.05em;border-radius:22%;vertical-align:-0.12em;mar
     <div class="empty"><strong>Loading shows…</strong>The list fills in from the daily refresh. Each row shows the date, venue, starting price and drive time from home.</div>
   </main>
 
-  <p class="foot">Drive times are estimates without traffic, based on distance from your start point. Tap <b>Directions</b> for live traffic. Prices are the lowest listed price when found; resale prices change often, so check before buying. Refreshed automatically every day. Shack song: “Brain Dance” Kevin MacLeod (incompetech.com), licensed under <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">Creative Commons: By Attribution 4.0</a>.</p>
 </div>
 
 <script>
@@ -1278,7 +1279,7 @@ async function copyOut(text,btn){
     if(el)el.pause();
     set(false);
   }
-  function set(on){playing=on;btn.setAttribute("aria-pressed",String(on));btn.setAttribute("aria-label",on?"Stop the Shack song":"Play the Shack song");if(!still)kick();}
+  function set(on){playing=on;document.getElementById("songCredit").hidden=!on;btn.setAttribute("aria-pressed",String(on));btn.setAttribute("aria-label",on?"Stop the Shack song":"Play the Shack song");if(!still)kick();}
   btn.addEventListener("click",()=>{playing?stop():start();});
 
   // Spin runs as a compositor animation (Web Animations), so it stays buttery even while you scroll.
