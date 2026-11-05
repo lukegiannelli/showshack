@@ -299,6 +299,9 @@ h1 .logo{height:1.05em;width:1.05em;border-radius:22%;vertical-align:-0.12em;mar
 .nfoot{margin:0;font-size:12px;color:var(--muted)}
 .splitbtn{font:inherit;font-weight:700;font-size:13px;padding:8px 12px;border-radius:999px;border:1px solid var(--accent);background:transparent;color:var(--accent);cursor:pointer;display:inline-flex;gap:6px;align-items:center}
 .splitbtn .ni{width:16px;height:16px}
+.nlast{margin:0;font-size:12.5px;line-height:1.45;color:var(--ink)}
+.nlast a{color:var(--accent);font-weight:700;text-decoration:none}
+.nlast span{color:var(--muted)}
 .nfoot a{color:var(--accent);font-weight:600;text-decoration:none}
 .songcredit{margin:-8px 0 0;text-align:center;font-size:11px;color:var(--muted)}.songcredit[hidden]{display:none}.songcredit a{color:inherit}
 .facts .wx{color:var(--ink);font-weight:500}.facts .wx:empty{display:none}
@@ -696,6 +699,15 @@ const TRANSIT=[[/palladium|avalon|fonda|pantages|dolby|academy|sound nightclub|e
  [/honda center|yost|glass house|fox theater pomona|fox performing arts/i,"Metrolink"],
  [/belly up/i,"Coaster train"],
  [/balboa|san diego civic|rady shell|house of blues san diego|music box|petco|casbah/i,"SD Trolley"]];
+// Rough last-ride cutoffs from agency notices (2023-25). Rail ends early or runs limited; always confirm in the maps link before relying on it.
+const LASTRIDE={"Metro rail":"Metro rail trains stop around midnight","SD Trolley":"Trolleys stop around midnight (earlier on some lines)","Metrolink":"Metrolink has few evening trains, and weekend service is limited","Coaster train":"Coaster weekend trains end early in the evening"};
+function lastRideHtml(e,nc){
+  if(nc.home!=="transit"||!nc.tr)return "";
+  const dest=encodeURIComponent((e.venue||"")+", "+(e.city||""));
+  const home=origin&&origin.address?encodeURIComponent(origin.address):"";
+  const link=`https://www.google.com/maps/dir/?api=1&origin=${dest}${home?"&destination="+home:""}&travelmode=transit`;
+  return `<p class="nlast">${ni("train")} <b>Last ride home:</b> ${esc(LASTRIDE[nc.tr]||"check the schedule")}. <a href="${link}" target="_blank" rel="noopener">Check it in Maps ↗</a> <span>(set "Depart at" after the show)</span></p>`;
+}
 function transitOf(e){const v=String(e.venue||"");for(const [re,l] of TRANSIT)if(re.test(v))return l;return null;}
 function shareText(e){const d=parseDay(e.start);const pi=priceInfo(e);
   const pr=pi.sold?"sold out":pi.free?"free":pi.est?`~$${pi.lo}–$${pi.hi} (est.)`:pi.lo!=null?`from $${Math.round(pi.lo)}`:"";
@@ -1007,7 +1019,7 @@ function backHtml(e,nc,fl){
     gas = nc.ride==null ? line(ni("taxi"),"Rideshare","set a start point","?")
       : line(ni("taxi"),"Rideshare",`round trip${nc.cars>1?` · ${nc.cars} cars`:""} · before surge & tip${nc.fell?" · no easy transit here":""}`,$(nc.ride));
   }else{
-    gas = line(ni("train"),"Transit",`${esc(nc.tr)} round trip${nc.n>1?" × "+nc.n:""} · check the last ride home`,$(nc.transit));
+    gas = line(ni("train"),"Transit",`${esc(nc.tr)} round trip${nc.n>1?" × "+nc.n:""} · see last ride below`,$(nc.transit));
   }
   const food = line(ni("food"),"Food",nc.food?`${$(nc.food)} × ${nc.n} · typical SoCal spend`:"skipped",$(nc.eat));
   const drk = nc.sober ? line(ni("drink"),"Drinks","usually a sober space","$0")
@@ -1016,6 +1028,7 @@ function backHtml(e,nc,fl){
     <div class="bh"><span class="sl">${ni("moon")} Night cost · ${who}</span></div>
     <div class="nlist">${tix}${gas}${park}${food}${drk}</div>
     <div class="ntot"><span>Total${nc.partial?" so far":""}</span><b>${$(nc.total)}${nc.partial?"+":""}</b>${nc.n>1?`<span class="each">${$(nc.each)}${nc.partial?"+":""} each</span>`:""}</div>
+    ${lastRideHtml(e,nc)}
     <p class="nfoot">Estimates · ${nc.home==="drive"?"gas & parking split across the car":nc.home==="ride"?"rides split across the group":"fares are per person"} · <a href="${esc(eatLink(e))}" target="_blank" rel="noopener">food near the venue ↗</a></p>
     <div class="flipbar">${nc.n>1?`<button type="button" class="splitbtn" data-split="${esc(splitText(e,nc))}">${ni("car")} Send the split</button>`:""}<button type="button" class="daybtn" data-flip="1">${ni("sun")} Back to day</button></div>
   </div>`;
