@@ -350,6 +350,19 @@ h1 .logo{height:1.05em;width:1.05em;border-radius:22%;vertical-align:-0.12em;mar
 .vopen b{font-size:16px}.vopen span{font-size:13px;color:var(--muted)}.vopen small{font-size:12px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .vpin{border:0;background:none;font-size:18px;padding:0 14px;cursor:pointer;filter:grayscale(1);opacity:.45}
 .vpin.on{filter:none;opacity:1}
+.vtags{display:flex;flex-wrap:wrap;gap:4px;margin-top:5px}
+.vtags .tag{font-size:11px}
+.vcard.open .vf{border-bottom-left-radius:0;border-bottom-right-radius:0}
+.vmore{border:1px solid var(--line);border-top:0;border-radius:0 0 12px 12px;background:var(--surface);padding:6px 12px 12px;display:flex;flex-direction:column;gap:10px;animation:vdrop .22s ease-out}
+.vmore[hidden]{display:none}
+@keyframes vdrop{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
+.vsec .sl{display:flex;align-items:center;gap:6px;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.vsec ul{margin:4px 0 0;padding-left:18px;font-size:13.5px;line-height:1.45}
+.vsec li.mut{color:var(--muted);list-style:none;margin-left:-18px}
+.vmore .vlinks{display:flex;flex-wrap:wrap;gap:8px}
+.vmore .vlinks a,.vmore .vall{font:inherit;font-size:13px;font-weight:700;display:inline-flex;align-items:center;gap:5px;padding:7px 11px;border-radius:999px;border:1px solid var(--line);color:var(--ink);background:transparent;text-decoration:none;cursor:pointer}
+.vmore .vall{border-color:var(--accent);color:var(--accent);margin-left:auto}
+.vmore .ni{width:15px;height:15px}
 .vhead .vpin{border:1px solid var(--bamboo);border-radius:999px;padding:6px 14px;font:600 13px var(--body);color:var(--ink);filter:none;opacity:1}
 .vhead .vpin.on{background:color-mix(in srgb,var(--thatch) 24%,transparent)}
 .vhead{background:var(--surface);border:1px solid var(--bamboo);border-radius:14px;padding:12px 14px;display:flex;flex-direction:column;gap:6px}
@@ -962,10 +975,30 @@ function renderVenues(){
   const infos=keys.map(venueInfo);
   const sortV=(a,b)=>origin?((a.drive?.mins??1e9)-(b.drive?.mins??1e9))||a.name.localeCompare(b.name):a.name.localeCompare(b.name);
   const card=v=>{const n=v.next,nd=n?parseDay(n.start).toLocaleDateString("en-US",{weekday:"short",month:"short",day:"numeric"}):"";
-    return `<div class="vcard"><div class="vf"><button type="button" class="vopen" data-venue="${esc(v.k)}"><b>${esc(v.name)}</b>
-      <span>${esc(v.city)}${v.drive?` · ~${fmtMins(v.drive.mins)}`:""}${v.year?` · opened ${v.year}`:""}</span>
-      <small>${v.evs.length} show${v.evs.length===1?"":"s"}${n?` · next ${esc(nd)}: ${esc(n.title)}`:""}</small></button>
-      <button type="button" class="vpin${isPinned(v.k)?" on":""}" data-pinv="${esc(v.k)}" aria-pressed="${isPinned(v.k)}" aria-label="${isPinned(v.k)?"Unpin":"Pin"} ${esc(v.name)}">${ni("pin")}</button></div></div>`;};
+    const prices=v.evs.map(e=>priceInfo(e)).filter(p=>p&&!p.sold&&!p.none&&p.lo!=null).map(p=>p.lo);
+    const lo=prices.length?Math.min(...prices):null;
+    const ages=v.evs.map(ageOf).filter(Boolean), allAges=ages.length&&ages.every(a=>a==="all"), over21=ages.length&&ages.every(a=>a==="21+");
+    const small=v.evs.length&&v.evs.some(isSmall), outdoor=v.evs.some(isOutdoor);
+    const tags=[small?`<span class="tag local">${ni("home")} Small &amp; local</span>`:"",
+      allAges?`<span class="tag age">All ages</span>`:over21?`<span class="tag age">21+</span>`:"",
+      v.transit?`<span class="tag transit">${ni("sprout")} ${esc(v.transit)}</span>`:"",
+      outdoor?`<span class="tag">Outdoor</span>`:"",
+      v.cap?`<span class="tag">~${Number(v.cap).toLocaleString()} cap</span>`:"",
+      lo!=null?`<span class="tag">${lo===0?"Free shows":"Shows from $"+Math.round(lo)}</span>`:""].filter(Boolean).join("");
+    const tips=((VOPEN[v.name]||{}).w||[]);
+    const dest=encodeURIComponent(v.name+", "+v.city), org=origin&&origin.address?"&origin="+encodeURIComponent(origin.address):"";
+    const maps=`https://www.google.com/maps/dir/?api=1${org}&destination=${dest}&travelmode=driving`;
+    const fmt=e=>parseDay(e.start).toLocaleDateString("en-US",{weekday:"short",month:"short",day:"numeric"});
+    const more=`<div class="vmore" hidden>
+        ${tips.length?`<div class="vsec"><span class="sl">${ni("car")} Getting there</span><ul>${tips.map(t=>`<li>${esc(t)}</li>`).join("")}</ul></div>`:""}
+        <div class="vsec"><span class="sl">${ni("ticket")} Coming up</span><ul>${v.evs.slice(0,3).map(e=>`<li><b>${esc(fmt(e))}</b> ${esc(e.title)}</li>`).join("")}${v.evs.length>3?`<li class="mut">+${v.evs.length-3} more</li>`:""}</ul></div>
+        <div class="vlinks"><a href="${maps}" target="_blank" rel="noopener">${ni("car")} Directions</a><a href="${maps.replace("travelmode=driving","travelmode=transit")}" target="_blank" rel="noopener">${ni("train")} Transit</a><button type="button" class="vall" data-venue="${esc(v.k)}">All ${v.evs.length} show${v.evs.length===1?"":"s"} →</button></div>
+      </div>`;
+    return `<div class="vcard"><div class="vf"><button type="button" class="vopen" data-vmore="1" aria-expanded="false"><b>${esc(v.name)}</b>
+      <span>${esc(v.city)}${v.drive?` · ~${fmtMins(v.drive.mins)}`:""}${v.year?` · since ${v.year}`:""}</span>
+      <small>${v.evs.length} show${v.evs.length===1?"":"s"}${n?` · next ${esc(nd)}: ${esc(n.title)}`:""}</small>
+      ${tags?`<span class="vtags">${tags}</span>`:""}</button>
+      <button type="button" class="vpin${isPinned(v.k)?" on":""}" data-pinv="${esc(v.k)}" aria-pressed="${isPinned(v.k)}" aria-label="${isPinned(v.k)?"Unpin":"Pin"} ${esc(v.name)}">${ni("pin")}</button></div>${more}</div>`;};
   const pinned=infos.filter(v=>isPinned(v.k)).sort((a,b)=>(state.pinV.indexOf(a.k))-(state.pinV.indexOf(b.k)));
   let html=`<div class="venues">`;
   html+=`<h2 class="month pickh">${ni("pin")} Your venues</h2>`+(pinned.length?pinned.map(card).join(""):`<div class="empty"><strong>Pin your favorite spots</strong>Tap the pin on any venue and it stays at the top here.</div>`);
@@ -975,6 +1008,8 @@ function renderVenues(){
   list.innerHTML=html+`</div>`;
 }
 document.getElementById("list").addEventListener("click",ev=>{
+  const vm=ev.target.closest("[data-vmore]");
+  if(vm){const c=vm.closest(".vcard"),m=c.querySelector(".vmore"),open=m.hidden;m.hidden=!open;vm.setAttribute("aria-expanded",String(open));c.classList.toggle("open",open);return;}
   const vf=ev.target.closest("[data-vflip]");
   if(vf){const c=vf.closest(".vcard");c.classList.remove("turn");c.classList.toggle("flipped");void c.offsetWidth;c.classList.add("turn");return;}
   const pin=ev.target.closest("[data-pinv]");
