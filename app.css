@@ -468,3 +468,13 @@ body.fx #bgfx{display:block}
 .vsec li a b{color:var(--ink)}
 .vmore .vbeen.on{border-color:hsl(150 60% 45%);color:hsl(150 60% 55%)}
 .tag.been{border-color:hsl(150 60% 45%);color:hsl(150 60% 55%)}
+
+.wkend{background:var(--surface);border:1.5px solid var(--accent);border-radius:12px;padding:8px 12px;margin:8px 0}
+.wkend summary{font-family:var(--display);text-transform:uppercase;letter-spacing:.04em;font-size:17px;cursor:pointer;display:flex;gap:6px;align-items:center}
+.wkend summary .ni{width:18px;height:18px}
+.wkrow{all:unset;box-sizing:border-box;display:flex;gap:10px;align-items:center;width:100%;padding:8px 0;border-top:1px solid var(--line,rgba(0,0,0,.1));cursor:pointer}
+.wkrow b{min-width:34px;color:var(--accent);font-size:13px}
+.wkrow .wkt{flex:1;font-weight:600;font-size:14px;line-height:1.25}
+.wkrow small{display:block;font-weight:400;color:var(--muted);font-size:12px}
+.wkrow i{color:var(--accent);font-style:normal}
+.wknote{margin:6px 0 2px;font-size:11.5px;color:var(--muted)}

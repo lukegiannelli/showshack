@@ -57,7 +57,7 @@ state.when=state.when||"any"; state.flags=state.flags||{}; state.view="list"; st
 buildChips("whenRow",[["any","Any day"],["tonight","Tonight"],["weekend","This weekend"]],"when");
 buildChips("kindRow",KINDS,"kind");
 (function(){const row=document.getElementById("flagRow");const first=row.querySelector(".range");
-  [["cheap","Free / under $25"],["allages","All ages"],["over21","21+"],["local",ni("home")+" Small & local"],["transit",ni("sprout")+" Transit-friendly"]].forEach(([k,l])=>{const b=document.createElement("button");b.type="button";b.className="chip";if(l.startsWith("<svg"))b.innerHTML=l;else b.textContent=l;b.setAttribute("aria-pressed",String(!!state.flags[k]));
+  [["free","Free only"],["cheap","Free / under $25"],["allages","All ages"],["over21","21+"],["local",ni("home")+" Small & local"],["transit",ni("sprout")+" Transit-friendly"]].forEach(([k,l])=>{const b=document.createElement("button");b.type="button";b.className="chip";if(l.startsWith("<svg"))b.innerHTML=l;else b.textContent=l;b.setAttribute("aria-pressed",String(!!state.flags[k]));
     b.onclick=()=>{state.flags[k]=!state.flags[k];if(k==="allages"&&state.flags.allages)state.flags.over21=false;if(k==="over21"&&state.flags.over21)state.flags.allages=false;row.querySelectorAll("button.chip").forEach(c=>{const kk=c.dataset.f;if(kk)c.setAttribute("aria-pressed",String(!!state.flags[kk]));});savePrefs();render();};
     b.dataset.f=k;row.insertBefore(b,first);});})();buildChips("genreRow",GENRES,"genre");
 const md=document.getElementById("maxDrive"), mdo=document.getElementById("maxDriveOut"), sb=document.getElementById("sortBy");
@@ -162,7 +162,7 @@ const RIDE={base:1.65,mile:1.35,min:0.26,fee:3};
 const TRANSIT_RT={"Metro rail":3.5,"Metrolink":19,"Coaster train":14,"SD Trolley":6};
 const DRINK={"Arena / stadium":17,"Festival":16,"Amphitheater":16,"Mid-size (1–3k)":14,"Theater / arts hall":14,"Comedy club":12,"Small / DIY":9,"Other":12};
 function nightCost(e,pi){
-  const n=state.car||1, mpg=state.mpg||25, gal=state.gas||5.85, food=state.food??0;
+  const n=state.carLink||state.car||1, mpg=state.mpg||25, gal=state.gas||5.85, food=state.food??0;
   const t=tier(e), dPrice=DRINK[t]??12, minTwo=t==="Comedy club";
   const dCount=CONS.has(e.kind)?0:Math.max(state.drinks??0, minTwo?2:0), drinks=dCount*dPrice*n;
   const tixEach = pi.sold||pi.none||pi.lo==null ? null : pi.lo;
@@ -208,6 +208,27 @@ function alertOf(e){const out=[];
   return out;}
 const pMid=pi=>pi.lo==null?null:(pi.hi!=null?(pi.lo+pi.hi)/2:pi.lo*1.3);
 let listObs=null;
+function weekendDigest(evs){
+  if(state.view!=="list"||state.surprise||state.venue!=="all"||state.q||state.when==="tonight")return "";
+  const r=dayRange("weekend"); if(!r)return "";
+  const pool=evs.filter(e=>!e.added&&!isRec(e)&&e.start<=r[1]&&(e.end||e.start)>=r[0]&&!priceInfo(e).sold);
+  if(pool.length<3)return "";
+  const score=e=>{const pi=priceInfo(e);let sc=0;
+    if(state.stars.has(skey(e)))sc+=100;
+    if(pi.free)sc+=20;else if(!pi.none&&pi.lo!=null&&pi.lo<=25)sc+=10;
+    if(e._drive){sc+=e._drive.mins<=30?15:e._drive.mins<=60?8:0;}
+    if(isSmall(e))sc+=5;
+    return sc;};
+  const seen={},top=[];
+  pool.map(e=>({e,s:score(e)})).sort((a,b)=>b.s-a.s||a.e.start.localeCompare(b.e.start)).forEach(({e})=>{
+    if(top.length>=5)return;const k=e.kind||"x";if((seen[k]||0)>=2)return;seen[k]=(seen[k]||0)+1;top.push(e);});
+  const when=d=>parseDay(d).toLocaleDateString("en-US",{weekday:"short"});
+  const rows=top.map(e=>{const pi=priceInfo(e);
+    const pr=pi.free?"Free":pi.none?"":pi.lo!=null?(pi.est?"≈":"")+"$"+Math.round(pi.lo):"";
+    const dr=e._drive?e._drive.mins+" min":"";
+    return `<button type="button" class="wkrow" data-jump="${esc(hid(e))}"><b>${esc(when(e.start))}</b><span class="wkt">${esc(e.title)}<small>${esc([e.venue,pr,dr].filter(Boolean).join(" · "))}</small></span>${state.stars.has(skey(e))?"<i>★</i>":""}</button>`;}).join("");
+  return `<details class="wkend" open><summary>${ni("sun")} This weekend: top ${top.length}</summary>${rows}<p class="wknote">Ranked by your stars, free or cheap tickets, short drives and small rooms. It's not popularity, since I don't have that data.</p></details>`;
+}
 function render(){
   const list=document.getElementById("list");
   if(!state.loaded) return;
@@ -231,6 +252,7 @@ function render(){
     .filter(e=>state.maxDrive>=180||!origin||(e._drive&&e._drive.mins<=state.maxDrive))
     .filter(e=>{const r=dayRange(state.when);if(!r)return true;return e.start<=r[1]&&(e.end||e.start)>=r[0];})
     .filter(e=>{if(!state.flags.cheap)return true;const pi=priceInfo(e);if(pi.sold)return false;if(pi.free)return true;if(pi.none)return isRec(e);return pi.est?(pi.hi!=null&&pi.hi<=40):pi.lo<=25;})
+    .filter(e=>{if(!state.flags.free)return true;const pi=priceInfo(e);return !!pi.free;})
     .filter(e=>!state.flags.allages||likelyAllAges(e))
     .filter(e=>!state.flags.over21||likely21(e))
     .filter(e=>!state.flags.local||isSmall(e))
@@ -253,7 +275,7 @@ function render(){
     if(pick){evs=[pick];surpriseHtml=`<div class="surprise">${ni("dice")} <b>Your pick</b><span>${esc(state.surpriseWhy||"")}</span><button type="button" class="chip" id="spAgain">Another</button><button type="button" class="chip" id="spDone">Show all</button></div>`;}
     else state.surprise=null;}
   const pinned=evs.filter(e=>e.added), rest=evs.filter(e=>!e.added);
-  let html=vHead+surpriseHtml, lastMonth="", restStarted=false;
+  let html=vHead+surpriseHtml+weekendDigest(evs), lastMonth="", restStarted=false;
   if(pinned.length) html+='<h2 class="month pickh">＋ Added by you &amp; friends</h2>';
   // Cards are built in batches as you scroll (building all ~900 at once is what made the app feel heavy).
   const all=[...pinned,...rest]; let idx=0;
@@ -488,10 +510,18 @@ function backHtml(e,nc,fl){
     <div class="bh"><span class="sl">${ni("moon")} Night cost · ${who}</span></div>
     <div class="nlist">${tix}${gas}${park}${food}${drk}</div>
     <div class="ntot"><span>Total${nc.partial?" so far":""}</span><b>${$(nc.total)}${nc.partial?"+":""}</b>${nc.n>1?`<span class="each">${$(nc.each)}${nc.partial?"+":""} each</span>`:""}</div>
-    ${lastRideHtml(e,nc)}
+    ${lastRideHtml(e,nc)}${co2Line(e,nc)}
     <p class="nfoot">Estimates · ${nc.home==="drive"?"gas & parking split across the car":nc.home==="ride"?"rides split across the group":"fares are per person"} · <a href="${esc(eatLink(e))}" target="_blank" rel="noopener">food near the venue ↗</a></p>
-    <div class="flipbar">${nc.n>1?`<button type="button" class="splitbtn" data-split="${esc(splitText(e,nc))}">${ni("car")} Send the split</button>`:""}<button type="button" class="daybtn" data-flip="1">${ni("sun")} Back to day</button></div>
+    <div class="flipbar"><button type="button" class="splitbtn" data-night="${esc(nightText(e,nc))}">${ni("share")} Share this night</button><button type="button" class="daybtn" data-flip="1">${ni("sun")} Back to day</button></div>
   </div>`;
+}
+function nightLink(e,nc){return APP_URL+"?n="+nc.n+"&night=1#"+hid(e);}
+function nightText(e,nc){return "Who's in? "+splitText(e,nc)+"\n🛖 Open it in The Show Shack: "+nightLink(e,nc);}
+const CO2_KG_GAL=8.887; // EPA: kg CO2 per gallon of gasoline
+function co2Line(e,nc){
+  if(!e._drive||!transitOf(e))return "";
+  const lb=Math.round(e._drive.miles*2/nc.mpg*CO2_KG_GAL*2.2046);
+  return `<p class="nlast">${ni("sprout")} <b>Eco route:</b> driving here and back burns about ${lb} lb of CO₂ per car (${nc.mpg} mpg).${nc.home==="transit"?" You're skipping that. 🌱":" "+esc(transitOf(e))+" nearby is the lower-carbon way in."}</p>`;
 }
 function splitText(e,nc){
   const $=v=>"$"+Math.round(v), lb=leaveBy(e), d=parseDay(String(e.start).slice(0,10));
@@ -502,7 +532,7 @@ function splitText(e,nc){
   if(mv)parts.push((nc.home==="drive"?"gas & parking ":nc.home==="ride"?"rides ":"transit ")+$(mv/nc.n));
   return [`${e.title} @ ${e.venue||""}${e.city?", "+e.city:""}`,[day,e.time].filter(Boolean).join(" · "),
     lb?`Leaving by ${lb} (no-traffic estimate)`:"",
-    `Split for ${nc.n}: about ${$(nc.tixEach!=null?nc.each:nc.each)} each${parts.length?" ("+parts.join(" + ")+" — food & drinks extra)":""}`,
+    `${nc.n>1?"Split for "+nc.n+": about":"Night cost: about"} ${$(nc.each)}${nc.n>1?" each":""}${parts.length?" ("+parts.join(" + ")+" — food & drinks extra)":""}`,
     e.url?e.url:""].filter(Boolean).join("\n");
 }
 function surpriseMe(){
@@ -528,7 +558,8 @@ function flipCard(card){if(!card)return;const on=!card.classList.contains("flipp
 const listEl=document.getElementById("list");
 listEl.addEventListener("click",ev=>{const b=ev.target.closest("[data-listen]");if(!b)return;
   const m=b.closest(".face").querySelector(".listenmenu");if(!m)return;m.hidden=!m.hidden;b.setAttribute("aria-expanded",String(!m.hidden));b.classList.toggle("on",!m.hidden);});
-listEl.addEventListener("click",ev=>{const sp=ev.target.closest("[data-split]");if(sp){const t=sp.dataset.split;
+listEl.addEventListener("click",ev=>{const jb=ev.target.closest("[data-jump]");if(jb){hashDone="";history.replaceState(null,"","#"+jb.dataset.jump);jumpToHash();return;}
+  const sp=ev.target.closest("[data-split],[data-night]");if(sp){const t=sp.dataset.split||sp.dataset.night;
   if(navigator.share){navigator.share({text:t}).catch(()=>{});}
   else if(navigator.clipboard){navigator.clipboard.writeText(t).then(()=>{const o=sp.innerHTML;sp.textContent="Copied ✓";setTimeout(()=>sp.innerHTML=o,1500);});}
   return;}
@@ -539,7 +570,7 @@ const vL=document.getElementById("vList"),vM=document.getElementById("vMap"),vI=
 function setView(v){state.view=v;[vL,vM,vI,vV].forEach(b=>b.setAttribute("aria-pressed",String(b.id===({list:"vList",map:"vMap",ins:"vIns",venues:"vVen"})[v])));render();}
 vV.onclick=()=>{state.surprise=null;state.venue="all";savePrefs();setView("venues");};
 vL.onclick=()=>{state.surprise=null;if(state.venue!=="all"){state.venue="all";savePrefs();}setView("list");};vM.onclick=()=>setView("map");vI.onclick=()=>setView("ins");
-const carSel=document.getElementById("carSel");carSel.value=String(state.car||1);carSel.onchange=()=>{state.car=+carSel.value;savePrefs();render();};
+const carSel=document.getElementById("carSel");carSel.value=String(state.car||1);carSel.onchange=()=>{state.carLink=null;state.car=+carSel.value;savePrefs();render();};
 const mpgIn=document.getElementById("mpgIn"),gasIn=document.getElementById("gasIn"),foodSel=document.getElementById("foodSel");
 mpgIn.value=state.mpg||25;gasIn.value=(state.gas||5.85).toFixed(2);foodSel.value=String(state.food??0);
 function costCommit(){const m=+mpgIn.value,g=+gasIn.value;
@@ -798,6 +829,9 @@ document.getElementById("list").addEventListener("click",async ev=>{
 const APP_URL="https://lukegiannelli.github.io/showshack/";
 function hid(e){return (e.added?"p-":"e-")+String(e.id).toLowerCase().replace(/[^a-z0-9-]/g,"-").slice(0,80);}
 let hashDone="";
+(function(){const q=new URLSearchParams(location.search),n=Math.round(+q.get("n"));
+  if(n>=1&&n<=5)state.carLink=n;
+  if(q.get("night")==="1"&&location.hash.length>1)state.flipped.add(location.hash.slice(1));})();
 function jumpToHash(){const h=(location.hash||"").slice(1);if(!h||h===hashDone)return;let el=document.getElementById(h);while(!el&&state._more&&state._more())el=document.getElementById(h);if(!el)return;hashDone=h;el.scrollIntoView({behavior:"smooth",block:"center"});el.classList.add("hl");setTimeout(()=>el.classList.remove("hl"),4000);}
 let shownDay=todayStr();
 function dayCheck(){if(todayStr()!==shownDay){shownDay=todayStr();render();}}
