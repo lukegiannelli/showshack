@@ -131,7 +131,7 @@ header .shack-share{position:relative;align-self:center;font:800 15px var(--body
   border:2px solid #6b3f12;box-shadow:inset 0 1px 0 rgba(255,255,255,.7),inset 0 -3px 0 rgba(107,63,18,.35),0 4px 0 #3b2208,0 8px 18px rgba(10,4,24,.55);
   text-shadow:0 1px 0 rgba(255,255,255,.55);transition:transform .08s,box-shadow .08s}
 header .shack-share:active{transform:translateY(3px);box-shadow:inset 0 1px 0 rgba(255,255,255,.7),inset 0 -3px 0 rgba(107,63,18,.35),0 1px 0 #3b2208,0 4px 10px rgba(10,4,24,.5)}
-.shack-meta{text-align:center;padding:10px 12px 2px;text-shadow:0 0 10px var(--bg),0 0 4px var(--bg)}
+.shack-meta{display:none;text-align:center;padding:10px 12px 2px;text-shadow:0 0 10px var(--bg),0 0 4px var(--bg)}
 .shack-meta p{margin:0}
 .shack-meta .tagline{font:600 14px var(--body);color:var(--ink);letter-spacing:.2px}
 .shack-meta .stats{margin-top:3px;font-size:12.5px;color:var(--muted);display:flex;justify-content:center;gap:6px;flex-wrap:wrap}
@@ -1073,35 +1073,31 @@ async function copyOut(text,btn){
     if(el)el.pause();
     set(false);
   }
-  function set(on){playing=on;loops=0;lastT=0;btn.setAttribute("aria-pressed",String(on));btn.setAttribute("aria-label",on?"Stop the Shack song":"Play the Shack song");if(!still)kick();}
+  function set(on){playing=on;btn.setAttribute("aria-pressed",String(on));btn.setAttribute("aria-label",on?"Stop the Shack song":"Play the Shack song");if(!still)kick();}
   btn.addEventListener("click",()=>{playing?stop():start();});
 
-  // Beat-locked spin: one full turn per bar at a steady speed, phase-locked to the song.
-  const K=0, TAU=Math.PI*2;
-  const shape=b=>{const n=Math.floor(b),x=b-n;return 360/SONG.beatsPerTurn*(n+x+K*Math.sin(TAU*x)/TAU);};
-  const angleAt=t=>shape(Math.max(0,(t-SONG.offset)*SONG.bpm/60));
-  let loops=0,lastT=0;
-  function songTime(){
-    let t=null,dur=0;
-    if(src&&ctx){dur=buf.duration;const raw=ctx.currentTime-t0;if(raw<0)return 0;loops=Math.floor(raw/dur);return {t:raw-loops*dur,dur};}
-    if(el){dur=el.duration||0;t=el.currentTime;if(t<lastT-1)loops++;lastT=t;return {t,dur};}
-    return null;}
-  function musicAngle(){const s=songTime();if(!s||s.t===undefined)return 0;
-    const perLoop=s.dur?angleAt(s.dur):0;               // keep spinning forward smoothly when the song loops
-    return angleAt(s.t)+loops*perLoop;}
-
-  let ang=0, vel=0, raf=0, last=0, target=null, base=0;
-  function kick(){target=null;if(playing)base=0;if(!raf){last=performance.now();raf=requestAnimationFrame(tick);}}
-  function tick(now){const dt=Math.max(0.001,Math.min(0.05,(now-last)/1000));last=now;
-    if(playing){ // glide at the song's speed; nudge gently toward the music's position so it never stutters
-      const speed=360/SONG.beatsPerTurn*SONG.bpm/60, a=musicAngle();
-      if(a===0&&ang===0){vel=0;}else{ang+=speed*dt;const d=a-ang;if(Math.abs(d)>45)ang=a;else ang+=d*Math.min(1,dt*1.5);vel=speed;}}
-    else{ // brake like a turntable and come to rest upright
-      if(target===null){vel=Math.max(0,Math.min(vel,400));target=Math.ceil((ang+vel*vel/500+0.5)/360)*360;}
-      const dist=target-ang; vel=Math.min(Math.max(vel,20),Math.sqrt(2*250*Math.max(dist,0))+6); ang=Math.min(target,ang+vel*dt);
-      if(target-ang<0.25){ang=0;vel=0;target=null;img.style.transform="";raf=0;return;}}
-    img.style.transform=`rotate(${(ang%360).toFixed(2)}deg)`;
-    raf=requestAnimationFrame(tick);}
+  // Spin runs as a compositor animation (Web Animations), so it stays buttery even while you scroll.
+  // One full turn per bar of the song; started so the turn lines up with the first beat.
+  const barMs=()=>SONG.beatsPerTurn*60000/SONG.bpm;
+  let spin=null, brake=null;
+  function curAngle(){
+    if(spin&&spin.currentTime!=null){const t=spin.currentTime;return t<0?0:(t%barMs())/barMs()*360;}
+    if(brake){const m=getComputedStyle(img).transform;if(m&&m!=="none"){const v=m.match(/matrix\(([^)]+)\)/);if(v){const p=v[1].split(",").map(Number);let d=Math.atan2(p[1],p[0])*180/Math.PI;return (d+360)%360;}}}
+    return 0;}
+  function kick(){
+    if(playing){
+      const from=curAngle(); if(brake){brake.cancel();brake=null;}
+      spin=img.animate([{transform:"rotate(0deg)"},{transform:"rotate(360deg)"}],{duration:barMs(),iterations:Infinity,easing:"linear"});
+      // line the turn up with the beat grid: start at the angle we're already at, offset by the song's first downbeat
+      spin.currentTime=from/360*barMs() - (from?0:SONG.offset*1000);
+    }else if(spin){
+      const from=curAngle(); spin.cancel(); spin=null;
+      let to=360; if(to-from<120)to+=360;                     // always coast a bit, like a turntable losing power
+      const speed=360/barMs();                                 // deg per ms
+      const dur=2*(to-from)/speed;                             // ease-out quad starts at full speed, ends at zero
+      brake=img.animate([{transform:`rotate(${from}deg)`},{transform:`rotate(${to}deg)`}],{duration:dur,easing:"cubic-bezier(.33,.66,.66,1)",fill:"forwards"});
+      brake.onfinish=()=>{if(brake){brake.cancel();brake=null;}};
+    }}
 })();
 document.getElementById("shareApp").addEventListener("click",ev=>{
   copyOut("🛖 The Show Shack: SoCal shows, raves, comedy, open mics, ecstatic dance & more, with prices and drive times. No login needed.\n"+APP_URL,ev.currentTarget);
