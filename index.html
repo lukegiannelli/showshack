@@ -316,6 +316,7 @@ h1 .logo{height:1.05em;width:1.05em;border-radius:22%;vertical-align:-0.12em;mar
 .stubtix{display:block;width:100%;margin-top:12px;text-align:center;font:700 12px/1.15 var(--body);padding:8px 2px;border-radius:10px;text-decoration:none;
   background:linear-gradient(180deg,#FBE3A8,#E9B76A);color:var(--thatch-ink);border:1px solid #8a5a22;box-shadow:0 2px 0 #6b3f12;overflow-wrap:normal;word-break:keep-all;hyphens:none}
 .stub{padding-right:2px}
+.stub .nowon{margin-top:4px;font:700 9.5px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--drive)}
 .stubtix{font-size:11.5px;padding:8px 0}
 .stubtix:active{transform:translateY(2px);box-shadow:none}
 .tr{flex:none;display:flex;flex-direction:column;align-items:flex-end;gap:6px}
@@ -621,6 +622,8 @@ function render(){
   let evs=[...state.events, ...state.picks.map(p=>({...p,added:true}))].map(e=>{
       const x={...e,_drive:driveEstimate(e.lat,e.lon)};
       if(isRec(e)){x.start=nextOccurrence(e.recurrence);x.end=null;}
+      // multi-day runs already underway: show today's date (counts forward each day until the run ends)
+      else if(e.end&&e.start&&e.start<today&&e.end>=today){x.runStart=e.start;x.start=today;}
       return x;})
     .filter(e=>e.start&&(e.end||e.start)>=today);
   const upcoming=evs.length;
@@ -667,7 +670,7 @@ function render(){
     const mon=d.toLocaleDateString("en-US",{month:"short"}).toUpperCase();
     const mic = isRec(e);
     const thru = mic ? `<span class="every">${esc(e.recurrence?.freq==="monthly"?"Monthly":"Weekly")}</span>`
-      : end && e.end!==e.start ? `<span class="thru">thru ${esc(end.toLocaleDateString("en-US",{month:"short",day:"numeric"}))}</span>`:"";
+      : end && e.end!==e.start ? (e.runStart?`<span class="nowon">On now</span>`:"")+`<span class="thru">thru ${esc(end.toLocaleDateString("en-US",{month:"short",day:"numeric"}))}</span>`:"";
     const pi=priceInfo(e); let priceHtml;
     const $r=n=>"$"+Math.round(n);
     if(pi.sold) priceHtml='<span class="sold">Sold out</span>';
@@ -1027,6 +1030,10 @@ const APP_URL="https://lukegiannelli.github.io/showshack/";
 function hid(e){return (e.added?"p-":"e-")+String(e.id).toLowerCase().replace(/[^a-z0-9-]/g,"-").slice(0,80);}
 let hashDone="";
 function jumpToHash(){const h=(location.hash||"").slice(1);if(!h||h===hashDone)return;const el=document.getElementById(h);if(!el)return;hashDone=h;el.scrollIntoView({behavior:"smooth",block:"center"});el.classList.add("hl");setTimeout(()=>el.classList.remove("hl"),4000);}
+let shownDay=todayStr();
+function dayCheck(){if(todayStr()!==shownDay){shownDay=todayStr();render();}}
+document.addEventListener("visibilitychange",()=>{if(!document.hidden)dayCheck();});
+setInterval(dayCheck,60000);
 window.addEventListener("hashchange",()=>{hashDone="";jumpToHash();});
 async function copyOut(text,btn){
   const old=btn.textContent;
