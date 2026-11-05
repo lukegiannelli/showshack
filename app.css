@@ -561,3 +561,35 @@ body.neb.nebok .vcard .vf .vpin{opacity:.7}
 .kind.social{background:#FF4FD8;color:#1a0718}
 .kind.art{background:transparent;color:#9B8CFF;border:1px solid #9B8CFF}
 .kind.vol{background:#4FC7B6;color:#06201c}
+
+/* ---- Artist logo stickers: faint, tilted, behind the text ---- */
+.ev .body{position:relative}
+.ev .body>*:not(.sticker){position:relative;z-index:1}
+.ev .sticker{position:absolute;right:-2px;bottom:4px;z-index:0;max-width:54%;max-height:70px;object-fit:contain;
+  transform:rotate(-7deg);transform-origin:100% 100%;opacity:.24;pointer-events:none;user-select:none;
+  filter:drop-shadow(1.5px 0 0 #fff) drop-shadow(-1.5px 0 0 #fff) drop-shadow(0 1.5px 0 #fff) drop-shadow(0 -1.5px 0 #fff) drop-shadow(0 2px 2px rgba(0,0,0,.35))}
+:root:not([data-theme="dark"]) .ev .sticker{opacity:.2;filter:drop-shadow(1.5px 0 0 #17141F) drop-shadow(-1.5px 0 0 #17141F) drop-shadow(0 1.5px 0 #17141F) drop-shadow(0 -1.5px 0 #17141F)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .ev .sticker{opacity:.24;filter:drop-shadow(1.5px 0 0 #fff) drop-shadow(-1.5px 0 0 #fff) drop-shadow(0 1.5px 0 #fff) drop-shadow(0 -1.5px 0 #fff) drop-shadow(0 2px 2px rgba(0,0,0,.35))}}
+
+/* ---- Listen: soft rainbow LED shimmer through the bubble and the letters (opaque) ---- */
+.links button.listenbtn{position:relative;isolation:isolate;border:1.5px solid transparent;
+  background:linear-gradient(#1b1528,#1b1528) padding-box,
+    linear-gradient(100deg,#ff8fb1,#ffc58a,#ffe97a,#8ff0b0,#7fd6ff,#a99bff,#ff9be0,#ff8fb1) border-box;
+  background-size:100% 100%,300% 100%;animation:ledborder 6s linear infinite;
+  box-shadow:0 0 10px -2px rgba(190,160,255,.6)}
+.links button.listenbtn::before{content:"";position:absolute;inset:2px;border-radius:inherit;z-index:-1;
+  background:linear-gradient(100deg,#ff8fb1,#ffc58a,#ffe97a,#8ff0b0,#7fd6ff,#a99bff,#ff9be0,#ff8fb1);background-size:300% 100%;
+  filter:blur(7px);opacity:.42;animation:ledflow 6s linear infinite}
+.links button.listenbtn .lt{background:linear-gradient(100deg,#ffc2d4,#ffe0b8,#fff6b8,#c6f7d4,#bfeaff,#d6caff,#ffc6ee,#ffc2d4);background-size:180% 100%;
+  -webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent;animation:ledflow 6s linear infinite reverse}
+.links button.listenbtn.on{box-shadow:0 0 15px 0 rgba(190,160,255,.8)}
+@keyframes ledflow{from{background-position:0% 50%}to{background-position:300% 50%}}
+@keyframes ledborder{from{background-position:0 0,0% 50%}to{background-position:0 0,300% 50%}}
+@media (prefers-reduced-motion:reduce){.links button.listenbtn,.links button.listenbtn::before,.links button.listenbtn .lt{animation:none}}
+
+/* ---- Neon 8-ball on the map's Pool chip ---- */
+.map svg.neon8,.neon8{width:21px;height:21px;display:inline-block;border-radius:0;vertical-align:-3.5px;margin-right:3px;overflow:visible;filter:drop-shadow(0 0 2px #ff4fd8) drop-shadow(0 0 5px #b04bff)}
+.neon8 .n8o{fill:#17111f;stroke:#ff6fe0;stroke-width:1.8}
+.neon8 .n8i{fill:none;stroke:#7fe8ff;stroke-width:1.4}
+.neon8 .n8t{font:800 6.6px/1 system-ui,sans-serif;fill:#e9fbff}
+.poolchip[aria-pressed="true"] .neon8{filter:drop-shadow(0 0 3px #ff4fd8) drop-shadow(0 0 8px #b04bff) drop-shadow(0 0 2px #7fe8ff)}
