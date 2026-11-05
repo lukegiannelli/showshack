@@ -1,6 +1,6 @@
 {
   "name": "The Show Shack",
-  "short_name": "Show Shack",
+  "short_name": "The Show Shack",
   "description": "SoCal shows, raves, comedy, open mics, ecstatic dance and more, with prices and drive times.",
   "start_url": "./",
   "scope": "./",
