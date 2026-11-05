@@ -246,7 +246,11 @@ h1 .logo{height:1.05em;width:1.05em;border-radius:22%;vertical-align:-0.12em;mar
 .bar .k{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .map .sea{fill:hsl(210 35% 22%)}:root:not([data-theme="light"]) .map .land{fill:hsl(230 12% 15%);stroke:hsl(210 25% 35%)}:root:not([data-theme="light"]) .map .city{fill:hsl(220 10% 70%)}:root:not([data-theme="light"]) .badge.down{color:hsl(150 60% 65%)}:root:not([data-theme="light"]) .badge.up{color:hsl(10 80% 70%)}:root:not([data-theme="light"]) .badge.sale{color:hsl(45 90% 70%)}}
 /* ---- carpool cost bar ---- */
-.costbar{flex-basis:100%;display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;padding-top:8px;margin-top:2px;border-top:1px dashed var(--line)}
+.costbar{flex-basis:100%;display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;padding-top:4px}
+/* even spacing around the search bar: drop the empty add-a-show slot, 18px above and below */
+.add:has(> #addOpen[hidden]):has(> #addForm[hidden]){display:none}
+.controls{margin-top:-10px}
+.controls .search{margin-bottom:8px}
 .cf{display:flex;align-items:center;gap:6px}
 .cf input{width:64px;font:500 16px var(--mono);background:var(--chip);color:var(--ink);border:0;border-radius:8px;padding:5px 8px;font-variant-numeric:tabular-nums}
 .cf select{font-size:14px}
