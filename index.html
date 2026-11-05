@@ -120,7 +120,7 @@ select{min-width:0;max-width:100%;text-overflow:ellipsis}
 .links{display:flex;flex-wrap:wrap;gap:8px;margin-top:2px}
 .links a{font:600 13px var(--body);text-decoration:none;padding:6px 12px;border-radius:7px;border:1px solid var(--line);color:var(--ink)}
 /* Show Shack header: hut art fills the card, gradient title above the roof */
-header{background:#1a0f33 url(header.jpg?v=2) center 96%/auto 106% no-repeat;aspect-ratio:1/1.25;max-height:640px;padding:18px 14px 14px;align-items:stretch;justify-content:space-between;gap:0;overflow:hidden;position:relative}
+header{background:#1a0f33;isolation:isolate;aspect-ratio:1/1.25;max-height:640px;padding:18px 14px 14px;align-items:stretch;justify-content:space-between;gap:0;overflow:hidden;position:relative}
 header::before{content:"";position:absolute;inset:0 0 auto 0;height:34%;background:linear-gradient(180deg,rgba(14,8,32,.55),rgba(14,8,32,0));pointer-events:none}
 header h1.shack-title{position:relative;background:linear-gradient(90deg,#FFE66D 0%,#FFB347 22%,#FF6FA5 48%,#D08CFF 72%,#6FF0FF 100%);-webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-stroke:1.6px #170b2e;paint-order:stroke fill;filter:drop-shadow(0 3px 0 #170b2e) drop-shadow(0 0 14px rgba(10,4,24,.7));padding:0;border-radius:0;text-align:center;font-size:clamp(26px,8.4vw,58px);line-height:1;letter-spacing:1.5px;max-width:100%;padding:0 .12em;white-space:nowrap;text-wrap:nowrap;align-self:center}
 header .sub{position:relative;background:rgba(18,10,38,.74);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);color:#ddd6ee;border:1px solid rgba(255,255,255,.14);border-radius:12px;padding:8px 12px;margin-top:auto}
@@ -277,16 +277,14 @@ h1 .logo{height:1.05em;width:1.05em;border-radius:22%;vertical-align:-0.12em;mar
 .ntot .each{font:600 14px var(--mono);color:var(--drive)}
 .nfoot{margin:0;font-size:12px;color:var(--muted)}
 .nfoot a{color:var(--accent);font-weight:600;text-decoration:none}
-/* Shack song: a real YouTube player (YouTube's rules don't allow hiding it), loaded only when asked for */
-.radiobtn{margin-top:10px;font:700 13.5px var(--body);color:var(--thatch-ink);padding:8px 16px;border-radius:999px;cursor:pointer;
-  background:linear-gradient(180deg,#FBE3A8,#E9B76A);border:1.5px solid #8a5a22;box-shadow:0 3px 0 #6b3f12;text-shadow:none}
-.radiobtn:active{transform:translateY(2px);box-shadow:0 1px 0 #6b3f12}
-.radio{background:var(--surface);border:1px solid var(--bamboo);border-radius:12px;padding:10px 12px;display:flex;flex-direction:column;gap:8px}
-.radio[hidden]{display:none}
-.radiohead{display:flex;justify-content:space-between;align-items:center}
-.radioframe{position:relative;width:100%;aspect-ratio:16/9;min-height:200px;border-radius:10px;overflow:hidden;background:#000}
-.radioframe iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
-.radio .hint a{color:var(--accent);font-weight:600;text-decoration:none}
+/* header art: same geometry the old background used (center 96% / auto 106%), so nothing moves */
+.hutart{position:absolute;z-index:-1;height:106%;aspect-ratio:952/1024;left:50%;top:-5.76%;transform:translateX(-50%);
+  background:url(header.jpg?v=3) center/100% 100% no-repeat;perspective:900px}
+.hutbtn{position:absolute;left:18.59%;top:14.55%;width:64.39%;height:73.34%;padding:0;border:0;background:none;cursor:pointer;
+  -webkit-tap-highlight-color:transparent;transform-style:preserve-3d;outline-offset:4px}
+.hutbtn img{width:100%;height:100%;display:block;will-change:transform;transform-origin:50% 60%;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;pointer-events:none}
+.hutbtn:active img{filter:brightness(1.08)}
+
 /* ===== cozy pass ===== */
 :root{--lbl:#B4561A;--thatch:#E9B76A;--thatch-ink:#3b2208;--bamboo:rgba(180,120,50,.45)}
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
@@ -349,19 +347,14 @@ h1 .logo{height:1.05em;width:1.05em;border-radius:22%;vertical-align:-0.12em;mar
 
 <div class="wrap">
   <header>
+    <div class="hutart" aria-hidden="false"><button type="button" class="hutbtn" id="hutBtn" aria-label="Play the Shack song" aria-pressed="false"><img src="hut.webp" alt="" draggable="false"></button></div>
     <h1 class="shack-title">The Show Shack</h1>
     <button type="button" class="shack-share" id="shareApp">🌴 Share the Shack</button>
   </header>
   <div class="shack-meta">
     <p class="tagline">Concerts, raves, clubs, comedy, theater &amp; festivals across Southern California</p>
     <p class="stats"><span id="refreshed">Loading…</span><span class="dot">·</span><span id="count"></span></p>
-    <button type="button" class="radiobtn" id="radioBtn" aria-expanded="false">🎵 Play the Shack song</button>
   </div>
-  <section class="radio" id="radio" hidden aria-label="The Shack song">
-    <div class="radiohead"><span class="label">🎵 Shack song · on loop</span><button type="button" class="chip" id="radioHide">Hide</button></div>
-    <div class="radioframe" id="radioFrame"></div>
-    <p class="hint">Tap ▶ in the player to start. It loops and keeps playing while you scroll. Player won't load? <a href="https://music.youtube.com/watch?v=32J7bZHva9M" target="_blank" rel="noopener">Open in YouTube Music ↗</a></p>
-  </section>
 
   <section class="start" aria-label="Starting point">
     <div class="start-view" id="startView">
@@ -1042,13 +1035,51 @@ async function copyOut(text,btn){
   if(!box){box=document.createElement("div");box.id="copybox";box.className="copybox";box.innerHTML='<textarea readonly></textarea><button type="button" class="sharebtn">Done</button>';document.body.appendChild(box);box.querySelector("button").onclick=()=>box.remove();}
   const ta=box.querySelector("textarea");ta.value=text;ta.focus();ta.select();
 }
-(function(){const ID="32J7bZHva9M",btn=document.getElementById("radioBtn"),sec=document.getElementById("radio"),fr=document.getElementById("radioFrame");
-  function show(on){sec.hidden=!on;btn.hidden=on;btn.setAttribute("aria-expanded",String(on));
-    if(on&&!fr.firstChild){const f=document.createElement("iframe");
-      f.src="https://www.youtube-nocookie.com/embed/"+ID+"?loop=1&playlist="+ID+"&playsinline=1&rel=0&autoplay=1";
-      f.title="The Shack song";f.allow="autoplay; encrypted-media; picture-in-picture";f.allowFullscreen=true;fr.appendChild(f);}
-    if(!on)fr.innerHTML="";}
-  btn.onclick=()=>show(true);document.getElementById("radioHide").onclick=()=>show(false);})();
+/* Easter egg: tap the shack to play the Shack song; the hut spins while it plays. */
+(function(){
+  const SONG="shack-song.mp3?v=1";          // swap this file to change the song
+  const btn=document.getElementById("hutBtn"), img=btn.querySelector("img");
+  const still=matchMedia("(prefers-reduced-motion: reduce)").matches;
+  let ctx=null, buf=null, src=null, gain=null, el=null, playing=false, loading=false;
+  try{if(navigator.audioSession)navigator.audioSession.type="playback";}catch(e){} // iPhone: play even with the silent switch on
+  async function start(){
+    if(loading)return; loading=true;
+    try{
+      // Web Audio = gapless loop. Falls back to a plain <audio loop> if anything fails.
+      const AC=window.AudioContext||window.webkitAudioContext;
+      if(!ctx&&AC){ctx=new AC();gain=ctx.createGain();gain.connect(ctx.destination);}
+      if(ctx){await ctx.resume();
+        if(!buf){const r=await fetch(SONG);buf=await ctx.decodeAudioData(await r.arrayBuffer());}
+        src=ctx.createBufferSource();src.buffer=buf;src.loop=true;src.connect(gain);
+        gain.gain.cancelScheduledValues(ctx.currentTime);gain.gain.setValueAtTime(0,ctx.currentTime);gain.gain.linearRampToValueAtTime(1,ctx.currentTime+0.6);
+        src.start();
+      }else throw 0;
+    }catch(e){
+      if(!el){el=new Audio(SONG);el.loop=true;}
+      try{await el.play();}catch(_){loading=false;return;}
+    }
+    loading=false; set(true);
+  }
+  function stop(){
+    if(src&&ctx){const s=src;gain.gain.cancelScheduledValues(ctx.currentTime);gain.gain.setValueAtTime(gain.gain.value,ctx.currentTime);gain.gain.linearRampToValueAtTime(0,ctx.currentTime+0.4);setTimeout(()=>{try{s.stop();}catch(e){}},450);src=null;}
+    if(el)el.pause();
+    set(false);
+  }
+  function set(on){playing=on;btn.setAttribute("aria-pressed",String(on));btn.setAttribute("aria-label",on?"Stop the Shack song":"Play the Shack song");if(!still)kick();}
+  btn.addEventListener("click",()=>{playing?stop():start();});
+  // spin: ease up to ~5 s per turn while playing; on stop, glide to a stop facing front
+  let ang=0, vel=0, raf=0, last=0, target=null, dec=0;
+  function kick(){target=null;if(!raf){last=performance.now();raf=requestAnimationFrame(tick);}}
+  function tick(now){const dt=Math.min(0.05,(now-last)/1000);last=now;
+    if(playing){vel+=(72-vel)*Math.min(1,dt*1.5);ang+=vel*dt;}
+    else{ // the hut is symmetric, so it can come to rest facing front or back (whichever is nearer)
+      if(target===null)target=Math.ceil((ang+vel*vel/140+0.5)/180)*180;
+      const dist=target-ang; vel=Math.min(Math.max(vel,12),Math.sqrt(2*70*Math.max(dist,0))+4); ang=Math.min(target,ang+vel*dt);
+      if(target-ang<0.25){ang=target%360;vel=0;target=null;img.style.transform=ang?`rotateY(${ang}deg)`:"";raf=0;return;}}
+    ang%=360*1000;
+    img.style.transform=`rotateY(${ang.toFixed(2)}deg)`;
+    raf=requestAnimationFrame(tick);}
+})();
 document.getElementById("shareApp").addEventListener("click",ev=>{
   copyOut("🛖 The Show Shack: SoCal shows, raves, comedy, open mics, ecstatic dance & more, with prices and drive times. No login needed.\n"+APP_URL,ev.currentTarget);
 });
