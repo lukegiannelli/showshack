@@ -183,7 +183,10 @@ function dayRange(when){const t=new Date();t.setHours(0,0,0,0);const d=t.getDay(
 function fmtShort(s){const d=parseDay(String(s).slice(0,10));return d?d.toLocaleDateString("en-US",{month:"short",day:"numeric"}):"";}
 function parseTime(t){const m=String(t||"").match(/(\d{1,2})(?::(\d{2}))?\s*(AM|PM)/i);if(!m)return null;let h=+m[1]%12;if(/pm/i.test(m[3]))h+=12;return h*60+(+m[2]||0);}
 function fmtClock(mins){mins=((mins%1440)+1440)%1440;const h=Math.floor(mins/60),m=mins%60;return ((h%12)||12)+":"+String(m).padStart(2,"0")+(h<12?" AM":" PM");}
-function leaveBy(e){const st=parseTime(e.time);if(st==null||!e._drive)return null;return fmtClock(Math.floor((st-e._drive.mins-15)/5)*5);}
+// Open mics: the sign-up time matters more than the start (the list fills). "6:00 PM (sign-up 5:00)" or "Sign-up 6:00 PM".
+function signupOf(e){const m=String(e.time||"").match(/sign[- ]?up\s*(\d{1,2})(?::(\d{2}))?\s*(AM|PM)?/i);if(!m)return null;
+  let h=+m[1]%12;const ap=m[3]||((String(e.time).match(/(AM|PM)/i)||[])[1])||"PM";if(/pm/i.test(ap))h+=12;return h*60+(+m[2]||0);}
+function leaveBy(e){const su=signupOf(e),st=su??parseTime(e.time);if(st==null||!e._drive)return null;return fmtClock(Math.floor((st-e._drive.mins-(su!=null?10:15))/5)*5);}
 function calLink(e){const st=parseTime(e.time);const d=String(e.start).replace(/-/g,"");let dates;
   if(st!=null){const pad=n=>String(n).padStart(2,"0");const s1=pad(Math.floor(st/60))+pad(st%60)+"00";const en=st+180;const dd=en>=1440?ymd(new Date(parseDay(e.start).getTime()+86400000)).replace(/-/g,""):d;dates=d+"T"+s1+"/"+dd+"T"+pad(Math.floor((en%1440)/60))+pad(en%60)+"00";}
   else{const end=parseDay(e.kind==="festival"&&e.end?e.end:e.start);end.setDate(end.getDate()+1);dates=d+"/"+ymd(end).replace(/-/g,"");}
@@ -272,7 +275,8 @@ function render(){
     const al = alertOf(e).map(a=>`<span class="badge ${a.c}">${a.c==="sale"?ni("ticket")+" ":""}${a.t}</span>`).join("");
     const ag = ageOf(e); const extraTags = (isSmall(e)?`<span class="tag local">${ni("home")} Small &amp; local</span>`:"")+(ag?`<span class="tag age">${ag==="all"?"All ages":ag}</span>`:"")+(transitOf(e)?`<span class="tag transit">${ni("sprout")} ${transitOf(e)}</span>`:"");
     const drv = e._drive ? `<span class="drive">~${fmtMins(e._drive.mins)} · ${e._drive.miles} mi</span>` : (origin ? '<span class="na">n/a</span>' : '<span class="na">Set start point</span>');
-    const time = mic ? `<span>${esc(e.recurrence?.text||"")}${e.time?" · "+esc(e.time):""}</span>` : e.time ? `<span>${esc(e.time)}</span>` : '<span class="na">Time TBA</span>';
+    const su=mic?signupOf(e):null, micTime=String(e.time||"").replace(/\s*\(?sign[- ]?up[^)]*\)?/i,"").trim();
+    const time = mic ? `<span>${esc(e.recurrence?.text||"")}${micTime?" · "+esc(micTime):""}</span>${su!=null?`<span class="signup">${ni("mic")} Sign-up ${fmtClock(su)}</span>`:`<span class="signup none">${ni("mic")} Sign-up: arrive early</span>`}` : e.time ? `<span>${esc(e.time)}</span>` : '<span class="na">Time TBA</span>';
     const tix=safeUrl(e.url)||(mic?null:safeUrl("https://www.google.com/search?q="+encodeURIComponent([e.title,e.venue,e.city,"tickets"].filter(Boolean).join(" "))));
     const tixLabel = tix ? "Tickets" : "";
     const dest = encodeURIComponent((e.venue||"")+", "+(e.city||""));

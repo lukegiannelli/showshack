@@ -237,7 +237,7 @@ h1 .logo{height:1.05em;width:1.05em;border-radius:22%;vertical-align:-0.12em;mar
 
 /* ---- neon icons ---- */
 .ni{width:1.2em;height:1.2em;vertical-align:-.24em;flex:none;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;overflow:visible;filter:drop-shadow(0 0 1.5px currentColor) drop-shadow(0 0 5px color-mix(in srgb,currentColor 70%,transparent))}
-.ni-car{color:#5ee7ff}.ni-fuel{color:#ff9a3d}.ni-food{color:#ffd166}.ni-drink{color:#ff5fa8}.ni-home{color:#ffb347}.ni-money{color:#5dff9a}.ni-list{color:#e8e1ff}.ni-map{color:#5ee7ff}.ni-venue{color:#b69cff}.ni-dice{color:#ff6fb5}.ni-chart{color:#5ee7ff}.ni-moon{color:#b69cff}.ni-sun{color:#ffd23f}.ni-ticket{color:#ff6fb5}.ni-taxi{color:#ffe14d}.ni-train{color:#5ee7ff}.ni-pin{color:#ff5d73}.ni-parking{color:#6ea8ff}.ni-sprout{color:#6bff8f}.ni-hand{color:#ffb347}.ni-palm{color:#6bff8f}.ni-bell{color:#ffd23f}.ni-cal{color:#5ee7ff}.ni-search{color:#e8e1ff}.ni-cloud{color:#bfe3ff}.ni-partly{color:#ffd23f}.ni-fog{color:#bfe3ff}.ni-rain{color:#5ee7ff}.ni-snow{color:#e8f4ff}.ni-storm{color:#ffe14d}
+.ni-mic{color:#ff8fd8}.ni-car{color:#5ee7ff}.ni-fuel{color:#ff9a3d}.ni-food{color:#ffd166}.ni-drink{color:#ff5fa8}.ni-home{color:#ffb347}.ni-money{color:#5dff9a}.ni-list{color:#e8e1ff}.ni-map{color:#5ee7ff}.ni-venue{color:#b69cff}.ni-dice{color:#ff6fb5}.ni-chart{color:#5ee7ff}.ni-moon{color:#b69cff}.ni-sun{color:#ffd23f}.ni-ticket{color:#ff6fb5}.ni-taxi{color:#ffe14d}.ni-train{color:#5ee7ff}.ni-pin{color:#ff5d73}.ni-parking{color:#6ea8ff}.ni-sprout{color:#6bff8f}.ni-hand{color:#ffb347}.ni-palm{color:#6bff8f}.ni-bell{color:#ffd23f}.ni-cal{color:#5ee7ff}.ni-search{color:#e8e1ff}.ni-cloud{color:#bfe3ff}.ni-partly{color:#ffd23f}.ni-fog{color:#bfe3ff}.ni-rain{color:#5ee7ff}.ni-snow{color:#e8f4ff}.ni-storm{color:#ffe14d}
 .chip[aria-pressed="true"] .ni,.chip.save .ni,.daybtn .ni{color:#3a2347;filter:none}
 .chip[aria-pressed="true"] .ni-pin{fill:rgba(58,35,71,.35)}
 [aria-pressed="true"] .ni-pin{fill:color-mix(in srgb,currentColor 45%,transparent)}
@@ -460,3 +460,6 @@ h1 .logo{height:1.05em;width:1.05em;border-radius:22%;vertical-align:-0.12em;mar
 #bgfx .ovl{position:absolute;inset:0;background:var(--ov)}
 body.fx{background:var(--bg)}
 body.fx #bgfx{display:block}
+.signup{display:inline-flex;align-items:center;gap:5px;font-weight:700;color:var(--accent)}
+.signup.none{font-weight:600;color:var(--muted)}
+.signup .ni{width:15px;height:15px}
