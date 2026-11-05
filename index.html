@@ -302,7 +302,8 @@ h1 .logo{height:1.05em;width:1.05em;border-radius:22%;vertical-align:-0.12em;mar
 /* venues */
 .vlink{all:unset;cursor:pointer;color:inherit;text-decoration:underline;text-decoration-color:var(--bamboo);text-underline-offset:3px}
 .venues{display:flex;flex-direction:column;gap:8px}
-.vcard{display:flex;align-items:stretch;gap:6px;background:var(--surface);border:1px solid var(--line);border-radius:12px}
+.vlegend{margin:0 0 8px;padding:7px 12px;border-radius:8px;background:var(--surface);border:1px solid var(--line);font-size:12.5px;color:var(--muted)}.vlegend b{color:var(--ink);font-weight:600}
+.vcard{display:flex;align-items:stretch;gap:6px;background:linear-gradient(90deg,var(--lc,transparent) 0%,var(--lc,transparent) 28%,var(--rc,transparent) 72%,var(--rc,transparent) 100%),var(--surface);border:1px solid var(--line);border-radius:12px}
 .vopen{all:unset;flex:1;min-width:0;cursor:pointer;padding:11px 12px;display:flex;flex-direction:column;gap:2px}
 .vopen b{font-size:16px}.vopen span{font-size:13px;color:var(--muted)}.vopen small{font-size:12px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .vpin{border:0;background:none;font-size:18px;padding:0 14px;cursor:pointer;filter:grayscale(1);opacity:.45}
@@ -868,10 +869,12 @@ function updateBudget(){
 /* ---- venues: directory (pinned favorites on top) + venue page header ---- */
 function isPinned(k){return (state.pinV||[]).includes(k);}
 function togglePin(k){const a=state.pinV=state.pinV||[];const i=a.indexOf(k);if(i>=0)a.splice(i,1);else a.push(k);savePrefs();}
+const AGE_STEPS=[3,8,15,25,40,60,80,95,110];   // years since opening
+const vYear=n=>(VOPEN[n]||{}).y||null;
 function venueInfo(k){
   const evs=(state._up||[]).filter(e=>venueKey(e)===k).sort((a,b)=>a.start.localeCompare(b.start));
   const e=evs[0]||{}, name=k.split(" · ")[0], city=k.split(" · ")[1]||"";
-  return {k,name,city,evs,next:evs[0],drive:e._drive||driveEstimate(e.lat,e.lon),tier:e.venue?tier(e):"Other",transit:e.venue?transitOf(e):null,lat:e.lat,lon:e.lon,cap:(SCOUT[e.venue]||{}).cap};
+  return {k,name,city,evs,next:evs[0],drive:e._drive||driveEstimate(e.lat,e.lon),tier:e.venue?tier(e):"Other",transit:e.venue?transitOf(e):null,lat:e.lat,lon:e.lon,cap:(SCOUT[e.venue]||{}).cap,year:vYear(name)};
 }
 function venueHeader(k){
   const v=venueInfo(k), pin=isPinned(k), park=PARK[v.tier]??15;
@@ -884,6 +887,7 @@ function venueHeader(k){
       <button type="button" class="vpin${pin?" on":""}" data-pinv="${esc(k)}" aria-pressed="${pin}">${ni("pin")}${pin?" Pinned":" Pin"}</button></div>
     <h2>${esc(v.name)}</h2><p class="vcity">${esc(v.city)} · ${v.evs.length} upcoming show${v.evs.length===1?"":"s"}</p>
     ${row("Drive",v.drive?`~${fmtMins(v.drive.mins)} · ${v.drive.miles} mi`:"set a start point")}
+    ${v.year?row("Opened",v.year+" · "+(new Date().getFullYear()-v.year||"<1")+" yr"+((new Date().getFullYear()-v.year)===1?"":"s")+" old"):""}
     ${row("Size",esc(v.tier)+(v.cap?` · ~${v.cap} people`:""))}
     ${row("Parking",v.tier==="Small / DIY"?"usually street or small lots · ~$"+park:"typically ~$"+park+" · lots fill up before big shows")}
     ${row("Transit",v.transit?ni("sprout")+" "+esc(v.transit)+" nearby":"best by car or rideshare")}
@@ -897,12 +901,13 @@ function renderVenues(){
   const infos=keys.map(venueInfo);
   const sortV=(a,b)=>origin?((a.drive?.mins??1e9)-(b.drive?.mins??1e9))||a.name.localeCompare(b.name):a.name.localeCompare(b.name);
   const card=v=>{const n=v.next,nd=n?parseDay(n.start).toLocaleDateString("en-US",{weekday:"short",month:"short",day:"numeric"}):"";
-    return `<div class="vcard"><button type="button" class="vopen" data-venue="${esc(v.k)}"><b>${esc(v.name)}</b>
-      <span>${esc(v.city)}${v.drive?` · ~${fmtMins(v.drive.mins)}`:""}</span>
+    const lc=v.drive?band(v.drive.mins,D_STEPS):"transparent",rc=v.year?band(new Date().getFullYear()-v.year,AGE_STEPS):"transparent";
+    return `<div class="vcard" style="--lc:${lc};--rc:${rc}"><button type="button" class="vopen" data-venue="${esc(v.k)}"><b>${esc(v.name)}</b>
+      <span>${esc(v.city)}${v.drive?` · ~${fmtMins(v.drive.mins)}`:""}${v.year?` · opened ${v.year}`:""}</span>
       <small>${v.evs.length} show${v.evs.length===1?"":"s"}${n?` · next ${esc(nd)}: ${esc(n.title)}`:""}</small></button>
       <button type="button" class="vpin${isPinned(v.k)?" on":""}" data-pinv="${esc(v.k)}" aria-pressed="${isPinned(v.k)}" aria-label="${isPinned(v.k)?"Unpin":"Pin"} ${esc(v.name)}">${ni("pin")}</button></div>`;};
   const pinned=infos.filter(v=>isPinned(v.k)).sort((a,b)=>(state.pinV.indexOf(a.k))-(state.pinV.indexOf(b.k)));
-  let html=`<div class="venues">`;
+  let html=`<div class="venues"><p class="vlegend"><b>Left tint</b> = how far (green close → red far) · <b>Right tint</b> = how old (green new → red historic)</p>`;
   html+=`<h2 class="month pickh">${ni("pin")} Your venues</h2>`+(pinned.length?pinned.map(card).join(""):`<div class="empty"><strong>Pin your favorite spots</strong>Tap the pin on any venue and it stays at the top here.</div>`);
   const regionOf=k=>{const e=(state._up||[]).find(x=>venueKey(x)===k);return e?region(e):"Other";};
   for(const r of REGIONS){const vs=infos.filter(v=>!isPinned(v.k)&&regionOf(v.k)===r).sort(sortV);if(!vs.length)continue;
@@ -1374,6 +1379,7 @@ try{if(location.hash==="#owner"){localStorage.setItem("shack-owner","1");history
   if(localStorage.getItem("shack-owner")==="1")document.getElementById("addOpen").hidden=false;}catch(e){}
 if("serviceWorker" in navigator&&location.protocol==="https:")navigator.serviceWorker.register("sw.js").catch(()=>{});
 // Shows come from events.json (works for everyone, no login). The database is only a fallback.
+let VOPEN={};fetch("venues.json").then(r=>r.ok?r.json():{}).then(j=>{VOPEN=j||{};if(state.view==="venues"||state.venue!=="all")render();}).catch(()=>{});
 let fileLoaded=false;
 (async()=>{
   try{
