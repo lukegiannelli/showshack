@@ -273,6 +273,34 @@ h1 .logo{height:1.05em;width:1.05em;border-radius:22%;vertical-align:-0.12em;mar
 .ntot .each{font:600 14px var(--mono);color:var(--drive)}
 .nfoot{margin:0;font-size:12px;color:var(--muted)}
 .nfoot a{color:var(--accent);font-weight:600;text-decoration:none}
+/* ===== cozy pass ===== */
+:root{--lbl:#B4561A;--thatch:#E9B76A;--thatch-ink:#3b2208;--bamboo:rgba(180,120,50,.45)}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#231922; --surface:#2C2029; --ink:#F6EEE6; --muted:#C2B2B4; --line:#46353F; --chip:#3B2C36;
+  --ov:rgba(46,28,36,.66); --glass:rgba(46,28,36,.6); --lbl:#FFC66B; --bamboo:rgba(239,194,122,.42)}}
+:root[data-theme="dark"]{--bg:#231922;--surface:#2C2029;--ink:#F6EEE6;--muted:#C2B2B4;--line:#46353F;--chip:#3B2C36;--ov:rgba(46,28,36,.66);--glass:rgba(46,28,36,.6);--lbl:#FFC66B;--bamboo:rgba(239,194,122,.42)}
+:root:not([data-theme="dark"]){--ov:rgba(250,240,228,.74)}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--ov:rgba(46,28,36,.66)}}
+/* section labels: chunky, warm, on-theme */
+.label{font:900 15px var(--display);letter-spacing:.09em;color:var(--lbl);text-shadow:0 1px 0 rgba(0,0,0,.35),0 0 10px rgba(255,170,60,.18);margin-right:6px}
+/* no dotted lines on cards */
+.stub{border-right:0}
+.sides{border-top:0;padding-top:4px}
+.nl{border-bottom:1px solid color-mix(in srgb,var(--line) 55%,transparent);padding:5px 0}
+/* card buttons: simple bamboo pills, tickets in thatch */
+.links a,.links button.share,.links button.rm,.listen summary{font:600 13px var(--body);padding:6px 13px;border-radius:999px;border:1px solid var(--bamboo);background:color-mix(in srgb,var(--thatch) 9%,transparent);color:var(--ink)}
+.links a.tix{background:linear-gradient(180deg,#FBE3A8,#E9B76A);color:var(--thatch-ink);border-color:#8a5a22;box-shadow:0 2px 0 #6b3f12}
+.listen[open] summary{background:color-mix(in srgb,var(--thatch) 22%,transparent)}
+/* night / day flip buttons sit centered at the bottom of each face */
+.flipbar{grid-column:1/-1;display:flex;justify-content:center;margin-top:auto;padding-top:8px}
+.nightbtn,.daybtn{font:700 14px var(--body);border-radius:999px;padding:9px 20px;cursor:pointer;letter-spacing:.2px;transition:transform .08s}
+.nightbtn{background:linear-gradient(180deg,#3a2a6e,#22174a);color:#FFE6A8;border:1.5px solid #E9B76A;box-shadow:0 3px 0 #120b2a,0 0 14px rgba(150,110,255,.25)}
+.nightbtn b{font-family:var(--mono);font-weight:600;margin-left:4px}
+.daybtn{background:linear-gradient(180deg,#FBE3A8,#E9B76A);color:var(--thatch-ink);border:1.5px solid #8a5a22;box-shadow:0 3px 0 #6b3f12}
+.nightbtn:active,.daybtn:active{transform:translateY(2px)}
+.face.front{grid-template-rows:1fr auto auto}
+.month{color:var(--ink);text-shadow:0 2px 0 rgba(0,0,0,.45),0 0 14px rgba(0,0,0,.5)}
+.back .nl{padding:4px 0}
 </style>
 
 <div class="wrap">
@@ -343,7 +371,6 @@ h1 .logo{height:1.05em;width:1.05em;border-radius:22%;vertical-align:-0.12em;mar
       <label class="range" for="maxDrive"><span class="label">Max drive</span>
         <input type="range" id="maxDrive" min="15" max="180" step="15" value="180">
         <output id="maxDriveOut">Any</output></label>
-      <button type="button" class="chip" id="tbaChip" aria-pressed="false">Listed prices only</button>
     </div>
     <div class="row" id="flagRow"><span class="label">Filter</span>
       <label class="range" for="sortBy"><span class="label">Sort</span>
@@ -434,8 +461,7 @@ md.value=state.maxDrive; sb.value=state.sort;
 function syncDrive(){mdo.textContent = +md.value>=180 ? "Any" : "≤ "+fmtMins(+md.value);}
 syncDrive();
 md.oninput=()=>{state.maxDrive=+md.value;syncDrive();savePrefs();render();};
-const tc=document.getElementById("tbaChip"); tc.setAttribute("aria-pressed",String(!!state.hideTBA));
-tc.onclick=()=>{state.hideTBA=!state.hideTBA;tc.setAttribute("aria-pressed",String(state.hideTBA));savePrefs();render();};
+
 sb.onchange=()=>{state.sort=sb.value;savePrefs();render();};
 const vChip=document.getElementById("venueChip");
 vChip.onclick=()=>{state.venue="all";savePrefs();render();};
@@ -562,7 +588,6 @@ function render(){
     .filter(e=>state.venue==="all"||venueKey(e)===state.venue)
     .filter(e=>state.kind==="all"||(state.kind==="starred"?state.stars.has(skey(e)):state.kind==="picks"?e.added:state.kind==="rave"?isRave(e):e.kind===state.kind))
     .filter(e=>state.genre==="all"||(e.genres||[]).includes(state.genre))
-    .filter(e=>!state.hideTBA||isRec(e)||e.status==="sold out"||(e.priceFrom!=null&&!e.priceEst))
     .filter(e=>state.maxDrive>=180||!origin||(e._drive&&e._drive.mins<=state.maxDrive))
     .filter(e=>{const r=dayRange(state.when);if(!r)return true;return e.start<=r[1]&&(e.end||e.start)>=r[0];})
     .filter(e=>{if(!state.flags.cheap)return true;const pi=priceInfo(e);if(pi.sold)return false;if(pi.free)return true;if(pi.none)return isRec(e);return pi.est?(pi.hi!=null&&pi.hi<=40):pi.lo<=25;})
@@ -610,7 +635,7 @@ function render(){
     else priceHtml=`<span class="price">From ${$r(pi.lo)}</span><span class="pn">cheapest seat</span>`;
     if(!pi.est&&!pi.sold&&!pi.free&&!pi.none&&e.priceAsOf) priceHtml=priceHtml.replace(/<\/span>$/,` · checked ${fmtShort(e.priceAsOf)}</span>`);
     const nc=nightCost(e,pi), lb=leaveBy(e);
-    const nightHtml = `<button type="button" class="night" data-flip="1">🌙 Night ≈ $${nc.n>1?nc.each+" each":nc.total}${nc.partial?"+":""} ↻</button>`;
+    const nightHtml = `<div class="flipbar"><button type="button" class="nightbtn" data-flip="1">🌙 Night out <b>≈ $${nc.n>1?nc.each+" each":nc.total}${nc.partial?"+":""}</b></button></div>`;
     const leaveHtml = lb ? `<span class="leave">Leave by ${lb}</span>` : "";
     const al = alertOf(e).map(a=>`<span class="badge ${a.c}">${a.t}</span>`).join("");
     const ag = ageOf(e); const extraTags = (isSmall(e)?'<span class="tag local">🏠 Small &amp; local</span>':"")+(ag?`<span class="tag age">${ag==="all"?"All ages":ag}</span>`:"")+(transitOf(e)?`<span class="tag transit">🌱 ${transitOf(e)}</span>`:"");
@@ -643,14 +668,14 @@ function render(){
         ${e.artists?`<div class="where">${esc(e.artists)}</div>`:""}
         <div class="where">${esc(e.venue)} · ${esc(e.city)}</div>
         ${al?`<div class="row">${al}</div>`:""}
-        <div class="facts">${time}${leaveHtml}${nightHtml}</div>
+        <div class="facts">${time}${leaveHtml}</div>
         ${e.priceNote?`<div class="note">${esc(e.priceNote)}</div>`:""}
         ${e.note?`<div class="note">${esc(e.note)}</div>`:""}
         ${(tags||extraTags)?`<div class="tags">${extraTags}${tags}</div>`:""}
         ${volHtml(e)}
-        <div class="links">${tix?`<a class="tix" href="${esc(tix)}" target="_blank" rel="noopener">${tixLabel}</a>`:""}${listen}<a href="${maps}" target="_blank" rel="noopener">Directions</a>${e.start?`<a href="${esc(calLink(e))}" target="_blank" rel="noopener">📅 Calendar</a>`:""}<a href="${esc(eatLink(e))}" target="_blank" rel="noopener">🍜 Eat nearby</a><button type="button" class="share" data-share="${esc(skey(e))}">📤 Share</button>${canRm?`<button type="button" class="rm" data-rm="${esc(e.id)}">Remove</button>`:""}</div>
+        <div class="links">${tix?`<a class="tix" href="${esc(tix)}" target="_blank" rel="noopener">${tixLabel}</a>`:""}${listen}<a href="${maps}" target="_blank" rel="noopener">Directions</a>${e.start?`<a href="${esc(calLink(e))}" target="_blank" rel="noopener">Calendar</a>`:""}<a href="${esc(eatLink(e))}" target="_blank" rel="noopener">Eat nearby</a><button type="button" class="share" data-share="${esc(skey(e))}">Share</button>${canRm?`<button type="button" class="rm" data-rm="${esc(e.id)}">Remove</button>`:""}</div>
       </div>
-      <div class="sides"><div class="side l"><span class="sl">Price</span>${priceHtml}</div><div class="side r"><span class="sl">Drive</span>${drv}</div></div></div>
+      <div class="sides"><div class="side l"><span class="sl">Price</span>${priceHtml}</div><div class="side r"><span class="sl">Drive</span>${drv}</div></div>${nightHtml}</div>
       ${backHtml(e,nc,fl)}</div></article>`;
   }
   list.innerHTML=html;
@@ -671,12 +696,11 @@ function backHtml(e,nc,fl){
   const drk = nc.sober ? line("🍹","Drinks","usually a sober space","$0")
     : line("🍹","Drinks",nc.dCount?`${nc.dCount} × ~${$(nc.dPrice)}${nc.n>1?" × "+nc.n:""}${nc.minTwo&&(state.drinks??2)<2?" · 2-item minimum":""}`:"none",$(nc.drinks));
   return `<div class="ev face back"${fl?"":' aria-hidden="true"'}>
-    <div class="bh"><span class="sl">🌙 Night cost · ${who}</span><button type="button" class="flipbtn" data-flip="1" aria-label="Flip back">↩</button></div>
-    <h3>${esc(e.title)}</h3>
+    <div class="bh"><span class="sl">🌙 Night cost · ${who}</span></div>
     <div class="nlist">${tix}${gas}${park}${food}${drk}</div>
     <div class="ntot"><span>Total${nc.partial?" so far":""}</span><b>${$(nc.total)}${nc.partial?"+":""}</b>${nc.n>1?`<span class="each">${$(nc.each)}${nc.partial?"+":""} each</span>`:""}</div>
-    <p class="nfoot">Estimates. Gas ${nc.gas!=null?"splits":"would split"} across the car; food, drinks & tickets are per person. Drink prices are typical for this kind of venue. Change MPG, gas price and food up top by Carpool. <a href="${esc(eatLink(e))}" target="_blank" rel="noopener">🍜 See food near the venue ↗</a></p>
-    <p class="nfoot">Double-tap the card to flip back.</p>
+    <p class="nfoot">Estimates · gas & parking split across the car · <a href="${esc(eatLink(e))}" target="_blank" rel="noopener">food near the venue ↗</a></p>
+    <div class="flipbar"><button type="button" class="daybtn" data-flip="1">☀️ Back to day</button></div>
   </div>`;
 }
 function surpriseMe(){
@@ -702,23 +726,8 @@ function flipCard(card){if(!card)return;const on=!card.classList.contains("flipp
   const f=card.querySelector(".front"),b=card.querySelector(".back");
   if(f)f.setAttribute("aria-hidden",String(on)); if(b)b.setAttribute("aria-hidden",String(!on));
   try{window.getSelection().removeAllRanges();}catch(e){}}
-const INTERACTIVE="a,button,select,input,summary,textarea,label";
-let lastTap={t:0,x:0,y:0,card:null}, lastFlipAt=0;
 const listEl=document.getElementById("list");
-listEl.addEventListener("click",ev=>{const b=ev.target.closest("[data-flip]");if(!b)return;flipCard(b.closest(".card"));lastFlipAt=Date.now();});
-listEl.addEventListener("pointerup",ev=>{
-  if(ev.pointerType==="mouse")return;
-  const card=ev.target.closest(".card"); if(!card||ev.target.closest(INTERACTIVE)){lastTap.t=0;return;}
-  const now=Date.now();
-  if(lastTap.card===card&&now-lastTap.t<350&&Math.hypot(ev.clientX-lastTap.x,ev.clientY-lastTap.y)<30){
-    lastTap.t=0;lastFlipAt=now;ev.preventDefault();flipCard(card);return;}
-  lastTap={t:now,x:ev.clientX,y:ev.clientY,card};
-});
-listEl.addEventListener("dblclick",ev=>{
-  if(Date.now()-lastFlipAt<600)return;
-  const card=ev.target.closest(".card"); if(!card||ev.target.closest(INTERACTIVE))return;
-  flipCard(card);
-});
+listEl.addEventListener("click",ev=>{const b=ev.target.closest("[data-flip]");if(!b)return;flipCard(b.closest(".card"));});
 
 /* ---- views: list / map / insights ---- */
 const vL=document.getElementById("vList"),vM=document.getElementById("vMap"),vI=document.getElementById("vIns");
@@ -957,7 +966,7 @@ document.getElementById("list").addEventListener("click",async ev=>{
   const t=shareText(e); let ok=false;
   try{await navigator.clipboard.writeText(t);ok=true;}catch(err){}
   const links=b.parentElement; let box=links.querySelector(".sharebox");
-  if(ok){b.textContent="✓ Copied — paste in a text";setTimeout(()=>{if(b.isConnected)b.textContent="📤 Share";},2500);if(box)box.remove();}
+  if(ok){b.textContent="✓ Copied — paste in a text";setTimeout(()=>{if(b.isConnected)b.textContent="Share";},2500);if(box)box.remove();}
   else{if(!box){box=document.createElement("div");box.className="sharebox";links.appendChild(box);}box.textContent=t;b.textContent="Press & hold to copy ↓";}
 });
 document.getElementById("list").addEventListener("click",async ev=>{
