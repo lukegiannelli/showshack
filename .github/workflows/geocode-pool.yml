@@ -1,0 +1,23 @@
+name: Geocode pool halls
+# Fills lat/lon in pool.json from OpenStreetMap (Nominatim). Run by hand or when pool.json changes.
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths: [pool.json]
+permissions:
+  contents: write
+concurrency: { group: pool-json, cancel-in-progress: false }
+jobs:
+  geocode:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: python3 scripts/geocode_pool.py pool.json
+      - run: |
+          git diff --quiet pool.json && { echo "Nothing new."; exit 0; }
+          git config user.name "show-shack-bot"
+          git config user.email "show-shack-bot@users.noreply.github.com"
+          git add pool.json
+          git commit -m "Pool halls: coordinates from OpenStreetMap"
+          for i in 1 2 3; do git pull --rebase origin main && git push && break; sleep 5; done
