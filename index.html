@@ -302,14 +302,10 @@ h1 .logo{height:1.05em;width:1.05em;border-radius:22%;vertical-align:-0.12em;mar
 /* disco-ball Surprise me */
 .disco{margin:26px 0 34px;text-align:center}
 .dstage{position:relative;width:170px;margin:0 auto}
-#dcv{display:block;width:156px;height:156px}
-.dball{position:relative;width:156px;height:156px;margin:0 auto;border-radius:50%;overflow:hidden;cursor:grab;touch-action:pan-y;user-select:none;-webkit-user-select:none;background:#0b0816;box-shadow:0 0 26px rgba(150,130,255,.5),0 0 60px rgba(255,110,200,.22);transition:box-shadow .3s}
-.dcrack{position:absolute;inset:0;z-index:2;fill:none;stroke:#fff;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;filter:drop-shadow(0 0 3px #fff) drop-shadow(0 0 7px #ffd36b)}
-.dcrack path{opacity:0}
-.dball.lv1 .c1,.dball.lv2 .c1,.dball.lv2 .c2,.dball.burst .c1,.dball.burst .c2,.dball.burst .c3{opacity:1}
+#dcv{position:absolute;left:50%;top:50%;width:320px;height:320px;margin:-160px 0 0 -160px;pointer-events:none}
+.dball{position:relative;width:156px;height:156px;margin:0 auto;border-radius:50%;cursor:grab;touch-action:pan-y;user-select:none;-webkit-user-select:none;background:transparent;box-shadow:0 0 26px rgba(150,130,255,.5),0 0 60px rgba(255,110,200,.22);transition:box-shadow .3s}
 .dball.lv1{box-shadow:0 0 34px rgba(255,200,110,.7),0 0 70px rgba(255,110,200,.3)}
 .dball.lv2{box-shadow:0 0 44px rgba(255,220,120,.9),0 0 90px rgba(255,110,200,.45);animation:dshake .22s infinite}
-.dball.burst{animation:dburst .5s ease-in forwards}
 .dball.fresh{animation:dfresh .6s ease-out}
 @keyframes dshake{0%,100%{transform:translateX(0)}25%{transform:translateX(-2px) rotate(-1deg)}75%{transform:translateX(2px) rotate(1deg)}}
 @keyframes dburst{0%{transform:scale(1);filter:brightness(1)}60%{transform:scale(1.12);filter:brightness(2.2)}100%{transform:scale(1.3);opacity:0;filter:brightness(4)}}
@@ -569,8 +565,7 @@ h1 .logo{height:1.05em;width:1.05em;border-radius:22%;vertical-align:-0.12em;mar
   <section id="disco" class="disco" hidden aria-label="Surprise me">
     <div class="dstage">
       <div class="dball" id="dball" role="button" tabindex="0" aria-label="Surprise me: swipe the disco ball sideways three times">
-        <canvas id="dcv" width="156" height="156"></canvas>
-        <svg class="dcrack" viewBox="0 0 100 100" aria-hidden="true"><path class="c1" d="M52 2 L46 20 L55 34 L47 50 L53 66"/><path class="c2" d="M46 20 L28 28 M55 34 L74 30 M47 50 L26 58 M53 66 L70 78 M47 50 L66 52"/><path class="c3" d="M53 66 L48 98 M28 28 L12 36 M74 30 L90 24 M26 58 L8 70"/></svg>
+        <canvas id="dcv" width="320" height="320"></canvas>
       </div>
       <i class="dflash"></i><div class="dsparks" id="dsparks"></div></div>
   </section>
@@ -1658,7 +1653,7 @@ void main(){
   const box=document.getElementById("disco"),ball=document.getElementById("dball"),cv=document.getElementById("dcv");if(!box||!ball||!cv)return;
   const sparks=document.getElementById("dsparks"),flash=box.querySelector(".dflash"),g=cv.getContext("2d");
   const still=matchMedia("(prefers-reduced-motion: reduce)").matches;
-  const SZ=156,DPR=Math.min(2,devicePixelRatio||1);cv.width=cv.height=SZ*DPR;g.scale(DPR,DPR);
+  const SZ=320,DPR=Math.min(2,devicePixelRatio||1);cv.width=cv.height=SZ*DPR;g.scale(DPR,DPR);
   // mirror tiles on a sphere
   const R=15,TILT=.32,tiles=[];
   for(let j=0;j<R;j++){const lat=-Math.PI/2+(j+.5)*Math.PI/R,cl=Math.cos(lat),n=Math.max(5,Math.round(2*Math.PI*cl/(Math.PI/R)));
@@ -1667,34 +1662,56 @@ void main(){
   const LIGHTS=[[norm([-.55,.55,.62]),[255,255,255],38,1],[norm([.7,.1,.7]),[255,70,170],26,.9],[norm([-.75,-.2,.62]),[70,220,255],26,.9],[norm([.2,-.7,.68]),[255,200,90],26,.8],[norm([.1,.8,.6]),[150,110,255],24,.7]];
   const ct=Math.cos(TILT),stl=Math.sin(TILT);
   function pt(lat,lon,th){const cl=Math.cos(lat),x=cl*Math.sin(lon+th),y0=Math.sin(lat),z0=cl*Math.cos(lon+th);return[x,y0*ct-z0*stl,y0*stl+z0*ct];}
-  let th=Math.random()*6,spin=0,lv=0,busy=false,raf=0,vis=false,idle=0,x0=null,xs=0,moved=0,dir=1,last=0;
+  // cracks live on the ball's surface (they turn with it): a main fault, side branches, then hairlines at the burst
+  function walk(lat,lon,hd,n,st){const p=[[lat,lon]];for(let i=0;i<n;i++){hd+=(Math.random()-.5)*1.3;lat+=Math.sin(hd)*st;lon+=Math.cos(hd)*st/Math.max(.3,Math.cos(lat));p.push([lat,lon]);}return p;}
+  const main=walk(.95,0,-Math.PI/2,13,.15),CR=[{p:main,lv:1,w:1}];
+  [[3,.9],[6,-.8],[9,.7]].forEach(([i,h],k)=>CR.push({p:walk(main[i][0],main[i][1],k%2?Math.PI-h:h,5,.13),lv:2,w:.7}));
+  [[2,2.4],[5,-2.2],[8,2.6],[11,-2.5]].forEach(([i,h])=>CR.push({p:walk(main[i][0],main[i][1],h,4,.11),lv:3,w:.5}));
+  const LC=main.reduce((a,q)=>a+q[1],0)/main.length;
+  let th=-.05,spin=0,lv=0,busy=false,raf=0,vis=false,idle=0,x0=null,xs=0,moved=0,dir=1,last=0,burstT=0;
   const BASE=[.0035,.012,.03];
   function draw(){
-    g.clearRect(0,0,SZ,SZ);g.fillStyle="#0b0816";g.beginPath();g.arc(SZ/2,SZ/2,SZ/2,0,6.2832);g.fill();
-    const r=SZ/2-1,c=SZ/2;
+    const now=performance.now(),bp=burstT?Math.min(1,(now-burstT)/750):0;
+    g.clearRect(0,0,SZ,SZ);
+    const c=SZ/2,r=78,show=Math.max(lv,burstT?3:0);
+    if(bp<1){g.globalAlpha=1-bp;g.fillStyle="#0b0816";g.beginPath();g.arc(c,c,r*(1+bp*.25),0,6.2832);g.fill();g.globalAlpha=1;}
     for(const t of tiles){
       const p=pt(t.lat,t.lon,th);if(p[2]<-.02)continue;
       const nz=Math.max(0,p[2]);
-      // jittered normal -> mirror direction toward the room
       const n=norm([p[0]+t.jx*.16,p[1]+t.jy*.16,p[2]+t.jz*.16]);
       const E=[2*n[2]*n[0],2*n[2]*n[1],2*n[2]*n[2]-1];
-      let cr=34+60*nz,cg=40+64*nz,cb=70+86*nz;           // cool silver base, darker at the rim
-      const room=Math.max(0,E[1])*28;cr+=room;cg+=room;cb+=room*1.3;   // faint ceiling reflection
+      let cr=34+60*nz,cg=40+64*nz,cb=70+86*nz;
+      const room=Math.max(0,E[1])*28;cr+=room;cg+=room;cb+=room*1.3;
       let star=0;
       for(const[L,col,pw,k]of LIGHTS){const d=E[0]*L[0]+E[1]*L[1]+E[2]*L[2];if(d>0){const f=Math.pow(d,pw)*k;cr+=col[0]*f*1.15;cg+=col[1]*f*1.15;cb+=col[2]*f*1.15;if(L===LIGHTS[0][0]&&d>.985&&t.st>.55)star=d;}}
-      const dim=.35+.65*Math.pow(nz,.45);
-      const rr=Math.min(255,cr*dim)|0,gg=Math.min(255,cg*dim)|0,bb=Math.min(255,cb*dim)|0;
-      const a=pt(t.lat-t.hl,t.lon-t.ho/Math.cos(t.lat),th),b=pt(t.lat-t.hl,t.lon+t.ho/Math.cos(t.lat),th),d2=pt(t.lat+t.hl,t.lon+t.ho/Math.cos(t.lat),th),e=pt(t.lat+t.hl,t.lon-t.ho/Math.cos(t.lat),th);
+      const dim=.35+.65*Math.pow(nz,.45),warm=show*8;
+      const rr=Math.min(255,cr*dim+warm*2)|0,gg=Math.min(255,cg*dim+warm)|0,bb=Math.min(255,cb*dim)|0;
+      const cl=Math.cos(t.lat),a=pt(t.lat-t.hl,t.lon-t.ho/cl,th),b=pt(t.lat-t.hl,t.lon+t.ho/cl,th),d2=pt(t.lat+t.hl,t.lon+t.ho/cl,th),e=pt(t.lat+t.hl,t.lon-t.ho/cl,th);
+      let ox=0,oy=0;if(bp>0){const k=bp*bp*(120+t.st*160);ox=p[0]*k;oy=-p[1]*k-bp*30*t.st;g.globalAlpha=Math.max(0,1-bp*1.05);}
       g.fillStyle=`rgb(${rr},${gg},${bb})`;g.beginPath();
-      g.moveTo(c+a[0]*r,c-a[1]*r);g.lineTo(c+b[0]*r,c-b[1]*r);g.lineTo(c+d2[0]*r,c-d2[1]*r);g.lineTo(c+e[0]*r,c-e[1]*r);g.closePath();g.fill();
-      if(star){const x=c+p[0]*r,y=c-p[1]*r,s=5+star*5;g.strokeStyle="rgba(255,255,255,.95)";g.lineWidth=1.2;g.beginPath();g.moveTo(x-s,y);g.lineTo(x+s,y);g.moveTo(x,y-s);g.lineTo(x,y+s);g.stroke();}
+      g.moveTo(c+a[0]*r+ox,c-a[1]*r+oy);g.lineTo(c+b[0]*r+ox,c-b[1]*r+oy);g.lineTo(c+d2[0]*r+ox,c-d2[1]*r+oy);g.lineTo(c+e[0]*r+ox,c-e[1]*r+oy);g.closePath();g.fill();
+      if(star&&!bp){const x=c+p[0]*r,y=c-p[1]*r,s=5+star*5;g.strokeStyle="rgba(255,255,255,.95)";g.lineWidth=1.2;g.beginPath();g.moveTo(x-s,y);g.lineTo(x+s,y);g.moveTo(x,y-s);g.lineTo(x,y+s);g.stroke();}
+      if(bp)g.globalAlpha=1;
     }
-    // soft top-left sheen and rim shadow
-    const gr=g.createRadialGradient(c*.7,c*.6,2,c,c,r);gr.addColorStop(0,"rgba(255,255,255,.28)");gr.addColorStop(.3,"rgba(255,255,255,0)");gr.addColorStop(.8,"rgba(4,2,16,0)");gr.addColorStop(1,"rgba(4,2,16,.6)");
-    g.fillStyle=gr;g.beginPath();g.arc(c,c,r,0,6.2832);g.fill();
+    if(bp<1){
+      const gr=g.createRadialGradient(c-r*.3,c-r*.4,2,c,c,r);gr.addColorStop(0,"rgba(255,255,255,.28)");gr.addColorStop(.3,"rgba(255,255,255,0)");gr.addColorStop(.8,"rgba(4,2,16,0)");gr.addColorStop(1,"rgba(4,2,16,.6)");
+      g.globalAlpha=1-bp;g.fillStyle=gr;g.beginPath();g.arc(c,c,r,0,6.2832);g.fill();g.globalAlpha=1;
+      const pulse=.75+.25*Math.sin(now/90);
+      for(const k of CR){if(k.lv>show)continue;
+        const pts=k.p.map(q=>pt(q[0],q[1],th));
+        const path=()=>{g.beginPath();let on=false;for(const q of pts){if(q[2]<.08){on=false;continue;}const x=c+q[0]*r,y=c-q[1]*r;on?g.lineTo(x,y):g.moveTo(x,y);on=true;}};
+        g.lineCap="round";g.lineJoin="round";g.globalAlpha=1-bp;
+        g.strokeStyle="#05030d";g.lineWidth=4.2*k.w;path();g.stroke();
+        g.save();g.globalCompositeOperation="lighter";g.shadowColor="rgba(255,150,40,.95)";g.shadowBlur=10+show*4;
+        g.strokeStyle=`rgba(255,${150+show*20},60,${.55*pulse})`;g.lineWidth=3.4*k.w;path();g.stroke();g.restore();
+        g.strokeStyle=`rgba(255,246,210,${.55+.15*show})`;g.lineWidth=1.5*k.w;path();g.stroke();g.globalAlpha=1;}
+      if(show){g.save();g.globalCompositeOperation="lighter";const gl=g.createRadialGradient(c,c,4,c,c,r);gl.addColorStop(0,`rgba(255,190,90,${.06*show})`);gl.addColorStop(1,"rgba(255,120,40,0)");g.globalAlpha=1-bp;g.fillStyle=gl;g.beginPath();g.arc(c,c,r,0,6.2832);g.fill();g.restore();}
+    }
   }
   function frame(now){raf=requestAnimationFrame(frame);const dt=now-last;if(dt<30)return;last=now;
-    const base=BASE[Math.min(lv,2)];spin=base+(spin-base)*.972;th+=dir*spin*(dt/16.7);draw();
+    const base=BASE[Math.min(lv,2)];spin=base+(spin-base)*.94;th+=dir*spin*(dt/16.7);
+    if(lv>0&&!busy&&spin<.05){let d=(-LC-th)%6.2832;if(d>3.1416)d-=6.2832;if(d<-3.1416)d+=6.2832;th+=d*.07;}   // after the spin-up, settle with the crack facing you
+    draw();
     if(lv>0&&!busy&&performance.now()-idle>7000)setLv(0);}
   const run=()=>{if(!still&&vis&&!document.hidden&&!raf){last=0;raf=requestAnimationFrame(frame);}},stop=()=>{if(raf){cancelAnimationFrame(raf);raf=0;}};
   if("IntersectionObserver" in window)new IntersectionObserver(es=>{vis=es[0].isIntersecting;vis?run():stop();}).observe(box);
@@ -1712,14 +1729,14 @@ void main(){
     gn.gain.setValueAtTime(.2,t);gn.gain.exponentialRampToValueAtTime(.0001,t+.45);o.connect(gn);gn.connect(ac.destination);o.start(t);o.stop(t+.5);
     [0,1,2,3,4,3,4,2,3,4].forEach((k,i)=>tone(F[k],t+.06+i*STEP,.55,.045+i*.002,"triangle"));}
   function buzz(p){try{navigator.vibrate&&navigator.vibrate(p);}catch(e){}}
-  function crack(){busy=true;ball.classList.remove("lv1","lv2");ball.classList.add("burst");
+  function crack(){busy=true;ball.classList.remove("lv1","lv2");burstT=performance.now();if(still)draw();
     buzz([40,30,90]);boom();
     flash.classList.remove("go");void flash.offsetWidth;flash.classList.add("go");
     sparks.innerHTML="";for(let i=0;i<30;i++){const a=Math.random()*6.283,rr=60+Math.random()*130,e=document.createElement("i");e.className="dsp";
       e.style.cssText=`--dx:${Math.cos(a)*rr}px;--dy:${Math.sin(a)*rr-30}px;--dl:${Math.random()*.15}s;background:hsl(${Math.random()*360} 100% 70%);width:${8+Math.random()*12}px;height:${8+Math.random()*12}px`;
       sparks.appendChild(e);}
     setTimeout(()=>{surpriseMe();},420);
-    setTimeout(()=>{ball.classList.remove("burst");setLv(0);spin=BASE[0];ball.classList.add("fresh");sparks.innerHTML="";busy=false;
+    setTimeout(()=>{burstT=0;setLv(0);spin=BASE[0];ball.classList.add("fresh");sparks.innerHTML="";busy=false;
       setTimeout(()=>ball.classList.remove("fresh"),700);if(still)draw();},1700);}
   function swipe(d){if(busy)return;dir=d||dir;idle=performance.now();spin=.28;
     if(still){th+=dir*.7;draw();}
