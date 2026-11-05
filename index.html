@@ -298,7 +298,7 @@ h1 .logo{height:1.05em;width:1.05em;border-radius:22%;vertical-align:-0.12em;mar
 .nightbtn b{font-family:var(--mono);font-weight:600;margin-left:4px}
 .daybtn{background:linear-gradient(180deg,#FBE3A8,#E9B76A);color:var(--thatch-ink);border:1.5px solid #8a5a22;box-shadow:0 3px 0 #6b3f12}
 .nightbtn:active,.daybtn:active{transform:translateY(2px)}
-.face.front{grid-template-rows:1fr auto auto auto}
+.face.front{grid-template-rows:1fr;grid-auto-rows:auto}
 /* layout: tickets under the date, add-to-calendar under star + category, the rest in a tidy 2x2 */
 .ev{grid-template-columns:64px 1fr}
 .stubtix{display:block;width:100%;margin-top:12px;text-align:center;font:700 12px/1.15 var(--body);padding:8px 2px;border-radius:10px;text-decoration:none;
@@ -310,18 +310,22 @@ h1 .logo{height:1.05em;width:1.05em;border-radius:22%;vertical-align:-0.12em;mar
 .trr{display:flex;align-items:flex-start;gap:8px}
 .addcal{font:600 11.5px var(--body);white-space:nowrap;text-decoration:none;color:var(--ink);padding:4px 10px;border-radius:999px;border:1px solid var(--bamboo);background:color-mix(in srgb,var(--thatch) 9%,transparent)}
 .links{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:4px}
-.links>a,.links>button,.links .listen summary{display:block;text-align:center;width:100%}
+.links>a,.links>button{display:block;text-align:center;width:100%}
+.links button.listenbtn{font:600 13px var(--body);padding:6px 13px;border-radius:999px;border:1px solid var(--bamboo);background:color-mix(in srgb,var(--thatch) 9%,transparent);color:var(--ink);cursor:pointer}
+.links button.listenbtn.on{background:color-mix(in srgb,var(--thatch) 24%,transparent)}
+.listenmenu{grid-column:1/-1;display:flex;flex-wrap:wrap;justify-content:center;gap:6px}
+.listenmenu[hidden]{display:none}
+.listenmenu a{font:600 12.5px var(--body);text-decoration:none;padding:5px 11px;border-radius:999px;border:1px solid var(--bamboo);color:var(--ink)}
 .links .listen[open]{grid-column:1/-1;order:0}
 .links .listen .lm{justify-content:center}
 .links button.rm{grid-column:1/-1}
 /* middle pills: full card width, centered on the same axis as the Night button */
 .links.wide{grid-column:1/-1;width:100%;max-width:440px;justify-self:center;margin-top:2px}
 /* top-right cluster: category + star + calendar as one tidy block */
-.tr{display:grid;grid-template-columns:1fr 30px;gap:5px;width:122px;padding:5px;border-radius:12px;align-items:stretch;
-  background:color-mix(in srgb,var(--thatch) 10%,rgba(0,0,0,.18));border:1px solid var(--bamboo)}
+.tr{display:grid;grid-template-columns:1fr 30px;gap:5px;width:122px;padding:5px;align-items:stretch}
 .trr{display:contents}
 .tr .kind{display:flex;align-items:center;justify-content:center;height:30px;padding:0 6px;border-radius:8px;font-size:10px;white-space:nowrap}
-.tr .starbtn{width:30px;height:30px;margin:0;font-size:19px;border-radius:8px;border:1px solid var(--bamboo);background:color-mix(in srgb,var(--thatch) 8%,transparent);display:flex;align-items:center;justify-content:center}
+.tr .starbtn{width:30px;height:30px;margin:0;font-size:19px;border-radius:8px;border:0;background:transparent;display:flex;align-items:center;justify-content:center}
 .tr .addcal{grid-column:1/-1;display:flex;align-items:center;justify-content:center;height:28px;padding:0 4px;border-radius:8px;font-size:11px}
 .links>:last-child:nth-child(odd){grid-column:1/-1}
 @media (max-width:420px){.ev{grid-template-columns:62px 1fr}}
@@ -668,18 +672,19 @@ function render(){
     const drv = e._drive ? `<span class="drive">~${fmtMins(e._drive.mins)} · ${e._drive.miles} mi</span>` : (origin ? '<span class="na">n/a</span>' : '<span class="na">Set start point</span>');
     const time = mic ? `<span>${esc(e.recurrence?.text||"")}${e.time?" · "+esc(e.time):""}</span>` : e.time ? `<span>${esc(e.time)}</span>` : '<span class="na">Time TBA</span>';
     const tix=safeUrl(e.url)||(mic?null:safeUrl("https://www.google.com/search?q="+encodeURIComponent([e.title,e.venue,e.city,"tickets"].filter(Boolean).join(" "))));
-    const tixLabel = mic ? "Details" : !tix ? "" : /google\.com\/search/.test(tix) ? "Find tickets" : TICKET_RE.test(tix) ? "Tickets" : "Website";
+    const tixLabel = tix ? "Tickets" : "";
     const dest = encodeURIComponent((e.venue||"")+", "+(e.city||""));
     const maps=`https://www.google.com/maps/dir/?api=1${origin&&origin.address?"&origin="+encodeURIComponent(origin.address):""}&destination=${dest}&travelmode=driving`;
     const tags=(e.genres||[]).map(g=>`<span class="tag">${esc((GENRES.find(x=>x[0]===g)||[g,g])[1])}</span>`).join("");
-    const listenQ = (e.kind==="concert"||e.kind==="club"||e.kind==="comedy") ? String(e.title||"").replace(/\s*\(.*?\)\s*/g," ").split(/:| & Friends/)[0].trim() : "";
+    const listenQ = (e.kind!=="openmic"&&e.kind!=="contact") ? String(e.title||"").replace(/\s*\(.*?\)\s*/g," ").split(/:| & Friends/)[0].trim() : "";
     const lq = encodeURIComponent(listenQ);
-    const listen = listenQ ? `<details class="listen"><summary>▶ Listen</summary><div class="lm">`+
+    const listen = listenQ ? `<button type="button" class="listenbtn" data-listen="1" aria-expanded="false">▶ Listen</button>` : "";
+    const listenMenu = listenQ ? `<div class="lm listenmenu" hidden>`+
       `<a href="https://music.youtube.com/search?q=${lq}" target="_blank" rel="noopener">YouTube Music</a>`+
       `<a href="https://open.spotify.com/search/${lq}" target="_blank" rel="noopener">Spotify</a>`+
       `<a href="https://music.apple.com/us/search?term=${lq}" target="_blank" rel="noopener">Apple Music</a>`+
       `<a href="https://soundcloud.com/search/people?q=${lq}" target="_blank" rel="noopener">SoundCloud</a>`+
-      `</div></details>` : "";
+      `</div>` : "";
 
     const pv=pMid(pi);
     const lc=(pv!=null&&!pi.sold)?band(pv,P_STEPS):"transparent";
@@ -700,7 +705,7 @@ function render(){
         ${(tags||extraTags)?`<div class="tags">${extraTags}${tags}</div>`:""}
         ${volHtml(e)}
       </div>
-      <div class="links wide"><a href="${maps}" target="_blank" rel="noopener">Directions</a><a href="${esc(eatLink(e))}" target="_blank" rel="noopener">Eat nearby</a><button type="button" class="share" data-share="${esc(skey(e))}">Share</button>${listen}${canRm?`<button type="button" class="rm" data-rm="${esc(e.id)}">Remove</button>`:""}</div>
+      <div class="links wide"><a href="${maps}" target="_blank" rel="noopener">Directions</a><a href="${esc(eatLink(e))}" target="_blank" rel="noopener">Eat nearby</a><button type="button" class="share" data-share="${esc(skey(e))}">Share</button>${listen}${canRm?`<button type="button" class="rm" data-rm="${esc(e.id)}">Remove</button>`:""}</div>${listenMenu}
       <div class="sides"><div class="side l"><span class="sl">Price</span>${priceHtml}</div><div class="side r"><span class="sl">Drive</span>${drv}</div></div>${nightHtml}</div>
       ${backHtml(e,nc,fl)}</div></article>`;
   }
@@ -753,6 +758,8 @@ function flipCard(card){if(!card)return;const on=!card.classList.contains("flipp
   if(f)f.setAttribute("aria-hidden",String(on)); if(b)b.setAttribute("aria-hidden",String(!on));
   try{window.getSelection().removeAllRanges();}catch(e){}}
 const listEl=document.getElementById("list");
+listEl.addEventListener("click",ev=>{const b=ev.target.closest("[data-listen]");if(!b)return;
+  const m=b.closest(".face").querySelector(".listenmenu");if(!m)return;m.hidden=!m.hidden;b.setAttribute("aria-expanded",String(!m.hidden));b.classList.toggle("on",!m.hidden);});
 listEl.addEventListener("click",ev=>{const b=ev.target.closest("[data-flip]");if(!b)return;flipCard(b.closest(".card"));});
 
 /* ---- views: list / map / insights ---- */
