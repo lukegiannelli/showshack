@@ -443,6 +443,7 @@ h1 .logo{height:1.05em;width:1.05em;border-radius:22%;vertical-align:-0.12em;mar
 .links .listen .lm{justify-content:center}
 .links button.rm{grid-column:1/-1}
 /* middle pills: full card width, centered on the same axis as the Night button */
+.links>:last-child:nth-child(odd){grid-column:1/-1}
 .links.wide{grid-column:1/-1;width:100%;max-width:440px;justify-self:center;margin-top:2px}
 /* top-right cluster: category + star + calendar as one tidy block */
 .tr{display:grid;grid-template-columns:1fr 30px;gap:5px;width:122px;padding:5px;align-items:stretch}
@@ -873,7 +874,7 @@ function render(){
         ${(tags||extraTags)?`<div class="tags">${extraTags}${tags}</div>`:""}
         ${volHtml(e)}
       </div>
-      <div class="links wide"><a href="${maps}" target="_blank" rel="noopener">Directions</a><a href="${esc(eatLink(e))}" target="_blank" rel="noopener">Eat nearby</a><button type="button" class="share" data-share="${esc(skey(e))}">Share</button>${listen}${canRm?`<button type="button" class="rm" data-rm="${esc(e.id)}">Remove</button>`:""}</div>${listenMenu}
+      <div class="links wide"><a href="${maps}" target="_blank" rel="noopener">Directions</a><a href="${maps.replace("travelmode=driving","travelmode=transit")}" target="_blank" rel="noopener">${ni("train")} Transit</a><a href="${esc(eatLink(e))}" target="_blank" rel="noopener">Eat nearby</a><button type="button" class="share" data-share="${esc(skey(e))}">Share</button>${listen}${canRm?`<button type="button" class="rm" data-rm="${esc(e.id)}">Remove</button>`:""}</div>${listenMenu}
       <div class="sides"><div class="side l"><span class="sl">Price</span>${priceHtml}</div><div class="side r"><span class="sl">Drive</span>${drv}</div></div>${nightHtml}</div>
       ${backHtml(e,nc,fl)}</div></article>`;
   }
@@ -935,7 +936,7 @@ function venueHeader(k){
     ${row("Size",esc(v.tier)+(v.cap?` · ~${v.cap} people`:""))}
     ${row("Parking",v.tier==="Small / DIY"?"usually street or small lots · ~$"+park:"typically ~$"+park+" · lots fill up before big shows")}
     ${row("Transit",v.transit?ni("sprout")+" "+esc(v.transit)+" nearby":"best by car or rideshare")}
-    <div class="vlinks"><a href="${maps}" target="_blank" rel="noopener">Directions</a><a href="${g("parking")}" target="_blank" rel="noopener">Parking ↗</a><a href="${g("bag policy")}" target="_blank" rel="noopener">Bag policy ↗</a></div>
+    <div class="vlinks"><a href="${maps}" target="_blank" rel="noopener">Directions</a><a href="${maps.replace("travelmode=driving","travelmode=transit")}" target="_blank" rel="noopener">${ni("train")} Transit</a><a href="${g("parking")}" target="_blank" rel="noopener">Parking ↗</a><a href="${g("bag policy")}" target="_blank" rel="noopener">Bag policy ↗</a></div>
     <p class="vnote">Parking prices are typical for this size of venue. Check the venue for tonight's actual rules.</p>
   </section>`;
 }
