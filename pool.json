@@ -518,9 +518,12 @@
 "n": "High Society Billiard & Dart",
 "c": "hall",
 "a": "34405 Waltham Pl",
-"city": "Winchester",
+"city": "Temecula",
 "zip": "92596",
-"t": []
+"t": [],
+"lat": 33.4857,
+"lon": -117.14324,
+"geo": "osm-poi"
 },
 {
 "n": "Stiix Billiards",
@@ -565,16 +568,6 @@
 "lat": 34.18523,
 "lon": -119.17182,
 "geo": "place"
-},
-{
-"n": "Fireside Lounge",
-"c": "bar",
-"a": "Fireside Lounge",
-"city": "Palm Springs",
-"zip": "",
-"t": [
-"Shuffleboard"
-]
 },
 {
 "n": "Pappy & Harriet's",
