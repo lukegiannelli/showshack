@@ -566,10 +566,10 @@ body.neb.nebok .vcard .vf .vpin{opacity:.7}
 .ev .body{position:relative}
 .ev .body>*:not(.sticker){position:relative;z-index:1}
 .ev .sticker{position:absolute;right:-2px;bottom:4px;z-index:0;max-width:54%;max-height:70px;object-fit:contain;
-  transform:rotate(-7deg);transform-origin:100% 100%;opacity:.24;pointer-events:none;user-select:none;
-  filter:drop-shadow(1.5px 0 0 #fff) drop-shadow(-1.5px 0 0 #fff) drop-shadow(0 1.5px 0 #fff) drop-shadow(0 -1.5px 0 #fff) drop-shadow(0 2px 2px rgba(0,0,0,.35))}
-:root:not([data-theme="dark"]) .ev .sticker{opacity:.2;filter:drop-shadow(1.5px 0 0 #17141F) drop-shadow(-1.5px 0 0 #17141F) drop-shadow(0 1.5px 0 #17141F) drop-shadow(0 -1.5px 0 #17141F)}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .ev .sticker{opacity:.24;filter:drop-shadow(1.5px 0 0 #fff) drop-shadow(-1.5px 0 0 #fff) drop-shadow(0 1.5px 0 #fff) drop-shadow(0 -1.5px 0 #fff) drop-shadow(0 2px 2px rgba(0,0,0,.35))}}
+  transform:rotate(-5deg) translateZ(0);transform-origin:100% 100%;opacity:.46;pointer-events:none;user-select:none;will-change:transform;
+  filter:drop-shadow(1px 0 0 #fff) drop-shadow(-1px 0 0 #fff) drop-shadow(0 1px 0 #fff) drop-shadow(0 -1px 0 #fff)}
+:root:not([data-theme="dark"]) .ev .sticker{opacity:.4;filter:drop-shadow(1px 0 0 #17141F) drop-shadow(-1px 0 0 #17141F) drop-shadow(0 1px 0 #17141F) drop-shadow(0 -1px 0 #17141F)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .ev .sticker{opacity:.46;filter:drop-shadow(1px 0 0 #fff) drop-shadow(-1px 0 0 #fff) drop-shadow(0 1px 0 #fff) drop-shadow(0 -1px 0 #fff)}}
 
 /* ---- Listen: soft rainbow LED shimmer through the bubble and the letters (opaque) ---- */
 .links button.listenbtn{position:relative;isolation:isolate;border:1.5px solid transparent;
