@@ -1350,6 +1350,9 @@ async function copyOut(text,btn){
   }
   function set(on){playing=on;document.getElementById("songCredit").hidden=!on;btn.setAttribute("aria-pressed",String(on));btn.setAttribute("aria-label",on?"Stop the Shack song":"Play the Shack song");if(!still)kick();}
   btn.addEventListener("click",()=>{playing?stop():start();});
+  // seconds until the song's next beat (div=1) or 16th note (div=4); null when the song isn't playing. The disco ball uses it to land its sounds on the beat.
+  window.shackBeat=function(div){if(!playing)return null;let pos=null;if(src&&ctx)pos=ctx.currentTime-t0;else if(el&&!el.paused)pos=el.currentTime;if(pos==null||pos<0)return null;
+    const g=60/SONG.bpm/(div||1),ph=(((pos-SONG.offset)%g)+g)%g;return ph<.02?0:g-ph;};
 
   // Spin runs as a compositor animation (Web Animations), so it stays buttery even while you scroll.
   // One full turn per bar of the song; started so the turn lines up with the first beat.
@@ -1726,8 +1729,8 @@ void main(){
   function loadChime(){if(chBuf||chLoad||!ac)return;chLoad=true;fetch("chime.mp3?v=1").then(r=>r.arrayBuffer()).then(b=>ac.decodeAudioData(b)).then(b=>{chBuf=b;}).catch(()=>{chLoad=false;});}
   function note(i,at,vol){if(chBuf){const s=ac.createBufferSource(),gn=ac.createGain();s.buffer=chBuf;gn.gain.value=vol;s.connect(gn);gn.connect(ac.destination);s.start(at,i*.6,.58);}
     else tone([F[0]/2*1,F[1]/2,F[2],F[4]][i],at,.4,vol*.05);}   // synth stand-in until the sample loads
-  function tick(n){if(!audio())return;loadChime();note(Math.min(3,n-1),ac.currentTime+.01,.9);}
-  function boom(){if(!audio())return;loadChime();const t=ac.currentTime+.01;
+  function tick(n){if(!audio())return;loadChime();const w=window.shackBeat?window.shackBeat(4):null;note(Math.min(3,n-1),ac.currentTime+.01+(w||0),.9);}
+  function boom(d){if(!audio())return;loadChime();const t=ac.currentTime+.01+(d||0);
     const o=ac.createOscillator(),gn=ac.createGain();o.frequency.setValueAtTime(174.6,t);o.frequency.exponentialRampToValueAtTime(43.65,t+.35);   // F3 drops to F1 like the song's low end
     gn.gain.setValueAtTime(.2,t);gn.gain.exponentialRampToValueAtTime(.0001,t+.45);o.connect(gn);gn.connect(ac.destination);o.start(t);o.stop(t+.5);
     [0,1,2,3].forEach(i=>note(i,t+.05+i*STEP*2,.8+i*.1));}
@@ -1740,15 +1743,16 @@ void main(){
     const f=walk(la,lo,h,6+(Math.random()*3|0),.13),bk=walk(la,lo,h+Math.PI,5+(Math.random()*3|0),.13);
     CR.push({p:bk.reverse().concat(f.slice(1)),w:i?.75:1});
     const m=f[3]||f[1];CR.push({p:walk(m[0],m[1],h+(Math.random()<.5?1:-1)*(.8+Math.random()*.6),4,.11),w:.55});}}
-  function crack(){CR.forEach(k=>{const m=k.p[k.p.length>>1];CR.push({p:walk(m[0],m[1],Math.random()*6.283,3,.1),w:.4});});busy=true;ball.classList.remove("lv1","lv2");burstT=performance.now();if(still)draw();
-    buzz([40,30,90]);boom();
+  function crack(){CR.forEach(k=>{const m=k.p[k.p.length>>1];CR.push({p:walk(m[0],m[1],Math.random()*6.283,3,.1),w:.4});});busy=true;const wb=window.shackBeat?window.shackBeat(1):null,dl=wb==null?0:wb;boom(dl);setTimeout(go,dl*1000);   // song playing: hold the burst for the next beat
+    function go(){ball.classList.remove("lv1","lv2");burstT=performance.now();if(still)draw();
+    buzz([40,30,90]);
     flash.classList.remove("go");void flash.offsetWidth;flash.classList.add("go");
     sparks.innerHTML="";for(let i=0;i<30;i++){const a=Math.random()*6.283,rr=60+Math.random()*130,e=document.createElement("i");e.className="dsp";
       e.style.cssText=`--dx:${Math.cos(a)*rr}px;--dy:${Math.sin(a)*rr-30}px;--dl:${Math.random()*.15}s;background:hsl(${Math.random()*360} 100% 70%);width:${8+Math.random()*12}px;height:${8+Math.random()*12}px`;
       sparks.appendChild(e);}
     setTimeout(()=>{surpriseMe();},420);
     setTimeout(()=>{burstT=0;setLv(0);spin=BASE[0];ball.classList.add("fresh");sparks.innerHTML="";busy=false;
-      setTimeout(()=>ball.classList.remove("fresh"),700);if(still)draw();},1700);}
+      setTimeout(()=>ball.classList.remove("fresh"),700);if(still)draw();},1700);}}
   let tx=.0,ty=.0;
   function mark(e){const rc=ball.getBoundingClientRect();tx=(e.clientX-rc.left-rc.width/2)/(rc.width/2);ty=-(e.clientY-rc.top-rc.height/2)/(rc.height/2);}
   function swipe(d,sp){if(busy)return;whoosh();dir=d||dir;idle=performance.now();spin=sp||.12;
