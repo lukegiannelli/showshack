@@ -71,7 +71,7 @@
     gn.gain.setValueAtTime(0,at);gn.gain.linearRampToValueAtTime(vol,at+.01);gn.gain.exponentialRampToValueAtTime(.0001,at+len);o.connect(gn);gn.connect(ac.destination);o.start(at);o.stop(at+len+.05);}
   function audio(){try{const AC=window.AudioContext||window.webkitAudioContext;if(!AC)return false;
     try{if(navigator.audioSession)navigator.audioSession.type="playback";}catch(e){}   // iPhone: play even with the silent switch on
-    if(!ac){ac=new AC();const b=ac.createBuffer(1,1,22050),sr=ac.createBufferSource();sr.buffer=b;sr.connect(ac.destination);sr.start(0);}
+    if(!ac){try{ac=new AC({latencyHint:"interactive"});}catch(e){ac=new AC();}const b=ac.createBuffer(1,1,22050),sr=ac.createBufferSource();sr.buffer=b;sr.connect(ac.destination);sr.start(0);}
     if(ac.state!=="running")ac.resume();loadChime();return true;}catch(e){return false;}}
   function whoosh(){if(!audio())return;const t=ac.currentTime+.01,len=ac.sampleRate*.5,bf=ac.createBuffer(1,len,ac.sampleRate),d=bf.getChannelData(0);
     for(let i=0;i<len;i++)d[i]=(Math.random()*2-1)*Math.sin(Math.PI*i/len);
@@ -80,13 +80,18 @@
   // the notes are real: four 0.5 s slices cut from the shack song (F4, Ab4, C5, F5 = its F-minor arpeggio)
   let chBuf=null,chLoad=false;
   function loadChime(){if(chBuf||chLoad||!ac)return;chLoad=true;fetch("chime.mp3?v=1").then(r=>r.arrayBuffer()).then(b=>ac.decodeAudioData(b)).then(b=>{chBuf=b;}).catch(()=>{chLoad=false;});}
-  function note(i,at,vol){if(chBuf){const s=ac.createBufferSource(),gn=ac.createGain();s.buffer=chBuf;gn.gain.value=vol;s.connect(gn);gn.connect(ac.destination);s.start(at,i*.6,.58);}
-    else tone([F[0]/2*1,F[1]/2,F[2],F[4]][i],at,.4,vol*.05);}   // synth stand-in until the sample loads
-  function tick(n){if(!audio())return;loadChime();const w=window.shackBeat?window.shackBeat(4):null;note(Math.min(3,n-1),ac.currentTime+.01+(w||0),.9);}
-  function boom(d){if(!audio())return;loadChime();const t=ac.currentTime+.01+(d||0);
-    const o=ac.createOscillator(),gn=ac.createGain();o.frequency.setValueAtTime(174.6,t);o.frequency.exponentialRampToValueAtTime(43.65,t+.35);   // F3 drops to F1 like the song's low end
+  function note(i,at,vol,oct){const r=oct||1;if(chBuf){const s=ac.createBufferSource(),gn=ac.createGain();s.buffer=chBuf;s.playbackRate.value=r;gn.gain.value=vol;s.connect(gn);gn.connect(ac.destination);s.start(at,i*.6,.58);}
+    else tone([698.5,830.6,1046.5,1396.9][i]*r,at,.4,vol*.05);}   // synth stand-in until the sample loads
+  function tick(n){if(!audio())return;loadChime();note(Math.min(2,n-1),ac.currentTime+.003,.9);}   // F4, Ab4, C5: climbing
+  function boom(){if(!audio())return;loadChime();const t=ac.currentTime+.003;
+    const o=ac.createOscillator(),gn=ac.createGain();o.frequency.setValueAtTime(174.6,t);o.frequency.exponentialRampToValueAtTime(43.65,t+.35);   // low thump
     gn.gain.setValueAtTime(.2,t);gn.gain.exponentialRampToValueAtTime(.0001,t+.45);o.connect(gn);gn.connect(ac.destination);o.start(t);o.stop(t+.5);
-    [0,1,2,3].forEach(i=>note(i,t+.05+i*STEP*2,.8+i*.1));}
+    // ticks climbed F4-Ab4-C5; the burst keeps climbing and resolves on the high tonic
+    const run=[[3,1],[1,2],[2,2],[3,2]];                       // F5, Ab5, C6, F6
+    run.forEach(([n,r],k)=>note(n,t+.02+k*.085,.75+k*.12,r));
+    const top=t+.02+3*.085;
+    tone(1396.9,top,1.6,.07,"sine");tone(698.5,top,1.4,.05,"sine");tone(2793.8,top+.02,0.9,.018,"triangle");   // ring out on F so it feels finished
+  }
   function buzz(p){try{navigator.vibrate&&navigator.vibrate(p);}catch(e){}}
   // finger spot -> point on the sphere (undo the tilt and the current turn), then a jagged fault both ways from it
   function hit(px,py){const d=px*px+py*py;if(d>.96){px*=.97/Math.sqrt(d);py*=.97/Math.sqrt(d);}
@@ -96,7 +101,7 @@
     const f=walk(la,lo,h,6+(Math.random()*3|0),.13),bk=walk(la,lo,h+Math.PI,5+(Math.random()*3|0),.13);
     CR.push({p:bk.reverse().concat(f.slice(1)),w:i?.75:1});
     const m=f[3]||f[1];CR.push({p:walk(m[0],m[1],h+(Math.random()<.5?1:-1)*(.8+Math.random()*.6),4,.11),w:.55});}}
-  function crack(){CR.forEach(k=>{const m=k.p[k.p.length>>1];CR.push({p:walk(m[0],m[1],Math.random()*6.283,3,.1),w:.4});});busy=true;const wb=window.shackBeat?window.shackBeat(1):null,dl=wb==null?0:wb;boom(dl);setTimeout(go,dl*1000);   // song playing: hold the burst for the next beat
+  function crack(){CR.forEach(k=>{const m=k.p[k.p.length>>1];CR.push({p:walk(m[0],m[1],Math.random()*6.283,3,.1),w:.4});});busy=true;boom();go();
     function go(){ball.classList.remove("lv1","lv2");ball.classList.add("burst");burstT=performance.now();if(still)draw();
     buzz([40,30,90]);
     flash.classList.remove("go");void flash.offsetWidth;flash.classList.add("go");
@@ -113,12 +118,16 @@
     if(lv<3){addCracks(tx,ty,lv===2?2:1);setLv(lv+1);tick(lv);buzz(12*(lv+1));}else crack();}
   // the whole disco area is the swipe zone (not just the ball); the ball keeps your finger's speed when you let go
   let trk=[];
-  box.addEventListener("pointerdown",e=>{if(busy)return;audio();x0=e.clientX;xs=x0;moved=0;trk=[[e.clientX,performance.now()]];mark(e);try{box.setPointerCapture(e.pointerId);}catch(_){}});
+  let fired=false;
+  const vel=()=>{const a=trk[0],z=trk[trk.length-1],dtm=Math.max(16,z[1]-a[1]);return (z[0]-a[0])/dtm;};   // px per ms
+  box.addEventListener("pointerdown",e=>{if(busy)return;audio();x0=e.clientX;xs=x0;moved=0;fired=false;trk=[[e.clientX,performance.now()]];mark(e);try{box.setPointerCapture(e.pointerId);}catch(_){}});
   box.addEventListener("pointermove",e=>{if(x0==null)return;const dx=e.clientX-x0;moved=Math.max(moved,Math.abs(e.clientX-xs));
-    th+=dx*.0128;x0=e.clientX;if(dx)dir=dx>0?1:-1;mark(e);const n=performance.now();trk.push([e.clientX,n]);while(trk.length>2&&n-trk[0][1]>90)trk.shift();spin=0;if(still)draw();});
+    th+=dx*.0128;x0=e.clientX;if(dx)dir=dx>0?1:-1;mark(e);const n=performance.now();trk.push([e.clientX,n]);while(trk.length>2&&n-trk[0][1]>90)trk.shift();spin=0;if(still)draw();
+    if(!fired&&moved>=24){fired=true;const v=vel();if(Math.abs(v)>.05)dir=v>0?1:-1;swipe(dir,.12);spin=0;}});   // sound + crack right as the swipe registers
   const end=()=>{if(x0==null)return;x0=null;audio();
-    if(moved>=24){const a=trk[0],z=trk[trk.length-1],dtm=Math.max(16,z[1]-a[1]),v=(z[0]-a[0])/dtm;   // px per ms
-      if(Math.abs(v)>.05)dir=v>0?1:-1;swipe(dir,Math.min(.6,Math.max(.05,Math.abs(v)*.214)));}};   // .0128 rad per px * 16.7 ms = .214 rad per frame per px/ms
+    if(moved>=24){const v=vel();if(Math.abs(v)>.05)dir=v>0?1:-1;const sp=Math.min(.6,Math.max(.05,Math.abs(v)*.214));
+      if(fired){spin=sp;idle=performance.now();}else swipe(dir,sp);}};   // already sounded mid-swipe: just hand over the finger's speed   // .0128 rad per px * 16.7 ms = .214 rad per frame per px/ms
+  box.addEventListener("touchend",()=>{audio();},{passive:true});   // iPhone only allows sound to start on a finger-up inside the disco area
   box.addEventListener("pointerup",end);box.addEventListener("pointercancel",()=>{x0=null;});
   ball.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();tx=(Math.random()-.5)*1.1;ty=(Math.random()-.5)*1.1;swipe(1);}});
 })();
