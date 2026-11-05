@@ -119,6 +119,13 @@ select{min-width:0;max-width:100%;text-overflow:ellipsis}
 .tag{font-size:11.5px;color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:1px 8px}
 .links{display:flex;flex-wrap:wrap;gap:8px;margin-top:2px}
 .links a{font:600 13px var(--body);text-decoration:none;padding:6px 12px;border-radius:7px;border:1px solid var(--line);color:var(--ink)}
+/* Show Shack header: hut art fills the card, gradient title above the roof */
+header{background:#1a0f33 url(header.jpg) center 34%/cover no-repeat;aspect-ratio:1/1.14;max-height:580px;padding:18px 14px 14px;align-items:stretch;justify-content:space-between;gap:0;overflow:hidden;position:relative}
+header::before{content:"";position:absolute;inset:0 0 auto 0;height:34%;background:linear-gradient(180deg,rgba(14,8,32,.55),rgba(14,8,32,0));pointer-events:none}
+header h1.shack-title{position:relative;background:linear-gradient(90deg,#FFE66D 0%,#FFB347 22%,#FF6FA5 48%,#D08CFF 72%,#6FF0FF 100%);-webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-stroke:1.6px #170b2e;paint-order:stroke fill;filter:drop-shadow(0 3px 0 #170b2e) drop-shadow(0 0 14px rgba(10,4,24,.7));padding:0;border-radius:0;text-align:center;font-size:clamp(26px,8.4vw,58px);line-height:1;letter-spacing:1.5px;max-width:100%;padding:0 .12em;white-space:nowrap;text-wrap:nowrap;align-self:center}
+header .sub{position:relative;background:rgba(18,10,38,.74);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);color:#ddd6ee;border:1px solid rgba(255,255,255,.14);border-radius:12px;padding:8px 12px;margin-top:auto}
+header .sub b{color:#fff}
+header .sub .sharebtn{color:#fff;border-color:rgba(255,255,255,.35);background:rgba(255,255,255,.08)}
 h1 .logo{height:1.05em;width:1.05em;border-radius:22%;vertical-align:-0.12em;margin-right:.3em}
 .links a.tix{background:var(--ink);color:var(--bg);border-color:var(--ink)}
 .sharebtn{font:600 13px var(--body);padding:6px 12px;border-radius:7px;border:1px solid var(--line);background:transparent;color:var(--ink);cursor:pointer}
@@ -231,7 +238,7 @@ h1 .logo{height:1.05em;width:1.05em;border-radius:22%;vertical-align:-0.12em;mar
 
 <div class="wrap">
   <header>
-    <h1><img class="logo" src="icon-192.png" alt="">THE SHOW <span>SHACK</span></h1>
+    <h1 class="shack-title">The Show Shack</h1>
     <div class="sub"><span>Concerts, raves, clubs, comedy, theater &amp; festivals across Southern California</span><span id="refreshed">Loading…</span><button type="button" class="sharebtn" id="shareApp">Share the Shack</button><span id="count"></span></div>
   </header>
 
