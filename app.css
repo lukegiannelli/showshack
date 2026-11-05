@@ -14,12 +14,12 @@
   --bg:#121019; --surface:#1C1926; --ink:#EEEBF5; --muted:#A39DB3; --line:#2E2A3A;
   --accent:#FF7A4D; --accent-ink:#1A0E08; --drive:#4FC7B6; --chip:#2A2636; --sold:#F08A8A; --bee:#FFC83D; --wing:#3A4A5C; --ov:rgba(18,16,25,.85); --glass:rgba(18,16,25,.5); --tintA:.38; color-scheme:dark}
 *{box-sizing:border-box}
-body{background:linear-gradient(var(--ov),var(--ov)),var(--wave) center top/100% auto repeat-y,var(--bg);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.45;
+body{background:linear-gradient(var(--ov),var(--ov)),var(--sky) center top/100% auto no-repeat,#120F2A;color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.45;
   padding-left:max(16px, env(safe-area-inset-left,0px));padding-right:max(16px, env(safe-area-inset-right,0px));padding-block:20px 48px}
 .wrap{max-width:760px;margin:0 auto;display:flex;flex-direction:column;gap:18px}
 header h1{font-family:var(--display);font-weight:900;font-size:clamp(40px,10vw,64px);line-height:.9;margin:0;letter-spacing:.5px;text-transform:uppercase;text-wrap:balance}
 header h1 span{color:var(--accent)}
-:root{--wave:url("wave.jpg?v=1")}
+:root{--wave:url("wave.jpg?v=1");--sky:url("sky.jpg?v=1")}
 header{background:var(--wave) center 20%/cover no-repeat;border-radius:14px;padding:22px 16px;display:flex;flex-direction:column;align-items:flex-start;gap:10px;box-shadow:0 1px 0 var(--line)}
 header h1{background:var(--ink);color:var(--bg);padding:8px 14px 6px;border-radius:10px}
 header .sub{margin-top:0;background:var(--surface);color:var(--muted);padding:6px 12px;border-radius:8px}
@@ -457,7 +457,9 @@ h1 .logo{height:1.05em;width:1.05em;border-radius:22%;vertical-align:-0.12em;mar
 /* living background: the swirl art flows slowly (WebGL). Falls back to the still image if anything fails. */
 #bgfx{position:fixed;top:0;left:0;width:100%;height:100vh;height:100lvh;z-index:-1;pointer-events:none;display:none;contain:strict;transform:translateZ(0)}
 #bgfx canvas{width:100%;height:100%;display:block}
-#bgfx .ovl{position:absolute;inset:0;background:var(--ov)}
+#bgfx .ovl{position:absolute;inset:0;background:var(--ovsky,var(--ov))}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--ovsky:rgba(12,10,30,.32)}}
+:root[data-theme="dark"]{--ovsky:rgba(12,10,30,.32)}
 body.fx{background:var(--bg)}
 body.fx #bgfx{display:block}
 .signup{display:inline-flex;align-items:center;gap:5px;font-weight:700;color:var(--accent)}
@@ -502,7 +504,6 @@ body.fx #bgfx{display:block}
 .wkb.skip{color:var(--sold,#F08A8A);border-color:var(--sold,#F08A8A)}
 .wkb.star{color:var(--bee);border-color:var(--bee);box-shadow:0 0 12px color-mix(in srgb,var(--bee) 40%,transparent)}
 .wkb.open{padding:10px 16px;font-weight:700}
-.wknote{margin:10px 0 0;font-size:11.5px;color:var(--muted);text-align:center}
 .wkdone{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;border:1.5px dashed var(--line);border-radius:14px}
 .wkdone b{font-family:var(--display);text-transform:uppercase;font-size:24px}
 .wkdone span{color:var(--muted)}
@@ -516,3 +517,14 @@ body.neb.nebok .vcard .vf{background:linear-gradient(180deg,rgba(8,6,22,.18),rgb
 body.neb.nebok .vcard .vf .vopen b{text-shadow:0 1px 3px rgba(0,0,0,.85),0 0 10px rgba(0,0,0,.4)}
 body.neb.nebok .vcard .vf .vopen span,body.neb.nebok .vcard .vf .vopen small{color:#DCD2F2;text-shadow:0 1px 2px rgba(0,0,0,.9)}
 body.neb.nebok .vcard .vf .vpin{opacity:.7}
+
+/* max drive: a neon sports sedan rides the slider */
+.range input#maxDrive{-webkit-appearance:none;appearance:none;height:30px;background:transparent;cursor:pointer;accent-color:auto;--p:100%}
+#maxDrive::-webkit-slider-runnable-track{height:5px;border-radius:5px;background:linear-gradient(90deg,#FF4FD8,var(--accent) calc(var(--p) * .6),#FFC83D var(--p),var(--chip) var(--p));box-shadow:0 0 8px rgba(255,122,77,.45)}
+#maxDrive::-moz-range-track{height:5px;border-radius:5px;background:var(--chip)}
+#maxDrive::-moz-range-progress{height:5px;border-radius:5px;background:linear-gradient(90deg,#FF4FD8,var(--accent),#FFC83D);box-shadow:0 0 8px rgba(255,122,77,.45)}
+#maxDrive::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:60px;height:22px;margin-top:-12px;border:0;background:url("car.svg?v=1") center/contain no-repeat;filter:drop-shadow(0 0 4px rgba(79,199,182,.8)) drop-shadow(0 0 2px rgba(255,79,216,.6))}
+#maxDrive::-moz-range-thumb{width:60px;height:22px;border:0;border-radius:0;background:url("car.svg?v=1") center/contain no-repeat;filter:drop-shadow(0 0 4px rgba(79,199,182,.8))}
+#maxDrive:focus-visible{outline:2px solid var(--accent);outline-offset:4px;border-radius:6px}
+.range input#maxDrive{width:170px}
+@media (max-width:420px){.range input#maxDrive{width:140px}}

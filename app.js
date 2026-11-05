@@ -62,7 +62,7 @@ buildChips("kindRow",KINDS,"kind");
     b.dataset.f=k;row.insertBefore(b,first);});})();buildChips("genreRow",GENRES,"genre");
 const md=document.getElementById("maxDrive"), mdo=document.getElementById("maxDriveOut"), sb=document.getElementById("sortBy");
 md.value=state.maxDrive; sb.value=state.sort;
-function syncDrive(){mdo.textContent = +md.value>=180 ? "Any" : "≤ "+fmtMins(+md.value);}
+function syncDrive(){mdo.textContent = +md.value>=180 ? "Any" : "≤ "+fmtMins(+md.value);md.style.setProperty("--p",((+md.value-+md.min)/(+md.max-+md.min)*100)+"%");}
 syncDrive();
 md.oninput=()=>{state.maxDrive=+md.value;syncDrive();savePrefs();render();};
 
@@ -255,8 +255,7 @@ function weekendDigest(evs){
   return `<section class="wkstack" id="wkstack">
     <div class="wkhead">${ni("sun")}<b>This weekend</b><span class="wkn">${left.length?`${wp.picks.length-left.length+1} of ${wp.picks.length}`:""}</span></div>
     <div class="wkdeck">${left.length?left.map(wkCard).join(""):wkDone(wp)}</div>
-    ${left.length?`<div class="wkbtns"><button type="button" class="wkb skip" data-wkact="skip" aria-label="Skip">✕</button><button type="button" class="wkb open" data-wkact="open">See it</button><button type="button" class="wkb star" data-wkact="star" aria-label="Star">★</button></div>
-    <p class="wknote">Swipe ← to skip, → to star. One pick per vibe, ranked by your stars, cheap tickets, short drives and small rooms. It's not popularity.</p>`:""}
+    ${left.length?`<div class="wkbtns"><button type="button" class="wkb skip" data-wkact="skip" aria-label="Skip">✕</button><button type="button" class="wkb open" data-wkact="open">See it</button><button type="button" class="wkb star" data-wkact="star" aria-label="Star">★</button></div>`:""}
   </section>`;
 }
 function wkDone(wp){const n=wp.picks.filter(p=>state.stars.has(skey(p.e))).length;
@@ -276,7 +275,7 @@ function wkCommit(card,dir){
   if(navigator.vibrate)try{navigator.vibrate(dir==="r"?[12,40,12]:8);}catch(e){}
   setTimeout(()=>{card.remove();const cs=wkLayout();
     if(!cs.length&&wp){const deck=document.querySelector("#wkstack .wkdeck");if(deck)deck.innerHTML=wkDone(wp);
-      document.querySelectorAll("#wkstack .wkbtns,#wkstack .wknote").forEach(x=>x.remove());}},320);
+      document.querySelectorAll("#wkstack .wkbtns").forEach(x=>x.remove());}},320);
 }
 (function(){const L=document.getElementById("list");let drag=null;
   L.addEventListener("pointerdown",ev=>{const c=ev.target.closest("#wkstack .wkc.top");if(!c||ev.button>0)return;
