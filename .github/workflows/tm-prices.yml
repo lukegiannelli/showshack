@@ -19,11 +19,19 @@ jobs:
       TM_API_KEY: ${{ secrets.TM_API_KEY }}
     steps:
       - uses: actions/checkout@v4
-      - run: python3 scripts/tm_prices.py events.json
+        with: { fetch-depth: 0 }
       - run: |
-          git diff --quiet events.json && { echo "No price changes."; exit 0; }
           git config user.name "show-shack-bot"
           git config user.email "show-shack-bot@users.noreply.github.com"
-          git add events.json
-          git commit -m "Ticketmaster prices: $(python3 -c "import json;print(json.load(open('events.json')).get('tmNote',''))")"
-          for i in 1 2 3; do git pull --rebase origin main && git push && break; sleep 5; done
+          # events.json is one long line, so git can't merge two edits to it. Instead: start from the
+          # latest main, redo the price pass, push; if someone pushed meanwhile, start over.
+          for i in 1 2 3 4; do
+            git fetch -q origin main && git reset -q --hard origin/main
+            python3 scripts/tm_prices.py events.json
+            git diff --quiet events.json && { echo "No price changes."; exit 0; }
+            git add events.json
+            git commit -q -m "Ticketmaster prices: $(python3 -c "import json;print(json.load(open('events.json')).get('tmNote',''))")"
+            git push origin HEAD:main && exit 0
+            sleep 10
+          done
+          exit 1
