@@ -209,27 +209,95 @@ function alertOf(e){const out=[];
   return out;}
 const pMid=pi=>pi.lo==null?null:(pi.hi!=null?(pi.lo+pi.hi)/2:pi.lo*1.3);
 let listObs=null;
-function weekendDigest(evs){
-  if(state.view!=="list"||state.surprise||state.venue!=="all"||state.q||state.when==="tonight")return "";
-  const r=dayRange("weekend"); if(!r)return "";
-  const pool=evs.filter(e=>!e.added&&!isRec(e)&&e.start<=r[1]&&(e.end||e.start)>=r[0]&&!priceInfo(e).sold);
-  if(pool.length<3)return "";
+/* ---- weekend top 5: a swipe stack, one pick per vibe. Swipe left = skip, right = star ---- */
+const VIBES=[
+  ["rave","flame","Bass & raves","#FF4FD8",e=>isRave(e)&&!CONS.has(e.kind)&&!isRec(e)],
+  ["laugh","mic","Laughs","#FFC83D",e=>e.kind==="comedy"],
+  ["band","venue","Live band","#FF7A4D",e=>(e.kind==="concert"||e.kind==="festival")&&!isRave(e)],
+  ["cheap","money","Free or cheap","#4FC7B6",e=>{const pi=priceInfo(e);return pi.free||(!pi.none&&!pi.sold&&pi.lo!=null&&pi.lo<=20);}],
+  ["local","home","Small & local","#9B8CFF",e=>isSmall(e)]];
+const WILD=["wild","dice","Wildcard","#7FD4FF"];
+function wkGone(w){try{const g=JSON.parse(localStorage.getItem("radar-wkgone")||"{}");return g.w===w?new Set(g.gone||[]):new Set();}catch(e){return new Set();}}
+function wkSave(w,set){try{localStorage.setItem("radar-wkgone",JSON.stringify({w,gone:[...set]}));}catch(e){}}
+function weekendPicks(evs){
+  const r=dayRange("weekend"); if(!r)return null;
+  const pool=evs.filter(e=>!e.added&&e.start<=r[1]&&(e.end||e.start)>=r[0]&&!priceInfo(e).sold);
+  if(pool.length<3)return null;
   const score=e=>{const pi=priceInfo(e);let sc=0;
     if(state.stars.has(skey(e)))sc+=100;
     if(pi.free)sc+=20;else if(!pi.none&&pi.lo!=null&&pi.lo<=25)sc+=10;
-    if(e._drive){sc+=e._drive.mins<=30?15:e._drive.mins<=60?8:0;}
-    if(isSmall(e))sc+=5;
+    if(e._drive)sc+=e._drive.mins<=30?15:e._drive.mins<=60?8:0;
+    if(isSmall(e))sc+=5; if(!isRec(e))sc+=3;
     return sc;};
-  const seen={},top=[];
-  pool.map(e=>({e,s:score(e)})).sort((a,b)=>b.s-a.s||a.e.start.localeCompare(b.e.start)).forEach(({e})=>{
-    if(top.length>=5)return;const k=e.kind||"x";if((seen[k]||0)>=2)return;seen[k]=(seen[k]||0)+1;top.push(e);});
-  const when=d=>parseDay(d).toLocaleDateString("en-US",{weekday:"short"});
-  const rows=top.map(e=>{const pi=priceInfo(e);
-    const pr=pi.free?"Free":pi.none?"":pi.lo!=null?(pi.est?"≈":"")+"$"+Math.round(pi.lo):"";
-    const dr=e._drive?e._drive.mins+" min":"";
-    return `<button type="button" class="wkrow" data-jump="${esc(hid(e))}"><b>${esc(when(e.start))}</b><span class="wkt">${esc(e.title)}<small>${esc([e.venue,pr,dr].filter(Boolean).join(" · "))}</small></span>${state.stars.has(skey(e))?"<i>★</i>":""}</button>`;}).join("");
-  return `<details class="wkend" open><summary>${ni("sun")} This weekend: top ${top.length}</summary>${rows}<p class="wknote">Ranked by your stars, free or cheap tickets, short drives and small rooms. It's not popularity, since I don't have that data.</p></details>`;
+  const ranked=pool.map(e=>({e,s:score(e)})).sort((a,b)=>b.s-a.s||a.e.start.localeCompare(b.e.start)).map(x=>x.e);
+  const used=new Set(), picks=[];
+  for(const v of VIBES){const e=ranked.find(x=>!used.has(skey(x))&&v[4](x));if(e){used.add(skey(e));picks.push({e,v});}}
+  for(const e of ranked){if(picks.length>=5)break;if(!used.has(skey(e))){used.add(skey(e));picks.push({e,v:WILD});}}
+  return {w:r[0],picks:picks.slice(0,5)};
 }
+function wkCard(p,i){const e=p.e,v=p.v,pi=priceInfo(e);
+  const d=parseDay(e.start);
+  const day=d.toLocaleDateString("en-US",{weekday:"short"}).toUpperCase()+(e.time?" · "+e.time:"");
+  const pr=pi.free?"Free":pi.none?"Price TBA":pi.lo!=null?(pi.est?"≈":"")+"$"+Math.round(pi.lo):"";
+  const st=state.stars.has(skey(e));
+  return `<article class="wkc" data-k="${esc(skey(e))}" data-h="${esc(hid(e))}" style="--vc:${v[3]}">
+    <div class="wkv">${ni(v[1])}<span>${esc(v[2])}</span>${st?'<b class="wkon">★ starred</b>':""}</div>
+    <div class="wkd">${esc(day)}</div>
+    <h4>${esc(e.title)}</h4>
+    <p class="wkp">${esc(e.venue||"")}${e.city?" · "+esc(e.city):""}</p>
+    <div class="wkm">${pr?`<b>${esc(pr)}</b>`:""}${e._drive?`<span>${ni("car")} ${e._drive.mins} min</span>`:""}</div>
+    <div class="wks l">Skip</div><div class="wks r">★ Star</div></article>`;}
+function weekendDigest(evs){
+  if(state.view!=="list"||state.surprise||state.venue!=="all"||state.q||state.when==="tonight")return "";
+  const wp=weekendPicks(evs); if(!wp)return "";
+  const gone=wkGone(wp.w), left=wp.picks.filter(p=>!gone.has(skey(p.e)));
+  state._wk=wp;
+  return `<section class="wkstack" id="wkstack">
+    <div class="wkhead">${ni("sun")}<b>This weekend</b><span class="wkn">${left.length?`${wp.picks.length-left.length+1} of ${wp.picks.length}`:""}</span></div>
+    <div class="wkdeck">${left.length?left.map(wkCard).join(""):wkDone(wp)}</div>
+    ${left.length?`<div class="wkbtns"><button type="button" class="wkb skip" data-wkact="skip" aria-label="Skip">✕</button><button type="button" class="wkb open" data-wkact="open">See it</button><button type="button" class="wkb star" data-wkact="star" aria-label="Star">★</button></div>
+    <p class="wknote">Swipe ← to skip, → to star. One pick per vibe, ranked by your stars, cheap tickets, short drives and small rooms. It's not popularity.</p>`:""}
+  </section>`;
+}
+function wkDone(wp){const n=wp.picks.filter(p=>state.stars.has(skey(p.e))).length;
+  return `<div class="wkdone"><b>That's the weekend.</b><span>${n} starred</span><button type="button" class="chip" data-wkact="reset">Start over</button></div>`;}
+function wkLayout(){const cs=[...document.querySelectorAll("#wkstack .wkc:not(.fly)")];
+  cs.forEach((c,i)=>{c.style.setProperty("--i",i);c.style.setProperty("--rot",(i===0?0:(i%2?1.6:-1.6))+"deg");c.classList.toggle("far",i>=3);c.style.zIndex=String(10-i);c.classList.toggle("top",i===0);c.setAttribute("aria-hidden",String(i!==0));});
+  const n=document.querySelector("#wkstack .wkn"),wp=state._wk;
+  if(n&&wp)n.textContent=cs.length?`${wp.picks.length-cs.length+1} of ${wp.picks.length}`:"";
+  return cs;}
+function wkCommit(card,dir){
+  if(!card||card.classList.contains("fly"))return;
+  const wp=state._wk, k=card.dataset.k;
+  if(dir==="r"&&!state.stars.has(k)){state.stars.add(k);starCount++;updateStarChip();saveStars();updateBudget();
+    document.querySelectorAll(`button[data-star="${CSS.escape(k)}"]`).forEach(b=>{b.setAttribute("aria-pressed","true");b.textContent="★";});}
+  if(wp){const g=wkGone(wp.w);g.add(k);wkSave(wp.w,g);}
+  card.classList.add("fly",dir==="r"?"fr":"fl");card.style.transform="";
+  if(navigator.vibrate)try{navigator.vibrate(dir==="r"?[12,40,12]:8);}catch(e){}
+  setTimeout(()=>{card.remove();const cs=wkLayout();
+    if(!cs.length&&wp){const deck=document.querySelector("#wkstack .wkdeck");if(deck)deck.innerHTML=wkDone(wp);
+      document.querySelectorAll("#wkstack .wkbtns,#wkstack .wknote").forEach(x=>x.remove());}},320);
+}
+(function(){const L=document.getElementById("list");let drag=null;
+  L.addEventListener("pointerdown",ev=>{const c=ev.target.closest("#wkstack .wkc.top");if(!c||ev.button>0)return;
+    drag={c,x:ev.clientX,y:ev.clientY,dx:0,id:ev.pointerId,t:Date.now(),h:false};c.style.transition="none";});
+  L.addEventListener("pointermove",ev=>{if(!drag||ev.pointerId!==drag.id)return;
+    const dx=ev.clientX-drag.x, dy=ev.clientY-drag.y;
+    if(!drag.h){if(Math.abs(dy)>10&&Math.abs(dy)>Math.abs(dx)){drag.c.style.transition="";drag=null;return;} if(Math.abs(dx)>8){drag.h=true;try{drag.c.setPointerCapture(ev.pointerId);}catch(e){}}}
+    if(!drag.h)return;
+    drag.dx=dx;drag.c.style.transform=`translateX(${dx}px) rotate(${dx/18}deg)`;
+    drag.c.style.setProperty("--sl",String(Math.min(1,Math.max(0,-dx/90))));drag.c.style.setProperty("--sr",String(Math.min(1,Math.max(0,dx/90))));});
+  const end=ev=>{if(!drag||ev.pointerId!==drag.id)return;const d=drag;drag=null;d.c.style.transition="";
+    d.c.style.setProperty("--sl","0");d.c.style.setProperty("--sr","0");
+    const v=Math.abs(d.dx)/Math.max(1,Date.now()-d.t);
+    if(d.h&&(Math.abs(d.dx)>90||(Math.abs(d.dx)>40&&v>0.5)))wkCommit(d.c,d.dx>0?"r":"l");
+    else{d.c.style.transform="";if(!d.h&&ev.type==="pointerup")wkOpen(d.c);}};
+  L.addEventListener("pointerup",end);L.addEventListener("pointercancel",end);
+  L.addEventListener("click",ev=>{const b=ev.target.closest("[data-wkact]");if(!b)return;const a=b.dataset.wkact,top=document.querySelector("#wkstack .wkc.top");
+    if(a==="skip")wkCommit(top,"l");else if(a==="star")wkCommit(top,"r");else if(a==="open")wkOpen(top);
+    else if(a==="reset"&&state._wk){wkSave(state._wk.w,new Set());render();}});
+})();
+function wkOpen(c){if(!c)return;hashDone="";history.replaceState(null,"","#"+c.dataset.h);jumpToHash();}
 function render(){
   const list=document.getElementById("list");
   if(!state.loaded) return;
@@ -357,6 +425,7 @@ function render(){
     listObs=new IntersectionObserver(es=>{if(es.some(x=>x.isIntersecting))fill();},{rootMargin:"1600px 0px"});listObs.observe(sent);}
   else if(sent){while(state._more());}
   fillWx();
+  wkLayout();
   jumpToHash();
   const sa=document.getElementById("spAgain"),sd=document.getElementById("spDone");
   if(sa)sa.onclick=surpriseMe; if(sd)sd.onclick=()=>{state.surprise=null;render();};
@@ -559,8 +628,7 @@ function flipCard(card){if(!card)return;const on=!card.classList.contains("flipp
 const listEl=document.getElementById("list");
 listEl.addEventListener("click",ev=>{const b=ev.target.closest("[data-listen]");if(!b)return;
   const m=b.closest(".face").querySelector(".listenmenu");if(!m)return;m.hidden=!m.hidden;b.setAttribute("aria-expanded",String(!m.hidden));b.classList.toggle("on",!m.hidden);});
-listEl.addEventListener("click",ev=>{const jb=ev.target.closest("[data-jump]");if(jb){hashDone="";history.replaceState(null,"","#"+jb.dataset.jump);jumpToHash();return;}
-  const sp=ev.target.closest("[data-split],[data-night]");if(sp){const t=sp.dataset.split||sp.dataset.night;
+listEl.addEventListener("click",ev=>{const sp=ev.target.closest("[data-split],[data-night]");if(sp){const t=sp.dataset.split||sp.dataset.night;
   if(navigator.share){navigator.share({text:t}).catch(()=>{});}
   else if(navigator.clipboard){navigator.clipboard.writeText(t).then(()=>{const o=sp.innerHTML;sp.textContent="Copied ✓";setTimeout(()=>sp.innerHTML=o,1500);});}
   return;}
