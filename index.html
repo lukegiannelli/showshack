@@ -299,6 +299,35 @@ h1 .logo{height:1.05em;width:1.05em;border-radius:22%;vertical-align:-0.12em;mar
 .nfoot a{color:var(--accent);font-weight:600;text-decoration:none}
 .songcredit{margin:-8px 0 0;text-align:center;font-size:11px;color:var(--muted)}.songcredit[hidden]{display:none}.songcredit a{color:inherit}
 .facts .wx{color:var(--ink);font-weight:500}.facts .wx:empty{display:none}
+/* disco-ball Surprise me */
+.disco{margin:26px 0 34px;text-align:center}
+.dstage{position:relative;width:170px;margin:0 auto;padding-top:46px}
+.dstring{position:absolute;left:50%;top:0;width:2px;height:48px;margin-left:-1px;background:linear-gradient(#0000,#cfd6ff);box-shadow:0 0 6px #9db0ff}
+.dball{position:relative;width:156px;height:156px;margin:0 auto;border-radius:50%;overflow:hidden;cursor:grab;touch-action:pan-y;user-select:none;-webkit-user-select:none;background:#6a7399;
+ box-shadow:0 0 26px rgba(150,130,255,.5),0 0 60px rgba(255,110,200,.22);transition:box-shadow .3s}
+.dtiles{position:absolute;inset:0;background-image:linear-gradient(90deg,rgba(10,8,25,.6) 1.6px,transparent 1.6px),linear-gradient(0deg,rgba(10,8,25,.6) 1.6px,transparent 1.6px),linear-gradient(135deg,#eef2ff,#97a3cf 38%,#454c73 62%,#d3dcff);background-size:16px 16px,16px 16px,32px 32px;background-position:var(--ox,0px) 0,var(--ox,0px) 0,0 0}
+.dglint{position:absolute;inset:0;mix-blend-mode:screen;opacity:.85;background-image:radial-gradient(circle,#ff5fb8 0 2.5px,transparent 3px),radial-gradient(circle,#5ee7ff 0 2.5px,transparent 3px),radial-gradient(circle,#ffe36b 0 2px,transparent 2.5px);background-size:32px 32px,32px 32px,32px 32px;background-position:var(--ox2,0px) 4px,calc(var(--ox2,0px) + 16px) 20px,calc(var(--ox2,0px) + 8px) 12px}
+.dshine{position:absolute;inset:0;border-radius:50%;background:radial-gradient(circle at 32% 26%,rgba(255,255,255,.9),transparent 26%),radial-gradient(circle,transparent 48%,rgba(6,3,22,.72) 100%)}
+.dcrack{position:absolute;inset:0;z-index:2;fill:none;stroke:#fff;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;filter:drop-shadow(0 0 3px #fff) drop-shadow(0 0 7px #ffd36b)}
+.dcrack path{opacity:0}
+.dball.lv1 .c1,.dball.lv2 .c1,.dball.lv2 .c2,.dball.burst .c1,.dball.burst .c2,.dball.burst .c3{opacity:1}
+.dball.lv1{box-shadow:0 0 34px rgba(255,200,110,.7),0 0 70px rgba(255,110,200,.3)}
+.dball.lv2{box-shadow:0 0 44px rgba(255,220,120,.9),0 0 90px rgba(255,110,200,.45);animation:dshake .22s infinite}
+.dball.burst{animation:dburst .5s ease-in forwards}
+.dball.fresh{animation:dfresh .6s ease-out}
+@keyframes dshake{0%,100%{transform:translateX(0)}25%{transform:translateX(-2px) rotate(-1deg)}75%{transform:translateX(2px) rotate(1deg)}}
+@keyframes dburst{0%{transform:scale(1);filter:brightness(1)}60%{transform:scale(1.12);filter:brightness(2.2)}100%{transform:scale(1.3);opacity:0;filter:brightness(4)}}
+@keyframes dfresh{from{transform:scale(.4);opacity:0}to{transform:scale(1);opacity:1}}
+.dflash{position:absolute;left:50%;top:124px;width:40px;height:40px;margin:-20px 0 0 -20px;border-radius:50%;pointer-events:none;opacity:0;background:radial-gradient(circle,#fff 0,#ffe9a8 30%,rgba(255,170,230,.5) 55%,transparent 72%)}
+.dflash.go{animation:dflash .9s ease-out}
+@keyframes dflash{0%{transform:scale(.3);opacity:1}100%{transform:scale(9);opacity:0}}
+.dsparks{position:absolute;left:50%;top:124px;width:0;height:0;pointer-events:none}
+.dsp{position:absolute;width:14px;height:14px;margin:-7px;clip-path:polygon(50% 0,62% 38%,100% 50%,62% 62%,50% 100%,38% 62%,0 50%,38% 38%);animation:dfly 1s cubic-bezier(.2,.7,.3,1) forwards;animation-delay:var(--dl,0s);opacity:0}
+@keyframes dfly{0%{transform:translate(0,0) scale(.3) rotate(0);opacity:1}100%{transform:translate(var(--dx),var(--dy)) scale(1.2) rotate(180deg);opacity:0}}
+.dhint{margin:16px 0 0;font:700 13px var(--mono);letter-spacing:.06em;text-transform:uppercase;color:#ffe9a8;text-shadow:0 0 8px rgba(255,200,110,.8)}
+.card.emerge,.list>.card.emerge{animation:emerge .8s cubic-bezier(.2,.8,.2,1)}
+@keyframes emerge{0%{transform:translateY(70px) scale(.5);opacity:0;box-shadow:0 0 0 rgba(255,220,120,0)}60%{box-shadow:0 0 40px rgba(255,220,120,.8)}100%{transform:none;opacity:1;box-shadow:none}}
+@media (prefers-reduced-motion:reduce){.dball.lv2,.dball.burst,.dball.fresh,.card.emerge,.dsp,.dflash.go{animation:none}}
 /* venues */
 .vlink{all:unset;cursor:pointer;color:inherit;text-decoration:underline;text-decoration-color:var(--bamboo);text-underline-offset:3px}
 .venues{display:flex;flex-direction:column;gap:8px}
@@ -536,13 +565,21 @@ h1 .logo{height:1.05em;width:1.05em;border-radius:22%;vertical-align:-0.12em;mar
     <button type="button" class="chip" id="vList" aria-pressed="true"><svg class="ni ni-list" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-list"/></svg> List</button>
     <button type="button" class="chip" id="vMap" aria-pressed="false"><svg class="ni ni-map" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-map"/></svg> Map</button>
     <button type="button" class="chip" id="vVen" aria-pressed="false"><svg class="ni ni-venue" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-venue"/></svg> Venues</button>
-    <button type="button" class="chip save" id="vSurprise"><svg class="ni ni-dice" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-dice"/></svg> Surprise me</button>
     <button type="button" class="chip" id="vIns" aria-pressed="false" hidden><svg class="ni ni-chart" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-chart"/></svg> Hivemind808 insights</button>
   </div>
   <button type="button" class="alertbar" id="alertBar" hidden></button>
   <main id="list" class="list" aria-live="polite">
     <div class="empty"><strong>Loading shows…</strong>The list fills in from the daily refresh. Each row shows the date, venue, starting price and drive time from home.</div>
   </main>
+  <section id="disco" class="disco" hidden aria-label="Surprise me">
+    <div class="dstage"><i class="dstring"></i>
+      <div class="dball" id="dball" role="button" tabindex="0" aria-label="Surprise me: swipe the disco ball sideways three times">
+        <div class="dtiles"></div><div class="dglint"></div>
+        <svg class="dcrack" viewBox="0 0 100 100" aria-hidden="true"><path class="c1" d="M52 2 L46 20 L55 34 L47 50 L53 66"/><path class="c2" d="M46 20 L28 28 M55 34 L74 30 M47 50 L26 58 M53 66 L70 78 M47 50 L66 52"/><path class="c3" d="M53 66 L48 98 M28 28 L12 36 M74 30 L90 24 M26 58 L8 70"/></svg>
+        <div class="dshine"></div></div>
+      <i class="dflash"></i><div class="dsparks" id="dsparks"></div></div>
+    <p class="dhint" id="dhint">Swipe the ball for a surprise show</p>
+  </section>
 
 </div>
 
@@ -739,6 +776,7 @@ let listObs=null;
 function render(){
   const list=document.getElementById("list");
   if(!state.loaded) return;
+  const dsc=document.getElementById("disco");if(dsc)dsc.hidden=!(state.view==="list"||state.view==="venues");
   const today=todayStr();
   let evs=[...state.events, ...state.picks.map(p=>({...p,added:true}))].map(e=>{
       const x={...e,_drive:driveEstimate(e.lat,e.lon)};
@@ -774,9 +812,9 @@ function render(){
   if(state.view==="venues"){renderVenues();return;}
   const vHead=state.venue!=="all"?venueHeader(state.venue):"";
   if(!state.events.length){list.innerHTML='<div class="empty"><strong>No shows yet</strong>The daily refresh adds concerts and festivals here with dates, prices and drive times. Check back after the next run.</div>';return;}
-  if(!evs.length){list.innerHTML = vHead + (state.venue!=="all"&&(state._up||[]).some(e=>venueKey(e)===state.venue)?'<div class="empty"><strong>Filters are hiding this venue\'s shows</strong>Set Show and Genre to All, and When to Any day.</div>':""); if(state.venue!=="all")return; list.innerHTML = state.kind==="starred" ? '<div class="empty"><strong>Nothing starred yet</strong>Tap ☆ on any show to keep an eye on it. Your stars are private to you.</div>' : state.kind==="picks" ? '<div class="empty"><strong>No added shows yet</strong>Tap ＋ Add a show to pin a gig you heard about. It shows up here and at the top of the full list.</div>' : (state.q ? `<div class="empty"><strong>No shows match “${esc(sq.value.trim())}”</strong>Check the spelling, try part of the name, or set the filters above to All.</div>` : '<div class="empty"><strong>Nothing matches these filters</strong>Try a longer max drive or set Genre to All.</div>');return;}
+  if(!evs.length&&!state.surprise){list.innerHTML = vHead + (state.venue!=="all"&&(state._up||[]).some(e=>venueKey(e)===state.venue)?'<div class="empty"><strong>Filters are hiding this venue\'s shows</strong>Set Show and Genre to All, and When to Any day.</div>':""); if(state.venue!=="all")return; list.innerHTML = state.kind==="starred" ? '<div class="empty"><strong>Nothing starred yet</strong>Tap ☆ on any show to keep an eye on it. Your stars are private to you.</div>' : state.kind==="picks" ? '<div class="empty"><strong>No added shows yet</strong>Tap ＋ Add a show to pin a gig you heard about. It shows up here and at the top of the full list.</div>' : (state.q ? `<div class="empty"><strong>No shows match “${esc(sq.value.trim())}”</strong>Check the spelling, try part of the name, or set the filters above to All.</div>` : '<div class="empty"><strong>Nothing matches these filters</strong>Try a longer max drive or set Genre to All.</div>');return;}
   let surpriseHtml="";
-  if(state.surprise){const pick=evs.find(e=>skey(e)===state.surprise);
+  if(state.surprise){const pick=(state._up||evs).find(e=>skey(e)===state.surprise);
     if(pick){evs=[pick];surpriseHtml=`<div class="surprise">${ni("dice")} <b>Your pick</b><span>${esc(state.surpriseWhy||"")}</span><button type="button" class="chip" id="spAgain">Another</button><button type="button" class="chip" id="spDone">Show all</button></div>`;}
     else state.surprise=null;}
   const pinned=evs.filter(e=>e.added), rest=evs.filter(e=>!e.added);
@@ -809,7 +847,7 @@ function render(){
     const nightHtml = `<div class="flipbar"><button type="button" class="nightbtn" data-flip="1">🌙 Night out <b>≈ $${nc.n>1?nc.each+" each":nc.total}${nc.partial?"+":""}</b></button></div>`;
     const leaveHtml = lb ? `<span class="leave">Leave by ${lb}</span>` : "";
     const al = alertOf(e).map(a=>`<span class="badge ${a.c}">${a.c==="sale"?ni("ticket")+" ":""}${a.t}</span>`).join("");
-    const ag = ageOf(e); const extraTags = (isSmall(e)?'<span class="tag local">${ni("home")} Small &amp; local</span>':"")+(ag?`<span class="tag age">${ag==="all"?"All ages":ag}</span>`:"")+(transitOf(e)?`<span class="tag transit">${ni("sprout")} ${transitOf(e)}</span>`:"");
+    const ag = ageOf(e); const extraTags = (isSmall(e)?`<span class="tag local">${ni("home")} Small &amp; local</span>`:"")+(ag?`<span class="tag age">${ag==="all"?"All ages":ag}</span>`:"")+(transitOf(e)?`<span class="tag transit">${ni("sprout")} ${transitOf(e)}</span>`:"");
     const drv = e._drive ? `<span class="drive">~${fmtMins(e._drive.mins)} · ${e._drive.miles} mi</span>` : (origin ? '<span class="na">n/a</span>' : '<span class="na">Set start point</span>');
     const time = mic ? `<span>${esc(e.recurrence?.text||"")}${e.time?" · "+esc(e.time):""}</span>` : e.time ? `<span>${esc(e.time)}</span>` : '<span class="na">Time TBA</span>';
     const tix=safeUrl(e.url)||(mic?null:safeUrl("https://www.google.com/search?q="+encodeURIComponent([e.title,e.venue,e.city,"tickets"].filter(Boolean).join(" "))));
@@ -997,20 +1035,17 @@ function backHtml(e,nc,fl){
   </div>`;
 }
 function surpriseMe(){
-  state.surprise=null; state.view="list"; [vL,vM,vI,vV].forEach(b=>b.setAttribute("aria-pressed",String(b===vL)));
-  render(); // fills state._shown with current filters
-  const pool=(state._shown||[]).filter(e=>{const pi=priceInfo(e);return !pi.sold;});
-  const tries=[["tonight","tonight"],["weekend","this weekend"],[null,"in the next 2 weeks"]];
-  let picks=[],why="";
-  for(const [w,label] of tries){const r=w?dayRange(w):[todayStr(),ymd(new Date(Date.now()+14*86400000))];
-    picks=pool.filter(e=>e.start<=r[1]&&(e.end||e.start)>=r[0]);if(picks.length){why=label;break;}}
-  if(!picks.length){picks=pool;why="coming up";}
-  if(!picks.length)return;
-  const prev=state._lastSurprise;let pick=picks[Math.floor(Math.random()*picks.length)];
-  if(picks.length>1&&pick&&skey(pick)===prev)pick=picks.find(e=>skey(e)!==prev);
+  state.surprise=null; state.venue="all"; state.view="list"; [vL,vM,vI,vV].forEach(b=>b.setAttribute("aria-pressed",String(b===vL)));
+  render(); // refreshes state._up
+  const pool=(state._up||[]).filter(e=>!priceInfo(e).sold);
+  if(!pool.length)return;
+  const prev=state._lastSurprise;let pick=pool[Math.floor(Math.random()*pool.length)];
+  if(pool.length>1&&pick&&skey(pick)===prev)pick=pool.find(e=>skey(e)!==prev);
   state._lastSurprise=skey(pick);state.surprise=skey(pick);
-  state.surpriseWhy=`Random pick ${why}, from ${picks.length} show${picks.length>1?"s":""} that match your filters${state.maxDrive<180?" and drive limit":""}.`;
-  render();window.scrollTo({top:document.getElementById("viewBar").offsetTop-8,behavior:"smooth"});
+  state.surpriseWhy=`Random pick from all ${pool.length} upcoming shows, filters ignored.`;
+  render();
+  const c=document.querySelector("#list .card");
+  if(c){c.classList.add("emerge");c.scrollIntoView({block:"center",behavior:"smooth"});}
 }
 
 /* ---- flip a card to its night-cost back: double-tap (or tap the 🌙 pill / ↩) ---- */
@@ -1028,7 +1063,7 @@ listEl.addEventListener("click",ev=>{const b=ev.target.closest("[data-flip]");if
 const vL=document.getElementById("vList"),vM=document.getElementById("vMap"),vI=document.getElementById("vIns"),vV=document.getElementById("vVen");
 function setView(v){state.view=v;[vL,vM,vI,vV].forEach(b=>b.setAttribute("aria-pressed",String(b.id===({list:"vList",map:"vMap",ins:"vIns",venues:"vVen"})[v])));render();}
 vV.onclick=()=>{state.surprise=null;state.venue="all";savePrefs();setView("venues");};
-vL.onclick=()=>{state.surprise=null;if(state.venue!=="all"){state.venue="all";savePrefs();}setView("list");};document.getElementById("vSurprise").onclick=()=>surpriseMe();vM.onclick=()=>setView("map");vI.onclick=()=>setView("ins");
+vL.onclick=()=>{state.surprise=null;if(state.venue!=="all"){state.venue="all";savePrefs();}setView("list");};vM.onclick=()=>setView("map");vI.onclick=()=>setView("ins");
 const carSel=document.getElementById("carSel");carSel.value=String(state.car||1);carSel.onchange=()=>{state.car=+carSel.value;savePrefs();render();};
 const mpgIn=document.getElementById("mpgIn"),gasIn=document.getElementById("gasIn"),foodSel=document.getElementById("foodSel");
 mpgIn.value=state.mpg||25;gasIn.value=(state.gas||5.85).toFixed(2);foodSel.value=String(state.food??30);
@@ -1624,4 +1659,46 @@ void main(){
 })();
 </script>
 
+<script>
+(function(){
+  const box=document.getElementById("disco"),ball=document.getElementById("dball");if(!box||!ball)return;
+  const hint=document.getElementById("dhint"),sparks=document.getElementById("dsparks"),flash=box.querySelector(".dflash");
+  const still=matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const BASE=[.45,1.1,2.2],MSG=["Swipe the ball for a surprise show","Faster! Swipe again","One more swipe...","✨"];
+  let xs=0,ox=0,ox2=0,vel=BASE[0],dir=1,lv=0,busy=false,raf=0,vis=false,idle=0,x0=null,moved=0;
+  function frame(){raf=requestAnimationFrame(frame);
+    const base=BASE[Math.min(lv,2)];vel=base+(vel-base)*.965;
+    ox=(ox+dir*vel)%32;ox2=(ox2-dir*vel*1.7)%32;
+    ball.style.setProperty("--ox",ox+"px");ball.style.setProperty("--ox2",ox2+"px");
+    if(lv>0&&!busy&&performance.now()-idle>7000)setLv(0);}
+  const run=()=>{if(!still&&vis&&!document.hidden&&!raf)raf=requestAnimationFrame(frame);},stop=()=>{if(raf){cancelAnimationFrame(raf);raf=0;}};
+  if("IntersectionObserver" in window)new IntersectionObserver(es=>{vis=es[0].isIntersecting;vis?run():stop();}).observe(box);
+  document.addEventListener("visibilitychange",()=>{document.hidden?stop():run();});
+  function setLv(n){lv=n;ball.classList.remove("lv1","lv2");if(n===1)ball.classList.add("lv1");if(n>=2)ball.classList.add("lv2");hint.textContent=MSG[Math.min(n,3)];}
+  function chime(){try{const AC=window.AudioContext||window.webkitAudioContext;if(!AC)return;const c=new AC(),t=c.currentTime;
+    [1318,1760,2093,2637,3136].forEach((f,i)=>{const o=c.createOscillator(),g=c.createGain();o.type="sine";o.frequency.value=f;
+      g.gain.setValueAtTime(0,t+i*.07);g.gain.linearRampToValueAtTime(.05,t+i*.07+.01);g.gain.exponentialRampToValueAtTime(.0001,t+i*.07+.5);
+      o.connect(g);g.connect(c.destination);o.start(t+i*.07);o.stop(t+i*.07+.55);});setTimeout(()=>c.close(),1200);}catch(e){}}
+  function buzz(p){try{navigator.vibrate&&navigator.vibrate(p);}catch(e){}}
+  function crack(){busy=true;ball.classList.remove("lv1","lv2");ball.classList.add("burst");hint.textContent=MSG[3];
+    buzz([40,30,90]);chime();
+    flash.classList.remove("go");void flash.offsetWidth;flash.classList.add("go");
+    sparks.innerHTML="";for(let i=0;i<30;i++){const a=Math.random()*6.283,r=60+Math.random()*130,e=document.createElement("i");e.className="dsp";
+      e.style.cssText=`--dx:${Math.cos(a)*r}px;--dy:${Math.sin(a)*r-30}px;--dl:${Math.random()*.15}s;background:hsl(${Math.random()*360} 100% 70%);width:${8+Math.random()*12}px;height:${8+Math.random()*12}px`;
+      sparks.appendChild(e);}
+    setTimeout(()=>{surpriseMe();},420);
+    setTimeout(()=>{ball.classList.remove("burst");setLv(0);vel=BASE[0];ball.classList.add("fresh");sparks.innerHTML="";busy=false;
+      setTimeout(()=>ball.classList.remove("fresh"),700);},1700);}
+  function swipe(d){if(busy)return;dir=d||dir;idle=performance.now();vel=16;
+    if(lv<2){setLv(lv+1);buzz(12*(lv+1));}else crack();}
+  ball.addEventListener("pointerdown",e=>{if(busy)return;x0=e.clientX;xs=x0;moved=0;try{ball.setPointerCapture(e.pointerId);}catch(_){}ball.style.cursor="grabbing";});
+  ball.addEventListener("pointermove",e=>{if(x0==null)return;const dx=e.clientX-x0;moved=Math.max(moved,Math.abs(e.clientX-xs));
+    ox=(ox+dx*.6)%32;ox2=(ox2-dx*.9)%32;x0=e.clientX;ball.style.setProperty("--ox",ox+"px");ball.style.setProperty("--ox2",ox2+"px");
+    if(dx)dir=dx>0?1:-1;});
+  const end=()=>{if(x0==null)return;x0=null;ball.style.cursor="";if(moved>=28)swipe(dir);};
+  ball.addEventListener("pointerup",end);ball.addEventListener("pointercancel",()=>{x0=null;});
+  ball.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();swipe(1);}});
+  setLv(0);
+})();
+</script>
 </body></html>
