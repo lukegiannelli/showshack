@@ -1096,7 +1096,7 @@ let fileLoaded=false;
 
 <style>
 /* living background: the swirl art flows slowly (WebGL). Falls back to the still image if anything fails. */
-#bgfx{position:fixed;inset:0;z-index:-1;pointer-events:none;display:none}
+#bgfx{position:fixed;inset:0;z-index:-1;pointer-events:none;display:none;contain:strict;transform:translateZ(0)}
 #bgfx canvas{width:100%;height:100%;display:block}
 #bgfx .ovl{position:absolute;inset:0;background:var(--ov)}
 body.fx{background:var(--bg)}
@@ -1140,15 +1140,22 @@ void main(){
     gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.LINEAR);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MAG_FILTER,gl.LINEAR);
     gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_S,gl.CLAMP_TO_EDGE);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_T,gl.CLAMP_TO_EDGE);
     gl.uniform1f(uA,img.height/img.width);
-    const scale=Math.min(1,(devicePixelRatio||1)*0.6); // soft art, so render small and save battery
+    const scale=Math.min(0.75,(devicePixelRatio||1)*0.4); // soft art, so render small and save battery
     function size(){const w=Math.round(innerWidth*scale),h=Math.round(innerHeight*scale);if(cv.width!==w||cv.height!==h){cv.width=w;cv.height=h;gl.viewport(0,0,w,h);}gl.uniform2f(uRes,w,h);}
     addEventListener("resize",size);size();
     document.body.classList.add("fx");
-    const t0=performance.now();let last=0,run=true,raf=0;
-    function frame(now){raf=requestAnimationFrame(frame);if(now-last<33)return;last=now; // ~30fps
-      gl.uniform1f(uT,(now-t0)/1000*0.35);
-      gl.uniform1f(uS,scrollY/innerWidth*0.5); // gentle parallax as you scroll
+    // Smooth scrolling first: the art holds still while you scroll and drifts again when you stop
+    // (redrawing a full-screen layer mid-scroll is what made it choppy). Time only advances while drawing, so no jump.
+    let last=0,raf=0,tt=0,scrolling=0;
+    addEventListener("scroll",()=>{scrolling=performance.now();},{passive:true});
+    addEventListener("touchmove",()=>{scrolling=performance.now();},{passive:true});
+    gl.uniform1f(uS,0);
+    function frame(now){raf=requestAnimationFrame(frame);
+      if(now-scrolling<220){last=now;return;}
+      const dt=now-last; if(dt<33)return; last=now;
+      tt+=Math.min(dt,100)/1000*0.35; gl.uniform1f(uT,tt);
       gl.drawArrays(gl.TRIANGLES,0,3);}
+    gl.uniform1f(uT,0);gl.drawArrays(gl.TRIANGLES,0,3);
     raf=requestAnimationFrame(frame);
     document.addEventListener("visibilitychange",()=>{if(document.hidden){cancelAnimationFrame(raf);}else{last=0;raf=requestAnimationFrame(frame);}});
     cv.addEventListener("webglcontextlost",e=>{e.preventDefault();cancelAnimationFrame(raf);document.body.classList.remove("fx");});
