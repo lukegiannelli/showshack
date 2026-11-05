@@ -59,6 +59,20 @@ def title_ok(ev, tm):
                 best = max(best, 0.9)
     return best >= 0.72
 
+def clean_url(u):
+    """Ticketmaster wraps links in affiliate tracking (impact/evyy.net) when the developer profile has an
+    affiliate ID. We don't use the affiliate program, so unwrap to the plain ticket page."""
+    if not u:
+        return u
+    p = urllib.parse.urlparse(u)
+    if "evyy.net" in p.netloc or "impact" in p.netloc:
+        inner = urllib.parse.parse_qs(p.query).get("u")
+        if inner:
+            u = inner[0]
+    p = urllib.parse.urlparse(u)
+    q = [(k, v) for k, v in urllib.parse.parse_qsl(p.query) if not k.startswith("utm_")]
+    return urllib.parse.urlunparse(p._replace(query=urllib.parse.urlencode(q)))
+
 def get(params, tries=4):
     url = API + "?" + urllib.parse.urlencode({**params, "apikey": KEY})
     for i in range(tries):
@@ -91,9 +105,9 @@ def fetch_all():
                     break
                 for x in (j.get("_embedded") or {}).get("events", []):
                     v = ((x.get("_embedded") or {}).get("venues") or [{}])[0]
-                    pr = [p for p in (x.get("priceRanges") or []) if p.get("min") is not None and (p.get("currency") or "USD") == "USD"]
+                    pr = [p for p in (x.get("priceRanges") or []) if (p.get("min") or 0) > 0 and (p.get("currency") or "USD") == "USD"]  # $0 = "no price set", never "free"
                     out.append({
-                        "id": x.get("id"), "name": x.get("name") or "", "url": x.get("url"),
+                        "id": x.get("id"), "name": x.get("name") or "", "url": clean_url(x.get("url")),
                         "date": ((x.get("dates") or {}).get("start") or {}).get("localDate"),
                         "status": (((x.get("dates") or {}).get("status") or {}).get("code") or "").lower(),
                         "onsale": ((x.get("sales") or {}).get("public") or {}).get("startDateTime"),
@@ -122,6 +136,11 @@ def main():
     today_s = today.isoformat()
     fresh_cut = (today - timedelta(days=FRESH_DAYS)).isoformat()
     matched = priced = changed = cancelled = 0
+    for ev in data.get("events", []):
+        if ev.get("url"):
+            ev["url"] = clean_url(ev["url"])
+        if ev.get("priceSrc") == "ticketmaster" and ev.get("priceFrom") == 0:
+            ev["priceFrom"], ev["priceSrc"] = None, None
     for ev in data.get("events", []):
         if ev.get("recurrence") or not ev.get("start") or (ev.get("end") or ev["start"]) < today_s:
             continue

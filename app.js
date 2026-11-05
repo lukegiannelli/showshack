@@ -105,6 +105,7 @@ const EST=[
  [/wiltern|palladium|youtube theater|fonda|belasco|novo|observatory|el rey|avalon|house of blues|glass house|fox|music box|belly up|coach house|wayfarer|garden amp|regent|bellwether|shrine|orpheum|yaamava|pappy|time nightclub|sound nightclub|exchange|spin nightclub/i,[35,95]]];
 const KEST={festival:[100,350],club:[20,60],comedy:[30,90],theater:[40,150],concert:[30,90]};
 function priceInfo(e){
+  if(e.status==="cancelled") return {sold:true,cancel:true};
   if(e.status==="sold out") return {sold:true};
   if(e.priceFrom===0) return {free:true,lo:0,hi:0};
   if(isRec(e)) return e.priceFrom!=null?{lo:e.priceFrom,hi:e.priceTo??e.priceFrom}:{none:true};
@@ -136,7 +137,7 @@ function lastRideHtml(e,nc){
 }
 function transitOf(e){const v=String(e.venue||"");for(const [re,l] of TRANSIT)if(re.test(v))return l;return null;}
 function shareText(e){const d=parseDay(e.start);const pi=priceInfo(e);
-  const pr=pi.sold?"sold out":pi.free?"free":pi.est?`~$${pi.lo}–$${pi.hi} (est.)`:pi.lo!=null?`from $${Math.round(pi.lo)}`:"";
+  const pr=pi.cancel?"cancelled (per Ticketmaster)":pi.sold?"sold out":pi.free?"free":pi.est?`~$${pi.lo}–$${pi.hi} (est.)`:pi.lo!=null?`from $${Math.round(pi.lo)}`:"";
   return [e.title+(e.artists?` (${e.artists})`:""),d.toLocaleDateString("en-US",{weekday:"short",month:"short",day:"numeric"})+(e.time?" · "+e.time:""),`${e.venue}, ${e.city}`,pr,e.url?"Tickets: "+e.url:""].filter(Boolean).join(" · ")+"\n🛖 "+APP_URL+"#"+hid(e);}
 function eatLink(e){return "https://www.google.com/maps/search/?api=1&query="+encodeURIComponent("local restaurants and bars near "+(e.venue||"")+", "+(e.city||""));}
 const VOL_KNOWN=/coachella|stagecoach/i;
@@ -293,12 +294,12 @@ function render(){
       : end && e.end!==e.start ? (e.runStart?`<span class="nowon">On now</span>`:"")+`<span class="thru">thru ${esc(end.toLocaleDateString("en-US",{month:"short",day:"numeric"}))}</span>`:"";
     const pi=priceInfo(e); let priceHtml;
     const $r=n=>"$"+Math.round(n);
-    if(pi.sold) priceHtml='<span class="sold">Sold out</span>';
+    if(pi.sold) priceHtml=pi.cancel?'<span class="sold">Cancelled</span><span class="pn">per Ticketmaster · double-check</span>':'<span class="sold">Sold out</span>';
     else if(pi.free) priceHtml='<span class="price">Free</span>';
     else if(pi.none) priceHtml='<span class="na">—</span>';
     else if(pi.est) priceHtml=`<span class="price est">≈${$r(pi.lo)}–${$r(pi.hi)}</span><span class="pn">typical · not yet listed</span>`;
-    else if(pi.hi!=null&&Math.round(pi.hi)>Math.round(pi.lo)) priceHtml=`<span class="price">${$r(pi.lo)}–${$r(pi.hi)}</span><span class="pn">cheapest seats listed</span>`;
-    else priceHtml=`<span class="price">From ${$r(pi.lo)}</span><span class="pn">cheapest seat</span>`;
+    else if(pi.hi!=null&&Math.round(pi.hi)>Math.round(pi.lo)) priceHtml=`<span class="price">${$r(pi.lo)}–${$r(pi.hi)}</span><span class="pn">${e.priceSrc==="ticketmaster"?"face value · before fees":"cheapest seats listed"}</span>`;
+    else priceHtml=`<span class="price">From ${$r(pi.lo)}</span><span class="pn">${e.priceSrc==="ticketmaster"?"face value · before fees":"cheapest seat"}</span>`;
     if(!pi.est&&!pi.sold&&!pi.free&&!pi.none&&e.priceAsOf) priceHtml=priceHtml.replace(/<\/span>$/,` · checked ${fmtShort(e.priceAsOf)}</span>`);
     const nc=nightCost(e,pi), lb=leaveBy(e);
     const nightHtml = `<div class="flipbar"><button type="button" class="nightbtn" data-flip="1">🌙 Night out <b>≈ $${nc.n>1?nc.each+" each":nc.total}${nc.partial?"+":""}</b></button></div>`;
