@@ -1,6 +1,6 @@
 <!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>The Show Shack</title>
 <link rel="stylesheet" href="app.css?v=15">
-<link rel="stylesheet" href="b.css?v=4">
+<link rel="stylesheet" href="b.css?v=6">
 <script>window.UI_B=true;document.documentElement.classList.add("ui-b");</script>
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="apple-touch-icon.png?v=2">
@@ -28,6 +28,7 @@
     <div class="hutart" aria-hidden="false"><button type="button" class="hutbtn" id="hutBtn" aria-label="Play the Shack song" aria-pressed="false"><img src="hut.webp?v=2" alt="" draggable="false"></button></div>
     <h1 class="shack-title">The Show Shack</h1>
     <button type="button" class="shack-share" id="shareApp">🌴 Share the Shack</button>
+    <button type="button" class="binfo-btn" id="bInfoBtn" aria-label="Where the Shack gets its info" aria-haspopup="dialog">?</button>
   </header>
   <p class="songcredit" id="songCredit" hidden>♪ “Brain Dance” Kevin MacLeod (incompetech.com) · <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a></p>
   <div class="getapp" id="getApp" hidden>
@@ -51,17 +52,7 @@
     <div class="bpicks"><div class="bpicks-h"><h2 class="bsec">This weekend's picks</h2><button type="button" class="blink" id="bAllWeekend">See all</button></div><div class="bpick-row" id="bPicks"></div></div>
     <button type="button" class="bsearchall" id="bSearchAll"><svg class="ni" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-search"/></svg> Search every show, venue or city</button>
     <div class="bspins" id="bSpins" hidden><div class="bpicks-h"><h2 class="bsec">Your disco picks</h2><button type="button" class="blink" id="bSpinClear">Clear</button></div><div class="bpick-row" id="bSpinRow"></div></div>
-    <section class="btrust" id="bTrust" aria-labelledby="bTrustH">
-      <div class="btrust-h"><h2 class="bsec" id="bTrustH">Where this comes from</h2><span class="btrust-upd" data-t="upd">Updated daily</span></div>
-      <ul>
-        <li><b>Straight from the source.</b> Every morning the Shack re-reads venue calendars and ticket sites (Ticketmaster, Gametime, TickPick, Eventbrite, Songkick and venue pages) and rebuilds all <span data-t="n">the</span>. Past shows drop off on their own.</li>
-        <li><b>Prices say how fresh they are.</b> “From $X · checked Nov 4” is the cheapest seat on the date shown. A “≈” price is a typical range, not a live listing. <span data-t="tm"></span></li>
-        <li><b>Recurring nights get spot-checked.</b> Of the <span data-t="rec">weekly and monthly series</span> (open mics, socials, volunteer days), a batch gets re-checked every week. Older listings carry a “call ahead” note on the card.</li>
-        <li><b>The Shack doesn't sell tickets.</b> Ticket and Info buttons go straight to the seller or organizer, so the price and the final say are always theirs.</li>
-      </ul>
-      <p class="btrust-f">Things still change last-minute. Check the seller's page before you buy or drive. Spot something wrong? Let Luke know.</p>
-    </section>
-    <div class="bdisco-h"><h2 class="bsec">Can't decide?</h2><p>Swipe the disco ball sideways three times for a random show.</p></div>
+        <div class="bdisco-h"><h2 class="bsec">Can't decide?</h2><p>Swipe the disco ball sideways three times for a random show.</p></div>
   </section>
   <div class="bbar" id="bBar" hidden>
     <div class="bbar-top"><button type="button" class="bback" id="bBack" aria-label="Back to vibes"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 5-7 7 7 7"/></svg></button><div class="btitle"><h1 id="bTitle">Shows</h1><span class="blbl" id="bCount"></span></div></div>
@@ -74,7 +65,7 @@
     <p class="stats"><span id="refreshed">Loading…</span><span class="dot">·</span><span id="count"></span></p>
   </div>
 
-  <div class="bbudget-h"><h1>Your night out</h1><p>Where you leave from, who's riding, and what a night costs. The Night out price on every show uses these.</p></div>
+  <div class="bbudget-h"><h1>Plan your night</h1><p>Where you leave from, who's rolling with you, and what you want to spend. Drive times, the map rings and every Night out price use these.</p></div>
   <section class="start" aria-label="Starting point">
     <canvas class="waterfx" aria-hidden="true"></canvas>
     <div class="start-view" id="startView">
@@ -153,6 +144,19 @@
   </div>
 
   <button type="button" class="alertbar" id="alertBar" hidden></button>
+  <section class="bmap" id="bMap" hidden aria-label="Show map">
+    <div class="bmap-bar">
+      <div class="bseg bmap-when" id="bMapWhen"></div>
+      <div class="bmap-chips" id="bMapChips"></div>
+    </div>
+    <div class="bmap-stage">
+      <div class="bmap-canvas" id="bMapCanvas" role="application" aria-label="Map of shows. Use the list under the map if you prefer."></div>
+      <button type="button" class="bmap-start" id="bMapStart" hidden>📍 Set start point for drive rings</button>
+      <div class="bmap-legend" id="bMapLegend" hidden></div>
+      <div class="bmap-sheet" id="bMapSheet" hidden></div>
+    </div>
+    <div class="bmap-reach" id="bMapReach"></div>
+  </section>
   <main id="list" class="list" aria-live="polite">
     <div class="empty"><strong>Loading shows…</strong>The list fills in from the daily refresh. Each row shows the date, venue, starting price and drive time from home.</div>
   </main>
@@ -167,15 +171,31 @@
 </div>
 
 
+<dialog class="binfo" id="bInfo" aria-labelledby="bInfoH">
+  <div class="binfo-in">
+    <button type="button" class="binfo-x" data-close aria-label="Close">✕</button>
+    <p class="binfo-kick">🛖 behind the shack</p>
+    <h2 id="bInfoH">How the Shack knows</h2>
+    <div class="binfo-stats"><span><b data-t="n">—</b>listings</span><span><b data-t="upd">daily</b>last refresh</span><span><b data-t="tmn">—</b>Ticketmaster checks</span></div>
+    <ul class="binfo-list">
+      <li><i aria-hidden="true">📡</i><div><b>Pulled from the source, every morning</b><p>Venue calendars and ticket sites (Ticketmaster, Gametime, TickPick, Eventbrite, Songkick, venue pages) get re-read daily. Shows that already happened drop off on their own.</p></div></li>
+      <li><i aria-hidden="true">🏷️</i><div><b>Prices wear their date</b><p>“From $X · checked Nov 4” is the cheapest seat on that day. A “≈” price is a typical range, not a live listing. <span data-t="tm"></span></p></div></li>
+      <li><i aria-hidden="true">🔁</i><div><b>Weekly nights get spot-checked</b><p>Of the <span data-t="rec">weekly and monthly series</span>, a batch gets re-checked every week. Older listings carry a “call ahead” note on the card.</p></div></li>
+      <li><i aria-hidden="true">🎟️</i><div><b>The Shack doesn't sell tickets</b><p>Tickets and Info buttons go straight to the seller or organizer. Their price, their final say.</p></div></li>
+    </ul>
+    <p class="binfo-f">Plans change last-minute. Peek at the seller's page before you buy or drive. Spot something off? Tell Luke 🤙</p>
+    <button type="button" class="binfo-ok" data-close>Got it</button>
+  </div>
+</dialog>
 <nav class="btabs" id="bTabs" aria-label="Sections">
   <button type="button" data-tab="shows" aria-current="page"><svg class="ni" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-list"/></svg>Shows</button>
   <button type="button" data-tab="map"><svg class="ni" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-map"/></svg>Map</button>
   <button type="button" data-tab="venues"><svg class="ni" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-venue"/></svg>Venues</button>
   <button type="button" data-tab="saved"><svg class="ni" viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3.5 2.6 5.4 5.9.8-4.3 4.1 1 5.8L12 16.8l-5.2 2.8 1-5.8-4.3-4.1 5.9-.8Z"/></svg>Saved</button>
-  <button type="button" data-tab="budget"><svg class="ni" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-money"/></svg>Budget</button>
+  <button type="button" data-tab="budget"><svg class="ni" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-cal"/></svg>Plan</button>
 </nav>
-<script src="app.js?v=18"></script>
-<script src="b.js?v=2"></script>
+<script src="app.js?v=19"></script>
+<script src="b.js?v=3"></script>
 
 <div id="bgfx" aria-hidden="true"><canvas></canvas><div class="ovl"></div></div>
 <canvas id="nebfx" aria-hidden="true"></canvas>

@@ -23,7 +23,7 @@ bar.insertBefore(controls.querySelector(".search"),$("bWhenRes"));
 tools.insertBefore($("maxDrive").closest("label"),$("bFilt"));
 tools.insertBefore($("sortBy").closest("label"),$("bFilt"));
 const flags=$("flagRow"); flags.hidden=true; bar.appendChild(flags);
-$("bHome").appendChild($("disco"));$("bHome").appendChild($("bTrust"));
+$("bHome").appendChild($("disco"));
 document.querySelector(".wrap").insertBefore($("budgetBar"),$("alertBar"));
 const bStart=document.createElement("button");bStart.type="button";bStart.className="chip bstart";bStart.textContent="Set your start point for drive times";tools.appendChild(bStart);
 bStart.onclick=()=>{state.view="list";show("budget");setTimeout(()=>{const b=$("startEdit");if(b)b.click();},80);};
@@ -31,7 +31,7 @@ $("bFilt").onclick=()=>{flags.hidden=!flags.hidden;$("bFilt").setAttribute("aria
 
 /* ---- when switch (home + results share it) ---- */
 function segHtml(){return WHEN.map(([v,l])=>`<button type="button" data-when="${v}" aria-pressed="${state.when===v}">${l}</button>`).join("");}
-["bWhenHome","bWhenRes"].forEach(id=>{const el=$(id);el.innerHTML=segHtml();
+["bWhenHome","bWhenRes","bMapWhen"].forEach(id=>{const el=$(id);el.innerHTML=segHtml();
   el.addEventListener("click",ev=>{const b=ev.target.closest("[data-when]");if(!b)return;state.when=b.dataset.when;savePrefs();render();});});
 if(!["tonight","weekend","any"].includes(state.when))state.when="any";
 
@@ -140,6 +140,7 @@ $("bSpinClear").onclick=()=>{spins=[];drawSpins();};
 const _render=render;
 render=function(){_render();try{after();}catch(e){console.error(e);}};
 function after(){
+  if(screen==="map"){closeSheet();drawMapUI();}
   if(pendingOpen)setTimeout(tryOpen,30);
   document.querySelectorAll("[data-when]").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.when===state.when)));
   const up=state._up||[];
@@ -170,15 +171,91 @@ function after(){
 $("bSubs").addEventListener("click",ev=>{const b=ev.target.closest("[data-sub]");if(!b)return;
   if(b.dataset.key==="genre"){state.genre=b.dataset.sub||"all";savePrefs();}else state.sub=b.dataset.sub||null;render();});
 
-/* ---- where the info comes from ---- */
-function trust(){const m=window.SHACK_META||{},el=$("bTrust");if(!el||!state.events.length)return;
-  const ago=t=>{if(!t)return "";const h=(Date.now()-new Date(t))/36e5;return h<1?"less than an hour ago":h<24?Math.round(h)+" hours ago":Math.round(h/24)+" days ago";};
+/* ---- "?" on the shack card: where the info comes from ---- */
+function trust(){const m=window.SHACK_META||{},el=$("bInfo");if(!el||!state.events.length)return;
+  const ago=t=>{if(!t)return "";const h=(Date.now()-new Date(t))/36e5;return h<1?"<1h ago":h<24?Math.round(h)+"h ago":Math.round(h/24)+"d ago";};
   const tm=/([\d,]+) listings checked/.exec(m.tmNote||"");
-  const n=state.events.length, rec=state.events.filter(isRec).length;
-  el.querySelector("[data-t=upd]").textContent=m.lastRun?"Updated "+ago(m.lastRun):"Updated daily";
-  el.querySelector("[data-t=n]").textContent=n.toLocaleString()+" listings";
-  el.querySelector("[data-t=tm]").textContent=tm?tm[1]+" Ticketmaster listings re-checked "+ago(m.tmRun)+".":"Ticketmaster prices are re-checked every day.";
-  el.querySelector("[data-t=rec]").textContent=rec+" weekly and monthly series";}
+  const set=(k,v)=>el.querySelectorAll(`[data-t=${k}]`).forEach(x=>x.textContent=v);
+  set("n",state.events.length.toLocaleString());set("upd",m.lastRun?ago(m.lastRun):"daily");
+  set("tmn",tm?tm[1]:"daily");set("tm",tm?`Ticketmaster prices got re-checked ${ago(m.tmRun)}.`:"Ticketmaster prices get re-checked daily.");
+  set("rec",state.events.filter(isRec).length+" weekly and monthly series");}
+$("bInfoBtn").onclick=()=>{trust();const d=$("bInfo");if(d.showModal)d.showModal();else d.setAttribute("open","");};
+$("bInfo").addEventListener("click",ev=>{const d=$("bInfo");if(ev.target===d||ev.target.closest("[data-close]")){d.close?d.close():d.removeAttribute("open");}});
+
+/* ---- map: dark street map + drive rings from your start point + "build your night" per venue ---- */
+const MAPV={vibe:"all"};let LM=null,LMG=null,lfLoad=null,fitSig="";
+function loadLeaflet(){if(window.L)return Promise.resolve();if(lfLoad)return lfLoad;
+  const l=document.createElement("link");l.rel="stylesheet";l.href="vendor/leaflet.css?v=1";document.head.appendChild(l);
+  return lfLoad=new Promise((res,rej)=>{const sc=document.createElement("script");sc.src="vendor/leaflet.js?v=1";sc.onload=res;sc.onerror=()=>{lfLoad=null;rej();};document.head.appendChild(sc);});}
+const RINGS=[[15,"#7ee0b8"],[30,"#FFC66B"],[60,"#FF6FA5"]];
+const ringM=m=>(m-6)*55/60/1.2*1609.34;            // inverse of driveEstimate()
+const vibeOf=e=>VIBES.find(v=>GROUPS[v.k].has(e.kind));
+function miles(a,b,c,d){const R=3958.8,t=x=>x*Math.PI/180,x=Math.sin(t(c-a)/2)**2+Math.cos(t(a))*Math.cos(t(c))*Math.sin(t(d-b)/2)**2;return 2*R*Math.asin(Math.sqrt(x));}
+function mapGroups(){const g={};(state._up||[]).forEach(e=>{if(typeof e.lat!=="number"||!inWhen(e))return;if(MAPV.vibe!=="all"&&!GROUPS[MAPV.vibe].has(e.kind))return;
+  const k=venueKey(e);(g[k]=g[k]||{k,lat:e.lat,lon:e.lon,evs:[]}).evs.push(e);});
+  return Object.values(g).map(x=>{x.evs.sort((a,b)=>a.start.localeCompare(b.start));const cnt={};x.evs.forEach(e=>{const v=vibeOf(e);if(v)cnt[v.k]=(cnt[v.k]||0)+1;});
+    const top=Object.entries(cnt).sort((a,b)=>b[1]-a[1])[0];x.v=VIBES.find(v=>top&&v.k===top[0])||VIBES[0];x.d=driveEstimate(x.lat,x.lon);return x;});}
+function drawMapUI(){
+  $("bMapChips").innerHTML=`<button type="button" class="chip" data-mv="all" aria-pressed="${MAPV.vibe==="all"}">All</button>`+VIBES.map(v=>`<button type="button" class="chip bmc" data-mv="${v.k}" style="--vc:${v.c}" aria-pressed="${MAPV.vibe===v.k}"><i></i>${v.name.split(" & ")[0]}</button>`).join("")
+    +`<button type="button" class="chip poolchip" data-mpool="1" aria-pressed="${!!state.poolOn}">${NEON8} Pool</button>`;
+  $("bMapStart").hidden=!!origin;
+  loadLeaflet().then(drawMap).catch(()=>{$("bMapCanvas").innerHTML='<p class="bmap-err">The map couldn\'t load. Check your connection and tap Map again.</p>';});}
+function drawMap(){const L=window.L;
+  if(!LM){LM=L.map("bMapCanvas",{zoomControl:false,attributionControl:true,tap:true}).setView([33.82,-117.9],9);
+    L.control.zoom({position:"topright"}).addTo(LM);
+    L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png",{maxZoom:18,className:"bmap-tiles",
+      attribution:'© <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors'}).addTo(LM);
+    LM.attributionControl.setPrefix(false);
+    LMG={rings:L.layerGroup().addTo(LM),pool:L.layerGroup().addTo(LM),pins:L.layerGroup().addTo(LM)};
+    LM.on("click",closeSheet);}
+  setTimeout(()=>LM.invalidateSize(),0);
+  const groups=mapGroups(),hasO=origin&&typeof origin.lat==="number";
+  LMG.rings.clearLayers();LMG.pins.clearLayers();LMG.pool.clearLayers();
+  if(hasO){RINGS.forEach(([m,c])=>{const r=ringM(m);
+      L.circle([origin.lat,origin.lon],{radius:r,color:c,weight:1.5,dashArray:"5 7",fillColor:c,fillOpacity:.035,interactive:false,className:"bring"}).addTo(LMG.rings);
+      L.marker([origin.lat+r/111320,origin.lon],{interactive:false,keyboard:false,icon:L.divIcon({className:"bring-l",html:`<span style="--rc:${c}">${m} min</span>`,iconSize:[60,18],iconAnchor:[30,9]})}).addTo(LMG.rings);});
+    L.marker([origin.lat,origin.lon],{interactive:false,keyboard:false,zIndexOffset:900,icon:L.divIcon({className:"bcar",html:'<img src="car.svg?v=2" alt="">',iconSize:[58,26],iconAnchor:[29,13]})}).addTo(LMG.rings);}
+  groups.sort((a,b)=>a.evs.length-b.evs.length).forEach(g=>{const n=g.evs.length,sz=Math.round(16+Math.min(14,Math.sqrt(n)*4));
+    const far=hasO&&g.d&&g.d.mins>60;
+    const mk=L.marker([g.lat,g.lon],{title:`${g.k.split(" · ")[0]}: ${n} show${n>1?"s":""}`,riseOnHover:true,icon:L.divIcon({className:"bpin-w"+(far?" far":""),html:`<span class="bpin" style="--pc:${g.v.c};--ps:${sz}px">${n>1?n:""}</span>`,iconSize:[sz,sz],iconAnchor:[sz/2,sz/2]})});
+    mk.on("click",ev=>{L.DomEvent.stopPropagation(ev);openSheet(g);});mk.addTo(LMG.pins);});
+  if(state.poolOn&&POOL.length)POOL.forEach(p=>{const mk=L.marker([p.lat,p.lon],{title:p.n,icon:L.divIcon({className:"bpool-w",html:NEON8,iconSize:[22,22],iconAnchor:[11,11]})});
+    mk.on("click",ev=>{L.DomEvent.stopPropagation(ev);openPool(p);});mk.addTo(LMG.pool);});
+  const sig=state.when+MAPV.vibe+(hasO?origin.lat:"");
+  if(sig!==fitSig){fitSig=sig;
+    if(hasO)LM.setView([origin.lat,origin.lon],10);
+    else if(groups.length)LM.fitBounds(L.latLngBounds(groups.map(g=>[g.lat,g.lon])).pad(.08),{maxZoom:12});}
+  // reach summary under the map
+  const tot=groups.reduce((s,g)=>s+g.evs.length,0);
+  if(hasO){const cnt=m=>groups.filter(g=>g.d&&g.d.mins<=m).reduce((s,g)=>s+g.evs.length,0);
+    $("bMapReach").innerHTML=`<b>${tot} ${tot===1?"show":"shows"} ${WHEN_WORD[state.when]}</b>`+RINGS.map(([m,c])=>`<span style="--rc:${c}"><i></i>${cnt(m)} within ${m} min</span>`).join("")+`<small>Rings are straight-line drive estimates, not live traffic. Tap a dot to plan the night around it.</small>`;}
+  else $("bMapReach").innerHTML=`<b>${tot} ${tot===1?"show":"shows"} ${WHEN_WORD[state.when]}</b><small>Tap a dot to see what's playing there and what's nearby. Set a start point to see what's in reach.</small>`;}
+function sheetOpen(html){const sh=$("bMapSheet");sh.innerHTML=`<button type="button" class="bms-x" aria-label="Close">✕</button>`+html;sh.hidden=false;sh.scrollTop=0;sh.querySelector(".bms-x").onclick=closeSheet;}
+function closeSheet(){$("bMapSheet").hidden=true;}
+function openSheet(g){const e0=g.evs[0],name=g.k.split(" · ")[0],city=g.k.split(" · ")[1]||e0.city||"";
+  const dest=encodeURIComponent(name+", "+city);
+  const dir=`https://www.google.com/maps/dir/?api=1${origin&&origin.address?"&origin="+encodeURIComponent(origin.address):""}&destination=${dest}`;
+  const rows=g.evs.slice(0,6).map(e=>{const pi=priceInfo(e),d=parseDay(e.start),tix=safeUrl(e.url);
+    const pr=pi.sold?"Sold out":pi.free?"Free":pi.none?"":pi.est?"≈$"+Math.round(pi.lo):"From $"+Math.round(pi.lo);
+    return `<div class="bms-row"><span class="bms-d">${esc(d.toLocaleDateString("en-US",{weekday:"short",month:"short",day:"numeric"}))}${e.time?" · "+esc(String(e.time).replace(/\s*\(.*\)/,"")):""}</span>
+      <b>${esc(e.title)}</b><span class="bms-p">${esc(pr)}</span>
+      <span class="bms-a">${tix?`<a href="${esc(tix)}" target="_blank" rel="noopener">${tixWord(e,pi)} ↗</a>`:""}<button type="button" data-card="${esc(hid(e))}">Full card</button></span></div>`;}).join("");
+  const more=g.evs.length>6?`<p class="bms-more">+${g.evs.length-6} more here</p>`:"";
+  const pools=POOL.map(p=>({p,mi:miles(g.lat,g.lon,p.lat,p.lon)})).filter(x=>x.mi<=8).sort((a,b)=>a.mi-b.mi).slice(0,2);
+  const near=(q,label,ic)=>`<a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(q+" near "+name+", "+city)}" target="_blank" rel="noopener">${ic} ${label}</a>`;
+  sheetOpen(`<div class="bms-h" style="--pc:${g.v.c}"><i></i><div><b>${esc(name)}</b><span>${esc(city)}${g.d?` · ~${fmtMins(g.d.mins)} · ${g.d.miles} mi`:""}</span></div></div>
+    <div class="bms-list">${rows}${more}</div>
+    <h3 class="bms-sub">Build your night here</h3>
+    <div class="bms-night">${near("restaurants","Eat before","🍜")}${near("bars","Drinks after","🍸")}${near("parking","Parking","🅿️")}<a href="${dir}" target="_blank" rel="noopener">🧭 Directions</a></div>
+    ${pools.length?`<div class="bms-pool">${pools.map(({p,mi})=>`<a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(p.n+", "+p.a+", "+p.city+", CA")}" target="_blank" rel="noopener">${NEON8}<span><b>${esc(p.n)}</b><small>${mi<1?"under a mile":mi.toFixed(1)+" mi"} away · ${p.c==="hall"?"pool hall":"bar with pool"}</small></span></a>`).join("")}</div>`:""}`);
+  $("bMapSheet").querySelectorAll("[data-card]").forEach(b=>b.onclick=()=>{state.when="any";state.view="list";openResults("all");openCard(b.dataset.card);});}
+function openPool(p){const d=driveEstimate(p.lat,p.lon);
+  sheetOpen(`<div class="bms-h" style="--pc:#ff6fe0"><i></i><div><b>${esc(p.n)}</b><span>${esc(p.city)} · ${p.c==="hall"?"pool hall":"bar with pool"}${d?` · ~${fmtMins(d.mins)}`:""}</span></div></div>
+    ${(p.t||[]).length?`<p class="bms-more">${p.t.map(esc).join(" · ")}</p>`:""}
+    <div class="bms-night"><a href="https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(p.n+", "+p.a+", "+p.city+", CA")}" target="_blank" rel="noopener">🧭 Directions</a><a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(p.n+", "+p.a+", "+p.city+", CA")}" target="_blank" rel="noopener">🕘 Hours</a></div>`);}
+$("bMapChips").addEventListener("click",ev=>{const b=ev.target.closest("[data-mv]");if(b){MAPV.vibe=b.dataset.mv;closeSheet();drawMapUI();return;}
+  if(ev.target.closest("[data-mpool]")){state.poolOn=!state.poolOn;savePrefs();drawMapUI();}});
+$("bMapStart").onclick=()=>{state.view="list";show("budget");setTimeout(()=>{const b=$("startEdit");if(b)b.click();},80);};
 
 /* ---- start on the home screen, unless a shared link points at a show ---- */
 state.kind="all";state.sub=null;state.genre="all";state.view="list";
