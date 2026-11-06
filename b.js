@@ -305,9 +305,9 @@ renderVenues=function(){const list=$("list");
   // passport
   const tot=infos.length,beenV=infos.filter(v=>BEEN.has(v.k));
   const regs=REGIONS.map(rg=>{const all=infos.filter(v=>regionOfK(v.k)===rg);return [rg,all.filter(v=>BEEN.has(v.k)).length,all.length];}).filter(x=>x[2]);
-  const stamps=beenV.slice(0,10).map((v,i)=>`<span class="bstamp" style="--sr:${(i*37%30)-15}deg;--sc:${VIBES[i%4].c}" title="${esc(v.name)}">${esc(v.name.replace(/^the\s+/i,"").split(/\s+/).slice(0,2).map(w=>w[0]).join("").toUpperCase())}</span>`).join("")+(beenV.length>10?`<span class="bstamp more">+${beenV.length-10}</span>`:"");
+  const stamps=beenV.slice(0,10).map((v,i)=>`<span class="bstamp" style="--sr:${(i*37%30)-15}deg;--sc:${VIBES[i%4].c}" title="${esc(v.name)}">${esc(initials(v))}</span>`).join("")+(beenV.length>10?`<span class="bstamp more">+${beenV.length-10}</span>`:"");
   const pass=`<div class="vcard bpass"><div class="vf"><div class="bpass-in">
-    <div class="bpass-h"><span class="bpass-k">🛖 Show passport</span><b>${beenV.length} <small>of ${tot} venues</small></b></div>
+    <div class="bpass-h"><span class="bpass-k"><img class="bshack-ic" src="hut.webp?v=2" alt="">Show passport</span><b>${beenV.length} <small>of ${tot} venues</small></b></div>
     ${beenV.length?`<div class="bstamps">${stamps}</div><div class="bpass-regs">${regs.filter(x=>x[1]).map(([rg,a,b])=>`<span>${esc(rg)} <b>${a}</b>/${b}</span>`).join("")}</div><button type="button" class="bpass-share" data-pshare="1">${ni("share")} Share my passport</button>`
       :`<p>Tap <b>I've been here</b> on any venue you've been to. Shows you star stamp themselves the day after.</p>`}
   </div></div></div>`;
@@ -321,6 +321,12 @@ renderVenues=function(){const list=$("list");
     for(const rg of REGIONS){const vs=rest.filter(v=>!v.inR.length&&regionOfK(v.k)===rg).sort((a,b)=>(a.evs[0]?.start||"9").localeCompare(b.evs[0]?.start||"9"));if(vs.length)html+=`<h3 class="bvreg">${esc(rg)}</h3>`+vs.map(card).join("");}}
   else for(const rg of REGIONS){const vs=rest.filter(v=>regionOfK(v.k)===rg).sort(byNext);if(vs.length)html+=`<h2 class="month">${esc(rg)}</h2>`+vs.map(card).join("");}
   list.innerHTML=html+`</div>`;syncFollowDot();};
+const STOPW=new Set(["the","of","at","and","a","an","on","in","&","+","-","·"]);
+function initials(v){const city=new Set(String(v.city||"").toLowerCase().split(/\s+/));
+  let w=v.name.replace(/[(),.'’!]/g," ").split(/\s+/).filter(x=>x&&!STOPW.has(x.toLowerCase()));
+  const nc=w.filter(x=>!city.has(x.toLowerCase()));if(nc.length)w=nc;
+  if(w.length===1)return w[0].slice(0,2).toUpperCase();
+  return w.slice(0,3).map(x=>/^\d/.test(x)?x.replace(/\D.*$/,""):x[0]).join("").toUpperCase().slice(0,3);}
 function regionOfK(k){const e=(state._up||[]).find(x=>venueKey(x)===k);return e?region(e):"Other";}
 // B-only clicks inside the venues list (capture so they run before app.js's handlers)
 $("list").addEventListener("click",ev=>{if(screen!=="venues")return;
