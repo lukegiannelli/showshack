@@ -56,7 +56,7 @@ function backSide(e){const pi=priceInfo(e),d=parseDay(e.start);
     <div class="bfb-acts">${tix?`<a class="bfb-main" href="${esc(tix)}" target="_blank" rel="noopener">${tixWord(e,pi)} ↗</a>`:""}<a href="${maps}" target="_blank" rel="noopener">Directions</a>
       ${lq?`<button type="button" class="bfb-listen" aria-expanded="false"><span class="lt">▶&#xFE0E; Listen</span></button>`:""}<button type="button" data-share="${esc(skey(e))}">Share</button></div>
     ${lq?`<div class="bfb-lm" hidden>${LISTEN(lq)}</div>`:""}
-    <div class="bfb-foot"><button type="button" class="bfb-full" data-full="${esc(hid(e))}">Full card</button><button type="button" class="bfb-back">↩ Flip back</button></div>`;}
+    <div class="bfb-foot"><button type="button" class="bfb-full" data-full="${esc(hid(e))}">Full card</button><span class="bfb-hint">Tap to flip back ↻</span></div>`;}
 function flipCardHtml(e,tag){const front=cardHtml(e).replace(/^\s*<article id="[^"]*"/,'<article').replace(/class="card( flipped)?"/,'class="card"');
   return `<div class="bfc" data-k="${esc(skey(e))}"><div class="bfc-in"><div class="bfc-f">${tag?`<span class="bfc-tag">${tag}</span>`:""}${front}</div><div class="bfc-b" aria-hidden="true">${backSide(e)}</div></div></div>`;}
 function flipRowClick(ev){const fc=ev.target.closest(".bfc");if(!fc)return;
@@ -64,10 +64,9 @@ function flipRowClick(ev){const fc=ev.target.closest(".bfc");if(!fc)return;
   const sh=ev.target.closest("button[data-share]");if(sh){shareBtn(sh);return;}
   const ls=ev.target.closest(".bfb-listen");if(ls){const m=fc.querySelector(".bfb-lm");m.hidden=!m.hidden;ls.setAttribute("aria-expanded",String(!m.hidden));ls.classList.toggle("on",!m.hidden);return;}
   const full=ev.target.closest("[data-full]");if(full){state.when="any";openResults("all");openCard(full.dataset.full);return;}
-  if(ev.target.closest(".bfb-back")){setFlip(fc,false);return;}
   if(ev.target.closest("a,input,select,label"))return;
   if(ev.target.closest(".vlink")){ev.stopPropagation();}
-  if(!fc.classList.contains("on"))setFlip(fc,true);}
+  setFlip(fc,!fc.classList.contains("on"));}
 function setFlip(fc,on){fc.classList.toggle("on",on);fc.querySelector(".bfc-b").setAttribute("aria-hidden",String(!on));fc.querySelector(".bfc-f").setAttribute("aria-hidden",String(on));}
 $("bPicks").addEventListener("click",flipRowClick,true);
 

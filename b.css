@@ -260,3 +260,15 @@
 .ui-b .bmap-reach span{display:inline-flex;align-items:center;gap:6px;font:600 12.5px var(--mono);color:var(--ink)}
 .ui-b .bmap-reach span i{width:12px;height:12px;border-radius:50%;border:2px dashed var(--rc)}
 .ui-b .bmap-reach small{width:100%;font-size:12px}
+
+/* smoother flip that works on iPhone: swap faces at the halfway point instead of trusting backface-visibility */
+.ui-b .bfc-in{transition:transform .5s cubic-bezier(.45,.05,.25,1);will-change:transform}
+.ui-b .bfc.on .bfc-in{transform:rotateY(180deg)}
+.ui-b .bfc-f{visibility:visible;transition:visibility 0s linear .25s}
+.ui-b .bfc.on .bfc-f{visibility:hidden}
+.ui-b .bfc-b{visibility:hidden;transition:visibility 0s linear .25s;cursor:pointer}
+.ui-b .bfc.on .bfc-b{visibility:visible}
+.ui-b .bfc-f article.card{perspective:none}
+.ui-b .bfc-f .flip{transform:none!important;transform-style:flat!important}
+.ui-b .bfc-f .sticker{transform:rotate(-5deg)!important}
+.ui-b .bfb-hint{align-self:center;font:600 11px var(--mono);letter-spacing:.4px;color:var(--muted);border:0!important;background:none!important;padding:0!important;cursor:pointer}
