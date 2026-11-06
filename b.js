@@ -409,7 +409,7 @@ function puff(x,y,big){const m=document.createElement("i");m.className="bmist";m
   if(big)m.style.setProperty("--s",1.6);fx.appendChild(m);setTimeout(()=>m.remove(),1300);}
 function spark(x,y){const k=document.createElement("b");k.className="bspark";k.style.left=x+"px";k.style.top=y+"px";
   k.style.setProperty("--dx",(-30-Math.random()*60)+"px");k.style.setProperty("--dy",(-14+Math.random()*34)+"px");fx.appendChild(k);setTimeout(()=>k.remove(),650);}
-function driveOff(btn){const img=btn.querySelector("img"),r=img.getBoundingClientRect();carGo=true;btn.classList.add("go");evWhoosh();
+function driveOff(btn,img){img=img||btn.querySelector("img");const r=img.getBoundingClientRect();carGo=true;btn.classList.add("go");evWhoosh();
   const out=innerWidth-r.left+40,back=-(r.right+40);let alive=true;
   (function trail(){if(!alive)return;const b=img.getBoundingClientRect();if(b.right>0&&b.left<innerWidth){
       puff(b.left+6,b.top+b.height*.55);if(Math.random()<.9){spark(b.left+b.width*.22,b.bottom-3);spark(b.left+b.width*.8,b.bottom-3);}}
@@ -418,10 +418,16 @@ function driveOff(btn){const img=btn.querySelector("img"),r=img.getBoundingClien
     img.style.transform=`translateX(${back}px)`;
     setTimeout(()=>{img.animate([{transform:`translateX(${back}px)`},{transform:"translateX(4px)",offset:.86},{transform:"translateX(0)"}],{duration:1100,easing:"cubic-bezier(.2,.75,.3,1)"}).onfinish=()=>{
       img.style.transform="";alive=false;carGo=false;carOn=false;btn.classList.remove("go","on");};},380);};}
-$("bMapReach").addEventListener("click",ev=>{const btn=ev.target.closest(".breach-btn");if(!btn||carGo)return;
+function carTap(btn,img){if(carGo)return;
   if(matchMedia("(prefers-reduced-motion: reduce)").matches){btn.classList.toggle("on");return;}
-  if(!carOn){carOn=true;btn.classList.add("on");const r=btn.getBoundingClientRect();for(let i=0;i<3;i++)setTimeout(()=>puff(r.left+4,r.top+r.height*.6,true),i*120);}
-  else driveOff(btn);});
+  if(!btn.classList.contains("on")){carOn=true;btn.classList.add("on");const r=(img||btn).getBoundingClientRect();for(let i=0;i<3;i++)setTimeout(()=>puff(r.left+4,r.top+r.height*.6,true),i*120);}
+  else driveOff(btn,img);}
+$("bMapReach").addEventListener("click",ev=>{const btn=ev.target.closest(".breach-btn");if(btn)carTap(btn);});
+// same egg on the Max drive slider: a tap right on the car (no drag) wakes it, a second tap sends it
+(()=>{const md=$("maxDrive"),rw=md.parentNode,car=rw.querySelector(".car");if(!car)return;let d=null;
+  md.addEventListener("pointerdown",e=>{const r=car.getBoundingClientRect();d={x:e.clientX,y:e.clientY,v:md.value,t:Date.now(),on:e.clientX>=r.left-6&&e.clientX<=r.right+6&&e.clientY>=r.top-12&&e.clientY<=r.bottom+12};});
+  md.addEventListener("pointerup",e=>{if(!d)return;const tap=d.on&&Math.hypot(e.clientX-d.x,e.clientY-d.y)<8&&Date.now()-d.t<450&&md.value===d.v;d=null;if(tap)carTap(rw,car);});
+  md.addEventListener("input",()=>{if(d&&md.value!==d.v)d.on=false;});})();
 function focusVenue(k){focusK=k;MAPV.vibe="all";const v=venueInfo(k);
   if(!v.evs.some(inWhen)){state.when="any";savePrefs();}
   state.kind="all";state.view="map";show("map");}
