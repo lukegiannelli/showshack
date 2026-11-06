@@ -22,7 +22,10 @@
 /* home header: the shack, shorter, so the vibes are on the first screen */
 .ui-b header{aspect-ratio:auto;height:clamp(230px,62vw,330px);background:#1a0f33}
 .ui-b header::after{content:"";position:absolute;inset:-24px;z-index:-2;background:url(header.jpg?v=4) center 35%/cover no-repeat;filter:blur(9px) brightness(.62) saturate(1.1)}
-.ui-b .hutart{-webkit-mask-image:linear-gradient(90deg,transparent 0,#000 16%,#000 84%,transparent 100%);mask-image:linear-gradient(90deg,transparent 0,#000 16%,#000 84%,transparent 100%)}
+.ui-b header{border-radius:22px;clip-path:inset(0 round 22px);-webkit-clip-path:inset(0 round 22px);transform:translateZ(0)}
+.ui-b header::after{filter:blur(14px) brightness(.6) saturate(1.15)}
+.ui-b .hutart{background:none}
+.ui-b .hutart::before{content:"";position:absolute;inset:-6%;background:url(header.jpg?v=4) center/100% 100% no-repeat;filter:blur(9px) brightness(.82) saturate(1.15);-webkit-mask-image:radial-gradient(closest-side,#000 70%,transparent);mask-image:radial-gradient(closest-side,#000 70%,transparent)}
 .ui-b header h1.shack-title{font-size:clamp(26px,8vw,46px)}
 .ui-b .shack-share{font-size:14px;padding:8px 16px}
 
