@@ -325,7 +325,7 @@ function render(){
   evs=evs.filter(e=>!qw||(h=>qw.every(w=>h.includes(w)))(norm([e.title,e.artists,e.venue,e.city].join(" "))))
     .filter(e=>state.venue==="all"||venueKey(e)===state.venue)
     .filter(e=>state.kind==="all"||(String(state.kind).startsWith("g:")?!!(GROUPS[state.kind.slice(2)]&&GROUPS[state.kind.slice(2)].has(e.kind)):state.kind==="starred"?state.stars.has(skey(e)):state.kind==="picks"?e.added:state.kind==="rave"?isRave(e):e.kind===state.kind))
-    .filter(e=>!state.sub||e.kind===state.sub)
+    .filter(e=>!state.sub||(state.sub==="dj"?(e.kind==="club"||(e.genres||[]).includes("electronic")):e.kind===state.sub))
     .filter(e=>state.genre==="all"||(e.genres||[]).includes(state.genre))
     .filter(e=>state.maxDrive>=180||!origin||(e._drive&&e._drive.mins<=state.maxDrive))
     .filter(e=>{const r=dayRange(state.when);if(!r)return true;return e.start<=r[1]&&(e.end||e.start)>=r[0];})

@@ -190,10 +190,10 @@ function after(){
     $("bTitle").textContent=screen==="saved"?"Saved":state.venue&&state.venue!=="all"?state.venue.split(" · ")[0]:v?v.name:cur==="surprise"?"Surprise pick":state.q?"Search":"All shows";
     const n=(state._shown||[]).length;$("bCount").textContent=n+(n===1?" event":" events")+(screen==="saved"?"":" · "+WHEN_WORD[state.when]);
     const subs=$("bSubs");let items=null,key="sub";
-    if(cur==="music"){items=GENRES.map(([g,l])=>[g==="all"?"":g,l]);key="genre";} else if(SUBS[cur])items=SUBS[cur];
+    if(cur==="music"){items=[["","All"],["k:festival","Festival"],["k:dj","DJ / rave"],...GENRES.filter(([g])=>g!=="all")];key="music";} else if(SUBS[cur])items=SUBS[cur];
     if(screen==="saved")items=null;
     subs.hidden=!items;
-    if(items){const val=key==="genre"?(state.genre==="all"?"":state.genre):(state.sub||"");
+    if(items){const val=key==="music"?(state.sub?"k:"+state.sub:state.genre==="all"?"":state.genre):(state.sub||"");
       subs.innerHTML=items.map(([x,l])=>`<button type="button" class="chip" data-sub="${x}" data-key="${key}" aria-pressed="${x===val}">${esc(l)}</button>`).join("");}
     bStart.hidden=!!origin;
     $("bWhenRes").hidden=screen==="saved";
@@ -201,7 +201,9 @@ function after(){
   }
 }
 $("bSubs").addEventListener("click",ev=>{const b=ev.target.closest("[data-sub]");if(!b)return;
-  if(b.dataset.key==="genre"){state.genre=b.dataset.sub||"all";savePrefs();}else state.sub=b.dataset.sub||null;render();});
+  const v=b.dataset.sub;
+  if(b.dataset.key==="music"){if(v.startsWith("k:")){state.sub=v.slice(2);state.genre="all";}else{state.sub=null;state.genre=v||"all";}savePrefs();}
+  else state.sub=v||null;render();});
 
 /* ---- "?" on the shack card: where the info comes from ---- */
 function trust(){const m=window.SHACK_META||{},el=$("bInfo");if(!el||!state.events.length)return;
