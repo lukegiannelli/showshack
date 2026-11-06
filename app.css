@@ -593,3 +593,4 @@ body.neb.nebok .vcard .vf .vpin{opacity:.7}
 .neon8 .n8i{fill:none;stroke:#7fe8ff;stroke-width:1.4}
 .neon8 .n8t{font:800 6.6px/1 system-ui,sans-serif;fill:#e9fbff}
 .poolchip[aria-pressed="true"] .neon8{filter:drop-shadow(0 0 3px #ff4fd8) drop-shadow(0 0 8px #b04bff) drop-shadow(0 0 2px #7fe8ff)}
+.bmore{display:none}

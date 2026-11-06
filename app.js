@@ -3,6 +3,8 @@ const CITIES = {"santa ana":[33.7455,-117.8677],"anaheim":[33.8366,-117.9143],"i
 function cityGuess(text){const t=text.toLowerCase();let best=null;for(const k in CITIES){if(t.includes(k)&&(!best||k.length>best.length))best=k;}return best?{lat:CITIES[best][0],lon:CITIES[best][1],approx:true}:null;}
 const KINDS = [["all","All"],["starred","★ Starred"],["rave","Raves & DJs"],["festival","Festivals"],["concert","Concerts"],["comedy","Comedy"],["theater","Theater & arts"],["openmic","Open mics"],["dance","Ecstatic dance"],["contact","Contact improv"],["sound","Sound baths"],["drum","Drum circles"],["social","Dance socials"],["art","Art walks & markets"],["volunteer","Volunteer"]];
 const CONS=new Set(["dance","contact","sound","drum"]);
+// Vibe groups (new home screen): each maps to several kinds.
+const GROUPS={music:new Set(["concert","festival","club"]),stage:new Set(["comedy","theater","openmic"]),move:new Set(["social","dance","contact"]),chill:new Set(["art","sound","drum","volunteer"])};
 const COMM=new Set(["social","art","volunteer"]);
 function isRec(e){return e.kind==="openmic"||((CONS.has(e.kind)||COMM.has(e.kind))&&!!e.recurrence);}
 function isRave(e){return e.kind==="club"||(e.genres||[]).includes("electronic");}
@@ -31,6 +33,7 @@ function saveStars(){try{localStorage.setItem("radar-stars",JSON.stringify([...s
 async function flushStars(){if(!starRef)return; if(starBusy){starAgain=true;return;} starBusy=true; try{await starRef.set({ids:[...state.stars]});}catch(e){if(e&&e.code==="invalid_argument")starRef=null;} starBusy=false; if(starAgain){starAgain=false;flushStars();}}
 function updateStarChip(){const c=document.getElementById("kindRow-starred");if(c)c.textContent="★ Starred"+(starCount>0?" · "+starCount:"");}
 try{const s=JSON.parse(localStorage.getItem("radar-prefs")||"{}");Object.assign(state,{kind:s.kind||"all",genre:s.genre||"all",maxDrive:s.maxDrive||180,sort:s.sort||"date",venue:"all",hideTBA:!!s.hideTBA,when:s.when||"any",flags:s.flags||{},car:s.car||1,mpg:+s.mpg>0?+s.mpg:25,gas:+s.gas>0?+s.gas:5.85,food:s.food!=null?+s.food:0,drinks:s.drinks!=null?+s.drinks:0,home:s.home||"drive",budget:+s.budget>0?+s.budget:0,pinV:Array.isArray(s.pinV)?s.pinV:[],poolOn:!!s.poolOn});}catch(e){}
+if(String(state.kind).startsWith("g:"))state.kind="all";
 function savePrefs(){try{localStorage.setItem("radar-prefs",JSON.stringify({kind:state.kind,genre:state.genre,maxDrive:state.maxDrive,sort:state.sort,venue:state.venue,hideTBA:!!state.hideTBA,when:state.when,flags:state.flags,car:state.car,mpg:state.mpg,gas:state.gas,food:state.food,drinks:state.drinks,home:state.home,budget:state.budget,pinV:state.pinV,poolOn:!!state.poolOn}));}catch(e){}}
 
 function driveEstimate(lat,lon){
@@ -321,7 +324,8 @@ function render(){
   const qw = state.q ? state.q.split(/\s+/) : null;
   evs=evs.filter(e=>!qw||(h=>qw.every(w=>h.includes(w)))(norm([e.title,e.artists,e.venue,e.city].join(" "))))
     .filter(e=>state.venue==="all"||venueKey(e)===state.venue)
-    .filter(e=>state.kind==="all"||(state.kind==="starred"?state.stars.has(skey(e)):state.kind==="picks"?e.added:state.kind==="rave"?isRave(e):e.kind===state.kind))
+    .filter(e=>state.kind==="all"||(String(state.kind).startsWith("g:")?!!(GROUPS[state.kind.slice(2)]&&GROUPS[state.kind.slice(2)].has(e.kind)):state.kind==="starred"?state.stars.has(skey(e)):state.kind==="picks"?e.added:state.kind==="rave"?isRave(e):e.kind===state.kind))
+    .filter(e=>!state.sub||e.kind===state.sub)
     .filter(e=>state.genre==="all"||(e.genres||[]).includes(state.genre))
     .filter(e=>state.maxDrive>=180||!origin||(e._drive&&e._drive.mins<=state.maxDrive))
     .filter(e=>{const r=dayRange(state.when);if(!r)return true;return e.start<=r[1]&&(e.end||e.start)>=r[0];})
@@ -416,6 +420,7 @@ function render(){
         ${e.note?`<div class="note">${esc(e.note)}</div>`:""}
         ${(tags||extraTags)?`<div class="tags">${extraTags}${tags}</div>`:""}
         ${volHtml(e)}
+        <button type="button" class="bmore" data-bmore="1" aria-expanded="false">Details</button>
       </div>
       <div class="links wide"><a href="${maps}" target="_blank" rel="noopener">Directions</a><a href="${maps.replace("travelmode=driving","travelmode=transit")}" target="_blank" rel="noopener">${ni("train")} Transit</a><a href="${esc(eatLink(e))}" target="_blank" rel="noopener">Eat nearby</a><button type="button" class="share" data-share="${esc(skey(e))}">Share</button>${listen}${canRm?`<button type="button" class="rm" data-rm="${esc(e.id)}">Remove</button>`:""}</div>${listenMenu}
       <div class="sides"><div class="side l"><span class="sl">Price</span>${priceHtml}</div><div class="side r"><span class="sl">Drive</span>${drv}</div></div>${nightHtml}</div>
@@ -819,7 +824,7 @@ let settingsRef=null, sampleFn=null;
 function showStart(){
   sl.textContent = origin ? (origin.label||origin.address) + (origin.approx?" (approx.)":"") : "Not set";
   se.textContent = origin ? "Change" : "Set start point";
-  document.querySelector(".controls .range").hidden = !origin;
+  md.closest("label").hidden = !origin;
 }
 function openForm(){sf.hidden=false;sv.hidden=true;sa.value=origin?.address||"";sm.textContent=HINT;sm.classList.remove("err");sa.focus();}
 function closeForm(){sf.hidden=true;sv.hidden=false;}
