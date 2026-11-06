@@ -618,7 +618,10 @@
 "Darts",
 "Pinball"
 ],
-"a": "741 Baker St"
+"a": "741 Baker St",
+"lat": 33.68004,
+"lon": -117.88732,
+"geo": "place"
 },
 {
 "n": "Garf's Sports Lounge",
@@ -629,7 +632,10 @@
 "Tables in back",
 "Bring cash"
 ],
-"a": "3046 Bristol St"
+"a": "3046 Bristol St",
+"lat": 33.68161,
+"lon": -117.88537,
+"geo": "amenity"
 },
 {
 "n": "Patrick's Irish Pub",
@@ -639,7 +645,10 @@
 "t": [
 "Darts"
 ],
-"a": "2645 Harbor Blvd"
+"a": "2645 Harbor Blvd",
+"lat": 33.66914,
+"lon": -117.91977,
+"geo": "building"
 },
 {
 "n": "Our Bar and Kitchen",
@@ -650,7 +659,10 @@
 "Live music",
 "Pinball"
 ],
-"a": "2000 Newport Blvd"
+"a": "2000 Newport Blvd",
+"lat": 33.64633,
+"lon": -117.91308,
+"geo": "building"
 },
 {
 "n": "Goat Hill Tavern",
@@ -660,7 +672,10 @@
 "t": [
 "Shuffleboard"
 ],
-"a": "1830 Newport Blvd"
+"a": "1830 Newport Blvd",
+"lat": 33.64051,
+"lon": -117.91963,
+"geo": "place"
 },
 {
 "n": "The Swinging Door Saloon",
@@ -671,7 +686,10 @@
 "Darts",
 "Shuffleboard"
 ],
-"a": "355 El Camino Real"
+"a": "355 El Camino Real",
+"lat": 33.74246,
+"lon": -117.82348,
+"geo": "amenity"
 },
 {
 "n": "The Blue Door",
@@ -679,7 +697,10 @@
 "city": "Fullerton",
 "zip": "92832",
 "t": [],
-"a": "1310 S Euclid St"
+"a": "1310 S Euclid St",
+"lat": 33.85903,
+"lon": -117.94171,
+"geo": "place"
 },
 {
 "n": "Titan Bowl & Billiards",
@@ -690,7 +711,10 @@
 "CSUF campus",
 "Bowling"
 ],
-"a": "800 N State College Blvd"
+"a": "800 N State College Blvd",
+"lat": 33.87939,
+"lon": -117.88384,
+"geo": "amenity"
 },
 {
 "n": "Linbrook Family Billiard",
@@ -698,7 +722,10 @@
 "city": "Anaheim",
 "zip": "92801",
 "t": [],
-"a": "2220 W Lincoln Ave"
+"a": "2220 W Lincoln Ave",
+"lat": 33.83231,
+"lon": -117.9604,
+"geo": "place"
 },
 {
 "n": "Hard Times Billiards",
@@ -709,7 +736,10 @@
 "Serious players",
 "Tournaments"
 ],
-"a": "17450 Bellflower Blvd"
+"a": "17450 Bellflower Blvd",
+"lat": 33.8739,
+"lon": -118.12508,
+"geo": "place"
 }
 ]
 }
