@@ -374,42 +374,32 @@ $("list").addEventListener("click",ev=>{if(screen!=="venues")return;
 let focusK=null;
 /* ---- Easter egg: tap the Fiscar to wake it (silent, it's electric), tap again and it peels out ---- */
 let carOn=false,carGo=false,AC=null;
-/* Karma-style drive-off: "a cross between a starship and a Formula One car" (Henrik Fisker).
-   Layers: throaty electric hum + detuned starship pad + buzzy F1-ish rev with formants + jet hiss,
-   then a Doppler pitch drop and pan right as it leaves, and a soft return from the left. */
-function karmaSound(ctx,dest){const t=ctx.currentTime+.02;
-  const master=ctx.createGain();master.gain.value=.09;master.connect(dest);
-  const pan=ctx.createStereoPanner?ctx.createStereoPanner():null;if(pan){pan.connect(master);pan.pan.setValueAtTime(0,t);pan.pan.linearRampToValueAtTime(.85,t+1.05);pan.pan.setValueAtTime(-.8,t+1.35);pan.pan.linearRampToValueAtTime(0,t+2.4);}
-  const bus=pan||master;
-  const away=ctx.createBiquadFilter();away.type="lowpass";away.Q.value=.7;          // closes as it drives off, reopens on return
-  away.frequency.setValueAtTime(5200,t);away.frequency.setValueAtTime(5200,t+.8);away.frequency.exponentialRampToValueAtTime(700,t+1.3);
-  away.frequency.setValueAtTime(900,t+1.35);away.frequency.exponentialRampToValueAtTime(2600,t+2.1);away.connect(bus);
-  const env=ctx.createGain();env.connect(away);const E=env.gain;               // overall loudness: swell, peak, fade away, soft return, settle
-  E.setValueAtTime(.0001,t);E.exponentialRampToValueAtTime(.6,t+.18);E.linearRampToValueAtTime(1,t+.75);E.exponentialRampToValueAtTime(.1,t+1.27);E.exponentialRampToValueAtTime(.0001,t+1.33);
-  E.setValueAtTime(.0001,t+1.38);E.exponentialRampToValueAtTime(.06,t+1.48);E.linearRampToValueAtTime(.4,t+1.95);E.exponentialRampToValueAtTime(.0001,t+2.7);
-  // pitch curve shared by the tonal layers: idle, rev up, Doppler drop as it passes, low return, settle
-  const pitch=(f,p)=>{f.setValueAtTime(p*1,t);f.exponentialRampToValueAtTime(p*1.15,t+.2);f.exponentialRampToValueAtTime(p*3.1,t+.85);
-    f.exponentialRampToValueAtTime(p*2.35,t+1.15);f.setValueAtTime(p*1.6,t+1.36);f.exponentialRampToValueAtTime(p*.95,t+2.2);f.exponentialRampToValueAtTime(p*.8,t+2.7);};
-  const end=t+2.75;
-  // 1. throaty electric hum (low, round)
-  [[1,.32,"triangle"],[.5,.2,"sine"]].forEach(([m,g,ty])=>{const o=ctx.createOscillator(),og=ctx.createGain();o.type=ty;pitch(o.frequency,62*m);og.gain.value=g;o.connect(og).connect(env);o.start(t);o.stop(end);});
-  // 2. starship pad: detuned saws through a sweeping bandpass (chorus + phaser feel)
-  const pad=ctx.createBiquadFilter();pad.type="bandpass";pad.Q.value=3;pad.frequency.setValueAtTime(400,t);pad.frequency.exponentialRampToValueAtTime(1800,t+.9);pad.frequency.exponentialRampToValueAtTime(600,t+1.3);pad.frequency.exponentialRampToValueAtTime(900,t+2.4);
-  const pg=ctx.createGain();pg.gain.value=.42;pad.connect(pg).connect(env);
-  [-9,0,8].forEach(c=>{const o=ctx.createOscillator();o.type="sawtooth";o.detune.value=c;pitch(o.frequency,124);o.connect(pad);o.start(t);o.stop(end);});
-  const lfo=ctx.createOscillator(),lg=ctx.createGain();lfo.frequency.value=5.5;lg.gain.value=180;lfo.connect(lg).connect(pad.frequency);lfo.start(t);lfo.stop(end);
-  // 3. F1 edge: buzzy square/saw stack with two formants, slightly gritty, sits on top during the rev
-  const grit=ctx.createWaveShaper(),cv=new Float32Array(256);for(let i=0;i<256;i++){const x=i/128-1;cv[i]=Math.tanh(x*2.4);}grit.curve=cv;
-  const f1=ctx.createBiquadFilter(),f2=ctx.createBiquadFilter();f1.type=f2.type="peaking";f1.frequency.value=950;f1.gain.value=9;f1.Q.value=2;f2.frequency.value=2300;f2.gain.value=7;f2.Q.value=3;
-  const fg=ctx.createGain();fg.gain.setValueAtTime(.0001,t);fg.gain.exponentialRampToValueAtTime(.3,t+.55);fg.gain.exponentialRampToValueAtTime(.05,t+1.2);fg.gain.setValueAtTime(.02,t+1.36);fg.gain.exponentialRampToValueAtTime(.0001,t+2.3);
-  grit.connect(f1).connect(f2).connect(fg).connect(env);
-  [[2,"square",.18],[3,"sawtooth",.14],[4,"sawtooth",.08]].forEach(([m,ty,g])=>{const o=ctx.createOscillator(),og=ctx.createGain();o.type=ty;pitch(o.frequency,62*m);og.gain.value=g;o.connect(og).connect(grit);o.start(t);o.stop(end);});
-  // 4. jet hiss: noise, highpassed, rising with speed
-  const nb=ctx.createBuffer(1,ctx.sampleRate*3,ctx.sampleRate),d=nb.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=Math.random()*2-1;
-  const n=ctx.createBufferSource(),hp=ctx.createBiquadFilter(),ng=ctx.createGain();n.buffer=nb;hp.type="bandpass";hp.Q.value=.6;
-  hp.frequency.setValueAtTime(900,t);hp.frequency.exponentialRampToValueAtTime(4200,t+.9);hp.frequency.exponentialRampToValueAtTime(1400,t+1.3);hp.frequency.exponentialRampToValueAtTime(2000,t+2.2);
-  ng.gain.setValueAtTime(.0001,t);ng.gain.exponentialRampToValueAtTime(.28,t+.85);ng.gain.exponentialRampToValueAtTime(.05,t+1.3);ng.gain.linearRampToValueAtTime(.09,t+1.9);ng.gain.exponentialRampToValueAtTime(.0001,t+2.6);
-  n.connect(hp).connect(ng).connect(env);n.start(t);n.stop(end);}
+/* Fiscar drive-off, modelled on the shape of a real Karma recording (measured, not copied):
+   a dense, rounded loudness curve: full pull-away, drop as it leaves, a big round swell as it comes
+   back around, a smaller one as it parks, then a soft trail. Thin electric whine (~2.4 -> 4.4 kHz)
+   over road rumble, a ~650 Hz body resonance and tyre hiss; gently compressed so it sounds full. */
+const K_ENV=[[0,0],[.22,.8],[.5,.88],[.85,1],[.95,.86],[1.15,.17],[1.3,.16],[1.6,.88],[1.8,.8],[2,.22],[2.12,.21],[2.38,.62],[2.6,.35],[2.85,.13],[3,0]];
+function curve(keys,dur,n){const out=new Float32Array(n);for(let i=0;i<n;i++){const x=i/(n-1)*dur;let k=0;while(k<keys.length-2&&keys[k+1][0]<x)k++;
+  const [x0,y0]=keys[k],[x1,y1]=keys[k+1],u=Math.min(1,Math.max(0,(x-x0)/(x1-x0||1))),c=(1-Math.cos(u*Math.PI))/2;out[i]=y0+(y1-y0)*c;}return out;}
+function karmaSound(ctx,dest){const t=ctx.currentTime+.02,sr=ctx.sampleRate,D=3,end=t+D;
+  const comp=ctx.createDynamicsCompressor();comp.threshold.value=-20;comp.ratio.value=2.5;comp.attack.value=.003;comp.release.value=.2;
+  const master=ctx.createGain();master.gain.value=.12;comp.connect(master).connect(dest);
+  const pan=ctx.createStereoPanner?ctx.createStereoPanner():null;
+  if(pan){pan.connect(comp);pan.pan.setValueCurveAtTime(curve([[0,-.1],[.9,.8],[1.2,.8],[1.33,-.7],[2.4,0],[3,0]],D,200),t,D);}
+  const far=ctx.createBiquadFilter();far.type="lowpass";far.Q.value=.5;far.frequency.setValueCurveAtTime(curve([[0,7000],[.9,7000],[1.25,1500],[1.6,4500],[2,2500],[2.38,3500],[3,1500]],D,200),t,D);far.connect(pan||comp);
+  const env=ctx.createGain();env.gain.setValueCurveAtTime(curve(K_ENV,D,400),t,D);env.connect(far);
+  const noise=(brown)=>{const b=ctx.createBuffer(1,sr*D,sr),d=b.getChannelData(0);let l=0;for(let i=0;i<d.length;i++){const w=Math.random()*2-1;if(brown){l=(l+.02*w)/1.02;d[i]=l*3.5;}else d[i]=w;}const n=ctx.createBufferSource();n.buffer=b;n.start(t);n.stop(end);return n;};
+  const chain=(src,...nodes)=>{let x=src;nodes.forEach(nn=>{x.connect(nn);x=nn;});x.connect(env);};
+  const bq=(type,f,q)=>{const b=ctx.createBiquadFilter();b.type=type;b.frequency.value=f;if(q)b.Q.value=q;return b;},gn=v=>{const g=ctx.createGain();g.gain.value=v;return g;};
+  chain(noise(true),bq("highpass",70),bq("lowpass",380),gn(1));                         // road rumble
+  const mf=bq("bandpass",640,4);mf.frequency.setValueCurveAtTime(curve([[0,600],[.86,700],[1.2,570],[1.6,680],[2.4,600],[3,560]],D,100),t,D);
+  chain(noise(false),mf,gn(.8));                                                           // body resonance
+  chain(noise(false),bq("bandpass",1600,.7),gn(.09));                                       // tyre hiss
+  const wg=gn(.03);wg.connect(env);                                                        // electric whine
+  const wf=curve([[0,2400],[.9,4400],[1.2,4200],[1.33,3300],[1.8,3000],[2.45,2300],[3,2200]],D,300);
+  [[1,1],[2,.18]].forEach(([m,g])=>{const o=ctx.createOscillator();o.type="sine";o.frequency.setValueCurveAtTime(wf.map(v=>v*m),t,D);
+    const v=ctx.createOscillator(),vg=gn(6*m);v.frequency.value=7;v.connect(vg).connect(o.frequency);v.start(t);v.stop(end);
+    const og=gn(g);o.connect(og).connect(wg);o.start(t);o.stop(end);});}
 window.karmaSound=karmaSound;
 function evWhoosh(){try{AC=AC||new (window.AudioContext||window.webkitAudioContext)();if(AC.state==="suspended")AC.resume();karmaSound(AC,AC.destination);}catch(e){}}
 const fx=document.createElement("div");fx.className="bcarfx";document.body.appendChild(fx);
