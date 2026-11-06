@@ -99,6 +99,7 @@ function openResults(key,noPush){
 function show(s,noPush){
   screen=s; const root=document.documentElement;
   ["home","results","map","venues","saved","budget"].forEach(x=>root.classList.toggle("b-"+x,x===s));
+  document.body.classList.toggle("nebtiles",s==="home");
   const tab=s==="home"||s==="results"?"shows":s;
   document.querySelectorAll("#bTabs [data-tab]").forEach(b=>{if(b.dataset.tab===tab)b.setAttribute("aria-current","page");else b.removeAttribute("aria-current");});
   bar.hidden=!(s==="results"||s==="saved");

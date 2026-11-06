@@ -49,13 +49,15 @@ void main(){
     if(cv.width!==w||cv.height!==h){cv.width=w;cv.height=h;gl.viewport(0,0,w,h);gl.uniform2f(uRes,w,h);gl.uniform1f(uK,k);gl.uniform1f(uRad,12*k);sig="";}}
   function collect(){
     const vh=innerHeight;let n=0,s="";
-    for(const el of document.querySelectorAll("#list .vcard .vf")){
+    const tiles=!document.body.classList.contains("neb");
+    for(const el of document.querySelectorAll(tiles?"#bTiles .btile":"#list .vcard .vf")){
       if(n>=MAX)break;
       const r=el.getBoundingClientRect();
       if(!r.width||r.bottom<0||r.top>vh)continue;
       rects[n*4]=(r.left+1)*k;rects[n*4+1]=(r.top+1)*k;rects[n*4+2]=(r.width-2)*k;rects[n*4+3]=(r.height-2)*k;
       s+=Math.round(r.top)+","+Math.round(r.height)+";";n++;}
-    return [n,s];}
+    gl.uniform1f(uRad,(tiles?18:12)*k);
+    return [n,(tiles?"t":"v")+s];}
   function draw(force){
     const [n,s]=collect();
     if(!force&&s===sig)return;
@@ -69,7 +71,7 @@ void main(){
     if(!still&&dt>=33){last=now;tt+=Math.min(dt,100)/1000*0.35;draw(true);}   // ~30 fps drift
     else draw(false);                                                         // every frame: keep the windows under the cards while scrolling
   }
-  const on=()=>document.body.classList.contains("neb")&&!document.hidden;
+  const on=()=>(document.body.classList.contains("neb")||document.body.classList.contains("nebtiles"))&&!document.hidden;
   function sync(){
     if(!ready)return;
     if(on()){size();if(!raf){last=0;sig="";raf=requestAnimationFrame(frame);}}

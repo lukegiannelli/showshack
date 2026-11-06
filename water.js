@@ -1,7 +1,8 @@
 // Planning-box water: the beach photo with surface ripples, a slow wash up and back, and glints that shimmer.
 (function(){
   if(matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-  const box=document.querySelector(".start"), cv=box&&box.querySelector(".waterfx"); if(!cv) return;
+  [".start","#budgetBar"].forEach(sel=>{const box=document.querySelector(sel), cv=box&&box.querySelector(".waterfx"); if(cv) setup(box,cv,sel!==".start");});
+  function setup(box,cv,crop){
   const gl=cv.getContext("webgl",{alpha:false,antialias:false,powerPreference:"low-power"}); if(!gl) return;
   const VS="attribute vec2 a;void main(){gl_Position=vec4(a,0.,1.);}";
   const FS=`
@@ -59,7 +60,7 @@ void main(){
     function size(){const r=box.getBoundingClientRect();if(!r.width||!r.height)return;
       const w=Math.max(2,Math.round(r.width*scale)),h=Math.max(2,Math.round(r.height*scale));
       if(cv.width!==w||cv.height!==h){cv.width=w;cv.height=h;gl.viewport(0,0,w,h);gl.uniform2f(uRes,w,h);}
-      const ba=r.width/r.height;gl.uniform2f(uSc,1,1);draw();}
+      const ba=r.width/r.height;gl.uniform2f(uSc,1,crop?Math.min(1,Math.max(.22,ia/ba*1.6)):1);draw();}
     function frame(now){raf=requestAnimationFrame(frame);
       if(now-scrolling<220){last=now;return;}          // hold still while scrolling, like the page background
       const dt=now-last;if(dt<33)return;last=now;
@@ -75,4 +76,5 @@ void main(){
     ready=true;size();run();
   };
   img.src="water.jpg?v=1";
+}
 })();

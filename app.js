@@ -397,7 +397,9 @@ function updateBudget(){
   const pct=Math.min(100,Math.round(spent/B*100)), over=spent>B;
   const mon=now.toLocaleDateString("en-US",{month:"long"});
   bar.hidden=false; bar.classList.toggle("over",over);
+  const wfx=bar.querySelector(".waterfx");
   bar.innerHTML=`<span class="bt"><b>${mon}: $${Math.round(spent)}${partial?"+":""} of $${B}</b><small>${count} starred show${count===1?"":"s"} left this month · your share${over?" · over budget":""}</small></span><span class="bm"><i style="width:${pct}%"></i></span>`;
+  if(wfx)bar.prepend(wfx);
 }
 /* ---- venues: directory (pinned favorites on top) + venue page header ---- */
 function isPinned(k){return (state.pinV||[]).includes(k);}

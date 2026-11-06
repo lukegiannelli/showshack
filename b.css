@@ -366,3 +366,23 @@
 .ui-b .range .rw.go::after{display:none}
 .ui-b .range .rw.go .car{animation:none}
 .ui-b .range .rw .car{will-change:transform}
+
+/* Chowder galaxy through the four vibe tiles, kept subtle behind a tinted veil */
+body.nebtiles.nebok #nebfx{display:block}
+body.nebtiles.nebok .btile{background:color-mix(in srgb,var(--vc) 20%,rgba(16,10,32,.74));border-color:color-mix(in srgb,var(--vc) 55%,transparent);box-shadow:0 0 16px -6px color-mix(in srgb,var(--vc) 60%,transparent)}
+body.nebtiles.nebok .btile b{text-shadow:0 1px 3px rgba(0,0,0,.7)}
+:root:not([data-theme="dark"]) body.nebtiles.nebok .btile{background:color-mix(in srgb,var(--vc) 22%,rgba(255,255,255,.8))}
+:root:not([data-theme="dark"]) body.nebtiles.nebok .btile b{text-shadow:none}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) body.nebtiles.nebok .btile{background:color-mix(in srgb,var(--vc) 20%,rgba(16,10,32,.74))}
+  :root:not([data-theme="light"]) body.nebtiles.nebok .btile b{text-shadow:0 1px 3px rgba(0,0,0,.7)}}
+
+/* budget bar: the same moving beach water as the planning box (shows on Plan and Saved) */
+.budget.wbox{position:relative;overflow:hidden;isolation:isolate;border:1px solid rgba(255,255,255,.28);border-radius:14px;padding:12px 14px;background:#6d7fa8 url(water.jpg?v=1) center/100% 100% no-repeat;color:#fff}
+.budget.wbox>:not(.waterfx){position:relative;z-index:1}
+.budget.wbox>.waterfx{position:absolute;inset:0;z-index:0;width:100%;height:100%;display:block;pointer-events:none}
+.budget.wbox b{color:#fff;font-size:15px;text-shadow:0 0 2px rgba(20,10,30,.95),0 1px 8px rgba(20,10,30,.85)}
+.budget.wbox small{color:#f3efff;text-shadow:0 1px 4px rgba(20,10,30,.9)}
+.budget.wbox .bm{background:rgba(14,10,34,.45);box-shadow:inset 0 0 0 1px rgba(255,255,255,.18)}
+.budget.wbox.over b{color:#FFB08A}
+.budget.wbox{background-size:100% 260%;background-position:center 55%}
+.budget.wbox::after{content:"";position:absolute;inset:0;z-index:0;pointer-events:none;background:linear-gradient(90deg,rgba(14,8,34,.62),rgba(14,8,34,.28) 70%,rgba(14,8,34,.15))}
