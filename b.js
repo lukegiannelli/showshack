@@ -374,14 +374,44 @@ $("list").addEventListener("click",ev=>{if(screen!=="venues")return;
 let focusK=null;
 /* ---- Easter egg: tap the Fiscar to wake it (silent, it's electric), tap again and it peels out ---- */
 let carOn=false,carGo=false,AC=null;
-function evWhoosh(){try{AC=AC||new (window.AudioContext||window.webkitAudioContext)();if(AC.state==="suspended")AC.resume();
-  const t=AC.currentTime,out=AC.createGain();out.gain.setValueAtTime(0,t);out.gain.linearRampToValueAtTime(.07,t+.25);out.gain.setValueAtTime(.07,t+1.1);out.gain.exponentialRampToValueAtTime(.0001,t+2.4);out.connect(AC.destination);
-  const lp=AC.createBiquadFilter();lp.type="lowpass";lp.frequency.setValueAtTime(900,t);lp.frequency.linearRampToValueAtTime(3200,t+1.2);lp.connect(out);
-  [[1,.55],[2.01,.25],[3.02,.12]].forEach(([m,g])=>{const o=AC.createOscillator(),og=AC.createGain();o.type=m===1?"sawtooth":"sine";
-    o.frequency.setValueAtTime(140*m,t);o.frequency.exponentialRampToValueAtTime(620*m,t+1.4);og.gain.value=g;o.connect(og).connect(lp);o.start(t);o.stop(t+2.5);});
-  const nb=AC.createBuffer(1,AC.sampleRate*2.5,AC.sampleRate),d=nb.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=Math.random()*2-1;
-  const n=AC.createBufferSource(),bp=AC.createBiquadFilter(),ng=AC.createGain();n.buffer=nb;bp.type="bandpass";bp.frequency.setValueAtTime(500,t);bp.frequency.linearRampToValueAtTime(2400,t+1.3);bp.Q.value=.8;
-  ng.gain.setValueAtTime(.0001,t);ng.gain.linearRampToValueAtTime(.35,t+.9);ng.gain.exponentialRampToValueAtTime(.0001,t+2.3);n.connect(bp).connect(ng).connect(out);n.start(t);}catch(e){}}
+/* Karma-style drive-off: "a cross between a starship and a Formula One car" (Henrik Fisker).
+   Layers: throaty electric hum + detuned starship pad + buzzy F1-ish rev with formants + jet hiss,
+   then a Doppler pitch drop and pan right as it leaves, and a soft return from the left. */
+function karmaSound(ctx,dest){const t=ctx.currentTime+.02;
+  const master=ctx.createGain();master.gain.value=.09;master.connect(dest);
+  const pan=ctx.createStereoPanner?ctx.createStereoPanner():null;if(pan){pan.connect(master);pan.pan.setValueAtTime(0,t);pan.pan.linearRampToValueAtTime(.85,t+1.05);pan.pan.setValueAtTime(-.8,t+1.35);pan.pan.linearRampToValueAtTime(0,t+2.4);}
+  const bus=pan||master;
+  const away=ctx.createBiquadFilter();away.type="lowpass";away.Q.value=.7;          // closes as it drives off, reopens on return
+  away.frequency.setValueAtTime(5200,t);away.frequency.setValueAtTime(5200,t+.8);away.frequency.exponentialRampToValueAtTime(700,t+1.3);
+  away.frequency.setValueAtTime(900,t+1.35);away.frequency.exponentialRampToValueAtTime(2600,t+2.1);away.connect(bus);
+  const env=ctx.createGain();env.connect(away);const E=env.gain;               // overall loudness: swell, peak, fade away, soft return, settle
+  E.setValueAtTime(.0001,t);E.exponentialRampToValueAtTime(.6,t+.18);E.linearRampToValueAtTime(1,t+.75);E.exponentialRampToValueAtTime(.1,t+1.27);E.exponentialRampToValueAtTime(.0001,t+1.33);
+  E.setValueAtTime(.0001,t+1.38);E.exponentialRampToValueAtTime(.06,t+1.48);E.linearRampToValueAtTime(.4,t+1.95);E.exponentialRampToValueAtTime(.0001,t+2.7);
+  // pitch curve shared by the tonal layers: idle, rev up, Doppler drop as it passes, low return, settle
+  const pitch=(f,p)=>{f.setValueAtTime(p*1,t);f.exponentialRampToValueAtTime(p*1.15,t+.2);f.exponentialRampToValueAtTime(p*3.1,t+.85);
+    f.exponentialRampToValueAtTime(p*2.35,t+1.15);f.setValueAtTime(p*1.6,t+1.36);f.exponentialRampToValueAtTime(p*.95,t+2.2);f.exponentialRampToValueAtTime(p*.8,t+2.7);};
+  const end=t+2.75;
+  // 1. throaty electric hum (low, round)
+  [[1,.32,"triangle"],[.5,.2,"sine"]].forEach(([m,g,ty])=>{const o=ctx.createOscillator(),og=ctx.createGain();o.type=ty;pitch(o.frequency,62*m);og.gain.value=g;o.connect(og).connect(env);o.start(t);o.stop(end);});
+  // 2. starship pad: detuned saws through a sweeping bandpass (chorus + phaser feel)
+  const pad=ctx.createBiquadFilter();pad.type="bandpass";pad.Q.value=3;pad.frequency.setValueAtTime(400,t);pad.frequency.exponentialRampToValueAtTime(1800,t+.9);pad.frequency.exponentialRampToValueAtTime(600,t+1.3);pad.frequency.exponentialRampToValueAtTime(900,t+2.4);
+  const pg=ctx.createGain();pg.gain.value=.42;pad.connect(pg).connect(env);
+  [-9,0,8].forEach(c=>{const o=ctx.createOscillator();o.type="sawtooth";o.detune.value=c;pitch(o.frequency,124);o.connect(pad);o.start(t);o.stop(end);});
+  const lfo=ctx.createOscillator(),lg=ctx.createGain();lfo.frequency.value=5.5;lg.gain.value=180;lfo.connect(lg).connect(pad.frequency);lfo.start(t);lfo.stop(end);
+  // 3. F1 edge: buzzy square/saw stack with two formants, slightly gritty, sits on top during the rev
+  const grit=ctx.createWaveShaper(),cv=new Float32Array(256);for(let i=0;i<256;i++){const x=i/128-1;cv[i]=Math.tanh(x*2.4);}grit.curve=cv;
+  const f1=ctx.createBiquadFilter(),f2=ctx.createBiquadFilter();f1.type=f2.type="peaking";f1.frequency.value=950;f1.gain.value=9;f1.Q.value=2;f2.frequency.value=2300;f2.gain.value=7;f2.Q.value=3;
+  const fg=ctx.createGain();fg.gain.setValueAtTime(.0001,t);fg.gain.exponentialRampToValueAtTime(.3,t+.55);fg.gain.exponentialRampToValueAtTime(.05,t+1.2);fg.gain.setValueAtTime(.02,t+1.36);fg.gain.exponentialRampToValueAtTime(.0001,t+2.3);
+  grit.connect(f1).connect(f2).connect(fg).connect(env);
+  [[2,"square",.18],[3,"sawtooth",.14],[4,"sawtooth",.08]].forEach(([m,ty,g])=>{const o=ctx.createOscillator(),og=ctx.createGain();o.type=ty;pitch(o.frequency,62*m);og.gain.value=g;o.connect(og).connect(grit);o.start(t);o.stop(end);});
+  // 4. jet hiss: noise, highpassed, rising with speed
+  const nb=ctx.createBuffer(1,ctx.sampleRate*3,ctx.sampleRate),d=nb.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=Math.random()*2-1;
+  const n=ctx.createBufferSource(),hp=ctx.createBiquadFilter(),ng=ctx.createGain();n.buffer=nb;hp.type="bandpass";hp.Q.value=.6;
+  hp.frequency.setValueAtTime(900,t);hp.frequency.exponentialRampToValueAtTime(4200,t+.9);hp.frequency.exponentialRampToValueAtTime(1400,t+1.3);hp.frequency.exponentialRampToValueAtTime(2000,t+2.2);
+  ng.gain.setValueAtTime(.0001,t);ng.gain.exponentialRampToValueAtTime(.28,t+.85);ng.gain.exponentialRampToValueAtTime(.05,t+1.3);ng.gain.linearRampToValueAtTime(.09,t+1.9);ng.gain.exponentialRampToValueAtTime(.0001,t+2.6);
+  n.connect(hp).connect(ng).connect(env);n.start(t);n.stop(end);}
+window.karmaSound=karmaSound;
+function evWhoosh(){try{AC=AC||new (window.AudioContext||window.webkitAudioContext)();if(AC.state==="suspended")AC.resume();karmaSound(AC,AC.destination);}catch(e){}}
 const fx=document.createElement("div");fx.className="bcarfx";document.body.appendChild(fx);
 function puff(x,y,big){const m=document.createElement("i");m.className="bmist";m.style.left=x+"px";m.style.top=y+"px";m.style.setProperty("--h",Math.round(Math.random()*360));
   if(big)m.style.setProperty("--s",1.6);fx.appendChild(m);setTimeout(()=>m.remove(),1300);}
