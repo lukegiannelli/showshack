@@ -607,6 +607,109 @@
 "lat": 33.42666,
 "lon": -117.61213,
 "geo": "amenity"
+},
+{
+"n": "The Huddle",
+"c": "bar",
+"city": "Costa Mesa",
+"zip": "92626",
+"t": [
+"~9 tables",
+"Darts",
+"Pinball"
+],
+"a": "741 Baker St"
+},
+{
+"n": "Garf's Sports Lounge",
+"c": "bar",
+"city": "Costa Mesa",
+"zip": "92626",
+"t": [
+"Tables in back",
+"Bring cash"
+],
+"a": "3046 Bristol St"
+},
+{
+"n": "Patrick's Irish Pub",
+"c": "bar",
+"city": "Costa Mesa",
+"zip": "92626",
+"t": [
+"Darts"
+],
+"a": "2645 Harbor Blvd"
+},
+{
+"n": "Our Bar and Kitchen",
+"c": "bar",
+"city": "Costa Mesa",
+"zip": "92627",
+"t": [
+"Live music",
+"Pinball"
+],
+"a": "2000 Newport Blvd"
+},
+{
+"n": "Goat Hill Tavern",
+"c": "bar",
+"city": "Costa Mesa",
+"zip": "92627",
+"t": [
+"Shuffleboard"
+],
+"a": "1830 Newport Blvd"
+},
+{
+"n": "The Swinging Door Saloon",
+"c": "bar",
+"city": "Tustin",
+"zip": "92780",
+"t": [
+"Darts",
+"Shuffleboard"
+],
+"a": "355 El Camino Real"
+},
+{
+"n": "The Blue Door",
+"c": "bar",
+"city": "Fullerton",
+"zip": "92832",
+"t": [],
+"a": "1310 S Euclid St"
+},
+{
+"n": "Titan Bowl & Billiards",
+"c": "hall",
+"city": "Fullerton",
+"zip": "92831",
+"t": [
+"CSUF campus",
+"Bowling"
+],
+"a": "800 N State College Blvd"
+},
+{
+"n": "Linbrook Family Billiard",
+"c": "hall",
+"city": "Anaheim",
+"zip": "92801",
+"t": [],
+"a": "2220 W Lincoln Ave"
+},
+{
+"n": "Hard Times Billiards",
+"c": "hall",
+"city": "Bellflower",
+"zip": "90706",
+"t": [
+"Serious players",
+"Tournaments"
+],
+"a": "17450 Bellflower Blvd"
 }
 ]
 }

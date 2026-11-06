@@ -41,6 +41,17 @@ $("bTiles").innerHTML=VIBES.map(v=>`<button type="button" class="btile t-${v.k}"
 $("bTiles").addEventListener("click",ev=>{const b=ev.target.closest("[data-vibe]");if(b)openResults(b.dataset.vibe);});
 $("bSearchAll").onclick=()=>{openResults("all");setTimeout(()=>{const q=$("q");if(q){q.focus();}},60);};
 $("bAllWeekend").onclick=()=>{state.when="weekend";savePrefs();openResults("all");};
+/* ---- weekend picks: one from each vibe when the weekend has one, then the best of the rest ---- */
+function bWeekendPicks(up){const r=dayRange("weekend");if(!r)return null;
+  const pool=up.filter(e=>!e.added&&e.start<=r[1]&&(e.end||e.start)>=r[0]&&!priceInfo(e).sold);if(pool.length<3)return null;
+  const score=e=>{const pi=priceInfo(e);let sc=0;if(state.stars.has(skey(e)))sc+=100;if(pi.free)sc+=20;else if(!pi.none&&pi.lo!=null&&pi.lo<=25)sc+=10;
+    if(e._drive)sc+=e._drive.mins<=30?15:e._drive.mins<=60?8:0;if(isSmall(e))sc+=5;if(!isRec(e))sc+=3;if(logoOf(e))sc+=2;return sc;};
+  const ranked=pool.map(e=>({e,s:score(e)})).sort((a,b)=>b.s-a.s||a.e.start.localeCompare(b.e.start)).map(x=>x.e);
+  const used=new Set(),picks=[];
+  for(const v of VIBES){const e=ranked.find(x=>!used.has(skey(x))&&GROUPS[v.k].has(x.kind));if(e){used.add(skey(e));picks.push({e,v});}}
+  for(const e of ranked){if(picks.length>=5)break;if(!used.has(skey(e))){used.add(skey(e));picks.push({e});}}
+  return {picks};}
+
 /* ---- flip cards: real event cards in a row; tap flips to the details right there ---- */
 const LISTEN=q=>[["YouTube Music","https://music.youtube.com/search?q="],["Spotify","https://open.spotify.com/search/"],["Apple Music","https://music.apple.com/us/search?term="],["SoundCloud","https://soundcloud.com/search/people?q="]].map(([n,u])=>`<a href="${u+encodeURIComponent(q)}" target="_blank" rel="noopener">${n}</a>`).join("");
 function backSide(e){const pi=priceInfo(e),d=parseDay(e.start);
@@ -67,7 +78,13 @@ function flipRowClick(ev){const fc=ev.target.closest(".bfc");if(!fc)return;
   if(ev.target.closest("a,input,select,label"))return;
   if(ev.target.closest(".vlink")){ev.stopPropagation();}
   setFlip(fc,!fc.classList.contains("on"));}
-function setFlip(fc,on){fc.classList.toggle("on",on);fc.querySelector(".bfc-b").setAttribute("aria-hidden",String(!on));fc.querySelector(".bfc-f").setAttribute("aria-hidden",String(on));}
+function setFlip(fc,on){const inn=fc.querySelector(".bfc-in");
+  if(fc._busy)return;if(!inn.animate||matchMedia("(prefers-reduced-motion: reduce)").matches){swapFlip(fc,on);return;}
+  fc._busy=true;const half={duration:150,easing:"cubic-bezier(.5,0,.75,.4)",fill:"forwards"};
+  inn.animate([{transform:"scaleX(1)"},{transform:"scaleX(0.02)"}],half).onfinish=()=>{swapFlip(fc,on);
+    const a=inn.animate([{transform:"scaleX(0.02)"},{transform:"scaleX(1)"}],{duration:170,easing:"cubic-bezier(.25,.6,.4,1)",fill:"forwards"});
+    a.onfinish=()=>{a.cancel();inn.getAnimations().forEach(x=>x.cancel());fc._busy=false;};};}
+function swapFlip(fc,on){fc.classList.toggle("on",on);fc.querySelector(".bfc-b").setAttribute("aria-hidden",String(!on));fc.querySelector(".bfc-f").setAttribute("aria-hidden",String(on));}
 $("bPicks").addEventListener("click",flipRowClick,true);
 
 /* ---- screens ---- */
@@ -135,10 +152,25 @@ function drawSpins(fresh){const box=$("bSpins");box.hidden=!spins.length;if(!spi
 $("bSpinRow").addEventListener("click",flipRowClick,true);
 $("bSpinClear").onclick=()=>{spins=[];drawSpins();};
 
+/* ---- search also finds pool spots ---- */
+const poolHits=document.createElement("section");poolHits.id="bPoolHits";poolHits.className="bpoolhits";poolHits.hidden=true;$("list").before(poolHits);
+const POOLWORD=/\b(pool|billiards?|snooker|8 ?ball|eight ball|cue)\b/;
+function drawPoolHits(){const q=state.q||"";if(screen!=="results"||!q||!POOL.length){poolHits.hidden=true;return;}
+  const all=POOLWORD.test(q),ws=q.split(/\s+/).filter(w=>!POOLWORD.test(w));
+  const hit=POOL.filter(p=>{const t=norm([p.n,p.city,(p.t||[]).join(" "),p.c==="hall"?"pool hall":"bar"].join(" "));return ws.length?ws.every(w=>t.includes(w)):all;})
+    .map(p=>({p,d:driveEstimate(p.lat,p.lon)})).sort((a,b)=>(a.d?.mins??1e9)-(b.d?.mins??1e9)||a.p.n.localeCompare(b.p.n));
+  if(!hit.length){poolHits.hidden=true;return;}
+  poolHits.hidden=false;
+  poolHits.innerHTML=`<h2 class="month">${NEON8} Pool spots · ${hit.length}</h2>`+hit.slice(0,8).map(({p,d})=>{const q2=encodeURIComponent(p.n+", "+p.a+", "+p.city+", CA");
+    return `<div class="bph"><div><b>${esc(p.n)}</b><span>${esc(p.city)} · ${p.c==="hall"?"pool hall":"bar with pool"}${d?` · ~${fmtMins(d.mins)}`:""}</span>${(p.t||[]).length?`<small>${p.t.map(esc).join(" · ")}</small>`:""}</div>
+      <span class="bph-a"><a href="https://www.google.com/maps/dir/?api=1&destination=${q2}" target="_blank" rel="noopener">Directions</a><a href="https://www.google.com/maps/search/?api=1&query=${q2}" target="_blank" rel="noopener">Hours</a></span></div>`;}).join("")
+    +(hit.length>8?`<p class="bph-more">+${hit.length-8} more. Turn on Pool in the Map tab to see them all.</p>`:"");}
+
 /* ---- after every render: counts, titles, sub-filters ---- */
 const _render=render;
 render=function(){_render();try{after();}catch(e){console.error(e);}};
 function after(){
+  try{drawPoolHits();}catch(e){}
   if((state._up||[]).length)try{syncFollowDot();}catch(e){}
   if(screen==="map"){closeSheet();drawMapUI();}
   if(pendingOpen)setTimeout(tryOpen,30);
@@ -147,10 +179,10 @@ function after(){
   if(screen==="home"){
     for(const v of VIBES){const n=up.filter(e=>GROUPS[v.k].has(e.kind)&&inWhen(e)).length;
       const el=document.querySelector(`[data-count="${v.k}"]`);if(el)el.textContent=n+" "+WHEN_WORD[state.when];}
-    const wp=weekendPicks(up);
+    const wp=bWeekendPicks(up);
     const sig=wp?wp.picks.slice(0,5).map(p=>skey(p.e)).join("|")+(origin?"o":""):"";
     if(sig!==$("bPicks").dataset.sig){$("bPicks").dataset.sig=sig;
-      $("bPicks").innerHTML=wp?wp.picks.slice(0,5).map(p=>flipCardHtml(p.e,"")).join(""):'<p class="bnone">Weekend picks show up here once the weekend list fills in.</p>';}
+      $("bPicks").innerHTML=wp?wp.picks.slice(0,5).map(p=>flipCardHtml(p.e,p.v?`<i style="--vc:${p.v.c}"></i>${p.v.name.split(" & ")[0]}`:"")).join(""):'<p class="bnone">Weekend picks show up here once the weekend list fills in.</p>';}
     trust();
   }
   if(screen==="results"||screen==="saved"){
@@ -228,9 +260,9 @@ function drawMap(){const L=window.L;
     else if(groups.length)LM.fitBounds(L.latLngBounds(groups.map(g=>[g.lat,g.lon])).pad(.08),{maxZoom:12});}
   // reach summary under the map
   const tot=groups.reduce((s,g)=>s+g.evs.length,0);
-  if(hasO){const cnt=m=>groups.filter(g=>g.d&&g.d.mins<=m).reduce((s,g)=>s+g.evs.length,0);
-    $("bMapReach").innerHTML=`<b>${tot} ${tot===1?"show":"shows"} ${WHEN_WORD[state.when]}<img class="breach-car" src="car.svg?v=2" alt=""></b>`+RINGS.map(([m,c])=>`<span style="--rc:${c}"><i></i>${cnt(m)} within ${m} min</span>`).join("")+`<small>The dot is your start point. Rings are straight-line drive estimates, not live traffic. Tap a dot to plan the night around it.</small>`;}
-  else $("bMapReach").innerHTML=`<b>${tot} ${tot===1?"show":"shows"} ${WHEN_WORD[state.when]}<img class="breach-car" src="car.svg?v=2" alt=""></b><small>Tap a dot to see what's playing there and what's nearby. Set a start point to see what's in reach.</small>`;}
+  if(carGo){}else if(hasO){const cnt=m=>groups.filter(g=>g.d&&g.d.mins<=m).reduce((s,g)=>s+g.evs.length,0);
+    $("bMapReach").innerHTML=`<b>${tot} ${tot===1?"show":"shows"} ${WHEN_WORD[state.when]}<button type="button" class="breach-btn${carOn?" on":""}" aria-label="The Fiscar (tap it)"><img class="breach-car" src="car.svg?v=2" alt=""></button></b>`+RINGS.map(([m,c])=>`<span style="--rc:${c}"><i></i>${cnt(m)} within ${m} min</span>`).join("")+`<small>The dot is your start point. Rings are straight-line drive estimates, not live traffic. Tap a dot to plan the night around it.</small>`;}
+  else if(!carGo)$("bMapReach").innerHTML=`<b>${tot} ${tot===1?"show":"shows"} ${WHEN_WORD[state.when]}<button type="button" class="breach-btn${carOn?" on":""}" aria-label="The Fiscar (tap it)"><img class="breach-car" src="car.svg?v=2" alt=""></button></b><small>Tap a dot to see what's playing there and what's nearby. Set a start point to see what's in reach.</small>`;}
 function sheetOpen(html){const sh=$("bMapSheet");sh.innerHTML=`<button type="button" class="bms-x" aria-label="Close">✕</button>`+html;sh.hidden=false;sh.scrollTop=0;sh.querySelector(".bms-x").onclick=closeSheet;}
 function closeSheet(){$("bMapSheet").hidden=true;}
 function openSheet(g){const e0=g.evs[0],name=g.k.split(" · ")[0],city=g.k.split(" · ")[1]||e0.city||"";
@@ -340,6 +372,34 @@ $("list").addEventListener("click",ev=>{if(screen!=="venues")return;
     const t=`My Show Shack passport: ${n} SoCal venue${n===1?"":"s"} stamped 🛖🎟️\n${APP_URL}`;
     if(navigator.share)navigator.share({text:t}).catch(()=>{});else if(navigator.clipboard)navigator.clipboard.writeText(t).then(()=>{ps.textContent="Copied ✓";});}},true);
 let focusK=null;
+/* ---- Easter egg: tap the Fiscar to wake it (silent, it's electric), tap again and it peels out ---- */
+let carOn=false,carGo=false,AC=null;
+function evWhoosh(){try{AC=AC||new (window.AudioContext||window.webkitAudioContext)();if(AC.state==="suspended")AC.resume();
+  const t=AC.currentTime,out=AC.createGain();out.gain.setValueAtTime(0,t);out.gain.linearRampToValueAtTime(.07,t+.25);out.gain.setValueAtTime(.07,t+1.1);out.gain.exponentialRampToValueAtTime(.0001,t+2.4);out.connect(AC.destination);
+  const lp=AC.createBiquadFilter();lp.type="lowpass";lp.frequency.setValueAtTime(900,t);lp.frequency.linearRampToValueAtTime(3200,t+1.2);lp.connect(out);
+  [[1,.55],[2.01,.25],[3.02,.12]].forEach(([m,g])=>{const o=AC.createOscillator(),og=AC.createGain();o.type=m===1?"sawtooth":"sine";
+    o.frequency.setValueAtTime(140*m,t);o.frequency.exponentialRampToValueAtTime(620*m,t+1.4);og.gain.value=g;o.connect(og).connect(lp);o.start(t);o.stop(t+2.5);});
+  const nb=AC.createBuffer(1,AC.sampleRate*2.5,AC.sampleRate),d=nb.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=Math.random()*2-1;
+  const n=AC.createBufferSource(),bp=AC.createBiquadFilter(),ng=AC.createGain();n.buffer=nb;bp.type="bandpass";bp.frequency.setValueAtTime(500,t);bp.frequency.linearRampToValueAtTime(2400,t+1.3);bp.Q.value=.8;
+  ng.gain.setValueAtTime(.0001,t);ng.gain.linearRampToValueAtTime(.35,t+.9);ng.gain.exponentialRampToValueAtTime(.0001,t+2.3);n.connect(bp).connect(ng).connect(out);n.start(t);}catch(e){}}
+const fx=document.createElement("div");fx.className="bcarfx";document.body.appendChild(fx);
+function puff(x,y,big){const m=document.createElement("i");m.className="bmist";m.style.left=x+"px";m.style.top=y+"px";m.style.setProperty("--h",Math.round(Math.random()*360));
+  if(big)m.style.setProperty("--s",1.6);fx.appendChild(m);setTimeout(()=>m.remove(),1300);}
+function spark(x,y){const k=document.createElement("b");k.className="bspark";k.style.left=x+"px";k.style.top=y+"px";
+  k.style.setProperty("--dx",(-30-Math.random()*60)+"px");k.style.setProperty("--dy",(-14+Math.random()*34)+"px");fx.appendChild(k);setTimeout(()=>k.remove(),650);}
+function driveOff(btn){const img=btn.querySelector("img"),r=img.getBoundingClientRect();carGo=true;btn.classList.add("go");evWhoosh();
+  const out=innerWidth-r.left+40,back=-(r.right+40);let alive=true;
+  (function trail(){if(!alive)return;const b=img.getBoundingClientRect();if(b.right>0&&b.left<innerWidth){
+      puff(b.left+6,b.top+b.height*.55);if(Math.random()<.9){spark(b.left+b.width*.22,b.bottom-3);spark(b.left+b.width*.8,b.bottom-3);}}
+    requestAnimationFrame(trail);})();
+  img.animate([{transform:"translateX(0)"},{transform:"translateX(-6px)",offset:.12},{transform:`translateX(${out}px)`}],{duration:950,easing:"cubic-bezier(.55,0,.85,.35)"}).onfinish=()=>{
+    img.style.transform=`translateX(${back}px)`;
+    setTimeout(()=>{img.animate([{transform:`translateX(${back}px)`},{transform:"translateX(4px)",offset:.86},{transform:"translateX(0)"}],{duration:1100,easing:"cubic-bezier(.2,.75,.3,1)"}).onfinish=()=>{
+      img.style.transform="";alive=false;carGo=false;carOn=false;btn.classList.remove("go","on");};},380);};}
+$("bMapReach").addEventListener("click",ev=>{const btn=ev.target.closest(".breach-btn");if(!btn||carGo)return;
+  if(matchMedia("(prefers-reduced-motion: reduce)").matches){btn.classList.toggle("on");return;}
+  if(!carOn){carOn=true;btn.classList.add("on");const r=btn.getBoundingClientRect();for(let i=0;i<3;i++)setTimeout(()=>puff(r.left+4,r.top+r.height*.6,true),i*120);}
+  else driveOff(btn);});
 function focusVenue(k){focusK=k;MAPV.vibe="all";const v=venueInfo(k);
   if(!v.evs.some(inWhen)){state.when="any";savePrefs();}
   state.kind="all";state.view="map";show("map");}
