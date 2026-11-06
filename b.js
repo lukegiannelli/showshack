@@ -91,7 +91,7 @@ function show(s,noPush){
 }
 window.addEventListener("popstate",()=>{if(pushed){pushed=false;if(screen!=="home"){state.kind="all";state.sub=null;show("home",true);}}});
 $("bBack").onclick=()=>goHome();
-function goHome(){state.kind="all";state.sub=null;state.genre="all";state.view="list";show("home");}
+function goHome(){state.venue="all";state.kind="all";state.sub=null;state.genre="all";state.view="list";show("home");}
 $("bTabs").addEventListener("click",ev=>{const b=ev.target.closest("[data-tab]");if(!b)return;const t=b.dataset.tab;
   if(t==="shows"){goHome();return;}
   state.sub=null;state.surprise=null;state.venue="all";
@@ -139,6 +139,7 @@ $("bSpinClear").onclick=()=>{spins=[];drawSpins();};
 const _render=render;
 render=function(){_render();try{after();}catch(e){console.error(e);}};
 function after(){
+  if((state._up||[]).length)try{syncFollowDot();}catch(e){}
   if(screen==="map"){closeSheet();drawMapUI();}
   if(pendingOpen)setTimeout(tryOpen,30);
   document.querySelectorAll("[data-when]").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.when===state.when)));
@@ -154,7 +155,7 @@ function after(){
   }
   if(screen==="results"||screen==="saved"){
     const v=VIBES.find(x=>x.k===cur);
-    $("bTitle").textContent=screen==="saved"?"Saved":v?v.name:cur==="surprise"?"Surprise pick":state.q?"Search":"All shows";
+    $("bTitle").textContent=screen==="saved"?"Saved":state.venue&&state.venue!=="all"?state.venue.split(" · ")[0]:v?v.name:cur==="surprise"?"Surprise pick":state.q?"Search":"All shows";
     const n=(state._shown||[]).length;$("bCount").textContent=n+(n===1?" event":" events")+(screen==="saved"?"":" · "+WHEN_WORD[state.when]);
     const subs=$("bSubs");let items=null,key="sub";
     if(cur==="music"){items=GENRES.map(([g,l])=>[g==="all"?"":g,l]);key="genre";} else if(SUBS[cur])items=SUBS[cur];
@@ -220,6 +221,7 @@ function drawMap(){const L=window.L;
     mk.on("click",ev=>{L.DomEvent.stopPropagation(ev);openSheet(g);});mk.addTo(LMG.pins);});
   if(state.poolOn&&POOL.length)POOL.forEach(p=>{const mk=L.marker([p.lat,p.lon],{title:p.n,icon:L.divIcon({className:"bpool-w",html:NEON8,iconSize:[22,22],iconAnchor:[11,11]})});
     mk.on("click",ev=>{L.DomEvent.stopPropagation(ev);openPool(p);});mk.addTo(LMG.pool);});
+  if(focusK){const g=groups.find(x=>x.k===focusK);focusK=null;if(g){fitSig=state.when+MAPV.vibe+(hasO?origin.lat:"");LM.setView([g.lat,g.lon],14);setTimeout(()=>openSheet(g),60);}}
   const sig=state.when+MAPV.vibe+(hasO?origin.lat:"");
   if(sig!==fitSig){fitSig=sig;
     if(hasO)LM.setView([origin.lat,origin.lon],10);
@@ -242,11 +244,13 @@ function openSheet(g){const e0=g.evs[0],name=g.k.split(" · ")[0],city=g.k.split
   const more=g.evs.length>6?`<p class="bms-more">+${g.evs.length-6} more here</p>`:"";
   const pools=POOL.map(p=>({p,mi:miles(g.lat,g.lon,p.lat,p.lon)})).filter(x=>x.mi<=8).sort((a,b)=>a.mi-b.mi).slice(0,2);
   const near=(q,label,ic)=>`<a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(q+" near "+name+", "+city)}" target="_blank" rel="noopener">${ic} ${label}</a>`;
-  sheetOpen(`<div class="bms-h" style="--pc:${g.v.c}"><i></i><div><b>${esc(name)}</b><span>${esc(city)}${g.d?` · ~${fmtMins(g.d.mins)} · ${g.d.miles} mi`:""}</span></div></div>
+  const fol=isPinned(g.k);
+  sheetOpen(`<div class="bms-h" style="--pc:${g.v.c}"><i></i><div><b>${esc(name)}</b><span>${esc(city)}${g.d?` · ~${fmtMins(g.d.mins)} · ${g.d.miles} mi`:""}</span></div><button type="button" class="bms-fol${fol?" on":""}" data-mfol="${esc(g.k)}" aria-pressed="${fol}">${ni("bell")} ${fol?"Following":"Follow"}</button></div>
     <div class="bms-list">${rows}${more}</div>
     <h3 class="bms-sub">Build your night here</h3>
     <div class="bms-night">${near("restaurants","Eat before","🍜")}${near("bars","Drinks after","🍸")}${near("parking","Parking","🅿️")}<a href="${dir}" target="_blank" rel="noopener">🧭 Directions</a></div>
     ${pools.length?`<div class="bms-pool">${pools.map(({p,mi})=>`<a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(p.n+", "+p.a+", "+p.city+", CA")}" target="_blank" rel="noopener">${NEON8}<span><b>${esc(p.n)}</b><small>${mi<1?"under a mile":mi.toFixed(1)+" mi"} away · ${p.c==="hall"?"pool hall":"bar with pool"}</small></span></a>`).join("")}</div>`:""}`);
+  const fb=$("bMapSheet").querySelector("[data-mfol]");if(fb)fb.onclick=()=>{const k=fb.dataset.mfol,on=!isPinned(k);if(on)markSeen(k);togglePin(k);fb.classList.toggle("on",on);fb.setAttribute("aria-pressed",String(on));fb.innerHTML=ni("bell")+(on?" Following":" Follow");syncFollowDot();};
   $("bMapSheet").querySelectorAll("[data-card]").forEach(b=>b.onclick=()=>{state.when="any";state.view="list";openResults("all");openCard(b.dataset.card);});}
 function openPool(p){const d=driveEstimate(p.lat,p.lon);
   sheetOpen(`<div class="bms-h" style="--pc:#ff6fe0"><i></i><div><b>${esc(p.n)}</b><span>${esc(p.city)} · ${p.c==="hall"?"pool hall":"bar with pool"}${d?` · ~${fmtMins(d.mins)}`:""}</span></div></div>
@@ -255,6 +259,83 @@ function openPool(p){const d=driveEstimate(p.lat,p.lon);
 $("bMapChips").addEventListener("click",ev=>{const b=ev.target.closest("[data-mv]");if(b){MAPV.vibe=b.dataset.mv;closeSheet();drawMapUI();return;}
   if(ev.target.closest("[data-mpool]")){state.poolOn=!state.poolOn;savePrefs();drawMapUI();}});
 $("bMapStart").onclick=()=>{state.view="list";show("budget");setTimeout(()=>{const b=$("startEdit");if(b)b.click();},80);};
+
+
+/* ---- venues: what's playing first, a one-line personality, follow + new-show dots, passport, jump to map ---- */
+const FSEEN=(()=>{try{return JSON.parse(localStorage.getItem("shack-fseen")||"{}")||{};}catch(e){return {};}})();
+const saveSeen=()=>{try{localStorage.setItem("shack-fseen",JSON.stringify(FSEEN));}catch(e){}};
+const KIND_WORD={concert:"music room",club:"dance club",festival:"festival grounds",comedy:"comedy club",theater:"theater",openmic:"open-mic spot",social:"dance-social spot",dance:"ecstatic-dance space",contact:"movement studio",sound:"sound-bath space",drum:"drum-circle spot"};
+function vibeLine(v){const cnt={};v.evs.forEach(e=>cnt[e.kind]=(cnt[e.kind]||0)+1);
+  const kind=Object.entries(cnt).sort((a,b)=>b[1]-a[1])[0];let type=kind?KIND_WORD[kind[0]]||"venue":"venue";
+  const cap=+v.cap||0,small=v.evs.some(isSmall),out=v.evs.some(isOutdoor);
+  const size=cap?(cap<=350?"Intimate":cap<=1500?"Mid-size":cap<=6000?"Big":"Arena-size"):small?"Small, local":"";
+  const ages=v.evs.map(ageOf).filter(Boolean),age=ages.length&&ages.every(a=>a==="all")?"all ages":ages.length&&ages.every(a=>a==="21+")?"21+":"";
+  let head=[size,out?"open-air":"",type].filter(Boolean).join(" ");head=head.charAt(0).toUpperCase()+head.slice(1)+(cap?` (~${cap.toLocaleString()})`:"")+(age?`, ${age}`:"")+".";
+  const tip=((VOPEN[v.name]||{}).w||[])[0]||(v.transit?`Near ${v.transit}`:"");
+  return head+(tip?" "+tip.replace(/\.?$/,"."):"");}
+function newCount(v){const s=FSEEN[v.k];if(!s)return 0;const have=new Set(s);return v.evs.filter(e=>!have.has(skey(e))).length;}
+function markSeen(k){const v=venueInfo(k);FSEEN[k]=v.evs.map(skey);saveSeen();}
+function syncFollowDot(){if(!(state._up||[]).length)return;let n=0;(state.pinV||[]).forEach(k=>{if(!FSEEN[k])markSeen(k);n+=newCount(venueInfo(k));});
+  const t=document.querySelector('#bTabs [data-tab="venues"]');if(t)t.classList.toggle("bdot",n>0);}
+renderVenues=function(){const list=$("list");
+  const keys=[...new Set((state._up||[]).filter(e=>e.kind!=="art"&&e.kind!=="volunteer").map(venueKey))];
+  const infos=keys.map(venueInfo),r=dayRange(state.when);
+  infos.forEach(v=>{v.inR=r?v.evs.filter(e=>e.start<=r[1]&&(e.end||e.start)>=r[0]):v.evs;});
+  const byNext=(a,b)=>(a.inR[0]?.start||"9").localeCompare(b.inR[0]?.start||"9")||(a.drive?.mins??1e9)-(b.drive?.mins??1e9);
+  const byDrive=(a,b)=>origin?((a.drive?.mins??1e9)-(b.drive?.mins??1e9))||byNext(a,b):byNext(a,b);
+  const card=v=>{const n=v.inR[0]||v.evs[0],when=n?parseDay(n.start).toLocaleDateString("en-US",{weekday:"short",month:"short",day:"numeric"})+(n.time?" · "+String(n.time).replace(/\s*\(.*\)/,""):""):"";
+    const fol=isPinned(v.k),nw=fol?newCount(v):0,been=BEEN.has(v.k);
+    const prices=v.evs.map(priceInfo).filter(p=>p&&!p.sold&&!p.none&&p.lo!=null).map(p=>p.lo);
+    const tags=[nw?`<span class="tag bnew">● ${nw} new</span>`:"",been?`<span class="tag been">✓ Been here</span>`:"",v.evs.some(isSmall)?`<span class="tag local">${ni("home")} Small &amp; local</span>`:"",prices.length&&Math.min(...prices)===0?`<span class="tag">Free shows</span>`:""].filter(Boolean).join("");
+    const vo=VOPEN[v.name]||{},eats=vo.e||[],acc=vo.a||null,tips=(vo.w||[]).slice(1);
+    const eatQ=u=>"https://www.google.com/maps/search/?api=1&query="+encodeURIComponent(u+" near "+v.name+", "+v.city);
+    const fmt=e=>parseDay(e.start).toLocaleDateString("en-US",{weekday:"short",month:"short",day:"numeric"});
+    const more=`<div class="vmore" hidden>
+      ${tips.length?`<div class="vsec"><span class="sl">${ni("car")} Getting there</span><ul>${tips.map(t=>`<li>${esc(t)}</li>`).join("")}</ul></div>`:""}
+      ${eats.length?`<div class="vsec"><span class="sl">${ni("food")} Local eats</span><ul>${eats.map(x=>`<li><a href="${eatQ(x.n)}" target="_blank" rel="noopener"><b>${esc(x.n)}</b></a> · ${esc(x.d)}</li>`).join("")}</ul></div>`:""}
+      ${acc?`<div class="vsec"><span class="sl">${ni("hand")} Accessibility</span><p class="vacc">${esc(acc.t)}${acc.u?` <a href="${esc(acc.u)}" target="_blank" rel="noopener">Venue's access page ↗</a>`:""}</p></div>`:""}
+      <div class="vsec"><span class="sl">${ni("ticket")} Coming up</span><ul>${v.evs.slice(0,3).map(e=>`<li><b>${esc(fmt(e))}</b> ${esc(e.title)}</li>`).join("")}${v.evs.length>3?`<li class="mut">+${v.evs.length-3} more</li>`:""}</ul></div>
+      <div class="vlinks"><button type="button" class="bvmap" data-vmap="${esc(v.k)}">${ni("map")} On the map</button><button type="button" class="vbeen${been?" on":""}" data-been="${esc(v.k)}" aria-pressed="${been}">${been?"✓ Been here":"I've been here"}</button><button type="button" class="vall" data-venue="${esc(v.k)}">All ${v.evs.length} show${v.evs.length===1?"":"s"} →</button></div></div>`;
+    return `<div class="vcard${nw?" hasnew":""}"><div class="vf"><button type="button" class="vopen" data-vmore="1" aria-expanded="false"><b>${esc(v.name)}</b>
+      <span>${esc(v.city)}${v.drive?` · ~${fmtMins(v.drive.mins)}`:""}${v.year?` · since ${v.year}`:""}</span>
+      <em class="bvibe">${esc(vibeLine(v))}</em>
+      <small>${n?`${v.inR.length&&r?"":"Next "}${esc(when)}: ${esc(n.title)}${v.inR.length>1?` +${v.inR.length-1} more`:""}`:"No shows listed"}</small>
+      ${tags?`<span class="vtags">${tags}</span>`:""}</button>
+      <button type="button" class="vpin bfollow${fol?" on":""}" data-pinv="${esc(v.k)}" aria-pressed="${fol}" aria-label="${fol?"Unfollow":"Follow"} ${esc(v.name)}">${ni("bell")}<span>${fol?"Following":"Follow"}</span></button></div>${more}</div>`;};
+  // passport
+  const tot=infos.length,beenV=infos.filter(v=>BEEN.has(v.k));
+  const regs=REGIONS.map(rg=>{const all=infos.filter(v=>regionOfK(v.k)===rg);return [rg,all.filter(v=>BEEN.has(v.k)).length,all.length];}).filter(x=>x[2]);
+  const stamps=beenV.slice(0,10).map((v,i)=>`<span class="bstamp" style="--sr:${(i*37%30)-15}deg;--sc:${VIBES[i%4].c}" title="${esc(v.name)}">${esc(v.name.replace(/^the\s+/i,"").split(/\s+/).slice(0,2).map(w=>w[0]).join("").toUpperCase())}</span>`).join("")+(beenV.length>10?`<span class="bstamp more">+${beenV.length-10}</span>`:"");
+  const pass=`<div class="vcard bpass"><div class="vf"><div class="bpass-in">
+    <div class="bpass-h"><span class="bpass-k">🛖 Show passport</span><b>${beenV.length} <small>of ${tot} venues</small></b></div>
+    ${beenV.length?`<div class="bstamps">${stamps}</div><div class="bpass-regs">${regs.filter(x=>x[1]).map(([rg,a,b])=>`<span>${esc(rg)} <b>${a}</b>/${b}</span>`).join("")}</div><button type="button" class="bpass-share" data-pshare="1">${ni("share")} Share my passport</button>`
+      :`<p>Tap <b>I've been here</b> on any venue you've been to. Shows you star stamp themselves the day after.</p>`}
+  </div></div></div>`;
+  const fol=infos.filter(v=>isPinned(v.k)).sort((a,b)=>newCount(b)-newCount(a)||byNext(a,b));
+  const seg=`<div class="bseg bven-when">${WHEN.map(([w,l])=>`<button type="button" data-when="${w}" aria-pressed="${state.when===w}">${l}</button>`).join("")}</div>`;
+  let html=`<div class="venues bven">${seg}${pass}<h2 class="month pickh">${ni("bell")} Following</h2>`+(fol.length?fol.map(card).join(""):`<div class="empty"><strong>Follow your spots</strong>Tap Follow on a venue. When it adds a show, you'll see a dot on the Venues tab.</div>`);
+  const rest=infos.filter(v=>!isPinned(v.k));
+  if(r){const on=rest.filter(v=>v.inR.length).sort(byDrive);
+    html+=`<h2 class="month">Playing ${WHEN_WORD[state.when]} · ${on.length}</h2>`+(on.length?on.map(card).join(""):`<div class="empty"><strong>Nothing listed ${WHEN_WORD[state.when]}</strong>Try This weekend or Anytime.</div>`);
+    html+=`<h2 class="month bquiet">Quiet ${WHEN_WORD[state.when]}</h2>`;
+    for(const rg of REGIONS){const vs=rest.filter(v=>!v.inR.length&&regionOfK(v.k)===rg).sort((a,b)=>(a.evs[0]?.start||"9").localeCompare(b.evs[0]?.start||"9"));if(vs.length)html+=`<h3 class="bvreg">${esc(rg)}</h3>`+vs.map(card).join("");}}
+  else for(const rg of REGIONS){const vs=rest.filter(v=>regionOfK(v.k)===rg).sort(byNext);if(vs.length)html+=`<h2 class="month">${esc(rg)}</h2>`+vs.map(card).join("");}
+  list.innerHTML=html+`</div>`;syncFollowDot();};
+function regionOfK(k){const e=(state._up||[]).find(x=>venueKey(x)===k);return e?region(e):"Other";}
+// B-only clicks inside the venues list (capture so they run before app.js's handlers)
+$("list").addEventListener("click",ev=>{if(screen!=="venues")return;
+  const w=ev.target.closest("[data-when]");if(w){ev.stopPropagation();state.when=w.dataset.when;savePrefs();render();return;}
+  const vm=ev.target.closest("[data-vmore]");if(vm){const k=vm.closest(".vf").querySelector("[data-pinv]")?.dataset.pinv;if(k&&isPinned(k)&&newCount(venueInfo(k))){markSeen(k);setTimeout(()=>{const c=vm.closest(".vcard");c.classList.remove("hasnew");const t=c.querySelector(".bnew");if(t)t.remove();syncFollowDot();},0);}return;}
+  const pn=ev.target.closest("[data-pinv]");if(pn){const k=pn.dataset.pinv;if(!isPinned(k))markSeen(k);return;}
+  const mp=ev.target.closest("[data-vmap]");if(mp){ev.stopPropagation();focusVenue(mp.dataset.vmap);return;}
+  const vv=ev.target.closest("[data-venue]");if(vv){ev.stopPropagation();state.venue=vv.dataset.venue;state.view="list";state.kind="all";state.sub=null;cur="venue";show("results");return;}
+  const ps=ev.target.closest("[data-pshare]");if(ps){ev.stopPropagation();const n=[...BEEN].length;
+    const t=`My Show Shack passport: ${n} SoCal venue${n===1?"":"s"} stamped 🛖🎟️\n${APP_URL}`;
+    if(navigator.share)navigator.share({text:t}).catch(()=>{});else if(navigator.clipboard)navigator.clipboard.writeText(t).then(()=>{ps.textContent="Copied ✓";});}},true);
+let focusK=null;
+function focusVenue(k){focusK=k;MAPV.vibe="all";const v=venueInfo(k);
+  if(!v.evs.some(inWhen)){state.when="any";savePrefs();}
+  state.kind="all";state.view="map";show("map");}
 
 /* ---- start on the home screen, unless a shared link points at a show ---- */
 state.kind="all";state.sub=null;state.genre="all";state.view="list";
