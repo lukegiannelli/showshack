@@ -317,3 +317,7 @@
 .ui-b .bpass-k{display:inline-flex;align-items:center}
 .binfo-kick{display:flex;align-items:center}
 .ui-b .bstamp{font-size:12px;letter-spacing:-.3px}
+.ui-b .bstamp{width:50px;height:50px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;line-height:1}
+.ui-b .bstamp b{font:800 13px var(--mono);letter-spacing:-.3px}
+.ui-b .bstamp small{font:700 8.5px var(--mono);letter-spacing:.8px;opacity:.85;padding-top:2px;border-top:1px solid currentColor;margin-top:1px}
+.ui-b .bstamp small:empty{display:none}
