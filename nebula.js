@@ -41,7 +41,10 @@ void main(){
   gl.clearColor(0,0,0,0);
   const rects=new Float32Array(MAX*4);
   let k=1,ready=false,raf=0,last=0,tt=0,sig="";
+  let vw=0,vh=0;
   function size(){k=Math.min(1.5,(devicePixelRatio||1)*0.75);
+    // pin the canvas to the exact viewport in px so it never stretches when Safari's toolbar slides in or out
+    if(innerWidth!==vw||innerHeight!==vh){vw=innerWidth;vh=innerHeight;cv.style.width=vw+"px";cv.style.height=vh+"px";}
     const w=Math.round(innerWidth*k),h=Math.round(innerHeight*k);
     if(cv.width!==w||cv.height!==h){cv.width=w;cv.height=h;gl.viewport(0,0,w,h);gl.uniform2f(uRes,w,h);gl.uniform1f(uK,k);gl.uniform1f(uRad,12*k);sig="";}}
   function collect(){
@@ -61,6 +64,7 @@ void main(){
     gl.clear(gl.COLOR_BUFFER_BIT);if(n)gl.drawArrays(gl.TRIANGLES,0,3);}
   function frame(now){
     raf=requestAnimationFrame(frame);
+    if(innerWidth!==vw||innerHeight!==vh)size();
     const dt=now-last;
     if(!still&&dt>=33){last=now;tt+=Math.min(dt,100)/1000*0.35;draw(true);}   // ~30 fps drift
     else draw(false);                                                         // every frame: keep the windows under the cards while scrolling

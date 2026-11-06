@@ -446,7 +446,7 @@ function renderVenues(){
       v.transit?`<span class="tag transit">${ni("sprout")} ${esc(v.transit)}</span>`:"",
       outdoor?`<span class="tag">Outdoor</span>`:"",
       v.cap?`<span class="tag">~${Number(v.cap).toLocaleString()} cap</span>`:"",
-      lo!=null?`<span class="tag">${lo===0?"Free shows":"Shows from $"+Math.round(lo)}</span>`:""].filter(Boolean).join("");
+      lo===0?`<span class="tag">Free shows</span>`:""].filter(Boolean).join("");
     const vo=VOPEN[v.name]||{}, tips=vo.w||[], eats=vo.e||[], acc=vo.a||null;
     const eatQ=u=>"https://www.google.com/maps/search/?api=1&query="+encodeURIComponent(u+" near "+v.name+", "+v.city);
     const dest=encodeURIComponent(v.name+", "+v.city), org=origin&&origin.address?"&origin="+encodeURIComponent(origin.address):"";

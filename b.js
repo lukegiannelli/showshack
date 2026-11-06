@@ -213,7 +213,7 @@ function drawMap(){const L=window.L;
   if(hasO){RINGS.forEach(([m,c])=>{const r=ringM(m);
       L.circle([origin.lat,origin.lon],{radius:r,color:c,weight:1.5,dashArray:"5 7",fillColor:c,fillOpacity:.035,interactive:false,className:"bring"}).addTo(LMG.rings);
       L.marker([origin.lat+r/111320,origin.lon],{interactive:false,keyboard:false,icon:L.divIcon({className:"bring-l",html:`<span style="--rc:${c}">${m} min</span>`,iconSize:[60,18],iconAnchor:[30,9]})}).addTo(LMG.rings);});
-    L.marker([origin.lat,origin.lon],{interactive:false,keyboard:false,zIndexOffset:900,icon:L.divIcon({className:"bcar",html:'<img src="car.svg?v=2" alt="">',iconSize:[58,26],iconAnchor:[29,13]})}).addTo(LMG.rings);}
+    L.marker([origin.lat,origin.lon],{interactive:false,keyboard:false,zIndexOffset:900,icon:L.divIcon({className:"bhome",html:'<span></span>',iconSize:[16,16],iconAnchor:[8,8]})}).addTo(LMG.rings);}
   groups.sort((a,b)=>a.evs.length-b.evs.length).forEach(g=>{const n=g.evs.length,sz=Math.round(16+Math.min(14,Math.sqrt(n)*4));
     const far=hasO&&g.d&&g.d.mins>60;
     const mk=L.marker([g.lat,g.lon],{title:`${g.k.split(" · ")[0]}: ${n} show${n>1?"s":""}`,riseOnHover:true,icon:L.divIcon({className:"bpin-w"+(far?" far":""),html:`<span class="bpin" style="--pc:${g.v.c};--ps:${sz}px">${n>1?n:""}</span>`,iconSize:[sz,sz],iconAnchor:[sz/2,sz/2]})});
@@ -227,8 +227,8 @@ function drawMap(){const L=window.L;
   // reach summary under the map
   const tot=groups.reduce((s,g)=>s+g.evs.length,0);
   if(hasO){const cnt=m=>groups.filter(g=>g.d&&g.d.mins<=m).reduce((s,g)=>s+g.evs.length,0);
-    $("bMapReach").innerHTML=`<b>${tot} ${tot===1?"show":"shows"} ${WHEN_WORD[state.when]}</b>`+RINGS.map(([m,c])=>`<span style="--rc:${c}"><i></i>${cnt(m)} within ${m} min</span>`).join("")+`<small>Rings are straight-line drive estimates, not live traffic. Tap a dot to plan the night around it.</small>`;}
-  else $("bMapReach").innerHTML=`<b>${tot} ${tot===1?"show":"shows"} ${WHEN_WORD[state.when]}</b><small>Tap a dot to see what's playing there and what's nearby. Set a start point to see what's in reach.</small>`;}
+    $("bMapReach").innerHTML=`<b>${tot} ${tot===1?"show":"shows"} ${WHEN_WORD[state.when]}<img class="breach-car" src="car.svg?v=2" alt=""></b>`+RINGS.map(([m,c])=>`<span style="--rc:${c}"><i></i>${cnt(m)} within ${m} min</span>`).join("")+`<small>The dot is your start point. Rings are straight-line drive estimates, not live traffic. Tap a dot to plan the night around it.</small>`;}
+  else $("bMapReach").innerHTML=`<b>${tot} ${tot===1?"show":"shows"} ${WHEN_WORD[state.when]}<img class="breach-car" src="car.svg?v=2" alt=""></b><small>Tap a dot to see what's playing there and what's nearby. Set a start point to see what's in reach.</small>`;}
 function sheetOpen(html){const sh=$("bMapSheet");sh.innerHTML=`<button type="button" class="bms-x" aria-label="Close">✕</button>`+html;sh.hidden=false;sh.scrollTop=0;sh.querySelector(".bms-x").onclick=closeSheet;}
 function closeSheet(){$("bMapSheet").hidden=true;}
 function openSheet(g){const e0=g.evs[0],name=g.k.split(" · ")[0],city=g.k.split(" · ")[1]||e0.city||"";

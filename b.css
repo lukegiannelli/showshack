@@ -272,3 +272,8 @@
 .ui-b .bfc-f .flip{transform:none!important;transform-style:flat!important}
 .ui-b .bfc-f .sticker{transform:rotate(-5deg)!important}
 .ui-b .bfb-hint{align-self:center;font:600 11px var(--mono);letter-spacing:.4px;color:var(--muted);border:0!important;background:none!important;padding:0!important;cursor:pointer}
+
+.bhome{background:none;border:0}
+.bhome span{display:block;width:16px;height:16px;border-radius:50%;background:#fff;border:3px solid #FF6FE0;box-shadow:0 0 0 3px rgba(13,8,32,.85),0 0 14px 4px rgba(255,111,224,.7)}
+.ui-b .bmap-reach b{display:flex;align-items:center;gap:10px}
+.ui-b .breach-car{width:62px;height:28px;filter:drop-shadow(0 0 8px rgba(255,111,224,.75))}
