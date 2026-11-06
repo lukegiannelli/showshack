@@ -365,66 +365,7 @@ function render(){
     if(!isPin && pinned.length && !restStarted && !monthKey){html+='<h2 class="month">All shows</h2>';}
     if(!isPin) restStarted=true;
     if(monthKey && monthKey!==lastMonth){html+=`<h2 class="month">${esc(monthKey)}</h2>`;lastMonth=monthKey;}
-    const dow=d.toLocaleDateString("en-US",{weekday:"short"}).toUpperCase();
-    const mon=d.toLocaleDateString("en-US",{month:"short"}).toUpperCase();
-    const mic = isRec(e);
-    const thru = mic ? `<span class="every">${esc(e.recurrence?.freq==="monthly"?"Monthly":"Weekly")}</span>`
-      : end && e.end!==e.start ? (e.runStart?`<span class="nowon">On now</span>`:"")+`<span class="thru">thru ${esc(end.toLocaleDateString("en-US",{month:"short",day:"numeric"}))}</span>`:"";
-    const pi=priceInfo(e); let priceHtml;
-    const $r=n=>"$"+Math.round(n);
-    if(pi.sold) priceHtml=pi.cancel?'<span class="sold">Cancelled</span><span class="pn">per Ticketmaster · double-check</span>':'<span class="sold">Sold out</span>';
-    else if(pi.free) priceHtml='<span class="price">Free</span>';
-    else if(pi.none) priceHtml='<span class="na">—</span>';
-    else if(pi.est) priceHtml=`<span class="price est">≈${$r(pi.lo)}–${$r(pi.hi)}</span><span class="pn">typical · not yet listed</span>`;
-    else if(pi.hi!=null&&Math.round(pi.hi)>Math.round(pi.lo)) priceHtml=`<span class="price">${$r(pi.lo)}–${$r(pi.hi)}</span><span class="pn">${e.priceSrc==="ticketmaster"?"face value · before fees":"cheapest seats listed"}</span>`;
-    else priceHtml=`<span class="price">From ${$r(pi.lo)}</span><span class="pn">${e.priceSrc==="ticketmaster"?"face value · before fees":"cheapest seat"}</span>`;
-    if(!pi.est&&!pi.sold&&!pi.free&&!pi.none&&e.priceAsOf) priceHtml=priceHtml.replace(/<\/span>$/,` · checked ${fmtShort(e.priceAsOf)}</span>`);
-    const nc=nightCost(e,pi), lb=leaveBy(e);
-    const nightHtml = `<div class="flipbar"><button type="button" class="nightbtn" data-flip="1">🌙 Night out <b>≈ $${nc.n>1?nc.each+" each":nc.total}${nc.partial?"+":""}</b></button></div>`;
-    const leaveHtml = lb ? `<span class="leave">Leave by ${lb}</span>` : "";
-    const al = alertOf(e).map(a=>`<span class="badge ${a.c}">${a.c==="sale"?ni("ticket")+" ":""}${a.t}</span>`).join("");
-    const ag = ageOf(e); const extraTags = (isSmall(e)?`<span class="tag local">${ni("home")} Small &amp; local</span>`:"")+(ag?`<span class="tag age">${ag==="all"?"All ages":ag}</span>`:"")+(transitOf(e)?`<span class="tag transit">${ni("sprout")} ${transitOf(e)}</span>`:"");
-    const drv = e._drive ? `<span class="drive">~${fmtMins(e._drive.mins)} · ${e._drive.miles} mi</span>` : (origin ? '<span class="na">n/a</span>' : '<span class="na">Set start point</span>');
-    const su=mic?signupOf(e):null, micTime=String(e.time||"").replace(/\s*\(?sign[- ]?up[^)]*\)?/i,"").trim();
-    const time = mic ? `<span>${esc(e.recurrence?.text||"")}${micTime?" · "+esc(micTime):""}</span>${su!=null?`<span class="signup">${ni("mic")} Sign-up ${fmtClock(su)}</span>`:`<span class="signup none">${ni("mic")} Sign-up: arrive early</span>`}` : e.time ? `<span>${esc(e.time)}</span>` : '<span class="na">Time TBA</span>';
-    const tix=safeUrl(e.url)||(mic?null:safeUrl("https://www.google.com/search?q="+encodeURIComponent([e.title,e.venue,e.city,"tickets"].filter(Boolean).join(" "))));
-    const tixLabel = tix ? tixWord(e,pi) : "";
-    const dest = encodeURIComponent((e.venue||"")+", "+(e.city||""));
-    const maps=`https://www.google.com/maps/dir/?api=1${origin&&origin.address?"&origin="+encodeURIComponent(origin.address):""}&destination=${dest}&travelmode=driving`;
-    const tags=(e.genres||[]).map(g=>`<span class="tag">${esc((GENRES.find(x=>x[0]===g)||[g,g])[1])}</span>`).join("");
-    const listenQ = (e.kind!=="openmic"&&e.kind!=="contact") ? String(e.title||"").replace(/\s*\(.*?\)\s*/g," ").split(/:| & Friends/)[0].trim() : "";
-    const lq = encodeURIComponent(listenQ);
-    const listen = listenQ ? `<button type="button" class="listenbtn" data-listen="1" aria-expanded="false"><span class="lt">▶&#xFE0E; Listen</span></button>` : "";
-    const listenMenu = listenQ ? `<div class="lm listenmenu" hidden>`+
-      `<a href="https://music.youtube.com/search?q=${lq}" target="_blank" rel="noopener">YouTube Music</a>`+
-      `<a href="https://open.spotify.com/search/${lq}" target="_blank" rel="noopener">Spotify</a>`+
-      `<a href="https://music.apple.com/us/search?term=${lq}" target="_blank" rel="noopener">Apple Music</a>`+
-      `<a href="https://soundcloud.com/search/people?q=${lq}" target="_blank" rel="noopener">SoundCloud</a>`+
-      `</div>` : "";
-
-    const pv=pMid(pi);
-    const lc=(pv!=null&&!pi.sold)?band(pv,P_STEPS):"transparent";
-    const rc=e._drive?band(e._drive.mins,D_STEPS):"transparent";
-    const canRm = isPin && (amOwner || (myUid && e.createdBy===myUid));
-    const fl=state.flipped.has(hid(e));
-    html+=`<article id="${hid(e)}" class="card${fl?" flipped":""}"><div class="flip"><div class="ev face front${isPin?" pick":""}" style="--lc:${lc};--rc:${rc}"${fl?' aria-hidden="true"':""}>
-      <div class="stub"><span class="dow">${dow}</span><span class="day">${d.getDate()}</span><span class="mon">${mon}</span>${thru}${tix?`<a class="tix stubtix" href="${esc(tix)}" target="_blank" rel="noopener">${tixLabel}</a>`:""}</div>
-      <div class="body">${logoOf(e)?`<img class="sticker" src="${esc(logoOf(e))}" alt="" loading="lazy" decoding="async" referrerpolicy="no-referrer" onerror="this.remove()">`:""}
-        ${isPin?`<span class="who">＋ Luke's pick</span>`:""}
-        <div class="top"><h3>${esc(e.title)}</h3><div class="tr"><div class="trr"><span class="kind ${e.kind==="social"?"social":e.kind==="art"?"art":e.kind==="volunteer"?"vol":CONS.has(e.kind)?"dance":e.kind==="festival"?"fest":mic?"mic":e.kind==="club"?"club":e.kind==="comedy"?"comedy":e.kind==="theater"?"theater":""}">${COMM.has(e.kind)?({social:"Dance social",art:"Art walk",volunteer:"Volunteer"})[e.kind]:CONS.has(e.kind)?({dance:"Dance",contact:"Contact",sound:"Sound",drum:"Drums"})[e.kind]:e.kind==="festival"?"Fest":mic?"Open mic":e.kind==="club"?"Club":e.kind==="comedy"?"Comedy":e.kind==="theater"?"Theater":"Show"}</span><button type="button" class="starbtn" data-star="${esc(skey(e))}" aria-pressed="${state.stars.has(skey(e))}" aria-label="Star ${esc(e.title)}">${state.stars.has(skey(e))?"★":"☆"}</button></div>${e.start?`<a class="addcal" href="${esc(calLink(e))}" target="_blank" rel="noopener">＋ Add to calendar</a>`:""}</div></div>
-        ${e.artists?`<div class="where">${esc(e.artists)}</div>`:""}
-        <div class="where"><button type="button" class="vlink" data-venue="${esc(venueKey(e))}">${esc(e.venue)}</button> · ${esc(e.city)}</div>
-        ${al?`<div class="row">${al}</div>`:""}
-        <div class="facts">${time}${leaveHtml}${wxSpan(e)}</div>
-        ${e.priceNote?`<div class="note">${esc(e.priceNote)}</div>`:""}
-        ${e.note?`<div class="note">${esc(e.note)}</div>`:""}
-        ${(tags||extraTags)?`<div class="tags">${extraTags}${tags}</div>`:""}
-        ${volHtml(e)}
-        <button type="button" class="bmore" data-bmore="1" aria-expanded="false">Details</button>
-      </div>
-      <div class="links wide"><a href="${maps}" target="_blank" rel="noopener">Directions</a><a href="${maps.replace("travelmode=driving","travelmode=transit")}" target="_blank" rel="noopener">${ni("train")} Transit</a><a href="${esc(eatLink(e))}" target="_blank" rel="noopener">Eat nearby</a><button type="button" class="share" data-share="${esc(skey(e))}">Share</button>${listen}${canRm?`<button type="button" class="rm" data-rm="${esc(e.id)}">Remove</button>`:""}</div>${listenMenu}
-      <div class="sides"><div class="side l"><span class="sl">Price</span>${priceHtml}</div><div class="side r"><span class="sl">Drive</span>${drv}</div></div>${nightHtml}</div>
-      ${backHtml(e,nc,fl)}</div></article>`;
+    html+=cardHtml(e);
   }
   return html;};
   if(listObs)listObs.disconnect();
@@ -567,6 +508,69 @@ function fillWx(){
       const hi=Math.round(d.temperature_2m_max[i]),lo=Math.round(d.temperature_2m_min[i]),rain=d.precipitation_probability_max[i];
       sp.innerHTML=`${wxIcon(d.weather_code[i])} ${hi}°/${lo}°${rain>=20?` · ${rain}% rain`:""}${lo<60?" · bring a layer":""}`;
       sp.title="Forecast for the venue on show day";});});}
+function cardHtml(e){
+    const isPin=!!e.added;
+    const d=parseDay(e.start), end=parseDay(e.end);
+    const dow=d.toLocaleDateString("en-US",{weekday:"short"}).toUpperCase();
+    const mon=d.toLocaleDateString("en-US",{month:"short"}).toUpperCase();
+    const mic = isRec(e);
+    const thru = mic ? `<span class="every">${esc(e.recurrence?.freq==="monthly"?"Monthly":"Weekly")}</span>`
+      : end && e.end!==e.start ? (e.runStart?`<span class="nowon">On now</span>`:"")+`<span class="thru">thru ${esc(end.toLocaleDateString("en-US",{month:"short",day:"numeric"}))}</span>`:"";
+    const pi=priceInfo(e); let priceHtml;
+    const $r=n=>"$"+Math.round(n);
+    if(pi.sold) priceHtml=pi.cancel?'<span class="sold">Cancelled</span><span class="pn">per Ticketmaster · double-check</span>':'<span class="sold">Sold out</span>';
+    else if(pi.free) priceHtml='<span class="price">Free</span>';
+    else if(pi.none) priceHtml='<span class="na">—</span>';
+    else if(pi.est) priceHtml=`<span class="price est">≈${$r(pi.lo)}–${$r(pi.hi)}</span><span class="pn">typical · not yet listed</span>`;
+    else if(pi.hi!=null&&Math.round(pi.hi)>Math.round(pi.lo)) priceHtml=`<span class="price">${$r(pi.lo)}–${$r(pi.hi)}</span><span class="pn">${e.priceSrc==="ticketmaster"?"face value · before fees":"cheapest seats listed"}</span>`;
+    else priceHtml=`<span class="price">From ${$r(pi.lo)}</span><span class="pn">${e.priceSrc==="ticketmaster"?"face value · before fees":"cheapest seat"}</span>`;
+    if(!pi.est&&!pi.sold&&!pi.free&&!pi.none&&e.priceAsOf) priceHtml=priceHtml.replace(/<\/span>$/,` · checked ${fmtShort(e.priceAsOf)}</span>`);
+    const nc=nightCost(e,pi), lb=leaveBy(e);
+    const nightHtml = `<div class="flipbar"><button type="button" class="nightbtn" data-flip="1">🌙 Night out <b>≈ $${nc.n>1?nc.each+" each":nc.total}${nc.partial?"+":""}</b></button></div>`;
+    const leaveHtml = lb ? `<span class="leave">Leave by ${lb}</span>` : "";
+    const al = alertOf(e).map(a=>`<span class="badge ${a.c}">${a.c==="sale"?ni("ticket")+" ":""}${a.t}</span>`).join("");
+    const ag = ageOf(e); const extraTags = (isSmall(e)?`<span class="tag local">${ni("home")} Small &amp; local</span>`:"")+(ag?`<span class="tag age">${ag==="all"?"All ages":ag}</span>`:"")+(transitOf(e)?`<span class="tag transit">${ni("sprout")} ${transitOf(e)}</span>`:"");
+    const drv = e._drive ? `<span class="drive">~${fmtMins(e._drive.mins)} · ${e._drive.miles} mi</span>` : (origin ? '<span class="na">n/a</span>' : '<span class="na">Set start point</span>');
+    const su=mic?signupOf(e):null, micTime=String(e.time||"").replace(/\s*\(?sign[- ]?up[^)]*\)?/i,"").trim();
+    const time = mic ? `<span>${esc(e.recurrence?.text||"")}${micTime?" · "+esc(micTime):""}</span>${su!=null?`<span class="signup">${ni("mic")} Sign-up ${fmtClock(su)}</span>`:`<span class="signup none">${ni("mic")} Sign-up: arrive early</span>`}` : e.time ? `<span>${esc(e.time)}</span>` : '<span class="na">Time TBA</span>';
+    const tix=safeUrl(e.url)||(mic?null:safeUrl("https://www.google.com/search?q="+encodeURIComponent([e.title,e.venue,e.city,"tickets"].filter(Boolean).join(" "))));
+    const tixLabel = tix ? tixWord(e,pi) : "";
+    const dest = encodeURIComponent((e.venue||"")+", "+(e.city||""));
+    const maps=`https://www.google.com/maps/dir/?api=1${origin&&origin.address?"&origin="+encodeURIComponent(origin.address):""}&destination=${dest}&travelmode=driving`;
+    const tags=(e.genres||[]).map(g=>`<span class="tag">${esc((GENRES.find(x=>x[0]===g)||[g,g])[1])}</span>`).join("");
+    const listenQ = (e.kind!=="openmic"&&e.kind!=="contact") ? String(e.title||"").replace(/\s*\(.*?\)\s*/g," ").split(/:| & Friends/)[0].trim() : "";
+    const lq = encodeURIComponent(listenQ);
+    const listen = listenQ ? `<button type="button" class="listenbtn" data-listen="1" aria-expanded="false"><span class="lt">▶&#xFE0E; Listen</span></button>` : "";
+    const listenMenu = listenQ ? `<div class="lm listenmenu" hidden>`+
+      `<a href="https://music.youtube.com/search?q=${lq}" target="_blank" rel="noopener">YouTube Music</a>`+
+      `<a href="https://open.spotify.com/search/${lq}" target="_blank" rel="noopener">Spotify</a>`+
+      `<a href="https://music.apple.com/us/search?term=${lq}" target="_blank" rel="noopener">Apple Music</a>`+
+      `<a href="https://soundcloud.com/search/people?q=${lq}" target="_blank" rel="noopener">SoundCloud</a>`+
+      `</div>` : "";
+
+    const pv=pMid(pi);
+    const lc=(pv!=null&&!pi.sold)?band(pv,P_STEPS):"transparent";
+    const rc=e._drive?band(e._drive.mins,D_STEPS):"transparent";
+    const canRm = isPin && (amOwner || (myUid && e.createdBy===myUid));
+    const fl=state.flipped.has(hid(e));
+    return `<article id="${hid(e)}" class="card${fl?" flipped":""}"><div class="flip"><div class="ev face front${isPin?" pick":""}" style="--lc:${lc};--rc:${rc}"${fl?' aria-hidden="true"':""}>
+      <div class="stub"><span class="dow">${dow}</span><span class="day">${d.getDate()}</span><span class="mon">${mon}</span>${thru}${tix?`<a class="tix stubtix" href="${esc(tix)}" target="_blank" rel="noopener">${tixLabel}</a>`:""}</div>
+      <div class="body">${logoOf(e)?`<img class="sticker" src="${esc(logoOf(e))}" alt="" loading="lazy" decoding="async" referrerpolicy="no-referrer" onerror="this.remove()">`:""}
+        ${isPin?`<span class="who">＋ Luke's pick</span>`:""}
+        <div class="top"><h3>${esc(e.title)}</h3><div class="tr"><div class="trr"><span class="kind ${e.kind==="social"?"social":e.kind==="art"?"art":e.kind==="volunteer"?"vol":CONS.has(e.kind)?"dance":e.kind==="festival"?"fest":mic?"mic":e.kind==="club"?"club":e.kind==="comedy"?"comedy":e.kind==="theater"?"theater":""}">${COMM.has(e.kind)?({social:"Dance social",art:"Art walk",volunteer:"Volunteer"})[e.kind]:CONS.has(e.kind)?({dance:"Dance",contact:"Contact",sound:"Sound",drum:"Drums"})[e.kind]:e.kind==="festival"?"Fest":mic?"Open mic":e.kind==="club"?"Club":e.kind==="comedy"?"Comedy":e.kind==="theater"?"Theater":"Show"}</span><button type="button" class="starbtn" data-star="${esc(skey(e))}" aria-pressed="${state.stars.has(skey(e))}" aria-label="Star ${esc(e.title)}">${state.stars.has(skey(e))?"★":"☆"}</button></div>${e.start?`<a class="addcal" href="${esc(calLink(e))}" target="_blank" rel="noopener">＋ Add to calendar</a>`:""}</div></div>
+        ${e.artists?`<div class="where">${esc(e.artists)}</div>`:""}
+        <div class="where"><button type="button" class="vlink" data-venue="${esc(venueKey(e))}">${esc(e.venue)}</button> · ${esc(e.city)}</div>
+        ${al?`<div class="row">${al}</div>`:""}
+        <div class="facts">${time}${leaveHtml}${wxSpan(e)}</div>
+        ${e.priceNote?`<div class="note">${esc(e.priceNote)}</div>`:""}
+        ${e.note?`<div class="note">${esc(e.note)}</div>`:""}
+        ${(tags||extraTags)?`<div class="tags">${extraTags}${tags}</div>`:""}
+        ${volHtml(e)}
+        <button type="button" class="bmore" data-bmore="1" aria-expanded="false">Details</button>
+      </div>
+      <div class="links wide"><a href="${maps}" target="_blank" rel="noopener">Directions</a><a href="${maps.replace("travelmode=driving","travelmode=transit")}" target="_blank" rel="noopener">${ni("train")} Transit</a><a href="${esc(eatLink(e))}" target="_blank" rel="noopener">Eat nearby</a><button type="button" class="share" data-share="${esc(skey(e))}">Share</button>${listen}${canRm?`<button type="button" class="rm" data-rm="${esc(e.id)}">Remove</button>`:""}</div>${listenMenu}
+      <div class="sides"><div class="side l"><span class="sl">Price</span>${priceHtml}</div><div class="side r"><span class="sl">Drive</span>${drv}</div></div>${nightHtml}</div>
+      ${backHtml(e,nc,fl)}</div></article>`;}
 function backHtml(e,nc,fl){
   const $=v=>"$"+Math.round(v), who=nc.n>1?`${nc.n} people`:"just you";
   const line=(ic,k,how,v)=>`<div class="nl"><span class="nk">${ic} ${k}</span><span class="nh">${how}</span><span class="nv">${v}</span></div>`;
@@ -896,15 +900,18 @@ af.addEventListener("submit",async ev=>{
   }finally{asv.disabled=false;}
 });
 document.getElementById("list").addEventListener("click",ev=>{
-  const b=ev.target.closest("button[data-star]"); if(!b)return;
+  const b=ev.target.closest("button[data-star]"); if(b)starBtn(b);});
+function starBtn(b){
   const k=b.dataset.star, on=!state.stars.has(k);
   if(on)state.stars.add(k); else state.stars.delete(k);
   b.setAttribute("aria-pressed",String(on)); b.textContent=on?"★":"☆";
   starCount+=on?1:-1; updateStarChip(); saveStars(); updateBudget();
+  document.querySelectorAll(`button[data-star="${CSS.escape(k)}"]`).forEach(x=>{x.setAttribute("aria-pressed",String(on));x.textContent=on?"★":"☆";});
   if(state.kind==="starred")render();
-});
-document.getElementById("list").addEventListener("click",async ev=>{
-  const b=ev.target.closest("button[data-share]"); if(!b)return;
+}
+document.getElementById("list").addEventListener("click",ev=>{
+  const b=ev.target.closest("button[data-share]"); if(b)shareBtn(b);});
+async function shareBtn(b){
   const all=[...state.events,...state.picks.map(p=>({...p,added:true}))].map(e=>isRec(e)?{...e,start:nextOccurrence(e.recurrence)}:e);
   const e=all.find(x=>skey(x)===b.dataset.share); if(!e)return;
   const t=shareText(e); let ok=false;
@@ -912,7 +919,7 @@ document.getElementById("list").addEventListener("click",async ev=>{
   const links=b.parentElement; let box=links.querySelector(".sharebox");
   if(ok){b.textContent="✓ Copied — paste in a text";setTimeout(()=>{if(b.isConnected)b.textContent="Share";},2500);if(box)box.remove();}
   else{if(!box){box=document.createElement("div");box.className="sharebox";links.appendChild(box);}box.textContent=t;b.textContent="Press & hold to copy ↓";}
-});
+}
 document.getElementById("list").addEventListener("click",async ev=>{
   const b=ev.target.closest("button[data-rm]"); if(!b||!dbRef)return;
   if(b.dataset.confirm!=="1"){b.dataset.confirm="1";b.textContent="Tap again to remove";setTimeout(()=>{if(b.isConnected){b.dataset.confirm="";b.textContent="Remove";}},4000);return;}
@@ -1116,6 +1123,7 @@ let fileLoaded=false;
     const evs=(d.events||[]).filter(e=>e.title&&(e.start||isRec(e)));
     if(!evs.length) throw 0;
     fileLoaded=true; state.events=evs; state.loaded=true;
+    window.SHACK_META={lastRun:d.lastRun,tmRun:d.tmRun,tmNote:d.tmNote};
     const el=document.getElementById("refreshed");
     if(d.lastRun){const t=new Date(d.lastRun);el.innerHTML="Updated <b>"+esc(t.toLocaleDateString("en-US",{month:"short",day:"numeric"}))+"</b>";}
     render();

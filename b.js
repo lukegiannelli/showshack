@@ -23,7 +23,7 @@ bar.insertBefore(controls.querySelector(".search"),$("bWhenRes"));
 tools.insertBefore($("maxDrive").closest("label"),$("bFilt"));
 tools.insertBefore($("sortBy").closest("label"),$("bFilt"));
 const flags=$("flagRow"); flags.hidden=true; bar.appendChild(flags);
-$("bHome").appendChild($("disco"));
+$("bHome").appendChild($("disco"));$("bHome").appendChild($("bTrust"));
 document.querySelector(".wrap").insertBefore($("budgetBar"),$("alertBar"));
 const bStart=document.createElement("button");bStart.type="button";bStart.className="chip bstart";bStart.textContent="Set your start point for drive times";tools.appendChild(bStart);
 bStart.onclick=()=>{state.view="list";show("budget");setTimeout(()=>{const b=$("startEdit");if(b)b.click();},80);};
@@ -41,8 +41,35 @@ $("bTiles").innerHTML=VIBES.map(v=>`<button type="button" class="btile t-${v.k}"
 $("bTiles").addEventListener("click",ev=>{const b=ev.target.closest("[data-vibe]");if(b)openResults(b.dataset.vibe);});
 $("bSearchAll").onclick=()=>{openResults("all");setTimeout(()=>{const q=$("q");if(q){q.focus();}},60);};
 $("bAllWeekend").onclick=()=>{state.when="weekend";savePrefs();openResults("all");};
-$("bPicks").addEventListener("click",ev=>{const b=ev.target.closest("[data-pick]");if(!b)return;
-  state.when="weekend";savePrefs();openResults("all");openCard(b.dataset.pick);});
+/* ---- flip cards: real event cards in a row; tap flips to the details right there ---- */
+const LISTEN=q=>[["YouTube Music","https://music.youtube.com/search?q="],["Spotify","https://open.spotify.com/search/"],["Apple Music","https://music.apple.com/us/search?term="],["SoundCloud","https://soundcloud.com/search/people?q="]].map(([n,u])=>`<a href="${u+encodeURIComponent(q)}" target="_blank" rel="noopener">${n}</a>`).join("");
+function backSide(e){const pi=priceInfo(e),d=parseDay(e.start);
+  const tix=safeUrl(e.url),dest=encodeURIComponent((e.venue||"")+", "+(e.city||""));
+  const maps=`https://www.google.com/maps/dir/?api=1${origin&&origin.address?"&origin="+encodeURIComponent(origin.address):""}&destination=${dest}&travelmode=driving`;
+  const pr=pi.sold?"Sold out":pi.free?"Free":pi.none?"Price not listed yet":pi.est?`≈$${Math.round(pi.lo)}–${Math.round(pi.hi)} typical`:`From $${Math.round(pi.lo)}${!pi.est&&e.priceAsOf?" · checked "+fmtShort(e.priceAsOf):""}`;
+  const lq=(e.kind!=="openmic"&&e.kind!=="contact")?String(e.title||"").replace(/\s*\(.*?\)\s*/g," ").split(/:| & Friends/)[0].trim():"";
+  const when=(isRec(e)&&e.recurrence?e.recurrence.text+" · next ":"")+d.toLocaleDateString("en-US",{weekday:"short",month:"short",day:"numeric"})+(e.time?" · "+e.time:"");
+  const note=e.note||e.priceNote||"";
+  return `<div class="bfb-top"><b>${esc(e.title)}</b><span>${esc(when)}</span><span>${esc(e.venue)} · ${esc(e.city)}${e._drive?` · ~${fmtMins(e._drive.mins)} drive`:""}</span></div>
+    <div class="bfb-price">${esc(pr)}</div>
+    ${note?`<p class="bfb-note">${esc(note)}</p>`:""}
+    <div class="bfb-acts">${tix?`<a class="bfb-main" href="${esc(tix)}" target="_blank" rel="noopener">${tixWord(e,pi)} ↗</a>`:""}<a href="${maps}" target="_blank" rel="noopener">Directions</a>
+      ${lq?`<button type="button" class="bfb-listen" aria-expanded="false"><span class="lt">▶&#xFE0E; Listen</span></button>`:""}<button type="button" data-share="${esc(skey(e))}">Share</button></div>
+    ${lq?`<div class="bfb-lm" hidden>${LISTEN(lq)}</div>`:""}
+    <div class="bfb-foot"><button type="button" class="bfb-full" data-full="${esc(hid(e))}">Full card</button><button type="button" class="bfb-back">↩ Flip back</button></div>`;}
+function flipCardHtml(e,tag){const front=cardHtml(e).replace(/^\s*<article id="[^"]*"/,'<article').replace(/class="card( flipped)?"/,'class="card"');
+  return `<div class="bfc" data-k="${esc(skey(e))}"><div class="bfc-in"><div class="bfc-f">${tag?`<span class="bfc-tag">${tag}</span>`:""}${front}</div><div class="bfc-b" aria-hidden="true">${backSide(e)}</div></div></div>`;}
+function flipRowClick(ev){const fc=ev.target.closest(".bfc");if(!fc)return;
+  const st=ev.target.closest("button[data-star]");if(st){starBtn(st);return;}
+  const sh=ev.target.closest("button[data-share]");if(sh){shareBtn(sh);return;}
+  const ls=ev.target.closest(".bfb-listen");if(ls){const m=fc.querySelector(".bfb-lm");m.hidden=!m.hidden;ls.setAttribute("aria-expanded",String(!m.hidden));ls.classList.toggle("on",!m.hidden);return;}
+  const full=ev.target.closest("[data-full]");if(full){state.when="any";openResults("all");openCard(full.dataset.full);return;}
+  if(ev.target.closest(".bfb-back")){setFlip(fc,false);return;}
+  if(ev.target.closest("a,input,select,label"))return;
+  if(ev.target.closest(".vlink")){ev.stopPropagation();}
+  if(!fc.classList.contains("on"))setFlip(fc,true);}
+function setFlip(fc,on){fc.classList.toggle("on",on);fc.querySelector(".bfc-b").setAttribute("aria-hidden",String(!on));fc.querySelector(".bfc-f").setAttribute("aria-hidden",String(on));}
+$("bPicks").addEventListener("click",flipRowClick,true);
 
 /* ---- screens ---- */
 function inWhen(e){const r=dayRange(state.when);return !r||(e.start<=r[1]&&(e.end||e.start)>=r[0]);}
@@ -96,9 +123,18 @@ function tryOpen(){if(!pendingOpen)return;if(!state.loaded){if(tries++<80)setTim
   pendingOpen=null;tries=0;toggleCard(el,true);jumpToHash(id);}
 
 /* ---- disco ball: a surprise opens the results with that show on top, already open ---- */
-const _surprise=surpriseMe;
-surpriseMe=function(){cur="surprise";state.kind="all";state.sub=null;state.genre="all";state.when="any";
-  show("results");_surprise();const c=document.querySelector("#list article.card");if(c)toggleCard(c,true);};
+let spins=[];
+surpriseMe=function(){state.kind="all";state.sub=null;state.genre="all";const w=state.when;state.when="any";state.venue="all";state.surprise=null;
+  _render();state.when=w;
+  const pool=(state._up||[]).filter(e=>!priceInfo(e).sold&&!spins.some(s=>skey(s)===skey(e)));if(!pool.length)return;
+  const pick=pool[Math.floor(Math.random()*pool.length)];spins=[pick,...spins].slice(0,5);
+  drawSpins(true);render();};
+function drawSpins(fresh){const box=$("bSpins");box.hidden=!spins.length;if(!spins.length)return;
+  $("bSpinRow").innerHTML=spins.map((e,i)=>flipCardHtml(e,i===0?"🪩 New spin":"")).join("");
+  if(fresh){const f=$("bSpinRow").firstElementChild;f.classList.add("emerge");$("bSpinRow").scrollLeft=0;
+    setTimeout(()=>box.scrollIntoView({block:"center",behavior:"smooth"}),60);}}
+$("bSpinRow").addEventListener("click",flipRowClick,true);
+$("bSpinClear").onclick=()=>{spins=[];drawSpins();};
 
 /* ---- after every render: counts, titles, sub-filters ---- */
 const _render=render;
@@ -111,9 +147,10 @@ function after(){
     for(const v of VIBES){const n=up.filter(e=>GROUPS[v.k].has(e.kind)&&inWhen(e)).length;
       const el=document.querySelector(`[data-count="${v.k}"]`);if(el)el.textContent=n+" "+WHEN_WORD[state.when];}
     const wp=weekendPicks(up);
-    $("bPicks").innerHTML=wp?wp.picks.slice(0,5).map(p=>{const e=p.e,pi=priceInfo(e),d=parseDay(e.start);
-      const pr=pi.sold?"Sold out":pi.free?"Free":pi.none?"":pi.est?"≈$"+Math.round(pi.lo):"From $"+Math.round(pi.lo);
-      return `<button type="button" class="bpick" data-pick="${esc(hid(e))}"><span class="blbl">${esc(d.toLocaleDateString("en-US",{weekday:"short"})+" "+d.getDate())}${e.time?" · "+esc(String(e.time).replace(/\s*\(.*\)/,"")):""}</span><b>${esc(e.title)}</b><span class="bv">${esc(e.venue)}</span>${pr?`<span class="bp">${pr}</span>`:""}</button>`;}).join(""):'<p class="bnone">Weekend picks show up here once the weekend list fills in.</p>';
+    const sig=wp?wp.picks.slice(0,5).map(p=>skey(p.e)).join("|")+(origin?"o":""):"";
+    if(sig!==$("bPicks").dataset.sig){$("bPicks").dataset.sig=sig;
+      $("bPicks").innerHTML=wp?wp.picks.slice(0,5).map(p=>flipCardHtml(p.e,"")).join(""):'<p class="bnone">Weekend picks show up here once the weekend list fills in.</p>';}
+    trust();
   }
   if(screen==="results"||screen==="saved"){
     const v=VIBES.find(x=>x.k===cur);
@@ -132,6 +169,16 @@ function after(){
 }
 $("bSubs").addEventListener("click",ev=>{const b=ev.target.closest("[data-sub]");if(!b)return;
   if(b.dataset.key==="genre"){state.genre=b.dataset.sub||"all";savePrefs();}else state.sub=b.dataset.sub||null;render();});
+
+/* ---- where the info comes from ---- */
+function trust(){const m=window.SHACK_META||{},el=$("bTrust");if(!el||!state.events.length)return;
+  const ago=t=>{if(!t)return "";const h=(Date.now()-new Date(t))/36e5;return h<1?"less than an hour ago":h<24?Math.round(h)+" hours ago":Math.round(h/24)+" days ago";};
+  const tm=/([\d,]+) listings checked/.exec(m.tmNote||"");
+  const n=state.events.length, rec=state.events.filter(isRec).length;
+  el.querySelector("[data-t=upd]").textContent=m.lastRun?"Updated "+ago(m.lastRun):"Updated daily";
+  el.querySelector("[data-t=n]").textContent=n.toLocaleString()+" listings";
+  el.querySelector("[data-t=tm]").textContent=tm?tm[1]+" Ticketmaster listings re-checked "+ago(m.tmRun)+".":"Ticketmaster prices are re-checked every day.";
+  el.querySelector("[data-t=rec]").textContent=rec+" weekly and monthly series";}
 
 /* ---- start on the home screen, unless a shared link points at a show ---- */
 state.kind="all";state.sub=null;state.genre="all";state.view="list";

@@ -572,17 +572,17 @@ body.neb.nebok .vcard .vf .vpin{opacity:.7}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .ev .sticker{opacity:.46;filter:drop-shadow(1px 0 0 #fff) drop-shadow(-1px 0 0 #fff) drop-shadow(0 1px 0 #fff) drop-shadow(0 -1px 0 #fff)}}
 
 /* ---- Listen: soft rainbow LED shimmer through the bubble and the letters (opaque) ---- */
-.links button.listenbtn{position:relative;isolation:isolate;border:1.5px solid transparent;
+.links button.listenbtn,.bfb-acts .bfb-listen{position:relative;isolation:isolate;border:1.5px solid transparent;
   background:linear-gradient(#1b1528,#1b1528) padding-box,
     linear-gradient(100deg,#ff8fb1,#ffc58a,#ffe97a,#8ff0b0,#7fd6ff,#a99bff,#ff9be0,#ff8fb1) border-box;
   background-size:100% 100%,300% 100%;animation:ledborder 6s linear infinite;
   box-shadow:0 0 10px -2px rgba(190,160,255,.6)}
-.links button.listenbtn::before{content:"";position:absolute;inset:2px;border-radius:inherit;z-index:-1;
+.links button.listenbtn::before,.bfb-acts .bfb-listen::before{content:"";position:absolute;inset:2px;border-radius:inherit;z-index:-1;
   background:linear-gradient(100deg,#ff8fb1,#ffc58a,#ffe97a,#8ff0b0,#7fd6ff,#a99bff,#ff9be0,#ff8fb1);background-size:300% 100%;
   filter:blur(7px);opacity:.42;animation:ledflow 6s linear infinite}
-.links button.listenbtn .lt{background:linear-gradient(100deg,#ffc2d4,#ffe0b8,#fff6b8,#c6f7d4,#bfeaff,#d6caff,#ffc6ee,#ffc2d4);background-size:180% 100%;
+.links button.listenbtn .lt,.bfb-acts .bfb-listen .lt{background:linear-gradient(100deg,#ffc2d4,#ffe0b8,#fff6b8,#c6f7d4,#bfeaff,#d6caff,#ffc6ee,#ffc2d4);background-size:180% 100%;
   -webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent;animation:ledflow 6s linear infinite reverse}
-.links button.listenbtn.on{box-shadow:0 0 15px 0 rgba(190,160,255,.8)}
+.links button.listenbtn.on,.bfb-acts .bfb-listen.on{box-shadow:0 0 15px 0 rgba(190,160,255,.8)}
 @keyframes ledflow{from{background-position:0% 50%}to{background-position:300% 50%}}
 @keyframes ledborder{from{background-position:0 0,0% 50%}to{background-position:0 0,300% 50%}}
 @media (prefers-reduced-motion:reduce){.links button.listenbtn,.links button.listenbtn::before,.links button.listenbtn .lt{animation:none}}
