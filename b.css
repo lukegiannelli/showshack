@@ -386,3 +386,17 @@ body.nebtiles.nebok .btile b{text-shadow:0 1px 3px rgba(0,0,0,.7)}
 .budget.wbox.over b{color:#FFB08A}
 .budget.wbox{background-size:100% 260%;background-position:center 55%}
 .budget.wbox::after{content:"";position:absolute;inset:0;z-index:0;pointer-events:none;background:linear-gradient(90deg,rgba(14,8,34,.62),rgba(14,8,34,.28) 70%,rgba(14,8,34,.15))}
+
+/* page titles: same neon-gradient voice as the shack sign, still easy to read */
+.ui-b .bhello h2,.ui-b .bbudget-h h1,.ui-b .btitle h1{font-family:var(--display);font-weight:900;text-transform:uppercase;letter-spacing:.035em;line-height:.95;
+  background:linear-gradient(90deg,#FFE66D 0%,#FFB347 22%,#FF6FA5 48%,#D08CFF 74%,#6FF0FF 100%);-webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent;
+  filter:drop-shadow(0 2px 0 rgba(23,11,46,.95)) drop-shadow(0 0 10px rgba(255,111,165,.35));padding-bottom:2px;width:fit-content;max-width:100%}
+.ui-b .bhello h2{font-size:42px}
+.ui-b .bbudget-h h1{font-size:38px}
+.ui-b .btitle h1{font-size:32px;overflow-wrap:anywhere}
+.ui-b .bhello p,.ui-b .bbudget-h p{margin-top:6px}
+:root:not([data-theme="dark"]) .ui-b .bhello h2,:root:not([data-theme="dark"]) .ui-b .bbudget-h h1,:root:not([data-theme="dark"]) .ui-b .btitle h1,
+:root.ui-b:not([data-theme="dark"]) .bhello h2,:root.ui-b:not([data-theme="dark"]) .bbudget-h h1,:root.ui-b:not([data-theme="dark"]) .btitle h1{
+  background-image:linear-gradient(90deg,#D97A00 0%,#E0457A 45%,#8F4BD6 75%,#1E8FB0 100%);filter:drop-shadow(0 1px 0 rgba(255,255,255,.9))}
+@media (prefers-color-scheme:dark){:root.ui-b:not([data-theme="light"]) .bhello h2,:root.ui-b:not([data-theme="light"]) .bbudget-h h1,:root.ui-b:not([data-theme="light"]) .btitle h1{
+  background-image:linear-gradient(90deg,#FFE66D 0%,#FFB347 22%,#FF6FA5 48%,#D08CFF 74%,#6FF0FF 100%);filter:drop-shadow(0 2px 0 rgba(23,11,46,.95)) drop-shadow(0 0 10px rgba(255,111,165,.35))}}
