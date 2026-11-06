@@ -45,13 +45,19 @@ void main(){
   // so the windows ride with their boxes during scrolling, even when iOS delays redraws. The galaxy inside
   // is drawn with a parallax offset, so it still feels like a deep, still sky behind the boxes.
   const EXT=0.4,PAR=0.7;let vw=0,vh=0,cTop=-1e9,H=0;
+  // the canvas lives in a clipped box as tall as the page content, so it can never make the page longer
+  const clip=document.createElement("div");clip.style.cssText="position:absolute;left:0;top:0;width:100%;height:0;overflow:hidden;pointer-events:none;z-index:-1";
+  cv.parentNode.insertBefore(clip,cv);clip.appendChild(cv);
   cv.style.position="absolute";cv.style.left="0";
+  const wrapEl=document.querySelector(".wrap");
+  function docH(){const pb=parseFloat(getComputedStyle(document.body).paddingBottom)||0;return Math.ceil((wrapEl?wrapEl.getBoundingClientRect().bottom+scrollY:document.body.scrollHeight)+pb);}
   function size(){k=Math.min(1.5,(devicePixelRatio||1)*0.75);
     if(innerWidth!==vw||innerHeight!==vh){vw=innerWidth;vh=innerHeight;H=Math.round(vh*(1+2*EXT));cv.style.width=vw+"px";cv.style.height=H+"px";cTop=-1e9;}
     const w=Math.round(vw*k),h=Math.round(H*k);
     if(cv.width!==w||cv.height!==h){cv.width=w;cv.height=h;gl.viewport(0,0,w,h);gl.uniform2f(uRes,w,h);gl.uniform1f(uK,k);sig="";}
     place();}
-  function place(){const want=Math.max(0,scrollY-vh*EXT);
+  function place(){const dh=docH();if(clip.style.height!==dh+"px")clip.style.height=dh+"px";
+    const want=Math.max(0,Math.min(scrollY-vh*EXT,dh-H));
     if(Math.abs(want-cTop)>vh*0.18){cTop=Math.round(want);cv.style.top=cTop+"px";sig="";}}
   function collect(){
     let n=0,s="";const sy=scrollY;

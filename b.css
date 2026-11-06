@@ -400,3 +400,4 @@ body.nebtiles.nebok .btile b{text-shadow:0 1px 3px rgba(0,0,0,.7)}
   background-image:linear-gradient(90deg,#D97A00 0%,#E0457A 45%,#8F4BD6 75%,#1E8FB0 100%);filter:drop-shadow(0 1px 0 rgba(255,255,255,.9))}
 @media (prefers-color-scheme:dark){:root.ui-b:not([data-theme="light"]) .bhello h2,:root.ui-b:not([data-theme="light"]) .bbudget-h h1,:root.ui-b:not([data-theme="light"]) .btitle h1{
   background-image:linear-gradient(90deg,#FFE66D 0%,#FFB347 22%,#FF6FA5 48%,#D08CFF 74%,#6FF0FF 100%);filter:drop-shadow(0 2px 0 rgba(23,11,46,.95)) drop-shadow(0 0 10px rgba(255,111,165,.35))}}
+body.neb.nebok .vcard .vf .bvibe{color:#EDE6FF;opacity:1;text-shadow:0 1px 3px rgba(0,0,0,.9)}
