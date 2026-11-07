@@ -723,7 +723,10 @@
 "a": "1 Balboa Pier",
 "t": [
 "Fire rings"
-]
+],
+"lat": 33.5996,
+"lon": -117.9003,
+"geo": "manual"
 },
 {
 "n": "Dockweiler State Beach",
