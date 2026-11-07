@@ -239,7 +239,10 @@
 "city": "Stanton",
 "zip": "90680",
 "t": [],
-"a": "10781 Dale Ave"
+"a": "10781 Dale Ave",
+"lat": 33.8105,
+"lon": -117.9933,
+"geo": "manual"
 },
 {
 "n": "The Wharf",
