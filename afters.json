@@ -1,0 +1,589 @@
+{
+"note": "Afters spots for the Night Card. Hours listed only where a source stated them; always check before you go.",
+"places": [
+{
+"n": "Mo Ran Gak",
+"c": "kbbq",
+"city": "Garden Grove",
+"zip": "92844",
+"a": "9651 Garden Grove Blvd",
+"t": [
+"Non-marinated cuts"
+]
+},
+{
+"n": "Baekjeong Irvine",
+"c": "kbbq",
+"city": "Irvine",
+"zip": "92604",
+"a": "14160 Culver Dr",
+"t": [
+"Servers grill for you"
+]
+},
+{
+"n": "Gangnam Station BBQ",
+"c": "kbbq",
+"city": "Buena Park",
+"zip": "90621",
+"a": "5333 Beach Blvd",
+"t": [
+"Late-night AYCE"
+]
+},
+{
+"n": "Thirsty Cow Korean BBQ",
+"c": "kbbq",
+"city": "Garden Grove",
+"zip": "92845",
+"a": "5939 Chapman Ave",
+"t": []
+},
+{
+"n": "Quarters Korean BBQ",
+"c": "kbbq",
+"city": "Los Angeles",
+"zip": "90020",
+"a": "3465 W 6th St",
+"t": [
+"Koreatown",
+"Full bar"
+],
+"h": "Open till 2 AM"
+},
+{
+"n": "Park's BBQ",
+"c": "kbbq",
+"city": "Los Angeles",
+"zip": "90006",
+"a": "955 S Vermont Ave",
+"t": [
+"Koreatown",
+"Prime cuts"
+]
+},
+{
+"n": "Karaoke Nice",
+"c": "karaoke",
+"city": "Garden Grove",
+"zip": "92843",
+"a": "13131 Brookhurst St",
+"t": [
+"Private rooms",
+"YouTube songs"
+],
+"h": "3 PM to 2 AM"
+},
+{
+"n": "Hay Karaoke & Events",
+"c": "karaoke",
+"city": "Garden Grove",
+"zip": "92843",
+"a": "13906 Brookhurst St",
+"t": [
+"Private rooms",
+"Big groups"
+]
+},
+{
+"n": "EightyTwo",
+"c": "arcade",
+"city": "Los Angeles",
+"zip": "90013",
+"a": "707 E 4th Pl",
+"t": [
+"Arts District",
+"Pinball",
+"DJs"
+],
+"h": "Bar till 2 AM"
+},
+{
+"n": "Barcade LA",
+"c": "arcade",
+"city": "Los Angeles",
+"zip": "90042",
+"a": "5684 York Blvd",
+"t": [
+"Highland Park",
+"Craft beer"
+]
+},
+{
+"n": "Button Mash",
+"c": "arcade",
+"city": "Los Angeles",
+"zip": "90026",
+"a": "1391 Sunset Blvd",
+"t": [
+"Echo Park"
+]
+},
+{
+"n": "Blipsy Bar",
+"c": "arcade",
+"city": "Los Angeles",
+"zip": "90004",
+"a": "369 N Western Ave",
+"t": [
+"Dive",
+"Cash only"
+]
+},
+{
+"n": "Walt's Bar",
+"c": "arcade",
+"city": "Los Angeles",
+"zip": "90041",
+"a": "4680 Eagle Rock Blvd",
+"t": [
+"Pinball"
+]
+},
+{
+"n": "Two Bit Circus",
+"c": "arcade",
+"city": "Los Angeles",
+"zip": "90021",
+"a": "634 Mateo St",
+"t": [
+"VR",
+"All ages w/ adult"
+]
+},
+{
+"n": "Barcode",
+"c": "arcade",
+"city": "Garden Grove",
+"zip": "92840",
+"a": "12926 Main St",
+"t": [
+"Cash only"
+]
+},
+{
+"n": "Coin-Op Game Room North Park",
+"c": "arcade",
+"city": "San Diego",
+"zip": "92104",
+"a": "3926 30th St",
+"t": [
+"Retro games"
+]
+},
+{
+"n": "Coin-Op Game Room Gaslamp",
+"c": "arcade",
+"city": "San Diego",
+"zip": "92101",
+"a": "789 Sixth Ave",
+"t": [
+"Retro games"
+]
+},
+{
+"n": "Brewskis Bar & Arcade",
+"c": "arcade",
+"city": "San Diego",
+"zip": "92126",
+"a": "8670 Miramar Rd",
+"t": [
+"21+"
+]
+},
+{
+"n": "Round1 Santa Ana",
+"c": "bowl",
+"city": "Santa Ana",
+"zip": "92705",
+"a": "2800 N Main St",
+"t": [
+"Bowling",
+"Karaoke",
+"Arcade"
+]
+},
+{
+"n": "Lucky Strike Orange",
+"c": "bowl",
+"city": "Orange",
+"zip": "92868",
+"a": "20 City Blvd W",
+"t": [
+"21+ after 9 PM"
+]
+},
+{
+"n": "Lucky Strike Tustin",
+"c": "bowl",
+"city": "Tustin",
+"zip": "92782",
+"a": "2405 Park Ave",
+"t": [
+"Formerly Bowlero OC"
+]
+},
+{
+"n": "Bowlero Anaheim",
+"c": "bowl",
+"city": "Anaheim",
+"zip": "92802",
+"a": "400 Disney Way",
+"t": []
+},
+{
+"n": "Fountain Bowl",
+"c": "bowl",
+"city": "Fountain Valley",
+"zip": "92708",
+"a": "17110 Brookhurst St",
+"t": []
+},
+{
+"n": "Saddleback Lanes",
+"c": "bowl",
+"city": "Mission Viejo",
+"zip": "92692",
+"a": "25402 Marguerite Pkwy",
+"t": [
+"Cosmic bowling"
+]
+},
+{
+"n": "Lucky Strike LA Live",
+"c": "bowl",
+"city": "Los Angeles",
+"zip": "90015",
+"a": "800 W Olympic Blvd",
+"t": [
+"DTLA"
+],
+"h": "Till 1 AM weekdays, 2 AM weekends"
+},
+{
+"n": "Lucky Strike Hollywood",
+"c": "bowl",
+"city": "Los Angeles",
+"zip": "90028",
+"a": "6801 Hollywood Blvd",
+"t": []
+},
+{
+"n": "Lucky Strike Mar Vista",
+"c": "bowl",
+"city": "Los Angeles",
+"zip": "90066",
+"a": "12125 Venice Blvd",
+"t": []
+},
+{
+"n": "Shatto 39 Lanes",
+"c": "bowl",
+"city": "Los Angeles",
+"zip": "90020",
+"a": "3255 W 4th St",
+"t": [
+"Koreatown",
+"Old-school"
+]
+},
+{
+"n": "Bowlero Torrance",
+"c": "bowl",
+"city": "Torrance",
+"zip": "90501",
+"a": "21915 S Western Ave",
+"t": []
+},
+{
+"n": "Bowlero Pasadena",
+"c": "bowl",
+"city": "Pasadena",
+"zip": "91107",
+"a": "3545 E Foothill Blvd",
+"t": []
+},
+{
+"n": "Wi Spa",
+"c": "spa",
+"city": "Los Angeles",
+"zip": "90057",
+"a": "2700 Wilshire Blvd",
+"t": [
+"Co-ed jjimjilbang",
+"Koreatown"
+],
+"h": "Open 24 hours"
+},
+{
+"n": "Century Day & Night Spa",
+"c": "spa",
+"city": "Los Angeles",
+"zip": "90019",
+"a": "4120 W Olympic Blvd",
+"t": [
+"Co-ed jjimjilbang"
+],
+"h": "Open 24 hours"
+},
+{
+"n": "Grand Spa",
+"c": "spa",
+"city": "Los Angeles",
+"zip": "90020",
+"a": "2999 W 6th St",
+"t": [
+"Koreatown"
+],
+"h": "Open 24 hours"
+},
+{
+"n": "Spa Palace",
+"c": "spa",
+"city": "Los Angeles",
+"zip": "90017",
+"a": "620 S Union Ave",
+"t": [
+"Salt room",
+"Co-ed area"
+],
+"h": "Open 24 hours"
+},
+{
+"n": "Sam First",
+"c": "jazz",
+"city": "Los Angeles",
+"zip": "90045",
+"a": "6171 W Century Blvd",
+"t": [
+"Listening room",
+"Near LAX"
+]
+},
+{
+"n": "Catalina Jazz Club",
+"c": "jazz",
+"city": "Los Angeles",
+"zip": "90028",
+"a": "6725 Sunset Blvd",
+"t": [
+"Supper club"
+]
+},
+{
+"n": "The Dresden Room",
+"c": "jazz",
+"city": "Los Angeles",
+"zip": "90027",
+"a": "1760 N Vermont Ave",
+"t": [
+"Vintage lounge"
+]
+},
+{
+"n": "Pip's on La Brea",
+"c": "jazz",
+"city": "Los Angeles",
+"zip": "90019",
+"a": "1356 S La Brea Ave",
+"t": []
+},
+{
+"n": "Stowaway",
+"c": "jazz",
+"city": "Los Angeles",
+"zip": "90013",
+"a": "416 S Spring St",
+"t": [
+"DTLA"
+]
+},
+{
+"n": "Gold Line",
+"c": "jazz",
+"city": "Los Angeles",
+"zip": "90042",
+"a": "5607 N Figueroa St",
+"t": [
+"Vinyl listening bar"
+]
+},
+{
+"n": "Tabula Rasa Bar",
+"c": "jazz",
+"city": "Los Angeles",
+"zip": "90027",
+"a": "5125 Hollywood Blvd",
+"t": [
+"Live jazz Sun & Tue"
+]
+},
+{
+"n": "Sunset & Vinyl",
+"c": "jazz",
+"city": "Los Angeles",
+"zip": "90028",
+"a": "1521 Vine St",
+"t": [
+"Listening bar"
+]
+},
+{
+"n": "Native Son Alehouse",
+"c": "roof",
+"city": "Santa Ana",
+"zip": "92701",
+"a": "305 E 4th St",
+"t": [
+"Rooftop beer garden"
+]
+},
+{
+"n": "High Rooftop Lounge",
+"c": "roof",
+"city": "Los Angeles",
+"zip": "90291",
+"a": "1697 Pacific Ave",
+"t": [
+"Venice",
+"Hotel Erwin"
+]
+},
+{
+"n": "Broken Shaker",
+"c": "roof",
+"city": "Los Angeles",
+"zip": "90014",
+"a": "416 W 8th St",
+"t": [
+"DTLA",
+"Freehand hotel"
+]
+},
+{
+"n": "Altitude Sky Lounge",
+"c": "roof",
+"city": "San Diego",
+"zip": "92101",
+"a": "660 K St",
+"t": [
+"Gaslamp"
+]
+},
+{
+"n": "Float Rooftop",
+"c": "roof",
+"city": "San Diego",
+"zip": "92101",
+"a": "207 Fifth Ave",
+"t": [
+"Hard Rock Hotel"
+]
+},
+{
+"n": "Fairweather",
+"c": "roof",
+"city": "San Diego",
+"zip": "92101",
+"a": "795 J St",
+"t": []
+},
+{
+"n": "The Rooftop Bar at Mission Pacific",
+"c": "roof",
+"city": "Oceanside",
+"zip": "92054",
+"a": "201 N Myers St",
+"t": [
+"Ocean views"
+]
+},
+{
+"n": "Griffith Observatory",
+"c": "stars",
+"city": "Los Angeles",
+"zip": "90027",
+"a": "2800 E Observatory Rd",
+"t": [
+"Free public telescopes"
+],
+"h": "Tue–Sun, closes 10 PM"
+},
+{
+"n": "Garvey Ranch Observatory",
+"c": "stars",
+"city": "Monterey Park",
+"zip": "91755",
+"a": "781 Orange Ave",
+"t": [
+"Free"
+],
+"h": "Wed 7:30–10 PM"
+},
+{
+"n": "Huntington State Beach",
+"c": "beach",
+"city": "Huntington Beach",
+"zip": "92646",
+"a": "21601 Pacific Coast Hwy",
+"t": [
+"200+ fire rings"
+],
+"h": "Closes 10 PM, gates 9 PM"
+},
+{
+"n": "Bolsa Chica State Beach",
+"c": "beach",
+"city": "Huntington Beach",
+"zip": "92649",
+"a": "17851 Pacific Coast Hwy",
+"t": [
+"Fire rings"
+],
+"h": "6 AM–10 PM"
+},
+{
+"n": "Corona del Mar State Beach",
+"c": "beach",
+"city": "Newport Beach",
+"zip": "92625",
+"a": "3001 Ocean Blvd",
+"t": [
+"Fire rings"
+],
+"h": "6 AM–10 PM"
+},
+{
+"n": "Balboa Pier",
+"c": "beach",
+"city": "Newport Beach",
+"zip": "92661",
+"a": "1 Balboa Pier",
+"t": [
+"Fire rings"
+]
+},
+{
+"n": "Dockweiler State Beach",
+"c": "beach",
+"city": "Los Angeles",
+"zip": "90293",
+"a": "12000 Vista del Mar",
+"t": [
+"Fire rings",
+"Playa del Rey"
+],
+"h": "6 AM–10 PM"
+},
+{
+"n": "T-Street Beach",
+"c": "beach",
+"city": "San Clemente",
+"zip": "92672",
+"a": "339 W Paseo De Cristobal",
+"t": [
+"Fire rings"
+]
+}
+]
+}

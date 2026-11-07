@@ -5,7 +5,7 @@ on:
   workflow_dispatch:
   push:
     branches: [main]
-    paths: [pool.json]
+    paths: [pool.json, afters.json]
 permissions:
   contents: write
 concurrency: { group: events-json, cancel-in-progress: false }   # same group as the Ticketmaster job
@@ -22,9 +22,9 @@ jobs:
           # latest main, redo our small edit, push; if someone pushed meanwhile, start over.
           for i in 1 2 3 4; do
             git fetch -q origin main && git reset -q --hard origin/main
-            python3 scripts/geocode_pool.py pool.json events.json
-            git diff --quiet pool.json events.json && { echo "Nothing new."; exit 0; }
-            git add pool.json events.json
+            python3 scripts/geocode_pool.py pool.json events.json afters.json
+            git diff --quiet pool.json events.json afters.json && { echo "Nothing new."; exit 0; }
+            git add pool.json events.json afters.json
             git commit -q -m "Coordinates from OpenStreetMap (pool halls / seeded events)"
             git push origin HEAD:main && exit 0
             sleep 10
