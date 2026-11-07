@@ -601,19 +601,8 @@ body.fx #bgfx{display:block}
 html,body{overflow-x:clip;overscroll-behavior-x:none}
 
 /* venues sky: CSS slices of one continuous galaxy (see nebula.js) */
-body.neb .vcard .vf{background:url(nebula.jpg?v=1) var(--nx,0) var(--ny,0)/720px 720px repeat #120c2a;border-color:rgba(205,180,255,.5);color:#F5F0FF;box-shadow:0 0 14px rgba(150,100,255,.18)}
+body.neb .vcard .vf{background:linear-gradient(180deg,rgba(8,6,22,.18),rgba(8,6,22,.5)),url(nebula.jpg?v=1) var(--nx,0) var(--ny,0)/720px 720px repeat #120c2a;border-color:rgba(205,180,255,.5);color:#F5F0FF;box-shadow:0 0 14px rgba(150,100,255,.18)}
 body.neb .vcard .vf .vopen b{text-shadow:0 1px 3px rgba(0,0,0,.85),0 0 10px rgba(0,0,0,.4)}
 body.neb .vcard .vf .vopen span,body.neb .vcard .vf .vopen small{color:#DCD2F2;text-shadow:0 1px 2px rgba(0,0,0,.9)}
 body.neb .vcard .vf .vpin{opacity:.7}
 body.neb .vcard .vf .bvibe{color:#EDE6FF;opacity:1;text-shadow:0 1px 3px rgba(0,0,0,.9)}
-
-/* screen-fixed sky inside each venue card (nebula.js adds .nsky to cards near the screen) */
-body.neb .vcard .vf{position:relative;clip-path:inset(0 round 12px)}
-body.neb .vcard .vf>*:not(.nsky){position:relative;z-index:2}
-body.neb .vcard .vf::after{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;border-radius:inherit;background:linear-gradient(180deg,rgba(8,6,22,.18),rgba(8,6,22,.5));box-shadow:inset 0 0 0 1px rgba(205,180,255,.5),inset 0 0 18px rgba(150,100,255,.18)}
-body.neb .vcard.open .vf{clip-path:inset(0 round 12px 12px 0 0)}
-body.neb .vcard.hasnew .vf::after{box-shadow:inset 0 0 0 1.5px #FF6FE0,inset 0 0 18px -2px #FF6FE0}
-.nsky{position:fixed;left:-80px;top:-80px;width:calc(100vw + 160px);height:calc(100vh + 160px);z-index:0;pointer-events:none;
-  background:url(nebula.jpg?v=1) 0 0/720px 720px repeat #120c2a;animation:nskydrift 80s ease-in-out infinite alternate;will-change:transform}
-@keyframes nskydrift{0%{transform:translate3d(0,0,0) scale(1)}50%{transform:translate3d(-34px,22px,0) scale(1.04)}100%{transform:translate3d(28px,-30px,0) scale(1.02)}}
-@media (prefers-reduced-motion:reduce){.nsky{animation:none}}

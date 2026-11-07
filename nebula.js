@@ -119,19 +119,3 @@ void main(){
   new MutationObserver(later).observe(document.body,{attributes:true,attributeFilter:["class"]});
   addEventListener("resize",later);
 })();
-
-/* Venues, "windows into space": cards near the screen get a screen-fixed sky inside them, clipped to the card.
-   One layer per card on screen (not per card in the list). The sky drifts slowly; scrolling only moves the windows. */
-(function(){
-  const list=document.getElementById("list");if(!list||!("IntersectionObserver" in window))return;
-  const T0=performance.now(),PERIOD=80000;
-  const io=new IntersectionObserver(es=>{for(const e of es){const el=e.target;let s=el.querySelector(":scope>.nsky");
-    if(e.isIntersecting&&!s){s=document.createElement("i");s.className="nsky";s.setAttribute("aria-hidden","true");
-      s.style.animationDelay=-((performance.now()-T0)%(PERIOD*2))+"ms";el.prepend(s);}   // all windows drift in step
-    else if(!e.isIntersecting&&s)s.remove();}},{rootMargin:"30% 0px"});
-  let seen=new WeakSet(),q=0;
-  function scan(){q=0;if(!document.body.classList.contains("neb"))return;for(const el of list.querySelectorAll(".vcard .vf"))if(!seen.has(el)){seen.add(el);io.observe(el);}}
-  const later=()=>{if(!q){q=1;requestAnimationFrame(scan);}};
-  new MutationObserver(later).observe(list,{childList:true,subtree:true});
-  new MutationObserver(later).observe(document.body,{attributes:true,attributeFilter:["class"]});
-})();
