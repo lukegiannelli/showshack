@@ -9,7 +9,10 @@
 "a": "9651 Garden Grove Blvd",
 "t": [
 "Non-marinated cuts"
-]
+],
+"lat": 33.77391,
+"lon": -117.96347,
+"geo": "place"
 },
 {
 "n": "Baekjeong Irvine",
@@ -19,7 +22,10 @@
 "a": "14160 Culver Dr",
 "t": [
 "Servers grill for you"
-]
+],
+"lat": 33.70804,
+"lon": -117.78377,
+"geo": "amenity"
 },
 {
 "n": "Gangnam Station BBQ",
@@ -29,7 +35,10 @@
 "a": "5333 Beach Blvd",
 "t": [
 "Late-night AYCE"
-]
+],
+"lat": 33.88279,
+"lon": -117.9971,
+"geo": "place"
 },
 {
 "n": "Thirsty Cow Korean BBQ",
@@ -37,7 +46,10 @@
 "city": "Garden Grove",
 "zip": "92845",
 "a": "5939 Chapman Ave",
-"t": []
+"t": [],
+"lat": 33.78852,
+"lon": -118.02971,
+"geo": "place"
 },
 {
 "n": "Quarters Korean BBQ",
@@ -49,7 +61,10 @@
 "Koreatown",
 "Full bar"
 ],
-"h": "Open till 2 AM"
+"h": "Open till 2 AM",
+"lat": 34.06392,
+"lon": -118.29686,
+"geo": "shop"
 },
 {
 "n": "Park's BBQ",
@@ -60,7 +75,10 @@
 "t": [
 "Koreatown",
 "Prime cuts"
-]
+],
+"lat": 34.054,
+"lon": -118.29204,
+"geo": "amenity"
 },
 {
 "n": "Karaoke Nice",
@@ -72,7 +90,10 @@
 "Private rooms",
 "YouTube songs"
 ],
-"h": "3 PM to 2 AM"
+"h": "3 PM to 2 AM",
+"lat": 33.77201,
+"lon": -117.95512,
+"geo": "place"
 },
 {
 "n": "Hay Karaoke & Events",
@@ -83,7 +104,10 @@
 "t": [
 "Private rooms",
 "Big groups"
-]
+],
+"lat": 33.76243,
+"lon": -117.95485,
+"geo": "place"
 },
 {
 "n": "EightyTwo",
@@ -96,7 +120,10 @@
 "Pinball",
 "DJs"
 ],
-"h": "Bar till 2 AM"
+"h": "Bar till 2 AM",
+"lat": 34.04531,
+"lon": -118.23725,
+"geo": "building"
 },
 {
 "n": "Barcade LA",
@@ -107,7 +134,10 @@
 "t": [
 "Highland Park",
 "Craft beer"
-]
+],
+"lat": 34.11887,
+"lon": -118.19417,
+"geo": "place"
 },
 {
 "n": "Button Mash",
@@ -117,7 +147,10 @@
 "a": "1391 Sunset Blvd",
 "t": [
 "Echo Park"
-]
+],
+"lat": 34.07398,
+"lon": -118.25153,
+"geo": "place"
 },
 {
 "n": "Blipsy Bar",
@@ -128,7 +161,10 @@
 "t": [
 "Dive",
 "Cash only"
-]
+],
+"lat": 34.07745,
+"lon": -118.30905,
+"geo": "place"
 },
 {
 "n": "Walt's Bar",
@@ -138,7 +174,10 @@
 "a": "4680 Eagle Rock Blvd",
 "t": [
 "Pinball"
-]
+],
+"lat": 34.12967,
+"lon": -118.21664,
+"geo": "amenity"
 },
 {
 "n": "Two Bit Circus",
@@ -149,7 +188,10 @@
 "t": [
 "VR",
 "All ages w/ adult"
-]
+],
+"lat": 34.03718,
+"lon": -118.23238,
+"geo": "place"
 },
 {
 "n": "Barcode",
@@ -159,7 +201,10 @@
 "a": "12926 Main St",
 "t": [
 "Cash only"
-]
+],
+"lat": 33.77497,
+"lon": -117.94069,
+"geo": "amenity"
 },
 {
 "n": "Coin-Op Game Room North Park",
@@ -169,7 +214,10 @@
 "a": "3926 30th St",
 "t": [
 "Retro games"
-]
+],
+"lat": 32.74902,
+"lon": -117.13042,
+"geo": "amenity"
 },
 {
 "n": "Coin-Op Game Room Gaslamp",
@@ -179,7 +227,10 @@
 "a": "789 Sixth Ave",
 "t": [
 "Retro games"
-]
+],
+"lat": 33.11249,
+"lon": -117.08747,
+"geo": "place"
 },
 {
 "n": "Brewskis Bar & Arcade",
@@ -189,7 +240,10 @@
 "a": "8670 Miramar Rd",
 "t": [
 "21+"
-]
+],
+"lat": 32.89433,
+"lon": -117.1374,
+"geo": "amenity"
 },
 {
 "n": "Round1 Santa Ana",
@@ -201,7 +255,10 @@
 "Bowling",
 "Karaoke",
 "Arcade"
-]
+],
+"lat": 33.77578,
+"lon": -117.86988,
+"geo": "shop"
 },
 {
 "n": "Lucky Strike Orange",
@@ -211,7 +268,10 @@
 "a": "20 City Blvd W",
 "t": [
 "21+ after 9 PM"
-]
+],
+"lat": 33.78277,
+"lon": -117.89233,
+"geo": "shop"
 },
 {
 "n": "Lucky Strike Tustin",
@@ -221,7 +281,10 @@
 "a": "2405 Park Ave",
 "t": [
 "Formerly Bowlero OC"
-]
+],
+"lat": 33.70075,
+"lon": -117.82895,
+"geo": "place"
 },
 {
 "n": "Bowlero Anaheim",
@@ -229,7 +292,10 @@
 "city": "Anaheim",
 "zip": "92802",
 "a": "400 Disney Way",
-"t": []
+"t": [],
+"lat": 33.8064,
+"lon": -117.91227,
+"geo": "amenity"
 },
 {
 "n": "Fountain Bowl",
@@ -237,7 +303,10 @@
 "city": "Fountain Valley",
 "zip": "92708",
 "a": "17110 Brookhurst St",
-"t": []
+"t": [],
+"lat": 33.71467,
+"lon": -117.95363,
+"geo": "leisure"
 },
 {
 "n": "Saddleback Lanes",
@@ -247,7 +316,10 @@
 "a": "25402 Marguerite Pkwy",
 "t": [
 "Cosmic bowling"
-]
+],
+"lat": 33.59301,
+"lon": -117.65848,
+"geo": "building"
 },
 {
 "n": "Lucky Strike LA Live",
@@ -258,7 +330,10 @@
 "t": [
 "DTLA"
 ],
-"h": "Till 1 AM weekdays, 2 AM weekends"
+"h": "Till 1 AM weekdays, 2 AM weekends",
+"lat": 34.0447,
+"lon": -118.26461,
+"geo": "tourism"
 },
 {
 "n": "Lucky Strike Hollywood",
@@ -266,7 +341,10 @@
 "city": "Los Angeles",
 "zip": "90028",
 "a": "6801 Hollywood Blvd",
-"t": []
+"t": [],
+"lat": 34.10269,
+"lon": -118.34047,
+"geo": "amenity"
 },
 {
 "n": "Lucky Strike Mar Vista",
@@ -274,7 +352,10 @@
 "city": "Los Angeles",
 "zip": "90066",
 "a": "12125 Venice Blvd",
-"t": []
+"t": [],
+"lat": 34.00544,
+"lon": -118.43115,
+"geo": "leisure"
 },
 {
 "n": "Shatto 39 Lanes",
@@ -285,7 +366,10 @@
 "t": [
 "Koreatown",
 "Old-school"
-]
+],
+"lat": 34.06716,
+"lon": -118.29088,
+"geo": "place"
 },
 {
 "n": "Bowlero Torrance",
@@ -293,7 +377,10 @@
 "city": "Torrance",
 "zip": "90501",
 "a": "21915 S Western Ave",
-"t": []
+"t": [],
+"lat": 33.82781,
+"lon": -118.30914,
+"geo": "place"
 },
 {
 "n": "Bowlero Pasadena",
@@ -301,7 +388,10 @@
 "city": "Pasadena",
 "zip": "91107",
 "a": "3545 E Foothill Blvd",
-"t": []
+"t": [],
+"lat": 34.15158,
+"lon": -118.07671,
+"geo": "building"
 },
 {
 "n": "Wi Spa",
@@ -313,7 +403,10 @@
 "Co-ed jjimjilbang",
 "Koreatown"
 ],
-"h": "Open 24 hours"
+"h": "Open 24 hours",
+"lat": 34.06083,
+"lon": -118.28255,
+"geo": "leisure"
 },
 {
 "n": "Century Day & Night Spa",
@@ -324,7 +417,10 @@
 "t": [
 "Co-ed jjimjilbang"
 ],
-"h": "Open 24 hours"
+"h": "Open 24 hours",
+"lat": 34.05431,
+"lon": -118.3222,
+"geo": "place"
 },
 {
 "n": "Grand Spa",
@@ -335,7 +431,10 @@
 "t": [
 "Koreatown"
 ],
-"h": "Open 24 hours"
+"h": "Open 24 hours",
+"lat": 34.06379,
+"lon": -118.28689,
+"geo": "place"
 },
 {
 "n": "Spa Palace",
@@ -347,7 +446,10 @@
 "Salt room",
 "Co-ed area"
 ],
-"h": "Open 24 hours"
+"h": "Open 24 hours",
+"lat": 34.05658,
+"lon": -118.26924,
+"geo": "place"
 },
 {
 "n": "Sam First",
@@ -358,7 +460,10 @@
 "t": [
 "Listening room",
 "Near LAX"
-]
+],
+"lat": 33.94592,
+"lon": -118.39359,
+"geo": "building"
 },
 {
 "n": "Catalina Jazz Club",
@@ -368,7 +473,10 @@
 "a": "6725 Sunset Blvd",
 "t": [
 "Supper club"
-]
+],
+"lat": 34.09822,
+"lon": -118.33739,
+"geo": "amenity"
 },
 {
 "n": "The Dresden Room",
@@ -378,7 +486,10 @@
 "a": "1760 N Vermont Ave",
 "t": [
 "Vintage lounge"
-]
+],
+"lat": 34.10317,
+"lon": -118.29163,
+"geo": "amenity"
 },
 {
 "n": "Pip's on La Brea",
@@ -386,7 +497,10 @@
 "city": "Los Angeles",
 "zip": "90019",
 "a": "1356 S La Brea Ave",
-"t": []
+"t": [],
+"lat": 34.0485,
+"lon": -118.34417,
+"geo": "building"
 },
 {
 "n": "Stowaway",
@@ -396,7 +510,10 @@
 "a": "416 S Spring St",
 "t": [
 "DTLA"
-]
+],
+"lat": 34.04827,
+"lon": -118.24841,
+"geo": "building"
 },
 {
 "n": "Gold Line",
@@ -406,7 +523,10 @@
 "a": "5607 N Figueroa St",
 "t": [
 "Vinyl listening bar"
-]
+],
+"lat": 34.1092,
+"lon": -118.19396,
+"geo": "amenity"
 },
 {
 "n": "Tabula Rasa Bar",
@@ -416,7 +536,10 @@
 "a": "5125 Hollywood Blvd",
 "t": [
 "Live jazz Sun & Tue"
-]
+],
+"lat": 34.10196,
+"lon": -118.30147,
+"geo": "amenity"
 },
 {
 "n": "Sunset & Vinyl",
@@ -426,7 +549,10 @@
 "a": "1521 Vine St",
 "t": [
 "Listening bar"
-]
+],
+"lat": 34.09843,
+"lon": -118.32676,
+"geo": "place"
 },
 {
 "n": "Native Son Alehouse",
@@ -436,7 +562,10 @@
 "a": "305 E 4th St",
 "t": [
 "Rooftop beer garden"
-]
+],
+"lat": 33.74811,
+"lon": -117.86525,
+"geo": "amenity"
 },
 {
 "n": "High Rooftop Lounge",
@@ -447,7 +576,10 @@
 "t": [
 "Venice",
 "Hotel Erwin"
-]
+],
+"lat": 33.98694,
+"lon": -118.47252,
+"geo": "tourism"
 },
 {
 "n": "Broken Shaker",
@@ -458,7 +590,10 @@
 "t": [
 "DTLA",
 "Freehand hotel"
-]
+],
+"lat": 34.04492,
+"lon": -118.25674,
+"geo": "amenity"
 },
 {
 "n": "Altitude Sky Lounge",
@@ -468,7 +603,10 @@
 "a": "660 K St",
 "t": [
 "Gaslamp"
-]
+],
+"lat": 32.7086,
+"lon": -117.15873,
+"geo": "tourism"
 },
 {
 "n": "Float Rooftop",
@@ -478,7 +616,10 @@
 "a": "207 Fifth Ave",
 "t": [
 "Hard Rock Hotel"
-]
+],
+"lat": 33.11719,
+"lon": -117.08043,
+"geo": "place"
 },
 {
 "n": "Fairweather",
@@ -486,7 +627,10 @@
 "city": "San Diego",
 "zip": "92101",
 "a": "795 J St",
-"t": []
+"t": [],
+"lat": 32.70877,
+"lon": -117.15756,
+"geo": "amenity"
 },
 {
 "n": "The Rooftop Bar at Mission Pacific",
@@ -496,7 +640,10 @@
 "a": "201 N Myers St",
 "t": [
 "Ocean views"
-]
+],
+"lat": 33.19452,
+"lon": -117.38287,
+"geo": "tourism"
 },
 {
 "n": "Griffith Observatory",
@@ -507,7 +654,10 @@
 "t": [
 "Free public telescopes"
 ],
-"h": "Tue–Sun, closes 10 PM"
+"h": "Tue–Sun, closes 10 PM",
+"lat": 34.11822,
+"lon": -118.30029,
+"geo": "tourism"
 },
 {
 "n": "Garvey Ranch Observatory",
@@ -518,7 +668,10 @@
 "t": [
 "Free"
 ],
-"h": "Wed 7:30–10 PM"
+"h": "Wed 7:30–10 PM",
+"lat": 34.05302,
+"lon": -118.11288,
+"geo": "place"
 },
 {
 "n": "Huntington State Beach",
@@ -529,7 +682,10 @@
 "t": [
 "200+ fire rings"
 ],
-"h": "Closes 10 PM, gates 9 PM"
+"h": "Closes 10 PM, gates 9 PM",
+"lat": 33.64747,
+"lon": -117.98745,
+"geo": "amenity"
 },
 {
 "n": "Bolsa Chica State Beach",
@@ -540,7 +696,10 @@
 "t": [
 "Fire rings"
 ],
-"h": "6 AM–10 PM"
+"h": "6 AM–10 PM",
+"lat": 33.69953,
+"lon": -118.05152,
+"geo": "amenity"
 },
 {
 "n": "Corona del Mar State Beach",
@@ -551,7 +710,10 @@
 "t": [
 "Fire rings"
 ],
-"h": "6 AM–10 PM"
+"h": "6 AM–10 PM",
+"lat": 33.59411,
+"lon": -117.87675,
+"geo": "office"
 },
 {
 "n": "Balboa Pier",
@@ -573,7 +735,10 @@
 "Fire rings",
 "Playa del Rey"
 ],
-"h": "6 AM–10 PM"
+"h": "6 AM–10 PM",
+"lat": 33.92548,
+"lon": -118.43072,
+"geo": "building"
 },
 {
 "n": "T-Street Beach",
@@ -583,7 +748,10 @@
 "a": "339 W Paseo De Cristobal",
 "t": [
 "Fire rings"
-]
+],
+"lat": 33.41577,
+"lon": -117.61567,
+"geo": "place"
 }
 ]
 }
