@@ -108,3 +108,18 @@ html.nview-on,html.nview-on body{overflow:hidden}
 .bn-dw.empty::before{content:"📅 Pick a date";position:absolute;left:12px;top:50%;transform:translateY(-50%);font:500 15px var(--body);color:#8f86ad;pointer-events:none}
 .bn-dw.empty input{color:transparent}
 .nv-main button.nv-in{flex:1 1 100%;justify-content:center}
+.bn-flipb{float:right;margin:2px 0 0 8px;min-height:34px;padding:0 12px;border-radius:999px;border:1px solid rgba(255,198,107,.55);background:rgba(255,198,107,.12);color:#FFC66B;font:700 13px var(--body);cursor:pointer}
+.bnight.flipped{background:linear-gradient(160deg,rgba(255,198,107,.14),rgba(255,111,165,.1) 55%,rgba(180,140,255,.12))}
+.bn-big{display:flex;flex-direction:column;align-items:flex-start;padding:12px 14px;border-radius:14px;background:rgba(10,6,28,.55);border:1px solid rgba(255,198,107,.3);margin-bottom:12px}
+.bn-big span{font:600 11px var(--mono);letter-spacing:.6px;text-transform:uppercase;color:#bfeaff}
+.bn-big b{font:900 44px/1 var(--display);color:#FFC66B;text-shadow:0 0 18px rgba(255,198,107,.35)}
+.bn-big small{font-size:12.5px;color:#cfc6ea;margin-top:2px}
+.bn-sub{margin:12px 0 6px;font:700 12px var(--mono);letter-spacing:.6px;text-transform:uppercase;color:#bfeaff}
+.bn-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:4px}
+.bn-list li{display:flex;flex-wrap:wrap;justify-content:space-between;gap:2px 10px;padding:8px 10px;border-radius:10px;background:rgba(10,6,28,.45);font-size:14px;color:#fff}
+.bn-list li span{min-width:0;flex:1}
+.bn-list li b{font:600 13.5px var(--mono);color:#FFC66B;white-space:nowrap}
+.bn-list li b.w{color:#ff9ab8}
+.bn-list li em{flex-basis:100%;font-style:normal;font-size:12.5px;color:#ff9ab8}
+.bn-notes{margin:0;padding-left:18px;font-size:13.5px;color:#e6dcff;display:flex;flex-direction:column;gap:4px}
+.bnight.flipped .bn-go{margin-top:14px}
