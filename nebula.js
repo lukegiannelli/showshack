@@ -119,12 +119,3 @@ void main(){
   new MutationObserver(later).observe(document.body,{attributes:true,attributeFilter:["class"]});
   addEventListener("resize",later);
 })();
-/* venues twinkle: only cards on screen animate (keeps it light on phones) */
-(function(){
-  if(!document.documentElement.classList.contains("twk"))return;
-  const list=document.getElementById("list");if(!list||!("IntersectionObserver" in window))return;
-  const io=new IntersectionObserver(es=>{for(const e of es)e.target.classList.toggle("tw",e.isIntersecting);},{rootMargin:"15% 0px"});
-  const seen=new WeakSet();let q=0;
-  function scan(){q=0;for(const el of list.querySelectorAll(".vcard .vf"))if(!seen.has(el)){seen.add(el);io.observe(el);}}
-  new MutationObserver(()=>{if(!q){q=1;requestAnimationFrame(scan);}}).observe(list,{childList:true,subtree:true});
-})();
