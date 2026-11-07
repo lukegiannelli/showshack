@@ -104,3 +104,7 @@ html.nview-on,html.nview-on body{overflow:hidden}
 .nv-in{background:linear-gradient(90deg,#ffb36b,#ff6fa5)!important;border-color:transparent!important;color:#1d0816!important;font-weight:800!important;flex:1 1 100%;justify-content:center}
 .nv-priv{margin:14px 0 0;font-size:12.5px;line-height:1.45;color:#a59cc4}
 .nv-shack{margin-top:14px;width:100%;justify-content:center}
+.bn-dw{position:relative;display:block}
+.bn-dw.empty::before{content:"📅 Pick a date";position:absolute;left:12px;top:50%;transform:translateY(-50%);font:500 15px var(--body);color:#8f86ad;pointer-events:none}
+.bn-dw.empty input{color:transparent}
+.nv-main button.nv-in{flex:1 1 100%;justify-content:center}

@@ -40,11 +40,13 @@ void main(){
   const U=x=>gl.getUniformLocation(pr,x),uRes=U("res"),uT=U("t"),uK=U("k"),uR=U("R"),uN=U("n"),uRad=U("rad"),uOy=U("oy");
   gl.clearColor(0,0,0,0);
   const rects=new Float32Array(MAX*4);
-  let k=1,ready=false,raf=0,last=0,tt=0,sig="";
+  let k=1,ready=false,raf=0,last=0,tt=0,sig="",lastScroll=0;
+  addEventListener("scroll",()=>{lastScroll=performance.now();},{passive:true});   // pause the slow drift while scrolling so the GPU only follows your finger
   // The canvas is anchored to the page (not fixed to the screen) and covers the viewport plus a margin,
   // so the windows ride with their boxes during scrolling, even when iOS delays redraws. The galaxy inside
   // is drawn with a parallax offset, so it still feels like a deep, still sky behind the boxes.
-  const EXT=0.6,PAR=1.0;let vw=0,vh=0,cTop=-1e9,H=0;
+  const EXT=0.6,PAR=0.0;   // 0 = the galaxy rides with its box: nothing has to be redrawn while you scroll
+  let vw=0,vh=0,cTop=-1e9,H=0;
   // the canvas lives in a clipped box as tall as the page content, so it can never make the page longer
   const clip=document.createElement("div");clip.style.cssText="position:absolute;left:0;top:0;width:100%;height:0;overflow:hidden;pointer-events:none;z-index:-1";
   cv.parentNode.insertBefore(clip,cv);clip.appendChild(cv);
@@ -58,7 +60,7 @@ void main(){
     place();}
   function place(){const dh=docH();if(clip.style.height!==dh+"px")clip.style.height=dh+"px";
     const want=Math.max(0,Math.min(scrollY-vh*EXT,dh-H));
-    if(Math.abs(want-cTop)>vh*0.25){cTop=Math.round(want);cv.style.top=cTop+"px";sig="";}}
+    if(Math.abs(want-cTop)>vh*0.45){cTop=Math.round(want);cv.style.top=cTop+"px";sig="";}}
   function collect(){
     let n=0,s="";const sy=scrollY;
     const tiles=!document.body.classList.contains("neb");
@@ -81,7 +83,7 @@ void main(){
     raf=requestAnimationFrame(frame);
     if(innerWidth!==vw||innerHeight!==vh)size();
     const dt=now-last;
-    if(!still&&dt>=33){last=now;tt+=Math.min(dt,100)/1000*0.35;draw(true);}   // ~30 fps drift
+    if(!still&&dt>=33&&now-lastScroll>180){last=now;tt+=Math.min(dt,100)/1000*0.35;draw(true);}   // ~30 fps drift
     else draw(false);                                                         // every frame: keep the windows under the cards while scrolling
   }
   const on=()=>(document.body.classList.contains("neb")||document.body.classList.contains("nebtiles"))&&!document.hidden;

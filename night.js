@@ -66,8 +66,8 @@ function addStop(st,quiet){if(plan.s.length>=MAXS){toast("A night tops out at "+
   if(!quiet)toast(`${TYPES[st.k][0]} Added to your night`,"Open",openPlan);return true;}
 const allEv=()=>[...((typeof state!=="undefined"&&state.events)||[]),...((typeof state!=="undefined"&&state.picks)||[]).map(p=>({...p,added:true}))];
 const evById=h=>allEv().find(e=>hid(e)===h);
-function showStop(e){const st={k:"show",n:e.title,p:[e.venue,e.city].filter(Boolean).join(", "),tm:parseTime(e.time),u:e.url,la:e.lat,lo:e.lon};
-  if(!plan.d&&e.start&&e.start>=todayISO())plan.d=e.start;return st;}
+function showStop(e,quiet){const st={k:"show",n:e.title,p:[e.venue,e.city].filter(Boolean).join(", "),tm:parseTime(e.time),u:e.url,la:e.lat,lo:e.lon};
+  if(!quiet&&!plan.d&&e.start&&e.start>=todayISO())plan.d=e.start;return st;}
 function afterStop(p){return {k:p.c==="pool"?"after":"after",n:p.n,p:[p.a,p.city].filter(Boolean).join(", "),la:p.lat,lo:p.lon,no:p.h?("Hours: "+p.h):""};}
 const todayISO=()=>{const d=new Date();return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");};
 // capture phase so the flip cards / card toggles never see these taps
@@ -135,14 +135,14 @@ function picker(){if(pickK==="show"){
     return `<div class="bn-pick"><p class="bn-pt">${an?"Closest to your last stop first.":"Set a start point or add a show to sort these by distance."}</p>
       <div class="bn-cats">${cats.map(c=>`<button type="button" class="chip" data-cat="${c}" aria-pressed="${c===f}">${AC[c][0]} ${AC[c][1]}</button>`).join("")}</div>
       ${rows.map(({p,i,mi})=>`<button type="button" class="bn-pi" data-naft="${i}"><b>${esc(p.n)}</b><small>${esc(p.city)}${mi!=null?` · ${mi<1?"under a mile":mi.toFixed(1)+" mi"}`:""}${p.h?" · "+esc(p.h):""}</small></button>`).join("")}
-      <div class="bn-row"><button type="button" data-blank="after">Somewhere else</button><button type="button" data-pick="">Close</button></div></div>`;}
+      <div class="bn-row"><button type="button" data-blank="house">🏠 Someone's place</button><button type="button" data-blank="other">✨ Other</button><button type="button" data-pick="">Close</button></div></div>`;}
   return "";}
 let pickK2="";
 function drawBuilder(){const el=$("bNight");if(!el)return;const n=plan.s.length,tot=each(plan);
-  el.innerHTML=`<div class="bn-h"><h2>Your night</h2><p>Pre-game to afters, then send one link. No sign-in. The plan lives in the link, not on a server.</p></div>
-    <div class="bn-meta"><input data-m="t" value="${esc(plan.t)}" placeholder="Name the night" maxlength="70" aria-label="Name the night"><input data-m="d" type="date" value="${esc(plan.d)}" aria-label="Date"></div>
+  el.innerHTML=`<div class="bn-h"><h2>Your night</h2><p>Pre-game to afters, then send one link. No sign-in. The whole plan lives in the link.</p></div>
+    <div class="bn-meta"><input data-m="t" value="${esc(plan.t)}" placeholder="Name the night" maxlength="70" aria-label="Name the night"><label class="bn-dw${plan.d?"":" empty"}"><input data-m="d" type="date" value="${esc(plan.d)}" aria-label="Date"></label></div>
     ${n?`<ol class="bn-stops">${plan.s.map(stopRow).join("")}</ol>`:`<p class="bn-empty">Nothing yet. Add stops below, or tap <b>＋ My night</b> on any show.</p>`}
-    <div class="bn-add">${Object.keys(TYPES).map(k=>`<button type="button" class="chip" data-addk="${k}" aria-pressed="${pickK===k}">${TYPES[k][0]} ${TYPES[k][1]}</button>`).join("")}</div>
+    <div class="bn-add">${["meet","eat","show","after"].map(k=>`<button type="button" class="chip" data-addk="${k}" aria-pressed="${pickK===k}">${TYPES[k][0]} ${TYPES[k][1]}</button>`).join("")}</div>
     ${picker()}
     <details class="bn-host"${plan.h||plan.ph?" open":""}><summary>Who's hosting (for "I'm in" texts)</summary>
       <div class="bn-two"><label class="bn-f"><span>Your name</span><input data-m="h" value="${esc(plan.h)}" maxlength="30"></label><label class="bn-f"><span>Phone (optional)</span><input data-m="ph" type="tel" value="${esc(plan.ph)}" maxlength="20"></label></div>
@@ -153,7 +153,7 @@ function drawBuilder(){const el=$("bNight");if(!el)return;const n=plan.s.length,
 function sortStops(){let last=-1;const k=plan.s.map((x,i)=>{if(x.tm){let [h,m]=x.tm.split(":").map(Number);if(h<5)h+=24;last=h*60+m;}return {x,i,t:last};});
   const open=plan.s[openI];k.sort((a,b)=>a.t-b.t||a.i-b.i);plan.s=k.map(o=>o.x);if(open)openI=plan.s.indexOf(open);}
 function onInput(ev){const t=ev.target;
-  if(t.dataset.m){plan[t.dataset.m]=t.value;plan.up=Date.now();save();return;}
+  if(t.dataset.m){plan[t.dataset.m]=t.value;plan.up=Date.now();save();if(t.dataset.m==="d")t.parentNode.classList.toggle("empty",!t.value);return;}
   const li=t.closest("[data-i]");if(!li||!t.dataset.f)return;const s=plan.s[+li.dataset.i];s[t.dataset.f]=t.value;
   if(t.dataset.f==="a"||t.dataset.f==="p"){delete s.la;delete s.lo;}
   plan.s[+li.dataset.i]=cleanStop(s);plan.up=Date.now();save();
@@ -187,12 +187,12 @@ function ics(p){const pad=n=>String(n).padStart(2,"0"),stamp=new Date().toISOStr
   const escI=s=>String(s).replace(/\\/g,"\\\\").replace(/[,;]/g,c=>"\\"+c).replace(/\n/g,"\\n");
   const desc=sumText(p)+"\n\n"+location.href;
   return ["BEGIN:VCALENDAR","VERSION:2.0","PRODID:-//The Show Shack//Night Card//EN","BEGIN:VEVENT","UID:night-"+Date.now()+"@showshack",`DTSTAMP:${stamp}`,`DTSTART:${f(startD)}`,`DTEND:${f(endD)}`,`SUMMARY:${escI("🌙 "+(p.t||"Our night"))}`,`DESCRIPTION:${escI(desc)}`,"END:VEVENT","END:VCALENDAR"].join("\r\n");}
-function view(p,preview){close();const tot=each(p),ios=/iPhone|iPad|iPod/.test(navigator.userAgent);
+function view(p,preview){close();const auto=preview==="auto";const tot=each(p),ios=/iPhone|iPad|iPod/.test(navigator.userAgent);
   const body=encodeURIComponent(`I'm in for ${p.t||"the night"}${p.d?" ("+fmtD(p.d)+")":""}! 🙌`);
   const sms=`sms:${p.ph||""}${ios?"&":"?"}body=${body}`;
   const rows=p.s.map(s=>{const T=TYPES[s.k],u=s.u?safeUrl(s.u):"";
-    const acts=[s.k!=="house"&&dirQ(s)?`<a href="${esc(dirUrl(s))}" target="_blank" rel="noopener">🧭 Directions</a>`:"",
-      u?`<a href="${esc(u)}" target="_blank" rel="noopener">${s.k==="show"?"🎟️ Tickets":"🔗 Link"} ↗</a>`:"",
+    const acts=[s.k!=="house"&&(s.p||s.a)?`<a href="${esc(dirUrl(s))}" target="_blank" rel="noopener">🧭 Directions</a>`:"",
+      u?`<a href="${esc(u)}" target="_blank" rel="noopener">${s.k==="show"?"🎟️ Tickets":/google\.com\/maps\/search/.test(u)?"🔎 Find a spot":"🔗 Link"} ↗</a>`:"",
       s.vh?`<a class="nv-pay" href="${esc(venmo(s))}" target="_blank" rel="noopener">Venmo <b>@${esc(s.vh)}</b>${s.amt?` · $${s.amt}`:""}</a>`:"",
       s.ch?`<a class="nv-pay" href="${esc(cash(s))}" target="_blank" rel="noopener">Cash App <b>$${esc(s.ch)}</b>${s.amt?` · $${s.amt}`:""}</a>`:""].filter(Boolean).join("");
     return `<li style="--sc:${T[2]}"><span class="nv-dot">${T[0]}</span><div class="nv-b"><span class="nv-tm">${s.tm?fmtT(s.tm):T[1]}</span><b>${esc(s.n||T[1])}</b>
@@ -201,18 +201,21 @@ function view(p,preview){close();const tot=each(p),ios=/iPhone|iPad|iPod/.test(n
       ${acts?`<div class="nv-acts">${acts}</div>`:""}</div></li>`;}).join("");
   const pays=p.s.some(s=>s.vh||s.ch);
   const el=document.createElement("div");el.id="nightView";el.className="nview";el.setAttribute("role","dialog");el.setAttribute("aria-modal","true");el.setAttribute("aria-label","Night Card");
-  el.innerHTML=`<div class="nv-card"><div class="nv-top"><span class="nv-kick">🌙 Night Card${preview?" · preview":""}</span><button type="button" class="nv-x" aria-label="Close">✕</button></div>
+  el.innerHTML=`<div class="nv-card"><div class="nv-top"><span class="nv-kick">${auto?"🌍 Spun by the globe":"🌙 Night Card"+(preview?" · preview":"")}</span><button type="button" class="nv-x" aria-label="Close">✕</button></div>
     <h1 class="nv-title">${esc(p.t||"Our night")}</h1><p class="nv-date">${esc(fmtD(p.d)||"Date TBD")}${p.h?` · planned by ${esc(p.h)}`:""}</p>
     ${p.up?`<p class="nv-up">Updated ${esc(fmtUp(p.up))}</p>`:""}
     <ol class="nv-line">${rows||'<li><div class="nv-b"><b>No stops yet</b></div></li>'}</ol>
     ${tot?`<div class="nv-sum">≈ $${Math.round(tot)} each for the whole night</div>`:""}
-    <div class="nv-main">${preview?"":`<a class="nv-in" href="${esc(sms)}">🙌 I'm in${p.h?" (text "+esc(p.h)+")":""}</a>`}${p.d?'<button type="button" data-ics="1">📅 Add to calendar</button>':""}<button type="button" data-vshare="1">↗ Share</button>${preview?'<button type="button" data-vedit="1">✏️ Keep editing</button>':'<button type="button" data-vcopy="1">✏️ Make my own copy</button>'}</div>
-    <p class="nv-priv">This plan lives only in this link. The Shack doesn't store it and nobody signs in.${pays?" Pay buttons open Venmo or Cash App: check the name there before you send money.":""}</p>
+    <div class="nv-main">${auto?'<button type="button" class="nv-in" data-vmine="1">✏️ Make it mine</button><button type="button" data-vspin="1">🌍 Spin again</button><button type="button" data-vshare="1">↗ Share</button>':`${preview?"":`<a class="nv-in" href="${esc(sms)}">🙌 I'm in${p.h?" (text "+esc(p.h)+")":""}</a>`}${p.d?'<button type="button" data-ics="1">📅 Add to calendar</button>':""}<button type="button" data-vshare="1">↗ Share</button>${preview?'<button type="button" data-vedit="1">✏️ Keep editing</button>':'<button type="button" data-vcopy="1">✏️ Make my own copy</button>'}`}</div>
+    <p class="nv-priv">${auto?"Picked at random from real listings near the show. Food and afters times are suggestions, and hours aren't always listed, so check before you go.":`This plan lives only in this link. The Shack doesn't store it and nobody signs in.${pays?" Pay buttons open Venmo or Cash App: check the name there before you send money.":""}`}</p>
     ${preview?"":'<button type="button" class="nv-shack" data-vclose="1">🌴 Open the Show Shack</button>'}</div>`;
   document.body.appendChild(el);document.documentElement.classList.add("nview-on");
   el.addEventListener("click",async ev=>{if(ev.target===el){close();return;}const b=ev.target.closest("button");if(!b)return;
     if(b.classList.contains("nv-x")||b.dataset.vclose||b.dataset.vedit){close();if(b.dataset.vedit)openPlan();return;}
     if(b.dataset.vshare){shareNight(p,b);return;}
+    if(b.dataset.vspin){surpriseNight();return;}
+    if(b.dataset.vmine){if(plan.s.length&&!b.classList.contains("sure")){b.classList.add("sure");b.textContent="Replaces your draft. Tap again";return;}
+      plan=cleanPlan({...p,up:Date.now()});save();close();drawBuilder();openPlan();toast("It's in your Plan tab. Tweak it, then send");return;}
     if(b.dataset.ics){const blob=new Blob([ics(p)],{type:"text/calendar"}),a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=(p.t||"night").replace(/[^\w-]+/g,"-").slice(0,40)+".ics";document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove();},1500);return;}
     if(b.dataset.vcopy){if(plan.s.length&&!b.classList.contains("sure")){b.classList.add("sure");b.textContent="Replaces your draft. Tap again";return;}
       plan=cleanPlan({...p,up:Date.now()});save();close();drawBuilder();openPlan();toast("Copied into your Plan tab");}});
@@ -224,7 +227,27 @@ async function fromHash(h){const m=/^#n=([01][A-Za-z0-9_-]+)$/.exec(h||"");if(!m
   catch(e){toast("That Night Card link looks broken. Ask for it again.");}}
 addEventListener("hashchange",ev=>fromHash(new URL(ev.newURL).hash));
 
-window.NIGHT={chip,map,sheet,encode,decode,cleanPlan,addStop,view,get plan(){return plan;}};
+/* ---------- the globe: plans a whole night at random (food → show → afters) ---------- */
+const plusMin=(t,m)=>{let [h,x]=t.split(":").map(Number);let v=((h*60+x+m)%1440+1440)%1440;return String(v/60|0).padStart(2,"0")+":"+String(v%60).padStart(2,"0");};
+const addDays=(iso,n)=>{const [y,m,d]=iso.split("-").map(Number),x=new Date(y,m-1,d+n);return x.getFullYear()+"-"+String(x.getMonth()+1).padStart(2,"0")+"-"+String(x.getDate()).padStart(2,"0");};
+let spun=[];
+function surpriseNight(){const now=todayISO(),hasO=typeof origin!=="undefined"&&origin&&typeof origin.lat==="number";
+  let pool=allEv().filter(e=>typeof e.lat==="number"&&e.start&&(e.end||e.start)>=now&&e.start<=addDays(now,14)&&!["openmic","contact"].includes(e.kind)&&!(typeof priceInfo==="function"&&priceInfo(e).sold)&&!spun.includes(hid(e)));
+  if(hasO){const near=pool.filter(e=>{const d=driveEstimate(e.lat,e.lon);return d&&d.mins<=50;});if(near.length>=5)pool=near;}
+  if(!pool.length){spun=[];toast("No shows to spin right now");return;}
+  const e=pool[Math.floor(Math.random()*pool.length)];spun=[hid(e),...spun].slice(0,8);
+  const show=showStop(e,true),st=show.tm||"20:00";show.tm=st;
+  const near=nearAfters(e.lat,e.lon,60,12),rnd=a=>a[Math.floor(Math.random()*a.length)];
+  const food=near.filter(x=>x.p.c==="kbbq"&&x.mi<=6).slice(0,3);
+  const eat=food.length?{...afterStop(rnd(food).p),k:"eat",no:"Korean BBQ before the show"}:{k:"eat",n:"Dinner near the venue",u:"https://www.google.com/maps/search/?api=1&query="+encodeURIComponent("restaurants near "+show.p)};
+  eat.tm=plusMin(st,-90);
+  const late=new Set(["karaoke","arcade","bowl","spa","jazz","roof","pool"]),opts=near.filter(x=>late.has(x.p.c)).slice(0,6);
+  const after=opts.length?afterStop(rnd(opts).p):{k:"after",n:"Late eats",u:"https://www.google.com/maps/search/?api=1&query="+encodeURIComponent("late night food near "+show.p)};
+  after.tm=plusMin(st,150);
+  const d=e.start<now?now:e.start,short=String(e.title).split(/[:(–—-]/)[0].trim().slice(0,40);
+  view(cleanPlan({t:short+" night",d,up:Date.now(),s:[eat,show,after]}),"auto");}
+
+window.NIGHT={surpriseNight,chip,map,sheet,encode,decode,cleanPlan,addStop,view,get plan(){return plan;}};
 const go=()=>{mount();inject(document.body);fromHash(window.NIGHT_HASH||location.hash);};
 if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",go);else go();
 })();

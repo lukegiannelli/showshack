@@ -293,6 +293,13 @@ h1 .logo{height:1.05em;width:1.05em;border-radius:22%;vertical-align:-0.12em;mar
 .dball.lv2{box-shadow:0 0 44px rgba(255,220,120,.9),0 0 90px rgba(255,110,200,.45);animation:dshake .22s infinite}
 .dball.burst{box-shadow:none;transition:box-shadow .12s}
 .dball.fresh{animation:dfresh .6s ease-out}
+.dball.globe{box-shadow:0 0 26px rgba(90,200,255,.45),0 0 60px rgba(120,110,255,.25)}
+.dball.globe.lv1{box-shadow:0 0 34px rgba(110,220,255,.7),0 0 70px rgba(255,110,200,.3)}
+.dball.globe.lv2{box-shadow:0 0 44px rgba(140,240,255,.9),0 0 90px rgba(255,110,200,.45)}
+.dball.flyup{animation:dflyup .32s cubic-bezier(.5,0,.9,.5) forwards}
+.dball.dropin{animation:ddrop .56s cubic-bezier(.2,1.5,.4,1)}
+@keyframes dflyup{to{transform:translateY(-190px) scale(.5) rotate(-24deg);opacity:0}}
+@keyframes ddrop{from{transform:translateY(-110px) scale(.55);opacity:0}to{transform:none;opacity:1}}
 @keyframes dshake{0%,100%{transform:translateX(0)}25%{transform:translateX(-2px) rotate(-1deg)}75%{transform:translateX(2px) rotate(1deg)}}
 @keyframes dburst{0%{transform:scale(1);filter:brightness(1)}60%{transform:scale(1.12);filter:brightness(2.2)}100%{transform:scale(1.3);opacity:0;filter:brightness(4)}}
 @keyframes dfresh{from{transform:scale(.4);opacity:0}to{transform:scale(1);opacity:1}}
@@ -304,7 +311,7 @@ h1 .logo{height:1.05em;width:1.05em;border-radius:22%;vertical-align:-0.12em;mar
 @keyframes dfly{0%{transform:translate(0,0) scale(.3) rotate(0);opacity:1}100%{transform:translate(var(--dx),var(--dy)) scale(1.2) rotate(180deg);opacity:0}}
 .card.emerge,.list>.card.emerge{animation:emerge .8s cubic-bezier(.2,.8,.2,1)}
 @keyframes emerge{0%{transform:translateY(70px) scale(.5);opacity:0;box-shadow:0 0 0 rgba(255,220,120,0)}60%{box-shadow:0 0 40px rgba(255,220,120,.8)}100%{transform:none;opacity:1;box-shadow:none}}
-@media (prefers-reduced-motion:reduce){.dball.lv2,.dball.burst,.dball.fresh,.card.emerge,.dsp,.dflash.go{animation:none}}
+@media (prefers-reduced-motion:reduce){.dball.flyup,.dball.dropin,.dball.lv2,.dball.burst,.dball.fresh,.card.emerge,.dsp,.dflash.go{animation:none}}
 /* venues */
 .vlink{all:unset;cursor:pointer;color:inherit;text-decoration:underline;text-decoration-color:var(--bamboo);text-underline-offset:3px}
 .venues{display:flex;flex-direction:column;gap:8px}
@@ -594,3 +601,6 @@ body.neb.nebok .vcard .vf .vpin{opacity:.7}
 .neon8 .n8t{font:800 6.6px/1 system-ui,sans-serif;fill:#e9fbff}
 .poolchip[aria-pressed="true"] .neon8{filter:drop-shadow(0 0 3px #ff4fd8) drop-shadow(0 0 8px #b04bff) drop-shadow(0 0 2px #7fe8ff)}
 .bmore{display:none}
+
+/* never let the page itself slide sideways (carousels inside still scroll) */
+html,body{overflow-x:clip;overscroll-behavior-x:none}
