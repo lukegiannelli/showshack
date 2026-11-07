@@ -141,17 +141,20 @@ function backHtml(){const p=plan,S=p.s,st=typeof state!=="undefined"?state:{};
   const ppl=Math.max(1,+(st.carLink||st.car||1)),mpg=st.mpg||25,gal=st.gas||5.85;
   const hasO=typeof origin!=="undefined"&&origin&&typeof origin.lat==="number";
   // money per person
-  const rows=[];let tot=0,approx=false;
+  const rows=[];let tot=0,approx=false,guessed=false;const bucket={show:0,eat:0,after:0,other:0};
   S.forEach(s=>{const T=TYPES[s.k];let pr;
-    if(s.k==="show")pr=showPrice(s);else if(s.c!=null&&s.c!=="")pr={v:+s.c,txt:+s.c?`$${s.c}`:"Free"};else return;
-    tot+=pr.v;if(pr.est||pr.warn)approx=true;rows.push(`<li><span>${T[0]} ${esc(s.n||T[1])}</span><b class="${pr.warn?"w":""}">${esc(pr.txt)}</b></li>`);});
+    if(s.k==="show")pr=showPrice(s);else if(s.c!=null&&s.c!=="")pr={v:+s.c,txt:+s.c?`$${s.c}`:"Free"};else pr=guessCost(s,st);
+    if(!pr)return;
+    tot+=pr.v;if(pr.est||pr.warn||pr.g)approx=true;if(pr.g)guessed=true;
+    bucket[bucket[s.k]!=null?s.k:"other"]+=pr.v;
+    rows.push(`<li><span>${T[0]} ${esc(s.n||T[1])}</span><b class="${pr.warn?"w":pr.g?"g":""}">${esc(pr.txt)}</b></li>`);});
   // driving: start → stops with a location → back to start
   const pts=S.filter(s=>typeof s.la==="number");const route=[];if(hasO)route.push({n:"Start",la:origin.lat,lo:origin.lon});pts.forEach(s=>route.push({n:s.n||TYPES[s.k][1],la:s.la,lo:s.lo,s}));if(hasO&&pts.length)route.push({n:"Home",la:origin.lat,lo:origin.lon});
   let mi=0;const legs=[];for(let i=1;i<route.length;i++){const a=route[i-1],b=route[i],m=road(a.la,a.lo,b.la,b.lo);mi+=m;
     let tight="";if(a.s&&b.s&&a.s.tm&&b.s.tm){const gap=tmin(b.s.tm)-tmin(a.s.tm),need=legMin(m);if(gap>0&&gap<need+30)tight=` <em>⚠️ only ${gap} min between</em>`;}
     legs.push(`<li><span>${esc(a.n)} → ${esc(b.n)}</span><b>${m<0.5?"walk":"~"+legMin(m)+" min"}</b>${tight}</li>`);}
   const gas=mi/mpg*gal,gasEach=gas/ppl;
-  if(mi>=1){rows.push(`<li><span>⛽ Gas · ${Math.round(mi)} mi${ppl>1?` ÷ ${ppl}`:""}</span><b>$${gasEach.toFixed(2)}</b></li>`);tot+=gasEach;}
+  if(mi>=1){rows.push(`<li><span>⛽ Gas · ${Math.round(mi)} mi ${hasO?"round trip":"between stops"}${ppl>1?` ÷ ${ppl}`:""}</span><b>$${gasEach.toFixed(2)}</b></li>`);tot+=gasEach;}
   // pay-backs
   const pays=S.filter(s=>s.vh||s.ch||s.amt).map(s=>`<li><span>${esc(s.dr||(s.vh?"@"+s.vh:s.ch?"$"+s.ch:"the host"))}${s.n?` · ${esc(s.n)}`:""}</span><b>${s.amt?"$"+s.amt:"—"}${s.vh?" Venmo":s.ch?" Cash App":""}</b></li>`);
   // timing
@@ -159,6 +162,7 @@ function backHtml(){const p=plan,S=p.s,st=typeof state!=="undefined"?state:{};
   const late=tms.some(t=>tmin(t)>=22*60);const drives=S.some(s=>s.w==="drive"),drinks=S.some(s=>/bar|karaoke|rooftop|barcade|jazz|lounge/i.test((s.n||"")+(s.no||"")))||S.some(s=>["after"].includes(s.k));
   const notes=[];
   if(!hasO)notes.push("Set a start point below to add driving there and home.");
+  if(guessed)notes.push("Prices marked \"guess\" are rough typical spends, not real prices. Tap a stop and fill in \"Cost each\" for the real number.");
   if(late&&(drives||drinks))notes.push("Late night: lock in a sober driver or a rideshare home before you go.");
   if(S.some(s=>s.k==="show"&&showPrice(s).warn))notes.push("A show price isn't listed. Check the ticket page.");
   if(S.some(s=>s.k==="after"&&!(s.no||"").startsWith("Hours")))notes.push("Afters hours aren't always listed. Check before you head over.");
@@ -169,7 +173,13 @@ function backHtml(){const p=plan,S=p.s,st=typeof state!=="undefined"?state:{};
     ${legs.length?`<h3 class="bn-sub">Getting around</h3><ul class="bn-list">${legs.join("")}</ul><p class="bn-hint">Straight-line estimates at ${mpg} mpg and $${(+gal).toFixed(2)}/gal, not live traffic.</p>`:""}
     ${pays.length?`<h3 class="bn-sub">Pay back</h3><ul class="bn-list">${pays.join("")}</ul>`:""}
     ${notes.length?`<h3 class="bn-sub">Heads up</h3><ul class="bn-notes">${notes.map(x=>`<li>${esc(x)}</li>`).join("")}</ul>`:""}
+    ${tot?`<h3 class="bn-sub">Total per person</h3><ul class="bn-list bn-tot">${[["🎟️ Tickets",bucket.show],["🍜 Food",bucket.eat],["🌙 Afters",bucket.after],["✨ Other",bucket.other],["⛽ Gas",mi>=1?gasEach:0]].filter(x=>x[1]>0).map(([l,v])=>`<li><span>${l}</span><b>$${v%1?v.toFixed(2):v}</b></li>`).join("")}<li class="sum"><span>Total</span><b>${approx?"≈ ":""}$${tot.toFixed(2)}</b></li></ul>`:""}
     <div class="bn-go"><button type="button" class="bn-send" data-send="1">Send the link</button><button type="button" data-flip="1">↻ Back to the plan</button></div>`;}
+// no cost entered: a rough typical spend, clearly marked as a guess
+const GUESS={kbbq:40,karaoke:15,arcade:20,bowl:20,spa:35,jazz:25,roof:25,pool:15,stars:0,beach:0};
+function guessCost(s,st){if(s.k==="eat"){const bbq=/bbq|korean/i.test((s.n||"")+(s.no||""));const v=bbq?40:(st.food||30);return {v,txt:`≈$${v} guess`,g:1};}
+  if(s.k==="after"){const a=allAfters().find(x=>x.n===s.n);const v=a&&GUESS[a.c]!=null?GUESS[a.c]:20;return v?{v,txt:`≈$${v} guess`,g:1}:{v:0,txt:"Free"};}
+  return null;}
 const near0=()=>{const s=plan.s.find(x=>x.k==="show"&&x.p);return s?s.p:"";};
 function anchor(){const s=[...plan.s].reverse().find(x=>typeof x.la==="number");if(s)return [s.la,s.lo];if(typeof origin!=="undefined"&&origin&&typeof origin.lat==="number")return [origin.lat,origin.lon];return null;}
 function picker(){if(pickK==="show"){
