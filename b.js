@@ -69,7 +69,8 @@ function backSide(e){const pi=priceInfo(e),d=parseDay(e.start);
     ${lq?`<div class="bfb-lm" hidden>${LISTEN(lq)}</div>`:""}
     <div class="bfb-foot"><button type="button" class="bfb-full" data-full="${esc(hid(e))}">Full card</button><span class="bfb-hint">Tap to flip back ↻</span></div>`;}
 function flipCardHtml(e,tag){const front=cardHtml(e).replace(/^\s*<article id="[^"]*"/,'<article').replace(/class="card( flipped)?"/,'class="card"');
-  return `<div class="bfc" data-k="${esc(skey(e))}"><div class="bfc-in"><div class="bfc-f">${tag?`<span class="bfc-tag">${tag}</span>`:""}${front}</div><div class="bfc-b" aria-hidden="true">${backSide(e)}</div></div></div>`;}
+  const free=priceInfo(e).free;
+  return `<div class="bfc" data-k="${esc(skey(e))}"><div class="bfc-in"><div class="bfc-f">${tag?`<span class="bfc-tag">${tag}</span>`:""}${free?`<span class="bfc-free">FREE</span>`:""}${front}</div><div class="bfc-b" aria-hidden="true">${backSide(e)}</div></div></div>`;}
 function flipRowClick(ev){const fc=ev.target.closest(".bfc");if(!fc)return;
   const st=ev.target.closest("button[data-star]");if(st){starBtn(st);return;}
   const sh=ev.target.closest("button[data-share]");if(sh){shareBtn(sh);return;}
@@ -191,7 +192,7 @@ function after(){
     $("bTitle").textContent=screen==="saved"?"Saved":state.venue&&state.venue!=="all"?state.venue.split(" · ")[0]:v?v.name:cur==="surprise"?"Surprise pick":state.q?"Search":"All shows";
     const n=(state._shown||[]).length;$("bCount").textContent=n+(n===1?" event":" events")+(screen==="saved"?"":" · "+WHEN_WORD[state.when]);
     const subs=$("bSubs");let items=null,key="sub";
-    if(cur==="music"){items=[["","All"],["k:festival","Festival"],["k:dj","DJ / rave"],...GENRES.filter(([g])=>g!=="all")];key="music";} else if(SUBS[cur])items=SUBS[cur];
+    if(cur==="music"){if(state.genre==="electronic"){state.genre="all";state.sub="dj";}items=[["","All"],["k:festival","Festival"],["k:dj","DJ / rave"],...GENRES.filter(([g])=>g!=="all"&&g!=="electronic")];key="music";} else if(SUBS[cur])items=SUBS[cur];
     if(screen==="saved")items=null;
     subs.hidden=!items;
     if(items){const val=key==="music"?(state.sub?"k:"+state.sub:state.genre==="all"?"":state.genre):(state.sub||"");
@@ -264,7 +265,7 @@ function drawMap(){const L=window.L;
   // reach summary under the map
   const tot=groups.reduce((s,g)=>s+g.evs.length,0);
   if(carGo){}else if(hasO){const cnt=m=>groups.filter(g=>g.d&&g.d.mins<=m).reduce((s,g)=>s+g.evs.length,0);
-    $("bMapReach").innerHTML=`<b>${tot} ${tot===1?"show":"shows"} ${WHEN_WORD[state.when]}<button type="button" class="breach-btn${carOn?" on":""}" aria-label="The Fiscar (tap it)"><img class="breach-car" src="car.svg?v=2" alt=""></button></b>`+RINGS.map(([m,c])=>`<span style="--rc:${c}"><i></i>${cnt(m)} within ${m} min</span>`).join("")+`<small>The dot is your start point. Rings are straight-line drive estimates, not live traffic. Tap a dot to plan the night around it.</small>`;}
+    $("bMapReach").innerHTML=`<b>${tot} ${tot===1?"show":"shows"} ${WHEN_WORD[state.when]}<button type="button" class="breach-btn${carOn?" on":""}" aria-label="The Fiscar (tap it)"><img class="breach-car" src="car.svg?v=2" alt=""></button></b>`+RINGS.map(([m,c])=>`<span style="--rc:${c}"><i></i>${cnt(m)} within ${m} min</span>`).join("")+(()=>{const r=dayRange("tonight");if(!r)return "";const n=(state._up||[]).filter(e=>typeof e.lat==="number"&&e.start<=r[1]&&(e.end||e.start)>=r[0]).filter(e=>{const d=driveEstimate(e.lat,e.lon);return d&&d.mins<=15;}).length;return `<span class="btonite">🌙 ${n} tonight within 15 min</span>`;})()+`<small>The dot is your start point. Rings are straight-line drive estimates, not live traffic. Tap a dot to plan the night around it.</small>`;}
   else if(!carGo)$("bMapReach").innerHTML=`<b>${tot} ${tot===1?"show":"shows"} ${WHEN_WORD[state.when]}<button type="button" class="breach-btn${carOn?" on":""}" aria-label="The Fiscar (tap it)"><img class="breach-car" src="car.svg?v=2" alt=""></button></b><small>Tap a dot to see what's playing there and what's nearby. Set a start point to see what's in reach.</small>`;}
 function sheetOpen(html){const sh=$("bMapSheet");sh.innerHTML=`<button type="button" class="bms-x" aria-label="Close">✕</button>`+html;sh.hidden=false;sh.scrollTop=0;sh.querySelector(".bms-x").onclick=closeSheet;}
 function closeSheet(){$("bMapSheet").hidden=true;}

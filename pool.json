@@ -740,6 +740,39 @@
 "lat": 33.8739,
 "lon": -118.12508,
 "geo": "place"
+},
+{
+"n": "Stix Billiards Sports & Grill",
+"c": "hall",
+"city": "Rancho Cucamonga",
+"zip": "91730",
+"t": [
+"~20 Gold Crown tables",
+"Snooker",
+"Kitchen"
+],
+"a": "7985 Vineyard Ave"
+},
+{
+"n": "The Red Fox",
+"c": "bar",
+"city": "San Bernardino",
+"zip": "92405",
+"t": [
+"21+",
+"Darts"
+],
+"a": "3142 N E St"
+},
+{
+"n": "The Silver Fox",
+"c": "bar",
+"city": "San Diego",
+"zip": "92109",
+"t": [
+"Pacific Beach dive"
+],
+"a": "1833 Garnet Ave"
 }
 ]
 }
