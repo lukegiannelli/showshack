@@ -519,11 +519,6 @@ body.fx #bgfx{display:block}
 
 /* venues: Chowder-style windows into a pinned, drifting nebula (nebula.js) */
 #nebfx{position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:-1;pointer-events:none;display:none}
-body.neb.nebok #nebfx{display:block}
-body.neb.nebok .vcard .vf{background:linear-gradient(180deg,rgba(8,6,22,.18),rgba(8,6,22,.5));border-color:rgba(205,180,255,.5);color:#F5F0FF;box-shadow:0 0 14px rgba(150,100,255,.18)}
-body.neb.nebok .vcard .vf .vopen b{text-shadow:0 1px 3px rgba(0,0,0,.85),0 0 10px rgba(0,0,0,.4)}
-body.neb.nebok .vcard .vf .vopen span,body.neb.nebok .vcard .vf .vopen small{color:#DCD2F2;text-shadow:0 1px 2px rgba(0,0,0,.9)}
-body.neb.nebok .vcard .vf .vpin{opacity:.7}
 
 /* max drive: a neon sports sedan rides the slider */
 .range input#maxDrive{-webkit-appearance:none;appearance:none;height:30px;background:transparent;cursor:pointer;accent-color:auto;--p:100%}
@@ -604,3 +599,10 @@ body.neb.nebok .vcard .vf .vpin{opacity:.7}
 
 /* never let the page itself slide sideways (carousels inside still scroll) */
 html,body{overflow-x:clip;overscroll-behavior-x:none}
+
+/* venues sky: CSS slices of one continuous galaxy (see nebula.js) */
+body.neb .vcard .vf{background:linear-gradient(180deg,rgba(8,6,22,.18),rgba(8,6,22,.5)),url(nebula.jpg?v=1) var(--nx,0) var(--ny,0)/720px 720px repeat #120c2a;border-color:rgba(205,180,255,.5);color:#F5F0FF;box-shadow:0 0 14px rgba(150,100,255,.18)}
+body.neb .vcard .vf .vopen b{text-shadow:0 1px 3px rgba(0,0,0,.85),0 0 10px rgba(0,0,0,.4)}
+body.neb .vcard .vf .vopen span,body.neb .vcard .vf .vopen small{color:#DCD2F2;text-shadow:0 1px 2px rgba(0,0,0,.9)}
+body.neb .vcard .vf .vpin{opacity:.7}
+body.neb .vcard .vf .bvibe{color:#EDE6FF;opacity:1;text-shadow:0 1px 3px rgba(0,0,0,.9)}

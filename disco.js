@@ -177,8 +177,8 @@
     const e=echoOut();bell(1046.5,t+.18,1.3,.12,e);bell(830.6,t+.42,1.3,.11,e);bell(1396.9,t+.66,2,.13,e);}   // C6, Ab5, F6: "your night is boarding"
   // flick the ball up: it flies off and the other one drops in
   const hintEl=document.querySelector(".bdisco-h p");
-  const HINT={disco:"Swipe the disco ball sideways three times for a random show. Flick it up for the globe.",
-    globe:"Swipe the globe three times and it plans a whole night: food, a show and afters. Flick it up to go back."};
+  const HINT={disco:"Swipe the disco ball sideways four times for a random show. Flick it up to swap in the globe.",
+    globe:"Swipe the globe sideways four times and it plans a whole night: food, a show and afters. Flick it up to bring back the disco ball."};
   if(hintEl)hintEl.textContent=HINT.disco;
   ball.style.touchAction="none";
   function flip(){if(busy)return;busy=true;audio();
@@ -186,7 +186,7 @@
       gn.gain.setValueAtTime(.0001,t);gn.gain.exponentialRampToValueAtTime(.08,t+.05);gn.gain.exponentialRampToValueAtTime(.0001,t+.32);o.connect(gn);gn.connect(ac.destination);o.start(t);o.stop(t+.35);}
     buzz(15);ball.classList.remove("lv1","lv2","dropin");ball.classList.add("flyup");
     setTimeout(()=>{mode=mode==="globe"?"disco":"globe";setLv(0);th=mode==="globe"?HOME_TH:-.05;spin=BASE[0];dir=1;
-      ball.classList.toggle("globe",mode==="globe");ball.setAttribute("aria-label",mode==="globe"?"Plan a night: swipe the globe sideways three times":"Surprise me: swipe the disco ball sideways three times");
+      ball.classList.toggle("globe",mode==="globe");ball.setAttribute("aria-label",mode==="globe"?"Plan a night: swipe the globe sideways four times":"Surprise me: swipe the disco ball sideways four times");
       if(hintEl)hintEl.textContent=HINT[mode];ball.classList.remove("flyup");void ball.offsetWidth;ball.classList.add("dropin");draw();
       if(ac){mode==="globe"?ping(1):tick(1);}
       setTimeout(()=>{ball.classList.remove("dropin");busy=false;},560);},320);}
@@ -203,9 +203,9 @@
   box.addEventListener("pointerdown",e=>{if(busy)return;audio();x0=e.clientX;xs=x0;ys=e.clientY;onBall=!!e.target.closest(".dball");moved=0;fired=false;trk=[[e.clientX,performance.now()]];mark(e);try{box.setPointerCapture(e.pointerId);}catch(_){}});
   box.addEventListener("pointermove",e=>{if(x0==null)return;const dx=e.clientX-x0;moved=Math.max(moved,Math.abs(e.clientX-xs));
     th+=dx*.0128;x0=e.clientX;if(dx)dir=dx>0?1:-1;mark(e);const n=performance.now();trk.push([e.clientX,n]);while(trk.length>2&&n-trk[0][1]>90)trk.shift();spin=0;if(still)draw();
-    if(!fired&&moved>=24){fired=true;const v=vel();if(Math.abs(v)>.05)dir=v>0?1:-1;swipe(dir,.12);spin=0;}});   // sound + crack right as the swipe registers
+    if(!fired&&moved>=24&&Math.abs(e.clientX-xs)>Math.abs(e.clientY-ys)){fired=true;const v=vel();if(Math.abs(v)>.05)dir=v>0?1:-1;swipe(dir,.12);spin=0;}});   // sound + crack right as the swipe registers
   const end=e=>{if(x0==null)return;x0=null;audio();
-    const fdx=e.clientX-xs,fdy=e.clientY-ys;if(onBall&&!fired&&fdy<-40&&Math.abs(fdy)>Math.abs(fdx)*1.3){flip();return;}
+    const fdx=e.clientX-xs,fdy=e.clientY-ys;if(onBall&&!fired&&fdy<-35&&Math.abs(fdy)>Math.abs(fdx)){flip();return;}
     if(moved>=24){const v=vel();if(Math.abs(v)>.05)dir=v>0?1:-1;const sp=Math.min(.6,Math.max(.05,Math.abs(v)*.214));
       if(fired){spin=sp;idle=performance.now();}else swipe(dir,sp);}};   // already sounded mid-swipe: just hand over the finger's speed   // .0128 rad per px * 16.7 ms = .214 rad per frame per px/ms
   box.addEventListener("touchend",()=>{audio();},{passive:true});   // iPhone only allows sound to start on a finger-up inside the disco area

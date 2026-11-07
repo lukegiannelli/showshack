@@ -63,7 +63,7 @@ void main(){
     if(Math.abs(want-cTop)>vh*0.45){cTop=Math.round(want);cv.style.top=cTop+"px";sig="";}}
   function collect(){
     let n=0,s="";const sy=scrollY;
-    const tiles=!document.body.classList.contains("neb");
+    const tiles=true;
     for(const el of document.querySelectorAll(tiles?"#bTiles .btile":"#list .vcard .vf")){
       if(n>=MAX)break;
       const r=el.getBoundingClientRect(),top=r.top+sy-cTop;
@@ -86,7 +86,7 @@ void main(){
     if(!still&&dt>=33&&now-lastScroll>180){last=now;tt+=Math.min(dt,100)/1000*0.35;draw(true);}   // ~30 fps drift
     else draw(false);                                                         // every frame: keep the windows under the cards while scrolling
   }
-  const on=()=>(document.body.classList.contains("neb")||document.body.classList.contains("nebtiles"))&&!document.hidden;
+  const on=()=>document.body.classList.contains("nebtiles")&&!document.hidden;   // venues use the CSS sky below, not WebGL
   function sync(){
     if(!ready)return;
     if(on()){size();if(!raf){last=0;sig="";raf=requestAnimationFrame(frame);}}
@@ -104,4 +104,18 @@ void main(){
     gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.LINEAR_MIPMAP_LINEAR);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MAG_FILTER,gl.LINEAR);
     ready=true;document.body.classList.add("nebok");sync();};
   img.src="nebula.jpg?v=1";
+})();
+/* Venues: each card shows its own slice of one big page-wide sky (plain CSS background), so it is
+   glued to the card and the browser scrolls it for free. No redraws while scrolling = no stutter. */
+(function(){
+  const list=document.getElementById("list");if(!list)return;
+  let q=0;
+  function place(){q=0;if(!document.body.classList.contains("neb"))return;const sy=scrollY;
+    for(const el of list.querySelectorAll(".vcard .vf")){const r=el.getBoundingClientRect();if(!r.width)continue;
+      const x=Math.round(-r.left)+"px",y=Math.round(-((r.top+sy)%720))+"px";
+      if(el.style.getPropertyValue("--ny")!==y){el.style.setProperty("--nx",x);el.style.setProperty("--ny",y);}}}
+  const later=()=>{if(!q){q=1;requestAnimationFrame(place);}};
+  new MutationObserver(later).observe(list,{childList:true,subtree:true});
+  new MutationObserver(later).observe(document.body,{attributes:true,attributeFilter:["class"]});
+  addEventListener("resize",later);
 })();
