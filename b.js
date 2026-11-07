@@ -233,7 +233,7 @@ function mapGroups(){const g={};(state._up||[]).forEach(e=>{if(typeof e.lat!=="n
     const top=Object.entries(cnt).sort((a,b)=>b[1]-a[1])[0];x.v=VIBES.find(v=>top&&v.k===top[0])||VIBES[0];x.d=driveEstimate(x.lat,x.lon);return x;});}
 function drawMapUI(){
   $("bMapChips").innerHTML=`<button type="button" class="chip" data-mv="all" aria-pressed="${MAPV.vibe==="all"}">All</button>`+VIBES.map(v=>`<button type="button" class="chip bmc" data-mv="${v.k}" style="--vc:${v.c}" aria-pressed="${MAPV.vibe===v.k}"><i></i>${v.name.split(" & ")[0]}</button>`).join("")
-    +`<button type="button" class="chip poolchip" data-mpool="1" aria-pressed="${!!state.poolOn}">${NEON8} Pool</button>`;
+    +`<button type="button" class="chip poolchip" data-mpool="1" aria-pressed="${!!state.poolOn}">${NEON8} Pool</button>`+(window.NIGHT?NIGHT.chip():"");
   $("bMapStart").hidden=!!origin;
   loadLeaflet().then(drawMap).catch(()=>{$("bMapCanvas").innerHTML='<p class="bmap-err">The map couldn\'t load. Check your connection and tap Map again.</p>';});}
 function drawMap(){const L=window.L;
@@ -257,6 +257,7 @@ function drawMap(){const L=window.L;
     mk.on("click",ev=>{L.DomEvent.stopPropagation(ev);openSheet(g);});mk.addTo(LMG.pins);});
   if(state.poolOn&&POOL.length)POOL.forEach(p=>{const mk=L.marker([p.lat,p.lon],{title:p.n,icon:L.divIcon({className:"bpool-w",html:NEON8,iconSize:[22,22],iconAnchor:[11,11]})});
     mk.on("click",ev=>{L.DomEvent.stopPropagation(ev);openPool(p);});mk.addTo(LMG.pool);});
+  if(window.NIGHT)NIGHT.map(L,LM,sheetOpen);
   if(focusK){const g=groups.find(x=>x.k===focusK);focusK=null;if(g){fitSig=state.when+MAPV.vibe+(hasO?origin.lat:"");LM.setView([g.lat,g.lon],14);setTimeout(()=>openSheet(g),60);}}
   const sig=state.when+MAPV.vibe+(hasO?origin.lat:"");
   if(sig!==fitSig){fitSig=sig;
@@ -287,7 +288,8 @@ function openSheet(g){const e0=g.evs[0],name=g.k.split(" · ")[0],city=g.k.split
     <div class="bms-night">${near("restaurants","Eat before","🍜")}${near("bars","Drinks after","🍸")}${near("parking","Parking","🅿️")}<a href="${dir}" target="_blank" rel="noopener">🧭 Directions</a></div>
     ${pools.length?`<div class="bms-pool">${pools.map(({p,mi})=>`<a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(p.n+", "+p.a+", "+p.city+", CA")}" target="_blank" rel="noopener">${NEON8}<span><b>${esc(p.n)}</b><small>${mi<1?"under a mile":mi.toFixed(1)+" mi"} away · ${p.c==="hall"?"pool hall":"bar with pool"}</small></span></a>`).join("")}</div>`:""}`);
   const fb=$("bMapSheet").querySelector("[data-mfol]");if(fb)fb.onclick=()=>{const k=fb.dataset.mfol,on=!isPinned(k);if(on)markSeen(k);togglePin(k);fb.classList.toggle("on",on);fb.setAttribute("aria-pressed",String(on));fb.innerHTML=ni("bell")+(on?" Following":" Follow");syncFollowDot();};
-  $("bMapSheet").querySelectorAll("[data-card]").forEach(b=>b.onclick=()=>{state.when="any";state.view="list";openResults("all");openCard(b.dataset.card);});}
+  $("bMapSheet").querySelectorAll("[data-card]").forEach(b=>b.onclick=()=>{state.when="any";state.view="list";openResults("all");openCard(b.dataset.card);});
+  if(window.NIGHT)NIGHT.sheet(g);}
 function openPool(p){const d=driveEstimate(p.lat,p.lon);
   sheetOpen(`<div class="bms-h" style="--pc:#ff6fe0"><i></i><div><b>${esc(p.n)}</b><span>${esc(p.city)} · ${p.c==="hall"?"pool hall":"bar with pool"}${d?` · ~${fmtMins(d.mins)}`:""}</span></div></div>
     ${(p.t||[]).length?`<p class="bms-more">${p.t.map(esc).join(" · ")}</p>`:""}

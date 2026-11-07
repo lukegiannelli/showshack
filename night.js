@@ -1,0 +1,230 @@
+/* ===== Night Card (beta). The whole plan lives in the link (#n=…). Nothing is sent to a server, no sign-in. =====
+   Loaded only by pages that set window.NIGHT_BETA. Uses app.js globals (state, esc, safeUrl, hid, POOL, origin, driveEstimate, fmtMins, NEON8). */
+(function(){
+if(!window.NIGHT_BETA)return;
+const $=id=>document.getElementById(id);
+const KEY="shack-night", MAXS=12;
+const TYPES={meet:["📍","Meet up","#7ee0b8"],eat:["🍜","Eat","#FFC66B"],show:["🎟️","Show","#FF6FA5"],after:["🌙","Afters","#b48cff"],house:["🏠","Someone's place","#7fd4ff"],other:["✨","Other","#e6dcff"]};
+const AC={kbbq:["🥩","Korean BBQ"],karaoke:["🎤","Karaoke"],arcade:["🕹️","Arcades & barcades"],bowl:["🎳","Bowling"],spa:["♨️","24h Korean spa"],jazz:["🎷","Jazz & listening bars"],roof:["🌃","Rooftops"],stars:["🔭","Stargazing"],beach:["🌊","Beaches"],pool:["🎱","Pool"]};
+const GO={drive:"🚗",ride:"🚕",walk:"🚶",transit:"🚇",there:"📍"};
+const GOW={drive:"Driving",ride:"Rideshare",walk:"Walk",transit:"Transit",there:"Meet there"};
+let AFTERS=[];
+fetch("afters.json?v=1").then(r=>r.ok?r.json():{}).then(j=>{AFTERS=((j||{}).places||[]).filter(p=>typeof p.lat==="number");if(mapOn)drawLayer();}).catch(()=>{});
+const allAfters=()=>[...AFTERS,...(typeof POOL!=="undefined"?POOL:[]).map(p=>({...p,c:"pool",t:[p.c==="hall"?"Pool hall":"Bar with pool",...(p.t||[])]}))];
+const icon=c=>c==="pool"&&typeof NEON8==="string"?NEON8:`<span class="nemo">${(AC[c]||TYPES.other)[0]}</span>`;
+function miles(a,b,c,d){const R=3958.8,t=x=>x*Math.PI/180,x=Math.sin(t(c-a)/2)**2+Math.cos(t(a))*Math.cos(t(c))*Math.sin(t(d-b)/2)**2;return 2*R*Math.asin(Math.sqrt(x));}
+
+/* ---------- plan model + cleaning (links come from other people, so everything is re-checked) ---------- */
+const S=(v,n)=>String(v??"").replace(/[\u0000-\u001f]/g," ").slice(0,n).trim();
+const handle=v=>S(v,30).replace(/^[@$]/,"").replace(/[^A-Za-z0-9_-]/g,"");
+const num=v=>{const x=parseFloat(v);return isFinite(x)&&x>=0&&x<100000?Math.round(x*100)/100:"";};
+const hhmm=v=>/^([01]\d|2[0-3]):[0-5]\d$/.test(v||"")?v:"";
+function cleanStop(s){s=s||{};const k=TYPES[s.k]?s.k:"other";
+  const o={k,n:S(s.n,80),p:S(s.p,90),a:k==="house"?"":S(s.a,120),tm:hhmm(s.tm),w:GO[s.w]?s.w:"",dr:S(s.dr,30),vh:handle(s.vh),ch:handle(s.ch).replace(/-/g,""),amt:num(s.amt),c:num(s.c),no:S(s.no,200),u:""};
+  if(s.u&&typeof safeUrl==="function"){const u=safeUrl(s.u);if(u)o.u=String(u).slice(0,300);}
+  if(k!=="house"&&typeof s.la==="number"&&typeof s.lo==="number"&&Math.abs(s.la)<=90&&Math.abs(s.lo)<=180){o.la=Math.round(s.la*1e5)/1e5;o.lo=Math.round(s.lo*1e5)/1e5;}
+  Object.keys(o).forEach(x=>{if(o[x]===""||o[x]==null)delete o[x];});o.k=k;return o;}
+function cleanPlan(p){p=p||{};return {v:1,t:S(p.t,70),d:/^\d{4}-\d\d-\d\d$/.test(p.d||"")?p.d:"",h:S(p.h,30),ph:S(p.ph,20).replace(/[^0-9+]/g,""),up:typeof p.up==="number"?p.up:0,s:(Array.isArray(p.s)?p.s:[]).slice(0,MAXS).map(cleanStop)};}
+function load(){try{return cleanPlan(JSON.parse(localStorage.getItem(KEY)||"null")||{});}catch(e){return cleanPlan({});}}
+let plan=load();
+function save(){try{localStorage.setItem(KEY,JSON.stringify(plan));}catch(e){}}
+
+/* ---------- link encoding: JSON → deflate → base64url ("1…"), or plain base64url ("0…") where the browser can't compress ---------- */
+const b64u=b=>{let s="";for(let i=0;i<b.length;i+=0x8000)s+=String.fromCharCode.apply(null,b.subarray(i,i+0x8000));return btoa(s).replace(/\+/g,"-").replace(/\//g,"_").replace(/=+$/,"");};
+const unb64u=s=>{s=s.replace(/-/g,"+").replace(/_/g,"/");const r=atob(s+"===".slice((s.length+3)%4));return Uint8Array.from(r,c=>c.charCodeAt(0));};
+async function encode(p){const s=JSON.stringify(cleanPlan(p));
+  if(window.CompressionStream){try{const st=new Blob([s]).stream().pipeThrough(new CompressionStream("deflate-raw"));return "1"+b64u(new Uint8Array(await new Response(st).arrayBuffer()));}catch(e){}}
+  return "0"+b64u(new TextEncoder().encode(s));}
+async function decode(code){const f=code[0],b=unb64u(code.slice(1));let s;
+  if(f==="1"){const st=new Blob([b]).stream().pipeThrough(new DecompressionStream("deflate-raw"));s=await new Response(st).text();}
+  else if(f==="0")s=new TextDecoder().decode(b);else throw new Error("bad");
+  if(s.length>20000)throw new Error("big");return cleanPlan(JSON.parse(s));}
+const base=()=>location.origin+location.pathname;
+async function linkFor(p){return base()+"#n="+await encode(p);}
+
+/* ---------- formatting ---------- */
+const fmtT=t=>{if(!t)return "";let [h,m]=t.split(":").map(Number);const ap=h>=12?"PM":"AM";h=h%12||12;return h+(m?":"+String(m).padStart(2,"0"):"")+" "+ap;};
+const fmtD=d=>{if(!d)return "";const [y,m,x]=d.split("-").map(Number);return new Date(y,m-1,x).toLocaleDateString("en-US",{weekday:"short",month:"short",day:"numeric"});};
+const fmtUp=ms=>ms?new Date(ms).toLocaleString("en-US",{weekday:"short",month:"short",day:"numeric",hour:"numeric",minute:"2-digit"}):"";
+const dirQ=s=>s.a?[s.p||s.n,s.a].filter(Boolean).join(", "):(s.p||s.n||"");
+const dirUrl=s=>`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(dirQ(s))}`;
+const venmo=s=>`https://venmo.com/u/${encodeURIComponent(s.vh)}`;
+const cash=s=>`https://cash.app/$${encodeURIComponent(s.ch)}${s.amt?"/"+s.amt:""}`;
+const each=p=>p.s.reduce((t,s)=>t+(+s.c||0),0);
+function parseTime(txt){const m=/(\d{1,2})(?::(\d\d))?\s*([ap])\.?m/i.exec(txt||"");if(!m)return "";let h=+m[1]%12;if(/p/i.test(m[3]))h+=12;return String(h).padStart(2,"0")+":"+(m[2]||"00");}
+function goLine(s){if(!s.w)return "";const w=s.w==="drive"&&s.dr?`${esc(s.dr)} is driving`:GOW[s.w];return `${GO[s.w]} ${w}`;}
+
+/* ---------- toast ---------- */
+let tt=0;function toast(msg,act,fn){let el=$("nToast");if(!el){el=document.createElement("div");el.id="nToast";el.className="ntoast";el.setAttribute("role","status");document.body.appendChild(el);}
+  el.innerHTML=`<span>${msg}</span>${act?`<button type="button">${act}</button>`:""}`;if(act)el.querySelector("button").onclick=()=>{el.classList.remove("on");fn();};
+  el.classList.add("on");clearTimeout(tt);tt=setTimeout(()=>el.classList.remove("on"),3800);}
+const openPlan=()=>{const b=document.querySelector('#bTabs [data-tab="budget"]');if(b)b.click();setTimeout(()=>{const n=$("bNight");if(n)n.scrollIntoView({behavior:"smooth",block:"start"});},120);};
+
+/* ---------- adding stops from anywhere ---------- */
+function addStop(st,quiet){if(plan.s.length>=MAXS){toast("A night tops out at "+MAXS+" stops");return false;}
+  plan.s.push(cleanStop(st));sortStops();plan.up=Date.now();save();drawBuilder();
+  if(!quiet)toast(`${TYPES[st.k][0]} Added to your night`,"Open",openPlan);return true;}
+const allEv=()=>[...((typeof state!=="undefined"&&state.events)||[]),...((typeof state!=="undefined"&&state.picks)||[]).map(p=>({...p,added:true}))];
+const evById=h=>allEv().find(e=>hid(e)===h);
+function showStop(e){const st={k:"show",n:e.title,p:[e.venue,e.city].filter(Boolean).join(", "),tm:parseTime(e.time),u:e.url,la:e.lat,lo:e.lon};
+  if(!plan.d&&e.start&&e.start>=todayISO())plan.d=e.start;return st;}
+function afterStop(p){return {k:p.c==="pool"?"after":"after",n:p.n,p:[p.a,p.city].filter(Boolean).join(", "),la:p.lat,lo:p.lon,no:p.h?("Hours: "+p.h):""};}
+const todayISO=()=>{const d=new Date();return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");};
+// capture phase so the flip cards / card toggles never see these taps
+document.addEventListener("click",ev=>{const b=ev.target.closest("[data-nadd],[data-naft]");if(!b)return;ev.stopPropagation();ev.preventDefault();
+  if(b.dataset.nadd){const e=evById(b.dataset.nadd);if(!e){toast("Couldn't find that show");return;}if(addStop(showStop(e))){b.classList.add("done");b.textContent="✓ In your night";}}
+  else{const p=allAfters()[+b.dataset.naft];if(p&&addStop(afterStop(p))){b.classList.add("done");b.textContent="✓ Added";}}},true);
+const addBtn=h=>`<button type="button" class="nadd" data-nadd="${esc(h)}">＋ My night</button>`;
+// inject "+ My night" into flip-card backs, full cards, and map-sheet rows as they appear
+function inject(root){
+  root.querySelectorAll(".bfb-foot:not([data-nx])").forEach(f=>{f.dataset.nx=1;const full=f.querySelector("[data-full]");if(full)full.insertAdjacentHTML("afterend",addBtn(full.dataset.full));});
+  root.querySelectorAll("article.card[id] .links.wide:not([data-nx])").forEach(l=>{l.dataset.nx=1;const c=l.closest("article.card");if(/^[ep]-/.test(c.id))l.insertAdjacentHTML("beforeend",addBtn(c.id));});
+  root.querySelectorAll(".bms-a:not([data-nx])").forEach(a=>{a.dataset.nx=1;const c=a.querySelector("[data-card]");if(c)a.insertAdjacentHTML("beforeend",addBtn(c.dataset.card));});}
+let iq=0;new MutationObserver(()=>{if(iq)return;iq=1;queueMicrotask(()=>{iq=0;inject(document.body);});}).observe(document.body,{childList:true,subtree:true});
+
+/* ---------- map hooks (called from b.js only when this file is loaded) ---------- */
+let mapOn=false,LG=null,mapRef=null,sheetFn=null;
+function chip(){return `<button type="button" class="chip nafchip" data-mafter="1" aria-pressed="${mapOn}">🌙 Afters</button>`;}
+function drawLayer(){if(!LG||!window.L)return;LG.clearLayers();if(!mapOn)return;const L=window.L;
+  AFTERS.forEach((p,i)=>{const mk=L.marker([p.lat,p.lon],{title:p.n,icon:L.divIcon({className:"naf-w",html:`<span class="naf">${(AC[p.c]||TYPES.other)[0]}</span>`,iconSize:[24,24],iconAnchor:[12,12]})});
+    mk.on("click",ev=>{L.DomEvent.stopPropagation(ev);openAfter(i);});mk.addTo(LG);});}
+function openAfter(i){const p=allAfters()[i];if(!p||!sheetFn)return;const d=typeof driveEstimate==="function"?driveEstimate(p.lat,p.lon):null;const q=encodeURIComponent([p.n,p.a,p.city,"CA"].filter(Boolean).join(", "));
+  sheetFn(`<div class="bms-h" style="--pc:#b48cff"><i></i><div><b>${esc(p.n)}</b><span>${esc((AC[p.c]||["",""])[1])} · ${esc(p.city)}${d?` · ~${fmtMins(d.mins)}`:""}</span></div></div>
+    ${(p.t||[]).length||p.h?`<p class="bms-more">${[...(p.t||[]),...(p.h?["Hours: "+p.h]:[])].map(esc).join(" · ")}</p>`:""}
+    <div class="bms-night"><a href="https://www.google.com/maps/dir/?api=1&destination=${q}" target="_blank" rel="noopener">🧭 Directions</a><a href="https://www.google.com/maps/search/?api=1&query=${q}" target="_blank" rel="noopener">🕘 Hours</a><button type="button" class="nadd" data-naft="${i}">＋ My night</button></div>`);}
+function nearAfters(lat,lon,n,max){const A=allAfters();return A.map((p,i)=>({p,i,mi:miles(lat,lon,p.lat,p.lon)})).filter(x=>x.mi<=max).sort((a,b)=>a.mi-b.mi).slice(0,n);}
+function sheet(g){const sh=$("bMapSheet");if(!sh||typeof g.lat!=="number")return;const near=nearAfters(g.lat,g.lon,40,10).filter(x=>x.p.c!=="pool");
+  const pick=[];const seen=new Set();near.forEach(x=>{if(pick.length<4&&!seen.has(x.p.c)){seen.add(x.p.c);pick.push(x);}});
+  if(!pick.length)return;
+  sh.insertAdjacentHTML("beforeend",`<h3 class="bms-sub">Afters nearby</h3><div class="naf-list">${pick.map(({p,i,mi})=>`<div class="naf-row">${icon(p.c)}<span><b>${esc(p.n)}</b><small>${esc(AC[p.c][1])} · ${mi<1?"under a mile":mi.toFixed(1)+" mi"}</small></span><button type="button" class="nadd" data-naft="${i}">＋</button></div>`).join("")}</div>`);
+  inject(sh);}
+function map(L,LM,sheetOpen){mapRef=LM;sheetFn=sheetOpen;if(!LG)LG=L.layerGroup().addTo(LM);drawLayer();}
+document.addEventListener("click",ev=>{const b=ev.target.closest("[data-mafter]");if(!b)return;mapOn=!mapOn;b.setAttribute("aria-pressed",String(mapOn));drawLayer();
+  if(mapOn&&mapRef&&AFTERS.length&&!(typeof origin!=="undefined"&&origin&&origin.lat))mapRef.fitBounds(window.L.latLngBounds(AFTERS.map(p=>[p.lat,p.lon])).pad(.05),{maxZoom:11});});
+
+/* ---------- builder (Plan tab) ---------- */
+let openI=-1,pickK="";
+function mount(){if($("bNight"))return;const h=document.querySelector(".bbudget-h");if(!h)return;
+  h.insertAdjacentHTML("afterend",`<section class="bnight" id="bNight" aria-label="Your night"></section>`);
+  const el=$("bNight");el.addEventListener("input",onInput);el.addEventListener("change",onInput);el.addEventListener("click",onClick);drawBuilder();}
+function stopRow(s,i){const T=TYPES[s.k],open=i===openI,f=(n,l,v,x)=>`<label class="bn-f"><span>${l}</span><input data-f="${n}" value="${esc(v??"")}" ${x||""}></label>`;
+  const head=`<button type="button" class="bn-sh" data-open="${i}" aria-expanded="${open}"><span class="bn-ic">${T[0]}</span><span class="bn-tm">${s.tm?fmtT(s.tm):"—"}</span><span class="bn-nm"><b>${esc(s.n||T[1])}</b>${s.p||s.a?`<small>${esc(s.p||s.a)}</small>`:s.k==="house"?"<small>Address stays in your group chat</small>":""}</span><span class="bn-ch">${open?"▴":"▾"}</span></button>`;
+  if(!open)return `<li class="bn-stop" style="--sc:${T[2]}">${head}</li>`;
+  return `<li class="bn-stop open" style="--sc:${T[2]}" data-i="${i}">${head}<div class="bn-ed">
+    <div class="bn-two">${f("n","What",s.n,`placeholder="${esc(T[1])}" maxlength="80"`)}${f("tm","Time",s.tm,'type="time"')}</div>
+    ${s.k==="house"?`<p class="bn-hint">🏠 No address here on purpose. Links get forwarded, so drop the address in your group chat.</p>${f("p","Whose place",s.p,'placeholder="e.g. Sam\'s place" maxlength="90"')}`
+      :`${f("p","Where",s.p,'placeholder="Place name" maxlength="90"')}${f("a","Address (optional)",s.a,'placeholder="Street, city" maxlength="120"')}`}
+    <label class="bn-f"><span>Getting there</span><select data-f="w"><option value="">—</option>${Object.keys(GO).map(k=>`<option value="${k}"${s.w===k?" selected":""}>${GO[k]} ${GOW[k]}</option>`).join("")}</select></label>
+    ${s.w==="drive"?f("dr","Who's driving",s.dr,'placeholder="Name" maxlength="30"'):""}
+    <div class="bn-two">${f("c","Cost each $",s.c,'type="number" inputmode="decimal" min="0" step="1"')}${f("amt","Pay back $",s.amt,'type="number" inputmode="decimal" min="0" step="1"')}</div>
+    <div class="bn-two">${f("vh","Venmo @",s.vh,'placeholder="handle" autocapitalize="off" maxlength="30"')}${f("ch","Cash App $",s.ch,'placeholder="cashtag" autocapitalize="off" maxlength="30"')}</div>
+    ${f("u","Tickets or link",s.u,'type="url" placeholder="https://…" autocapitalize="off"')}
+    <label class="bn-f"><span>Note</span><textarea data-f="no" maxlength="200" rows="2" placeholder="Parking, dress code, bring cash…">${esc(s.no||"")}</textarea></label>
+    ${s.k==="eat"&&near0()?`<a class="bn-find" href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent("restaurants near "+near0())}" target="_blank" rel="noopener">🔎 Food near ${esc(near0())}</a>`:""}
+    <div class="bn-row"><button type="button" data-mv="-1"${i?"":" disabled"}>↑</button><button type="button" data-mv="1"${i<plan.s.length-1?"":" disabled"}>↓</button><button type="button" class="bn-del" data-del="${i}">Remove</button><button type="button" class="bn-done" data-open="${i}">Done</button></div>
+  </div></li>`;}
+const near0=()=>{const s=plan.s.find(x=>x.k==="show"&&x.p);return s?s.p:"";};
+function anchor(){const s=[...plan.s].reverse().find(x=>typeof x.la==="number");if(s)return [s.la,s.lo];if(typeof origin!=="undefined"&&origin&&typeof origin.lat==="number")return [origin.lat,origin.lon];return null;}
+function picker(){if(pickK==="show"){
+    const now=todayISO(),sv=allEv().filter(e=>typeof state!=="undefined"&&state.stars.has(skey(e))&&(e.end||e.start)>=now).sort((a,b)=>a.start.localeCompare(b.start)).slice(0,8);
+    return `<div class="bn-pick"><p class="bn-pt">Pick a saved show, or tap <b>＋ My night</b> on any card.</p>${sv.map(e=>`<button type="button" class="bn-pi" data-nadd="${esc(hid(e))}"><b>${esc(e.title)}</b><small>${esc(fmtD(e.start))} · ${esc(e.venue||"")}</small></button>`).join("")||'<p class="bn-pt">No saved shows yet.</p>'}
+      <div class="bn-row"><button type="button" data-blank="show">Type one in</button><button type="button" data-find="1">Browse shows</button><button type="button" data-pick="">Close</button></div></div>`;}
+  if(pickK==="after"){const an=anchor(),A=allAfters().map((p,i)=>({p,i,mi:an?miles(an[0],an[1],p.lat,p.lon):null}));
+    const cats=Object.keys(AC).filter(c=>A.some(x=>x.p.c===c));
+    const f=pickK2||cats[0];const rows=A.filter(x=>x.p.c===f).sort((a,b)=>an?a.mi-b.mi:a.p.city.localeCompare(b.p.city)).slice(0,8);
+    return `<div class="bn-pick"><p class="bn-pt">${an?"Closest to your last stop first.":"Set a start point or add a show to sort these by distance."}</p>
+      <div class="bn-cats">${cats.map(c=>`<button type="button" class="chip" data-cat="${c}" aria-pressed="${c===f}">${AC[c][0]} ${AC[c][1]}</button>`).join("")}</div>
+      ${rows.map(({p,i,mi})=>`<button type="button" class="bn-pi" data-naft="${i}"><b>${esc(p.n)}</b><small>${esc(p.city)}${mi!=null?` · ${mi<1?"under a mile":mi.toFixed(1)+" mi"}`:""}${p.h?" · "+esc(p.h):""}</small></button>`).join("")}
+      <div class="bn-row"><button type="button" data-blank="after">Somewhere else</button><button type="button" data-pick="">Close</button></div></div>`;}
+  return "";}
+let pickK2="";
+function drawBuilder(){const el=$("bNight");if(!el)return;const n=plan.s.length,tot=each(plan);
+  el.innerHTML=`<div class="bn-h"><h2>Your night</h2><p>Pre-game to afters, then send one link. No sign-in. The plan lives in the link, not on a server.</p></div>
+    <div class="bn-meta"><input data-m="t" value="${esc(plan.t)}" placeholder="Name the night" maxlength="70" aria-label="Name the night"><input data-m="d" type="date" value="${esc(plan.d)}" aria-label="Date"></div>
+    ${n?`<ol class="bn-stops">${plan.s.map(stopRow).join("")}</ol>`:`<p class="bn-empty">Nothing yet. Add stops below, or tap <b>＋ My night</b> on any show.</p>`}
+    <div class="bn-add">${Object.keys(TYPES).map(k=>`<button type="button" class="chip" data-addk="${k}" aria-pressed="${pickK===k}">${TYPES[k][0]} ${TYPES[k][1]}</button>`).join("")}</div>
+    ${picker()}
+    <details class="bn-host"${plan.h||plan.ph?" open":""}><summary>Who's hosting (for "I'm in" texts)</summary>
+      <div class="bn-two"><label class="bn-f"><span>Your name</span><input data-m="h" value="${esc(plan.h)}" maxlength="30"></label><label class="bn-f"><span>Phone (optional)</span><input data-m="ph" type="tel" value="${esc(plan.ph)}" maxlength="20"></label></div>
+      <p class="bn-hint">Your number only goes inside the link you send, so friends' "I'm in" texts reach you. Leave it blank and they'll pick who to text.</p></details>
+    ${n?`<div class="bn-sum">${n} stop${n>1?"s":""}${tot?` · ≈ $${Math.round(tot)} each`:""}</div>`:""}
+    <div class="bn-go"><button type="button" class="bn-send" data-send="1"${n?"":" disabled"}>Send the link</button><button type="button" data-prev="1"${n?"":" disabled"}>Preview</button>${n?'<button type="button" class="bn-clr" data-clear="1">Start over</button>':""}</div>
+    <p class="bn-fine">Changed something after you sent it? Send the new link. Every card shows when it was last updated, so the newest one is easy to spot.</p>`;}
+function sortStops(){let last=-1;const k=plan.s.map((x,i)=>{if(x.tm){let [h,m]=x.tm.split(":").map(Number);if(h<5)h+=24;last=h*60+m;}return {x,i,t:last};});
+  const open=plan.s[openI];k.sort((a,b)=>a.t-b.t||a.i-b.i);plan.s=k.map(o=>o.x);if(open)openI=plan.s.indexOf(open);}
+function onInput(ev){const t=ev.target;
+  if(t.dataset.m){plan[t.dataset.m]=t.value;plan.up=Date.now();save();return;}
+  const li=t.closest("[data-i]");if(!li||!t.dataset.f)return;const s=plan.s[+li.dataset.i];s[t.dataset.f]=t.value;
+  if(t.dataset.f==="a"||t.dataset.f==="p"){delete s.la;delete s.lo;}
+  plan.s[+li.dataset.i]=cleanStop(s);plan.up=Date.now();save();
+  if(ev.type==="change"&&(t.dataset.f==="w"||t.dataset.f==="tm")){if(t.dataset.f==="tm")sortStops();save();drawBuilder();}}
+async function onClick(ev){const b=ev.target.closest("button");if(!b)return;const d=b.dataset;
+  if(d.addk){const k=d.addk;if(k==="show"||k==="after"){pickK=pickK===k?"":k;pickK2="";drawBuilder();return;}
+    if(addStop({k},true)){openI=plan.s.findIndex(x=>x===plan.s[plan.s.length-1]);pickK="";drawBuilder();focusFirst();}return;}
+  if(d.cat){pickK2=d.cat;drawBuilder();return;}
+  if("pick" in d){pickK="";drawBuilder();return;}
+  if(d.blank){if(addStop({k:d.blank},true)){openI=plan.s.length-1;pickK="";drawBuilder();focusFirst();}return;}
+  if(d.find){const t=document.querySelector('#bTabs [data-tab="shows"]');if(t)t.click();return;}
+  if(d.open!=null){openI=openI===+d.open?-1:+d.open;drawBuilder();return;}
+  if(d.mv){const i=+b.closest("[data-i]").dataset.i,j=i+ +d.mv;if(j<0||j>=plan.s.length)return;[plan.s[i],plan.s[j]]=[plan.s[j],plan.s[i]];openI=j;plan.up=Date.now();save();drawBuilder();return;}
+  if(d.del!=null){plan.s.splice(+d.del,1);openI=-1;plan.up=Date.now();save();drawBuilder();return;}
+  if(d.clear){if(!b.classList.contains("sure")){b.classList.add("sure");b.textContent="Tap again to clear";setTimeout(()=>{b.classList.remove("sure");b.textContent="Start over";},2500);return;}
+    plan=cleanPlan({});openI=-1;pickK="";save();drawBuilder();return;}
+  if(d.prev){view(cleanPlan({...plan,up:plan.up||Date.now()}),true);return;}
+  if(d.send){if(!plan.up)plan.up=Date.now();save();shareNight(plan,b);return;}}
+function focusFirst(){setTimeout(()=>{const i=document.querySelector("#bNight .bn-stop.open input");if(i)i.focus({preventScroll:false});},30);}
+const sumText=p=>[`🌙 ${p.t||"Our night"}${p.d?" · "+fmtD(p.d):""}`,...p.s.map(s=>`${s.tm?fmtT(s.tm)+" ":""}${TYPES[s.k][0]} ${s.n||TYPES[s.k][1]}${s.p?" @ "+s.p:""}`)].join("\n");
+async function shareNight(p,btn){const url=await linkFor(p),text=sumText(cleanPlan(p));
+  if(navigator.share){try{await navigator.share({title:p.t||"Our night",text:text+"\n",url});return;}catch(e){if(e&&e.name==="AbortError")return;}}
+  if(typeof copyOut==="function")copyOut(text+"\n"+url,btn);else{try{await navigator.clipboard.writeText(text+"\n"+url);toast("Link copied");}catch(e){prompt("Copy this link",url);}}}
+
+/* ---------- viewer: opens from a #n= link ---------- */
+function ics(p){const pad=n=>String(n).padStart(2,"0"),stamp=new Date().toISOString().replace(/[-:]/g,"").replace(/\.\d+/,"");
+  const tms=p.s.map(s=>s.tm).filter(Boolean).sort(),[y,m,d]=p.d.split("-").map(Number);
+  const st=tms[0]||"19:00",[h1,m1]=st.split(":").map(Number);let lastH,lastM;if(tms.length>1){[lastH,lastM]=tms[tms.length-1].split(":").map(Number);}
+  const startD=new Date(y,m-1,d,h1,m1),endD=lastH!=null?new Date(y,m-1,d+(lastH<h1?1:0),lastH+2,lastM):new Date(startD.getTime()+4*3600e3);
+  const f=x=>x.getFullYear()+pad(x.getMonth()+1)+pad(x.getDate())+"T"+pad(x.getHours())+pad(x.getMinutes())+"00";
+  const escI=s=>String(s).replace(/\\/g,"\\\\").replace(/[,;]/g,c=>"\\"+c).replace(/\n/g,"\\n");
+  const desc=sumText(p)+"\n\n"+location.href;
+  return ["BEGIN:VCALENDAR","VERSION:2.0","PRODID:-//The Show Shack//Night Card//EN","BEGIN:VEVENT","UID:night-"+Date.now()+"@showshack",`DTSTAMP:${stamp}`,`DTSTART:${f(startD)}`,`DTEND:${f(endD)}`,`SUMMARY:${escI("🌙 "+(p.t||"Our night"))}`,`DESCRIPTION:${escI(desc)}`,"END:VEVENT","END:VCALENDAR"].join("\r\n");}
+function view(p,preview){close();const tot=each(p),ios=/iPhone|iPad|iPod/.test(navigator.userAgent);
+  const body=encodeURIComponent(`I'm in for ${p.t||"the night"}${p.d?" ("+fmtD(p.d)+")":""}! 🙌`);
+  const sms=`sms:${p.ph||""}${ios?"&":"?"}body=${body}`;
+  const rows=p.s.map(s=>{const T=TYPES[s.k],u=s.u?safeUrl(s.u):"";
+    const acts=[s.k!=="house"&&dirQ(s)?`<a href="${esc(dirUrl(s))}" target="_blank" rel="noopener">🧭 Directions</a>`:"",
+      u?`<a href="${esc(u)}" target="_blank" rel="noopener">${s.k==="show"?"🎟️ Tickets":"🔗 Link"} ↗</a>`:"",
+      s.vh?`<a class="nv-pay" href="${esc(venmo(s))}" target="_blank" rel="noopener">Venmo <b>@${esc(s.vh)}</b>${s.amt?` · $${s.amt}`:""}</a>`:"",
+      s.ch?`<a class="nv-pay" href="${esc(cash(s))}" target="_blank" rel="noopener">Cash App <b>$${esc(s.ch)}</b>${s.amt?` · $${s.amt}`:""}</a>`:""].filter(Boolean).join("");
+    return `<li style="--sc:${T[2]}"><span class="nv-dot">${T[0]}</span><div class="nv-b"><span class="nv-tm">${s.tm?fmtT(s.tm):T[1]}</span><b>${esc(s.n||T[1])}</b>
+      ${s.p?`<span class="nv-p">${esc(s.p)}</span>`:""}${s.a?`<span class="nv-p">${esc(s.a)}</span>`:""}${s.k==="house"?'<span class="nv-p">Address in the group chat</span>':""}
+      ${s.w?`<span class="nv-go">${goLine(s)}</span>`:""}${s.c?`<span class="nv-c">≈ $${s.c} each</span>`:""}${s.no?`<p class="nv-no">${esc(s.no)}</p>`:""}
+      ${acts?`<div class="nv-acts">${acts}</div>`:""}</div></li>`;}).join("");
+  const pays=p.s.some(s=>s.vh||s.ch);
+  const el=document.createElement("div");el.id="nightView";el.className="nview";el.setAttribute("role","dialog");el.setAttribute("aria-modal","true");el.setAttribute("aria-label","Night Card");
+  el.innerHTML=`<div class="nv-card"><div class="nv-top"><span class="nv-kick">🌙 Night Card${preview?" · preview":""}</span><button type="button" class="nv-x" aria-label="Close">✕</button></div>
+    <h1 class="nv-title">${esc(p.t||"Our night")}</h1><p class="nv-date">${esc(fmtD(p.d)||"Date TBD")}${p.h?` · planned by ${esc(p.h)}`:""}</p>
+    ${p.up?`<p class="nv-up">Updated ${esc(fmtUp(p.up))}</p>`:""}
+    <ol class="nv-line">${rows||'<li><div class="nv-b"><b>No stops yet</b></div></li>'}</ol>
+    ${tot?`<div class="nv-sum">≈ $${Math.round(tot)} each for the whole night</div>`:""}
+    <div class="nv-main">${preview?"":`<a class="nv-in" href="${esc(sms)}">🙌 I'm in${p.h?" (text "+esc(p.h)+")":""}</a>`}${p.d?'<button type="button" data-ics="1">📅 Add to calendar</button>':""}<button type="button" data-vshare="1">↗ Share</button>${preview?'<button type="button" data-vedit="1">✏️ Keep editing</button>':'<button type="button" data-vcopy="1">✏️ Make my own copy</button>'}</div>
+    <p class="nv-priv">This plan lives only in this link. The Shack doesn't store it and nobody signs in.${pays?" Pay buttons open Venmo or Cash App: check the name there before you send money.":""}</p>
+    ${preview?"":'<button type="button" class="nv-shack" data-vclose="1">🌴 Open the Show Shack</button>'}</div>`;
+  document.body.appendChild(el);document.documentElement.classList.add("nview-on");
+  el.addEventListener("click",async ev=>{if(ev.target===el){close();return;}const b=ev.target.closest("button");if(!b)return;
+    if(b.classList.contains("nv-x")||b.dataset.vclose||b.dataset.vedit){close();if(b.dataset.vedit)openPlan();return;}
+    if(b.dataset.vshare){shareNight(p,b);return;}
+    if(b.dataset.ics){const blob=new Blob([ics(p)],{type:"text/calendar"}),a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=(p.t||"night").replace(/[^\w-]+/g,"-").slice(0,40)+".ics";document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove();},1500);return;}
+    if(b.dataset.vcopy){if(plan.s.length&&!b.classList.contains("sure")){b.classList.add("sure");b.textContent="Replaces your draft. Tap again";return;}
+      plan=cleanPlan({...p,up:Date.now()});save();close();drawBuilder();openPlan();toast("Copied into your Plan tab");}});
+  el.querySelector(".nv-x").focus({preventScroll:true});}
+function close(){const v=$("nightView");if(v){v.remove();document.documentElement.classList.remove("nview-on");}}
+document.addEventListener("keydown",ev=>{if(ev.key==="Escape")close();});
+async function fromHash(h){const m=/^#n=([01][A-Za-z0-9_-]+)$/.exec(h||"");if(!m)return;
+  try{const p=await decode(m[1]);try{history.replaceState(null,"",location.pathname);}catch(e){}view(p,false);}
+  catch(e){toast("That Night Card link looks broken. Ask for it again.");}}
+addEventListener("hashchange",ev=>fromHash(new URL(ev.newURL).hash));
+
+window.NIGHT={chip,map,sheet,encode,decode,cleanPlan,addStop,view,get plan(){return plan;}};
+const go=()=>{mount();inject(document.body);fromHash(window.NIGHT_HASH||location.hash);};
+if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",go);else go();
+})();
