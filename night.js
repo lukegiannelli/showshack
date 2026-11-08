@@ -87,7 +87,10 @@ let iq=0;new MutationObserver(()=>{if(iq)return;iq=1;queueMicrotask(()=>{iq=0;in
 let mapOn=false,LG=null,mapRef=null,sheetFn=null;
 function chip(){return `<button type="button" class="chip nafchip" data-mafter="1" aria-pressed="${mapOn}">🌙 Afters</button>`;}
 function drawLayer(){if(!LG||!window.L)return;LG.clearLayers();if(!mapOn)return;const L=window.L;
-  AFTERS.forEach((p,i)=>{const mk=L.marker([p.lat,p.lon],{title:p.n,icon:L.divIcon({className:"naf-w",html:`<span class="naf">${(AC[p.c]||TYPES.other)[0]}</span>`,iconSize:[24,24],iconAnchor:[12,12]})});
+  // pool spots ride along with afters; skipped while the Pool chip is on so the two layers don't stack
+  const poolOn=typeof state!=="undefined"&&state.poolOn;
+  allAfters().forEach((p,i)=>{if(p.c==="pool"&&poolOn)return;
+    const mk=L.marker([p.lat,p.lon],{title:p.n,icon:L.divIcon({className:"naf-w",html:`<span class="naf${p.c==="pool"?" naf-pool":""}">${(AC[p.c]||TYPES.other)[0]}</span>`,iconSize:[24,24],iconAnchor:[12,12]})});
     mk.on("click",ev=>{L.DomEvent.stopPropagation(ev);openAfter(i);});mk.addTo(LG);});}
 function openAfter(i){const p=allAfters()[i];if(!p||!sheetFn)return;const d=typeof driveEstimate==="function"?driveEstimate(p.lat,p.lon):null;const q=encodeURIComponent([p.n,p.a,p.city,"CA"].filter(Boolean).join(", "));
   sheetFn(`<div class="bms-h" style="--pc:#b48cff"><i></i><div><b>${esc(p.n)}</b><span>${esc((AC[p.c]||["",""])[1])} · ${esc(p.city)}${d?` · ~${fmtMins(d.mins)}`:""}</span></div></div>
@@ -101,7 +104,7 @@ function sheet(g){const sh=$("bMapSheet");if(!sh||typeof g.lat!=="number")return
   inject(sh);}
 function map(L,LM,sheetOpen){mapRef=LM;sheetFn=sheetOpen;if(!LG)LG=L.layerGroup().addTo(LM);drawLayer();}
 document.addEventListener("click",ev=>{const b=ev.target.closest("[data-mafter]");if(!b)return;mapOn=!mapOn;b.setAttribute("aria-pressed",String(mapOn));drawLayer();
-  if(mapOn&&mapRef&&AFTERS.length&&!(typeof origin!=="undefined"&&origin&&origin.lat))mapRef.fitBounds(window.L.latLngBounds(AFTERS.map(p=>[p.lat,p.lon])).pad(.05),{maxZoom:11});});
+  const A=allAfters();if(mapOn&&mapRef&&A.length&&!(typeof origin!=="undefined"&&origin&&origin.lat))mapRef.fitBounds(window.L.latLngBounds(A.map(p=>[p.lat,p.lon])).pad(.05),{maxZoom:11});});
 
 /* ---------- builder (Plan tab) ---------- */
 let openI=-1,pickK="";
