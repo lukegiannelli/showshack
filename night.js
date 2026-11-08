@@ -9,7 +9,7 @@ const AC={kbbq:["🥩","Korean BBQ"],karaoke:["🎤","Karaoke"],arcade:["🕹️
 const GO={drive:"🚗",ride:"🚕",walk:"🚶",transit:"🚇",there:"📍"};
 const GOW={drive:"Driving",ride:"Rideshare",walk:"Walk",transit:"Transit",there:"Meet there"};
 let AFTERS=[];
-fetch("afters.json?v=2").then(r=>r.ok?r.json():{}).then(j=>{AFTERS=((j||{}).places||[]).filter(p=>typeof p.lat==="number");if(mapOn)drawLayer();document.dispatchEvent(new Event("shack:spots"));}).catch(()=>{});
+fetch("afters.json?v=3").then(r=>r.ok?r.json():{}).then(j=>{AFTERS=((j||{}).places||[]).filter(p=>typeof p.lat==="number");if(mapOn)drawLayer();document.dispatchEvent(new Event("shack:spots"));}).catch(()=>{});
 const allAfters=()=>[...AFTERS,...(typeof POOL!=="undefined"?POOL:[]).map(p=>({...p,c:"pool",t:[p.c==="hall"?"Pool hall":"Bar with pool",...(p.t||[])]}))];
 const GRP={kbbq:"food",beach:"chill",stars:"chill"},grp=p=>GRP[p.c]||"after";
 const icon=c=>c==="pool"&&typeof NEON8==="string"?NEON8:`<span class="nemo">${(AC[c]||TYPES.other)[0]}</span>`;

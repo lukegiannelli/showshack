@@ -9,8 +9,10 @@ const KINDS={
     icon:'<path d="M4 11h16a8 8 0 0 1-16 0Z"/><path d="M8 7c0-1.5 1-1.5 1-3M12 7c0-1.5 1-1.5 1-3M16 7c0-1.5 1-1.5 1-3"/>'},
   after:{name:"Afters & late night",c:"#B48CFF",title:"Afters",blurb:"Where the night goes after the show.",
     icon:'<path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5Z"/><path d="M17 3v4M15 5h4"/>'}};
-const CHILL={c:"#8FB4FF"};
-let cur="after", sub="", late=false;
+const CHILL={c:"#8FB4FF",title:"Chill spots",blurb:"Beaches, coves and stargazing. Most close by 10 PM, a few run till midnight."};
+const SCR=k=>KINDS[k]||CHILL, TAGF=["Fire rings","Tide pools","Sunset"];
+const hasTag=(p,t)=>(p.t||[]).some(x=>x.toLowerCase().includes(t.toLowerCase().split(" ")[0]));
+let cur="after", sub="", late=false, tag="";
 const label=p=>p.c==="pool"?["🎱","Pool"]:(N.AC[p.c]||["✨","Spot"]);
 const late24=p=>p.til>=24;
 function list(g){return N.spots().map((p,i)=>({p,i})).filter(x=>N.grp(x.p)===g);}
@@ -47,16 +49,18 @@ function mount(){if($("bSpots"))return;const sec=document.createElement("section
     <p class="bsp-blurb" id="bSpBlurb"></p><div class="bsubs" id="bSpSubs"></div><div class="spc-list" id="bSpList"></div>
     <p class="bsp-note">Hours marked <em>usually</em> come from listings that don't fully agree. Check before you go.</p>`;
   $("bHome").after(sec);
-  sec.addEventListener("click",ev=>{if(ev.target.closest("[data-sback]")){BUI.goHome();return;}
+  sec.addEventListener("click",ev=>{if(ev.target.closest("[data-sback]")){if(cur==="chill")BUI.show("results");else BUI.goHome();return;}
     const c=ev.target.closest("[data-ssub]");if(c){sub=c.dataset.ssub;draw();return;}
-    if(ev.target.closest("[data-slate]")){late=!late;draw();}});}
-function open(k){cur=k;sub="";late=false;mount();BUI.show("spots");}
-function draw(){mount();const K=KINDS[cur],all=list(cur);
+    if(ev.target.closest("[data-slate]")){late=!late;draw();return;}
+    const tg=ev.target.closest("[data-stag]");if(tg){tag=tag===tg.dataset.stag?"":tg.dataset.stag;draw();}});}
+function open(k){cur=k;sub="";late=false;tag="";mount();BUI.show("spots");}
+function draw(){mount();const K=SCR(cur),all=list(cur);
   $("bSpTitle").textContent=K.title;$("bSpBlurb").textContent=K.blurb;
   const cats=[...new Set(all.map(x=>x.p.c))];
   $("bSpSubs").innerHTML=(cats.length>1?[["","All"],...cats.map(c=>[c,label({c}).join(" ")])]:[]).map(([v,l])=>`<button type="button" class="chip" data-ssub="${v}" aria-pressed="${v===sub}">${esc(l)}</button>`).join("")
-    +(cur==="after"?`<button type="button" class="chip" data-slate="1" aria-pressed="${late}">🌙 Past midnight</button>`:"");
-  const xs=sorted(all.filter(x=>(!sub||x.p.c===sub)&&(!late||late24(x.p))));
+    +(cur!=="food"?`<button type="button" class="chip" data-slate="1" aria-pressed="${late}">🌙 ${cur==="chill"?"Open till midnight":"Past midnight"}</button>`:"")
+    +(cur==="chill"?TAGF.map(t=>`<button type="button" class="chip" data-stag="${t}" aria-pressed="${tag===t}">${t==="Fire rings"?"🔥":t==="Tide pools"?"🦀":"🌅"} ${t}</button>`).join(""):"");
+  const xs=sorted(all.filter(x=>(!sub||x.p.c===sub)&&(!late||late24(x.p))&&(!tag||hasTag(x.p,tag))));
   $("bSpCount").textContent=xs.length+(xs.length===1?" spot":" spots")+(origin?" · closest first":"");
   $("bSpList").innerHTML=xs.length?xs.map(x=>card(x,K.c)).join(""):'<p class="bnone">Nothing here yet.</p>';}
 
@@ -66,7 +70,8 @@ function chillRow(on){let el=$("bChillSpots");
   if(!el){el=document.createElement("section");el.id="bChillSpots";el.className="bchill";$("list").before(el);}
   const xs=sorted(list("chill"));el.hidden=!xs.length;
   const sig=xs.map(x=>x.i).join(",")+(origin?origin.lat:"");if(el.dataset.sig===sig)return;el.dataset.sig=sig;
-  el.innerHTML=`<div class="bpicks-h"><h2 class="bsec">Chill spots · ${xs.length}</h2></div><div class="spc-row">${xs.map(x=>card(x,CHILL.c)).join("")}</div>`;}
+  el.innerHTML=`<div class="bpicks-h"><h2 class="bsec">Chill spots · ${xs.length}</h2><button type="button" class="blink" data-sall>See all</button></div><div class="spc-row">${xs.slice(0,8).map(x=>card(x,CHILL.c)).join("")}</div>`;
+  el.querySelector("[data-sall]").onclick=()=>open("chill");}
 
 window.SPOTS={home,after(screen,c){if(screen==="spots")draw();chillRow(screen==="results"&&c==="chill");}};
 document.addEventListener("shack:spots",()=>{home();const s=BUI.screen;if(s==="spots")draw();else if(s==="results")render();});

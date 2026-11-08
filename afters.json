@@ -790,6 +790,442 @@
 "lon": -118.43072,
 "geo": "building",
 "til": 22
+},
+{
+"n": "Crescent Bay",
+"c": "beach",
+"city": "Laguna Beach",
+"zip": "92651",
+"a": "Crescent Bay Dr & Cliff Dr",
+"t": [
+"Sunset views",
+"Bodysurfing"
+],
+"lat": 33.5466,
+"lon": -117.803,
+"geo": "approx",
+"h": "Till midnight",
+"til": 24,
+"hq": "~"
+},
+{
+"n": "Shaw's Cove",
+"c": "beach",
+"city": "Laguna Beach",
+"zip": "92651",
+"a": "Fairview St & Cliff Dr",
+"t": [
+"Tide pools",
+"Snorkeling"
+],
+"lat": 33.5451,
+"lon": -117.799,
+"geo": "approx",
+"h": "Till midnight",
+"til": 24,
+"hq": "~"
+},
+{
+"n": "Heisler Park",
+"c": "beach",
+"city": "Laguna Beach",
+"zip": "92651",
+"a": "400 Cliff Dr",
+"t": [
+"Tide pools",
+"Clifftop sunset"
+],
+"lat": 33.5433,
+"lon": -117.789,
+"geo": "approx",
+"h": "Till midnight",
+"til": 24,
+"hq": "~"
+},
+{
+"n": "Laguna Main Beach",
+"c": "beach",
+"city": "Laguna Beach",
+"zip": "92651",
+"a": "Broadway & Coast Hwy",
+"t": [
+"Boardwalk",
+"Volleyball"
+],
+"lat": 33.5422,
+"lon": -117.7853,
+"geo": "approx",
+"h": "Till midnight",
+"til": 24,
+"hq": "~"
+},
+{
+"n": "Wood's Cove",
+"c": "beach",
+"city": "Laguna Beach",
+"zip": "92651",
+"a": "Diamond St & Ocean Way",
+"t": [
+"Tide pools",
+"Coves"
+],
+"lat": 33.5267,
+"lon": -117.7683,
+"geo": "approx",
+"h": "Till midnight",
+"til": 24,
+"hq": "~"
+},
+{
+"n": "Victoria Beach",
+"c": "beach",
+"city": "Laguna Beach",
+"zip": "92651",
+"a": "Victoria Dr",
+"t": [
+"Pirate tower",
+"Tide pools"
+],
+"lat": 33.5196,
+"lon": -117.7616,
+"geo": "approx",
+"h": "Till midnight",
+"til": 24,
+"hq": "~"
+},
+{
+"n": "Treasure Island Beach",
+"c": "beach",
+"city": "Laguna Beach",
+"zip": "92651",
+"a": "30801 Coast Hwy",
+"t": [
+"Tide pools",
+"Bluff park"
+],
+"lat": 33.514,
+"lon": -117.7562,
+"geo": "approx",
+"h": "Till midnight",
+"til": 24,
+"hq": "~"
+},
+{
+"n": "Aliso Beach",
+"c": "beach",
+"city": "Laguna Beach",
+"zip": "92651",
+"a": "31131 Coast Hwy",
+"t": [
+"Skimboarding",
+"Big lot"
+],
+"lat": 33.51,
+"lon": -117.7531,
+"geo": "approx",
+"h": "6 AM–10 PM",
+"til": 22,
+"hq": "~"
+},
+{
+"n": "Table Rock Beach",
+"c": "beach",
+"city": "Laguna Beach",
+"zip": "92651",
+"a": "Table Rock Dr",
+"t": [
+"Hidden stairs",
+"Small cove"
+],
+"lat": 33.5072,
+"lon": -117.7447,
+"geo": "approx",
+"h": "6 AM–10 PM",
+"til": 22,
+"hq": "~"
+},
+{
+"n": "West Street Beach",
+"c": "beach",
+"city": "Laguna Beach",
+"zip": "92651",
+"a": "West St & Coast Hwy",
+"t": [
+"Locals' beach"
+],
+"lat": 33.4999,
+"lon": -117.7416,
+"geo": "approx",
+"h": "6 AM–10 PM",
+"til": 22,
+"hq": "~"
+},
+{
+"n": "Thousand Steps Beach",
+"c": "beach",
+"city": "Laguna Beach",
+"zip": "92651",
+"a": "9th Ave & Coast Hwy",
+"t": [
+"Sea cave",
+"200+ stairs"
+],
+"lat": 33.4958,
+"lon": -117.7392,
+"geo": "approx",
+"h": "6 AM–9 PM",
+"til": 21,
+"hq": "~"
+},
+{
+"n": "Crystal Cove State Park",
+"c": "beach",
+"city": "Newport Beach",
+"zip": "92657",
+"a": "8471 N Coast Hwy",
+"t": [
+"Tide pools",
+"Historic cottages",
+"Parking fee"
+],
+"lat": 33.5745,
+"lon": -117.84,
+"geo": "approx",
+"h": "Beach 6 AM–sunset, Historic District till 10 PM",
+"til": 22,
+"hq": "~"
+},
+{
+"n": "Little Corona",
+"c": "beach",
+"city": "Newport Beach",
+"zip": "92625",
+"a": "Poppy Ave & Ocean Blvd",
+"t": [
+"Tide pools",
+"Arch rock"
+],
+"lat": 33.589,
+"lon": -117.868,
+"geo": "approx",
+"h": "6 AM–10 PM",
+"til": 22
+},
+{
+"n": "Pirates Cove",
+"c": "beach",
+"city": "Newport Beach",
+"zip": "92625",
+"a": "Corona del Mar State Beach, north end",
+"t": [
+"Sea cave",
+"Calm water"
+],
+"lat": 33.5935,
+"lon": -117.877,
+"geo": "approx",
+"h": "6 AM–10 PM",
+"til": 22
+},
+{
+"n": "The Wedge",
+"c": "beach",
+"city": "Newport Beach",
+"zip": "92661",
+"a": "Channel Rd & E Ocean Blvd",
+"t": [
+"Big shorebreak",
+"Watch, don't swim"
+],
+"lat": 33.5932,
+"lon": -117.8818,
+"geo": "approx",
+"h": "6 AM–10 PM",
+"til": 22
+},
+{
+"n": "Newport Pier",
+"c": "beach",
+"city": "Newport Beach",
+"zip": "92663",
+"a": "1 Newport Pier",
+"t": [
+"Pier",
+"Sunset"
+],
+"lat": 33.6073,
+"lon": -117.9292,
+"geo": "approx",
+"h": "Pier till midnight, sand closes 10 PM",
+"til": 24
+},
+{
+"n": "Salt Creek Beach",
+"c": "beach",
+"city": "Dana Point",
+"zip": "92629",
+"a": "33333 S Pacific Coast Hwy",
+"t": [
+"Surf",
+"Sunset",
+"$1/hr parking"
+],
+"lat": 33.4795,
+"lon": -117.729,
+"geo": "approx",
+"h": "5 AM–midnight",
+"til": 24
+},
+{
+"n": "Strands Beach",
+"c": "beach",
+"city": "Dana Point",
+"zip": "92629",
+"a": "34000 Selva Rd",
+"t": [
+"Long stairs or tram",
+"Surf"
+],
+"lat": 33.4705,
+"lon": -117.7155,
+"geo": "approx",
+"h": "5 AM–midnight",
+"til": 24
+},
+{
+"n": "Doheny State Beach",
+"c": "beach",
+"city": "Dana Point",
+"zip": "92629",
+"a": "25300 Dana Point Harbor Dr",
+"t": [
+"Fire rings",
+"Tide pools"
+],
+"lat": 33.461,
+"lon": -117.687,
+"geo": "approx",
+"h": "6 AM–10 PM",
+"til": 22
+},
+{
+"n": "Capistrano Beach",
+"c": "beach",
+"city": "Dana Point",
+"zip": "92624",
+"a": "35005 Beach Rd",
+"t": [
+"Fire rings",
+"Volleyball"
+],
+"lat": 33.459,
+"lon": -117.672,
+"geo": "approx",
+"h": "~6 AM–10 PM",
+"til": 22,
+"hq": "~"
+},
+{
+"n": "Poche Beach",
+"c": "beach",
+"city": "San Clemente",
+"zip": "92672",
+"a": "Camino Capistrano & PCH",
+"t": [
+"Tide pools",
+"Under-the-tracks tunnel"
+],
+"lat": 33.44,
+"lon": -117.6462,
+"geo": "approx",
+"h": "~6 AM–10 PM",
+"til": 22,
+"hq": "~"
+},
+{
+"n": "San Clemente Pier",
+"c": "beach",
+"city": "San Clemente",
+"zip": "92672",
+"a": "611 Avenida Victoria",
+"t": [
+"Pier",
+"Sunset",
+"Train views"
+],
+"lat": 33.4196,
+"lon": -117.6203,
+"geo": "approx",
+"h": "Pier till midnight, sand closes 10 PM",
+"til": 24
+},
+{
+"n": "T-Street Beach",
+"c": "beach",
+"city": "San Clemente",
+"zip": "92672",
+"a": "339 W Paseo De Cristobal",
+"t": [
+"Fire rings",
+"Surf"
+],
+"lat": 33.41577,
+"lon": -117.61567,
+"geo": "approx",
+"h": "Beach closes 10 PM",
+"til": 22
+},
+{
+"n": "Calafia State Beach",
+"c": "beach",
+"city": "San Clemente",
+"zip": "92672",
+"a": "243 Avenida Calafia",
+"t": [
+"Tide pools",
+"Surf"
+],
+"lat": 33.399,
+"lon": -117.603,
+"geo": "approx",
+"h": "~6 AM–10 PM",
+"til": 22,
+"hq": "~"
+},
+{
+"n": "Trestles",
+"c": "beach",
+"city": "San Clemente",
+"zip": "92672",
+"a": "Cristianitos Rd trailhead",
+"t": [
+"World-class surf",
+"1.5 mi walk in"
+],
+"lat": 33.3828,
+"lon": -117.5884,
+"geo": "approx",
+"h": "~6 AM–10 PM",
+"til": 22,
+"hq": "~"
+},
+{
+"n": "San Onofre (Old Man's)",
+"c": "beach",
+"city": "San Clemente",
+"zip": "92672",
+"a": "San Onofre Surf Beach",
+"t": [
+"Longboarding",
+"Fire rings",
+"Parking fee"
+],
+"lat": 33.3785,
+"lon": -117.5775,
+"geo": "approx",
+"h": "~6 AM–10 PM",
+"til": 22,
+"hq": "~"
 }
 ]
 }
