@@ -99,9 +99,9 @@ function openResults(key,noPush){
 }
 function show(s,noPush){
   screen=s; const root=document.documentElement;
-  ["home","results","map","venues","saved","budget"].forEach(x=>root.classList.toggle("b-"+x,x===s));
+  ["home","results","map","venues","saved","budget","spots"].forEach(x=>root.classList.toggle("b-"+x,x===s));
   document.body.classList.toggle("nebtiles",s==="home");
-  const tab=s==="home"||s==="results"?"shows":s;
+  const tab=s==="home"||s==="results"||s==="spots"?"shows":s;
   document.querySelectorAll("#bTabs [data-tab]").forEach(b=>{if(b.dataset.tab===tab)b.setAttribute("aria-current","page");else b.removeAttribute("aria-current");});
   bar.hidden=!(s==="results"||s==="saved");
   if(s!=="home"&&!noPush&&!pushed){try{history.pushState({b:1},"");pushed=true;}catch(e){}}
@@ -110,6 +110,7 @@ function show(s,noPush){
 }
 window.addEventListener("popstate",()=>{if(pushed){pushed=false;if(screen!=="home"){state.kind="all";state.sub=null;show("home",true);}}});
 $("bBack").onclick=()=>goHome();
+window.BUI={show,goHome,get screen(){return screen;}};
 function goHome(){state.venue="all";state.kind="all";state.sub=null;state.genre="all";state.view="list";show("home");}
 $("bTabs").addEventListener("click",ev=>{const b=ev.target.closest("[data-tab]");if(!b)return;const t=b.dataset.tab;
   if(t==="shows"){goHome();return;}
@@ -186,6 +187,7 @@ function after(){
     if(sig!==$("bPicks").dataset.sig){$("bPicks").dataset.sig=sig;
       $("bPicks").innerHTML=wp?wp.picks.slice(0,5).map(p=>flipCardHtml(p.e,p.v?`<i style="--vc:${p.v.c}"></i>${p.v.name.split(" & ")[0]}`:"")).join(""):'<p class="bnone">Weekend picks show up here once the weekend list fills in.</p>';}
     trust();
+    if(window.SPOTS)SPOTS.home();
   }
   if(screen==="results"||screen==="saved"){
     const v=VIBES.find(x=>x.k===cur);
@@ -201,6 +203,7 @@ function after(){
     $("bWhenRes").hidden=screen==="saved";
     tools.hidden=screen==="saved";
   }
+  if(window.SPOTS)SPOTS.after(screen,cur);
 }
 $("bSubs").addEventListener("click",ev=>{const b=ev.target.closest("[data-sub]");if(!b)return;
   const v=b.dataset.sub;

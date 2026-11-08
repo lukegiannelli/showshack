@@ -9,8 +9,9 @@ const AC={kbbq:["🥩","Korean BBQ"],karaoke:["🎤","Karaoke"],arcade:["🕹️
 const GO={drive:"🚗",ride:"🚕",walk:"🚶",transit:"🚇",there:"📍"};
 const GOW={drive:"Driving",ride:"Rideshare",walk:"Walk",transit:"Transit",there:"Meet there"};
 let AFTERS=[];
-fetch("afters.json?v=2").then(r=>r.ok?r.json():{}).then(j=>{AFTERS=((j||{}).places||[]).filter(p=>typeof p.lat==="number");if(mapOn)drawLayer();}).catch(()=>{});
+fetch("afters.json?v=2").then(r=>r.ok?r.json():{}).then(j=>{AFTERS=((j||{}).places||[]).filter(p=>typeof p.lat==="number");if(mapOn)drawLayer();document.dispatchEvent(new Event("shack:spots"));}).catch(()=>{});
 const allAfters=()=>[...AFTERS,...(typeof POOL!=="undefined"?POOL:[]).map(p=>({...p,c:"pool",t:[p.c==="hall"?"Pool hall":"Bar with pool",...(p.t||[])]}))];
+const GRP={kbbq:"food",beach:"chill",stars:"chill"},grp=p=>GRP[p.c]||"after";
 const icon=c=>c==="pool"&&typeof NEON8==="string"?NEON8:`<span class="nemo">${(AC[c]||TYPES.other)[0]}</span>`;
 // hours label: firm, "usually" (sources disagree / third-party only), or unknown
 const hrs=p=>!p.h?"Hours not listed, check before you go":p.hq?`Usually ${p.h[0].toLowerCase()+p.h.slice(1)}, check before you go`:p.h;
@@ -91,7 +92,7 @@ function chip(){return `<button type="button" class="chip nafchip" data-mafter="
 function drawLayer(){if(!LG||!window.L)return;LG.clearLayers();if(!mapOn)return;const L=window.L;
   // pool spots ride along with afters; skipped while the Pool chip is on so the two layers don't stack
   const poolOn=typeof state!=="undefined"&&state.poolOn;
-  allAfters().forEach((p,i)=>{if(p.c==="pool"&&poolOn)return;
+  allAfters().forEach((p,i)=>{if((p.c==="pool"&&poolOn)||grp(p)!=="after")return;
     const mk=L.marker([p.lat,p.lon],{title:p.n,icon:L.divIcon({className:"naf-w",html:`<span class="naf${p.c==="pool"?" naf-pool":""}">${(AC[p.c]||TYPES.other)[0]}</span>`,iconSize:[24,24],iconAnchor:[12,12]})});
     mk.on("click",ev=>{L.DomEvent.stopPropagation(ev);openAfter(i);});mk.addTo(LG);});}
 function openAfter(i){const p=allAfters()[i];if(!p||!sheetFn)return;const d=typeof driveEstimate==="function"?driveEstimate(p.lat,p.lon):null;const q=encodeURIComponent([p.n,p.a,p.city,"CA"].filter(Boolean).join(", "));
@@ -99,14 +100,14 @@ function openAfter(i){const p=allAfters()[i];if(!p||!sheetFn)return;const d=type
     <p class="bms-more">${[...(p.t||[]),"🕘 "+hrs(p)].map(esc).join(" · ")}</p>
     <div class="bms-night"><a href="https://www.google.com/maps/dir/?api=1&destination=${q}" target="_blank" rel="noopener">🧭 Directions</a><a href="https://www.google.com/maps/search/?api=1&query=${q}" target="_blank" rel="noopener">🕘 Hours</a><button type="button" class="nadd" data-naft="${i}">＋ My night</button></div>`);}
 function nearAfters(lat,lon,n,max){const A=allAfters();return A.map((p,i)=>({p,i,mi:miles(lat,lon,p.lat,p.lon)})).filter(x=>x.mi<=max).sort((a,b)=>a.mi-b.mi).slice(0,n);}
-function sheet(g){const sh=$("bMapSheet");if(!sh||typeof g.lat!=="number")return;const near=nearAfters(g.lat,g.lon,40,10).filter(x=>x.p.c!=="pool");
+function sheet(g){const sh=$("bMapSheet");if(!sh||typeof g.lat!=="number")return;const near=nearAfters(g.lat,g.lon,40,10).filter(x=>x.p.c!=="pool"&&grp(x.p)==="after");
   const pick=[];const seen=new Set();near.forEach(x=>{if(pick.length<4&&!seen.has(x.p.c)){seen.add(x.p.c);pick.push(x);}});
   if(!pick.length)return;
   sh.insertAdjacentHTML("beforeend",`<h3 class="bms-sub">Afters nearby</h3><div class="naf-list">${pick.map(({p,i,mi})=>`<div class="naf-row">${icon(p.c)}<span><b>${esc(p.n)}</b><small>${esc(AC[p.c][1])} · ${mi<1?"under a mile":mi.toFixed(1)+" mi"}</small></span><button type="button" class="nadd" data-naft="${i}">＋</button></div>`).join("")}</div>`);
   inject(sh);}
 function map(L,LM,sheetOpen){mapRef=LM;sheetFn=sheetOpen;if(!LG)LG=L.layerGroup().addTo(LM);drawLayer();}
 document.addEventListener("click",ev=>{const b=ev.target.closest("[data-mafter]");if(!b)return;mapOn=!mapOn;b.setAttribute("aria-pressed",String(mapOn));drawLayer();
-  const A=allAfters();if(mapOn&&mapRef&&A.length&&!(typeof origin!=="undefined"&&origin&&origin.lat))mapRef.fitBounds(window.L.latLngBounds(A.map(p=>[p.lat,p.lon])).pad(.05),{maxZoom:11});});
+  const A=allAfters().filter(p=>grp(p)==="after");if(mapOn&&mapRef&&A.length&&!(typeof origin!=="undefined"&&origin&&origin.lat))mapRef.fitBounds(window.L.latLngBounds(A.map(p=>[p.lat,p.lon])).pad(.05),{maxZoom:11});});
 
 /* ---------- builder (Plan tab) ---------- */
 let openI=-1,pickK="";
@@ -313,7 +314,7 @@ function surpriseNight(){const now=todayISO(),hasO=typeof origin!=="undefined"&&
   const d=e.start<now?now:e.start,short=String(e.title).split(/[:(–—-]/)[0].trim().slice(0,40);
   view(cleanPlan({t:short+" night",d,up:Date.now(),s:[eat,show,after]}),"auto");}
 
-window.NIGHT={surpriseNight,chip,map,sheet,encode,decode,cleanPlan,addStop,view,get plan(){return plan;}};
+window.NIGHT={spots:allAfters,AC,hrs,grp,ready:()=>AFTERS.length>0,surpriseNight,chip,map,sheet,encode,decode,cleanPlan,addStop,view,get plan(){return plan;}};
 const go=()=>{mount();inject(document.body);fromHash(window.NIGHT_HASH||location.hash);};
 if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",go);else go();
 })();

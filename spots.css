@@ -1,0 +1,32 @@
+/* ===== Spots: Food / Afters screen, place cards, Chill spots row ===== */
+.ui-b #bSpots{display:none!important}
+.ui-b.b-spots #bSpots{display:flex!important}
+.bspots{flex-direction:column;gap:12px}
+.bsp-blurb{margin:-6px 0 0;color:var(--muted);font-size:14px}
+.bsp-note{margin:4px 0 0;color:var(--muted);font-size:12px}
+.spc-list{display:flex;flex-direction:column;gap:10px}
+
+.spc{--vc:#B48CFF;display:flex;flex-direction:column;gap:6px;padding:14px;border-radius:16px;color:var(--ink);
+  background:color-mix(in srgb,var(--vc) 12%,var(--surface));border:1px solid color-mix(in srgb,var(--vc) 45%,transparent);
+  box-shadow:0 0 14px -8px color-mix(in srgb,var(--vc) 70%,transparent)}
+.spc-top{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.spc-cat{font:600 12px var(--mono);color:color-mix(in srgb,var(--vc) 70%,var(--ink));white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.spc-dr{flex:none;font:600 12px var(--mono);color:var(--drive)}
+.spc h3{margin:0;font:700 18px/1.2 var(--body)}
+.spc-where{margin:0;color:var(--muted);font-size:13px}
+.spc-hrs{font:600 13px var(--mono)}
+.spc-hrs em{font-style:normal;font-weight:500;color:var(--muted)}
+.spc-hrs.none{color:var(--muted);font-weight:500}
+.spc-tags{display:flex;flex-wrap:wrap;gap:6px}
+.spc-tags i{font-style:normal;font-size:12px;padding:3px 8px;border-radius:999px;background:color-mix(in srgb,var(--vc) 18%,var(--chip))}
+.spc-act{display:flex;flex-wrap:wrap;gap:8px;margin-top:4px;align-items:center}
+.spc-act a,.spc-act .nadd{display:inline-flex;align-items:center;height:36px;padding:0 12px;border-radius:10px;font:600 13px var(--body);text-decoration:none;
+  color:var(--ink);background:var(--chip);border:1px solid var(--line);cursor:pointer}
+.spc-act .nadd{margin-left:auto;background:color-mix(in srgb,var(--vc) 30%,var(--chip));border-color:color-mix(in srgb,var(--vc) 55%,transparent)}
+
+/* chill spots: a sideways row on the Chill & community results */
+.bchill{display:flex;flex-direction:column;gap:8px;margin-bottom:6px}
+.bchill[hidden]{display:none}
+.spc-row{display:flex;gap:10px;overflow-x:auto;scroll-snap-type:x mandatory;margin:0 -16px;padding:0 16px 4px;scrollbar-width:none}
+.spc-row::-webkit-scrollbar{display:none}
+.spc-row .spc{flex:none;width:min(290px,78vw);scroll-snap-align:start}
