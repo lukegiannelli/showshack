@@ -1,0 +1,36 @@
+name: Hours from Google Places
+# Refreshes opening hours in afters.json + pool.json. Hard money limits live in scripts/places_hours.py
+# (25 calls/run, 900/month, counted in scripts/places_budget.json) plus the owner's 30/day quota in Google Cloud.
+# Never runs on push. Without the GOOGLE_PLACES_KEY secret it does nothing.
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "17 11 * * *"   # once a day, 11:17 UTC
+permissions:
+  contents: write
+concurrency: { group: places-hours, cancel-in-progress: false }
+jobs:
+  hours:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Fetch hours (capped)
+        env: { GOOGLE_PLACES_KEY: "${{ secrets.GOOGLE_PLACES_KEY }}" }
+        run: python3 scripts/places_hours.py
+      - name: Commit (the call counter is always saved, even if nothing else changed)
+        run: |
+          git config user.name "show-shack-bot"
+          git config user.email "show-shack-bot@users.noreply.github.com"
+          [ -f scripts/places_budget.json ] || exit 0
+          mkdir -p /tmp/out && cp afters.json pool.json scripts/places_budget.json /tmp/out/
+          # The script already ran (and spent its calls), so on a push race we re-apply its files instead of re-running it.
+          for i in 1 2 3 4 5; do
+            git fetch -q origin main && git reset -q --hard origin/main
+            cp /tmp/out/afters.json /tmp/out/pool.json . && cp /tmp/out/places_budget.json scripts/
+            git add afters.json pool.json scripts/places_budget.json
+            git diff --cached --quiet && { echo "Nothing new."; exit 0; }
+            git commit -q -m "Hours from Google Places (capped run)"
+            git push origin HEAD:main && exit 0
+            sleep 10
+          done
+          exit 1

@@ -1114,7 +1114,7 @@ const NEON8='<svg class="neon8" viewBox="0 0 24 24" aria-hidden="true"><circle c
 let LOGOS={};fetch("logos.json",{cache:"no-cache"}).then(r=>r.ok?r.json():{}).then(j=>{LOGOS=(j&&j.logos)||{};if(Object.keys(LOGOS).length)render();}).catch(()=>{});
 function logoKey(t){t=String(t||"").replace(/\s*\(.*?\)\s*/g," ").split(/:| & Friends| - | – | — | w\/ | with | feat\.? | ft\.? | \/ |, | \+ | x /i)[0].trim().toLowerCase().replace(/&/g,"and").replace(/^the /,"");return t.replace(/[^a-z0-9]+/g,"");}
 function logoOf(e){if(!["concert","festival","club"].includes(e.kind))return null;const u=LOGOS[logoKey(e.title)];return u&&/^https:\/\/[a-z0-9.-]*theaudiodb\.com\//.test(u)?u:null;}
-let POOL=[];fetch("pool.json?v=3").then(r=>r.ok?r.json():{}).then(j=>{POOL=((j||{}).places||[]).filter(p=>typeof p.lat==="number");if(state.view==="map"&&state.poolOn)render();}).catch(()=>{});
+let POOL=[];fetch("pool.json?v=3").then(r=>r.ok?r.json():{}).then(j=>{POOL=((j||{}).places||[]).filter(p=>typeof p.lat==="number"&&!p.gone);if(state.view==="map"&&state.poolOn)render();}).catch(()=>{});
 let VOPEN={};fetch("venues.json").then(r=>r.ok?r.json():{}).then(j=>{VOPEN=j||{};if(state.view==="venues"||state.venue!=="all")render();}).catch(()=>{});
 let fileLoaded=false;
 (async()=>{
