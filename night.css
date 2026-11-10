@@ -66,6 +66,7 @@
 .nemo{font-size:20px;flex:none;width:24px;text-align:center}
 .naf-w{background:none;border:0}
 .naf{display:grid;place-items:center;width:24px;height:24px;border-radius:50%;font-size:13px;background:rgba(30,16,60,.85);border:1.5px solid #b48cff;box-shadow:0 0 10px rgba(180,140,255,.8)}
+.naf-pool{border-color:#ff6fe0;box-shadow:0 0 10px rgba(255,111,224,.8)}
 .nafchip[aria-pressed="true"]{background:#b48cff!important;color:#160a2e!important}
 
 /* toast */

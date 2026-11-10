@@ -9,9 +9,12 @@ const AC={kbbq:["🥩","Korean BBQ"],karaoke:["🎤","Karaoke"],arcade:["🕹️
 const GO={drive:"🚗",ride:"🚕",walk:"🚶",transit:"🚇",there:"📍"};
 const GOW={drive:"Driving",ride:"Rideshare",walk:"Walk",transit:"Transit",there:"Meet there"};
 let AFTERS=[];
-fetch("afters.json?v=1").then(r=>r.ok?r.json():{}).then(j=>{AFTERS=((j||{}).places||[]).filter(p=>typeof p.lat==="number");if(mapOn)drawLayer();}).catch(()=>{});
+fetch("afters.json?v=3").then(r=>r.ok?r.json():{}).then(j=>{AFTERS=((j||{}).places||[]).filter(p=>typeof p.lat==="number"&&!p.gone);if(mapOn)drawLayer();document.dispatchEvent(new Event("shack:spots"));}).catch(()=>{});
 const allAfters=()=>[...AFTERS,...(typeof POOL!=="undefined"?POOL:[]).map(p=>({...p,c:"pool",t:[p.c==="hall"?"Pool hall":"Bar with pool",...(p.t||[])]}))];
+const GRP={kbbq:"food",beach:"chill",stars:"chill"},grp=p=>GRP[p.c]||"after";
 const icon=c=>c==="pool"&&typeof NEON8==="string"?NEON8:`<span class="nemo">${(AC[c]||TYPES.other)[0]}</span>`;
+// hours label: firm, "usually" (sources disagree / third-party only), or unknown
+const hrs=p=>!p.h?"Hours not listed, check before you go":p.hq?`Usually ${p.h[0].toLowerCase()+p.h.slice(1)}, check before you go`:p.h;
 function miles(a,b,c,d){const R=3958.8,t=x=>x*Math.PI/180,x=Math.sin(t(c-a)/2)**2+Math.cos(t(a))*Math.cos(t(c))*Math.sin(t(d-b)/2)**2;return 2*R*Math.asin(Math.sqrt(x));}
 
 /* ---------- plan model + cleaning (links come from other people, so everything is re-checked) ---------- */
@@ -69,7 +72,7 @@ const evById=h=>allEv().find(e=>hid(e)===h);
 function showStop(e,quiet){const st={k:"show",n:e.title,p:[e.venue,e.city].filter(Boolean).join(", "),tm:parseTime(e.time),u:e.url,la:e.lat,lo:e.lon};
   try{const pi=priceInfo(e);if(pi.free)st.c=0;else if(!pi.sold&&!pi.none&&pi.lo)st.c=Math.round(pi.lo);}catch(_){}
   if(!quiet&&!plan.d&&e.start&&e.start>=todayISO())plan.d=e.start;return st;}
-function afterStop(p){return {k:p.c==="pool"?"after":"after",n:p.n,p:[p.a,p.city].filter(Boolean).join(", "),la:p.lat,lo:p.lon,no:p.h?("Hours: "+p.h):""};}
+function afterStop(p){return {k:p.c==="pool"?"after":"after",n:p.n,p:[p.a,p.city].filter(Boolean).join(", "),la:p.lat,lo:p.lon,no:"Hours: "+hrs(p)};}
 const todayISO=()=>{const d=new Date();return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");};
 // capture phase so the flip cards / card toggles never see these taps
 document.addEventListener("click",ev=>{const b=ev.target.closest("[data-nadd],[data-naft]");if(!b)return;ev.stopPropagation();ev.preventDefault();
@@ -87,21 +90,24 @@ let iq=0;new MutationObserver(()=>{if(iq)return;iq=1;queueMicrotask(()=>{iq=0;in
 let mapOn=false,LG=null,mapRef=null,sheetFn=null;
 function chip(){return `<button type="button" class="chip nafchip" data-mafter="1" aria-pressed="${mapOn}">🌙 Afters</button>`;}
 function drawLayer(){if(!LG||!window.L)return;LG.clearLayers();if(!mapOn)return;const L=window.L;
-  AFTERS.forEach((p,i)=>{const mk=L.marker([p.lat,p.lon],{title:p.n,icon:L.divIcon({className:"naf-w",html:`<span class="naf">${(AC[p.c]||TYPES.other)[0]}</span>`,iconSize:[24,24],iconAnchor:[12,12]})});
+  // pool spots ride along with afters; skipped while the Pool chip is on so the two layers don't stack
+  const poolOn=typeof state!=="undefined"&&state.poolOn;
+  allAfters().forEach((p,i)=>{if((p.c==="pool"&&poolOn)||grp(p)!=="after")return;
+    const mk=L.marker([p.lat,p.lon],{title:p.n,icon:L.divIcon({className:"naf-w",html:`<span class="naf${p.c==="pool"?" naf-pool":""}">${(AC[p.c]||TYPES.other)[0]}</span>`,iconSize:[24,24],iconAnchor:[12,12]})});
     mk.on("click",ev=>{L.DomEvent.stopPropagation(ev);openAfter(i);});mk.addTo(LG);});}
 function openAfter(i){const p=allAfters()[i];if(!p||!sheetFn)return;const d=typeof driveEstimate==="function"?driveEstimate(p.lat,p.lon):null;const q=encodeURIComponent([p.n,p.a,p.city,"CA"].filter(Boolean).join(", "));
   sheetFn(`<div class="bms-h" style="--pc:#b48cff"><i></i><div><b>${esc(p.n)}</b><span>${esc((AC[p.c]||["",""])[1])} · ${esc(p.city)}${d?` · ~${fmtMins(d.mins)}`:""}</span></div></div>
-    ${(p.t||[]).length||p.h?`<p class="bms-more">${[...(p.t||[]),...(p.h?["Hours: "+p.h]:[])].map(esc).join(" · ")}</p>`:""}
+    <p class="bms-more">${[...(p.t||[]),"🕘 "+hrs(p)].map(esc).join(" · ")}</p>
     <div class="bms-night"><a href="https://www.google.com/maps/dir/?api=1&destination=${q}" target="_blank" rel="noopener">🧭 Directions</a><a href="https://www.google.com/maps/search/?api=1&query=${q}" target="_blank" rel="noopener">🕘 Hours</a><button type="button" class="nadd" data-naft="${i}">＋ My night</button></div>`);}
 function nearAfters(lat,lon,n,max){const A=allAfters();return A.map((p,i)=>({p,i,mi:miles(lat,lon,p.lat,p.lon)})).filter(x=>x.mi<=max).sort((a,b)=>a.mi-b.mi).slice(0,n);}
-function sheet(g){const sh=$("bMapSheet");if(!sh||typeof g.lat!=="number")return;const near=nearAfters(g.lat,g.lon,40,10).filter(x=>x.p.c!=="pool");
+function sheet(g){const sh=$("bMapSheet");if(!sh||typeof g.lat!=="number")return;const near=nearAfters(g.lat,g.lon,40,10).filter(x=>x.p.c!=="pool"&&grp(x.p)==="after");
   const pick=[];const seen=new Set();near.forEach(x=>{if(pick.length<4&&!seen.has(x.p.c)){seen.add(x.p.c);pick.push(x);}});
   if(!pick.length)return;
   sh.insertAdjacentHTML("beforeend",`<h3 class="bms-sub">Afters nearby</h3><div class="naf-list">${pick.map(({p,i,mi})=>`<div class="naf-row">${icon(p.c)}<span><b>${esc(p.n)}</b><small>${esc(AC[p.c][1])} · ${mi<1?"under a mile":mi.toFixed(1)+" mi"}</small></span><button type="button" class="nadd" data-naft="${i}">＋</button></div>`).join("")}</div>`);
   inject(sh);}
 function map(L,LM,sheetOpen){mapRef=LM;sheetFn=sheetOpen;if(!LG)LG=L.layerGroup().addTo(LM);drawLayer();}
 document.addEventListener("click",ev=>{const b=ev.target.closest("[data-mafter]");if(!b)return;mapOn=!mapOn;b.setAttribute("aria-pressed",String(mapOn));drawLayer();
-  if(mapOn&&mapRef&&AFTERS.length&&!(typeof origin!=="undefined"&&origin&&origin.lat))mapRef.fitBounds(window.L.latLngBounds(AFTERS.map(p=>[p.lat,p.lon])).pad(.05),{maxZoom:11});});
+  const A=allAfters().filter(p=>grp(p)==="after");if(mapOn&&mapRef&&A.length&&!(typeof origin!=="undefined"&&origin&&origin.lat))mapRef.fitBounds(window.L.latLngBounds(A.map(p=>[p.lat,p.lon])).pad(.05),{maxZoom:11});});
 
 /* ---------- builder (Plan tab) ---------- */
 let openI=-1,pickK="";
@@ -302,13 +308,13 @@ function surpriseNight(){const now=todayISO(),hasO=typeof origin!=="undefined"&&
   const food=near.filter(x=>x.p.c==="kbbq"&&x.mi<=6).slice(0,3);
   const eat=food.length?{...afterStop(rnd(food).p),k:"eat",no:"Korean BBQ before the show"}:{k:"eat",n:"Dinner near the venue",u:"https://www.google.com/maps/search/?api=1&query="+encodeURIComponent("restaurants near "+show.p)};
   eat.tm=plusMin(st,-90);
-  const late=new Set(["karaoke","arcade","bowl","spa","jazz","roof","pool"]),opts=near.filter(x=>late.has(x.p.c)).slice(0,6);
+  const late=new Set(["karaoke","arcade","bowl","spa","jazz","roof","pool"]),opts=near.filter(x=>late.has(x.p.c)&&!(x.p.til&&x.p.til<23)).slice(0,6);
   const after=opts.length?afterStop(rnd(opts).p):{k:"after",n:"Late eats",u:"https://www.google.com/maps/search/?api=1&query="+encodeURIComponent("late night food near "+show.p)};
   after.tm=plusMin(st,150);
   const d=e.start<now?now:e.start,short=String(e.title).split(/[:(–—-]/)[0].trim().slice(0,40);
   view(cleanPlan({t:short+" night",d,up:Date.now(),s:[eat,show,after]}),"auto");}
 
-window.NIGHT={surpriseNight,chip,map,sheet,encode,decode,cleanPlan,addStop,view,get plan(){return plan;}};
+window.NIGHT={spots:allAfters,AC,hrs,grp,ready:()=>AFTERS.length>0,surpriseNight,chip,map,sheet,encode,decode,cleanPlan,addStop,view,get plan(){return plan;}};
 const go=()=>{mount();inject(document.body);fromHash(window.NIGHT_HASH||location.hash);};
 if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",go);else go();
 })();

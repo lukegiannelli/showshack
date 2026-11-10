@@ -35,6 +35,7 @@ function segHtml(){return WHEN.map(([v,l])=>`<button type="button" data-when="${
   el.addEventListener("click",ev=>{const b=ev.target.closest("[data-when]");if(!b)return;state.when=b.dataset.when;savePrefs();render();});});
 if(!["tonight","weekend","any"].includes(state.when))state.when="any";
 
+state.poolOn=false; // the separate Pool layer is gone (pool shows under Afters); clear old saved prefs
 /* ---- vibe tiles ---- */
 $("bTiles").innerHTML=VIBES.map(v=>`<button type="button" class="btile t-${v.k}" data-vibe="${v.k}" style="--vc:${v.c}">
   <svg viewBox="0 0 24 24" aria-hidden="true">${v.icon}</svg><span><b>${v.name}</b><small data-count="${v.k}">&nbsp;</small></span></button>`).join("");
@@ -99,9 +100,9 @@ function openResults(key,noPush){
 }
 function show(s,noPush){
   screen=s; const root=document.documentElement;
-  ["home","results","map","venues","saved","budget"].forEach(x=>root.classList.toggle("b-"+x,x===s));
+  ["home","results","map","venues","saved","budget","spots"].forEach(x=>root.classList.toggle("b-"+x,x===s));
   document.body.classList.toggle("nebtiles",s==="home");
-  const tab=s==="home"||s==="results"?"shows":s;
+  const tab=s==="home"||s==="results"||s==="spots"?"shows":s;
   document.querySelectorAll("#bTabs [data-tab]").forEach(b=>{if(b.dataset.tab===tab)b.setAttribute("aria-current","page");else b.removeAttribute("aria-current");});
   bar.hidden=!(s==="results"||s==="saved");
   if(s!=="home"&&!noPush&&!pushed){try{history.pushState({b:1},"");pushed=true;}catch(e){}}
@@ -110,6 +111,7 @@ function show(s,noPush){
 }
 window.addEventListener("popstate",()=>{if(pushed){pushed=false;if(screen!=="home"){state.kind="all";state.sub=null;show("home",true);}}});
 $("bBack").onclick=()=>goHome();
+window.BUI={show,goHome,get screen(){return screen;}};
 function goHome(){state.venue="all";state.kind="all";state.sub=null;state.genre="all";state.view="list";show("home");}
 $("bTabs").addEventListener("click",ev=>{const b=ev.target.closest("[data-tab]");if(!b)return;const t=b.dataset.tab;
   if(t==="shows"){goHome();return;}
@@ -186,6 +188,7 @@ function after(){
     if(sig!==$("bPicks").dataset.sig){$("bPicks").dataset.sig=sig;
       $("bPicks").innerHTML=wp?wp.picks.slice(0,5).map(p=>flipCardHtml(p.e,p.v?`<i style="--vc:${p.v.c}"></i>${p.v.name.split(" & ")[0]}`:"")).join(""):'<p class="bnone">Weekend picks show up here once the weekend list fills in.</p>';}
     trust();
+    if(window.SPOTS)SPOTS.home();
   }
   if(screen==="results"||screen==="saved"){
     const v=VIBES.find(x=>x.k===cur);
@@ -201,6 +204,7 @@ function after(){
     $("bWhenRes").hidden=screen==="saved";
     tools.hidden=screen==="saved";
   }
+  if(window.SPOTS)SPOTS.after(screen,cur);
 }
 $("bSubs").addEventListener("click",ev=>{const b=ev.target.closest("[data-sub]");if(!b)return;
   const v=b.dataset.sub;
@@ -233,7 +237,7 @@ function mapGroups(){const g={};(state._up||[]).forEach(e=>{if(typeof e.lat!=="n
     const top=Object.entries(cnt).sort((a,b)=>b[1]-a[1])[0];x.v=VIBES.find(v=>top&&v.k===top[0])||VIBES[0];x.d=driveEstimate(x.lat,x.lon);return x;});}
 function drawMapUI(){
   $("bMapChips").innerHTML=`<button type="button" class="chip" data-mv="all" aria-pressed="${MAPV.vibe==="all"}">All</button>`+VIBES.map(v=>`<button type="button" class="chip bmc" data-mv="${v.k}" style="--vc:${v.c}" aria-pressed="${MAPV.vibe===v.k}"><i></i>${v.name.split(" & ")[0]}</button>`).join("")
-    +`<button type="button" class="chip poolchip" data-mpool="1" aria-pressed="${!!state.poolOn}">${NEON8} Pool</button>`+(window.NIGHT?NIGHT.chip():"");
+    +(window.NIGHT?NIGHT.chip():"");   // pool lives inside 🌙 Afters now
   $("bMapStart").hidden=!!origin;
   loadLeaflet().then(drawMap).catch(()=>{$("bMapCanvas").innerHTML='<p class="bmap-err">The map couldn\'t load. Check your connection and tap Map again.</p>';});}
 function drawMap(){const L=window.L;

@@ -1,0 +1,52 @@
+/* ===== Spots: Food / Afters screen, place cards, Chill spots row ===== */
+.ui-b #bSpots{display:none!important}
+.ui-b.b-spots #bSpots{display:flex!important}
+.bspots{flex-direction:column;gap:12px}
+.bsp-blurb{margin:-6px 0 0;color:var(--muted);font-size:14px}
+.bsp-note{margin:4px 0 0;color:var(--muted);font-size:12px}
+.spc-list{display:flex;flex-direction:column;gap:10px}
+
+.spc{--vc:#B48CFF;display:flex;flex-direction:column;gap:6px;padding:14px;border-radius:16px;color:var(--ink);
+  background:color-mix(in srgb,var(--vc) 12%,var(--surface));border:1px solid color-mix(in srgb,var(--vc) 45%,transparent);
+  box-shadow:0 0 14px -8px color-mix(in srgb,var(--vc) 70%,transparent)}
+.spc-top{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.spc-cat{font:600 12px var(--mono);color:color-mix(in srgb,var(--vc) 70%,var(--ink));white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.spc-dr{flex:none;font:600 12px var(--mono);color:var(--drive)}
+.spc h3{margin:0;font:700 18px/1.2 var(--body)}
+.spc-where{margin:0;color:var(--muted);font-size:13px}
+.spc-hrs{font:600 13px var(--mono)}
+.spc-hrs em{font-style:normal;font-weight:500;color:var(--muted)}
+.spc-hrs.none{color:var(--muted);font-weight:500}
+.spc-tags{display:flex;flex-wrap:wrap;gap:6px}
+.spc-tags i{font-style:normal;font-size:12px;padding:3px 8px;border-radius:999px;background:color-mix(in srgb,var(--vc) 18%,var(--chip))}
+.spc-act{display:flex;flex-wrap:wrap;gap:8px;margin-top:4px;align-items:center}
+.spc-act a,.spc-act .nadd{display:inline-flex;align-items:center;height:36px;padding:0 12px;border-radius:10px;font:600 13px var(--body);text-decoration:none;
+  color:var(--ink);background:var(--chip);border:1px solid var(--line);cursor:pointer}
+.spc-act .nadd{margin-left:auto;background:color-mix(in srgb,var(--vc) 30%,var(--chip));border-color:color-mix(in srgb,var(--vc) 55%,transparent)}
+
+/* chill spots: a sideways row on the Chill & community results */
+.bchill{display:flex;flex-direction:column;gap:8px;margin-bottom:6px}
+.bchill[hidden]{display:none}
+.spc-row{display:flex;gap:10px;overflow-x:auto;scroll-snap-type:x mandatory;margin:0 -16px;padding:0 16px 4px;scrollbar-width:none}
+.spc-row::-webkit-scrollbar{display:none}
+.spc-row .spc{flex:none;width:min(290px,78vw);scroll-snap-align:start}
+
+/* ===== vibe tiles: see-through glass onto the sky behind, with a soft drifting light inside each box ===== */
+.ui-b #nebfx{display:none!important}   /* tiles no longer paint the nebula; they show the page sky itself */
+.ui-b .btile,
+.ui-b body.nebtiles.nebok .btile{position:relative;overflow:hidden;isolation:isolate;
+  background:color-mix(in srgb,var(--vc) 8%,transparent)!important;
+  border:1px solid color-mix(in srgb,var(--vc) 60%,transparent)!important;
+  box-shadow:0 0 18px -8px color-mix(in srgb,var(--vc) 75%,transparent),inset 0 0 22px -12px color-mix(in srgb,var(--vc) 80%,transparent)!important}
+.ui-b .btile>*{position:relative;z-index:1}
+.ui-b .btile b{text-shadow:0 1px 6px rgba(0,0,0,.35)}
+.ui-b .btile::before{content:"";position:absolute;z-index:0;inset:-45%;pointer-events:none;
+  background:radial-gradient(circle at 35% 35%,color-mix(in srgb,var(--vc) 38%,transparent) 0,transparent 42%);
+  animation:btglow 11s ease-in-out infinite alternate;animation-delay:var(--d,0s)}
+.ui-b .btile::after{content:"";position:absolute;z-index:0;inset:0;pointer-events:none;
+  background:linear-gradient(115deg,transparent 35%,rgba(255,255,255,.16) 50%,transparent 65%);background-size:260% 100%;
+  animation:btsheen 9s ease-in-out infinite;animation-delay:var(--d,0s)}
+.ui-b .btile:nth-child(2){--d:-2s}.ui-b .btile:nth-child(3){--d:-4s}.ui-b .btile:nth-child(4){--d:-6s}.ui-b .btile:nth-child(5){--d:-8s}.ui-b .btile:nth-child(6){--d:-10s}
+@keyframes btglow{0%{transform:translate(-12%,-8%)}50%{transform:translate(18%,12%)}100%{transform:translate(-4%,22%)}}
+@keyframes btsheen{0%,55%{background-position:130% 0}85%,100%{background-position:-30% 0}}
+@media (prefers-reduced-motion:reduce){.ui-b .btile::before,.ui-b .btile::after{animation:none}}
