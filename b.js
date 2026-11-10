@@ -61,7 +61,7 @@ function backSide(e){const pi=priceInfo(e),d=parseDay(e.start);
   const lq=(e.kind!=="openmic"&&e.kind!=="contact")?String(e.title||"").replace(/\s*\(.*?\)\s*/g," ").split(/:| & Friends/)[0].trim():"";
   const when=(isRec(e)&&e.recurrence?e.recurrence.text+" · next ":"")+d.toLocaleDateString("en-US",{weekday:"short",month:"short",day:"numeric"})+(e.time?" · "+e.time:"");
   const note=e.note||e.priceNote||"";
-  return `<div class="bfb-top"><b>${esc(e.title)}</b><span>${esc(when)}</span><span>${esc(e.venue)} · ${esc(e.city)}${e._drive?` · ~${fmtMins(e._drive.mins)} drive`:""}</span></div>
+  return `<div class="bfb-top"><b>${esc(e.title)}</b><span>${esc(when)}</span><span>${esc(e.venue)} · ${esc(e.city)}${e._drive?` · ${e._drive.real?"":"~"}${fmtMins(e._drive.mins)} drive`:""}</span></div>
     <div class="bfb-price">${esc(pr)}</div>
     ${note?`<p class="bfb-note">${esc(note)}</p>`:""}
     <div class="bfb-acts">${tix?`<a class="bfb-main" href="${esc(tix)}" target="_blank" rel="noopener">${tixWord(e,pi)} ↗</a>`:""}<a href="${maps}" target="_blank" rel="noopener">Directions</a>
@@ -266,7 +266,7 @@ function drawMap(){const L=window.L;
   // reach summary under the map
   const tot=groups.reduce((s,g)=>s+g.evs.length,0);
   if(carGo){}else if(hasO){const cnt=m=>groups.filter(g=>g.d&&g.d.mins<=m).reduce((s,g)=>s+g.evs.length,0);
-    $("bMapReach").innerHTML=`<b>${tot} ${tot===1?"show":"shows"} ${WHEN_WORD[state.when]}<button type="button" class="breach-btn${carOn?" on":""}" aria-label="The Fiscar (tap it)"><img class="breach-car" src="car.svg?v=2" alt=""></button></b>`+RINGS.map(([m,c])=>`<span style="--rc:${c}"><i></i>${cnt(m)} within ${m} min</span>`).join("")+(()=>{const r=dayRange("tonight");if(!r)return "";const n=(state._up||[]).filter(e=>typeof e.lat==="number"&&e.start<=r[1]&&(e.end||e.start)>=r[0]).filter(e=>{const d=driveEstimate(e.lat,e.lon);return d&&d.mins<=15;}).length;return `<span class="btonite">🌙 ${n} tonight within 15 min</span>`;})()+`<small>The dot is your start point. Rings are straight-line drive estimates, not live traffic. Tap a dot to plan the night around it.</small>`;}
+    $("bMapReach").innerHTML=`<b>${tot} ${tot===1?"show":"shows"} ${WHEN_WORD[state.when]}<button type="button" class="breach-btn${carOn?" on":""}" aria-label="The Fiscar (tap it)"><img class="breach-car" src="car.svg?v=2" alt=""></button></b>`+RINGS.map(([m,c])=>`<span style="--rc:${c}"><i></i>${cnt(m)} within ${m} min</span>`).join("")+(()=>{const r=dayRange("tonight");if(!r)return "";const n=(state._up||[]).filter(e=>typeof e.lat==="number"&&e.start<=r[1]&&(e.end||e.start)>=r[0]).filter(e=>{const d=driveEstimate(e.lat,e.lon);return d&&d.mins<=15;}).length;return `<span class="btonite">🌙 ${n} tonight within 15 min</span>`;})()+`<small>The dot is your start point. Rings are rough drive estimates. Times without a "~" are real road times from Google. Tap a dot to plan the night around it.</small>`;}
   else if(!carGo)$("bMapReach").innerHTML=`<b>${tot} ${tot===1?"show":"shows"} ${WHEN_WORD[state.when]}<button type="button" class="breach-btn${carOn?" on":""}" aria-label="The Fiscar (tap it)"><img class="breach-car" src="car.svg?v=2" alt=""></button></b><small>Tap a dot to see what's playing there and what's nearby. Set a start point to see what's in reach.</small>`;}
 function sheetOpen(html){const sh=$("bMapSheet");sh.innerHTML=`<button type="button" class="bms-x" aria-label="Close">✕</button>`+html;sh.hidden=false;sh.scrollTop=0;sh.querySelector(".bms-x").onclick=closeSheet;}
 function closeSheet(){$("bMapSheet").hidden=true;}
@@ -282,7 +282,8 @@ function openSheet(g){const e0=g.evs[0],name=g.k.split(" · ")[0],city=g.k.split
   const pools=POOL.map(p=>({p,mi:miles(g.lat,g.lon,p.lat,p.lon)})).filter(x=>x.mi<=8).sort((a,b)=>a.mi-b.mi).slice(0,2);
   const near=(q,label,ic)=>`<a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(q+" near "+name+", "+city)}" target="_blank" rel="noopener">${ic} ${label}</a>`;
   const fol=isPinned(g.k);
-  sheetOpen(`<div class="bms-h" style="--pc:${g.v.c}"><i></i><div><b>${esc(name)}</b><span>${esc(city)}${g.d?` · ~${fmtMins(g.d.mins)} · ${g.d.miles} mi`:""}</span></div><button type="button" class="bms-fol${fol?" on":""}" data-mfol="${esc(g.k)}" aria-pressed="${fol}">${ni("bell")} ${fol?"Following":"Follow"}</button></div>
+  sheetOpen(`<div class="bms-h" style="--pc:${g.v.c}"><i></i><div><b>${esc(name)}</b><span>${esc(city)}${g.d?` · ${g.d.real?"":"~"}${fmtMins(g.d.mins)} · ${g.d.miles} mi${g.d.real?" by road":""}`:""}</span></div><button type="button" class="bms-fol${fol?" on":""}" data-mfol="${esc(g.k)}" aria-pressed="${fol}">${ni("bell")} ${fol?"Following":"Follow"}</button></div>
+    <div class="gplace" data-gq="${esc(name+", "+city)}"></div>
     <div class="bms-list">${rows}${more}</div>
     <h3 class="bms-sub">Build your night here</h3>
     <div class="bms-night">${near("restaurants","Eat before","🍜")}${near("bars","Drinks after","🍸")}${near("parking","Parking","🅿️")}<a href="${dir}" target="_blank" rel="noopener">🧭 Directions</a></div>
@@ -335,7 +336,7 @@ renderVenues=function(){const list=$("list");
       <div class="vsec"><span class="sl">${ni("ticket")} Coming up</span><ul>${v.evs.slice(0,3).map(e=>`<li><b>${esc(fmt(e))}</b> ${esc(e.title)}</li>`).join("")}${v.evs.length>3?`<li class="mut">+${v.evs.length-3} more</li>`:""}</ul></div>
       <div class="vlinks"><button type="button" class="bvmap" data-vmap="${esc(v.k)}">${ni("map")} On the map</button><button type="button" class="vbeen${been?" on":""}" data-been="${esc(v.k)}" aria-pressed="${been}">${been?"✓ Been here":"I've been here"}</button><button type="button" class="vall" data-venue="${esc(v.k)}">All ${v.evs.length} show${v.evs.length===1?"":"s"} →</button></div></div>`;
     return `<div class="vcard${nw?" hasnew":""}"><div class="vf"><button type="button" class="vopen" data-vmore="1" aria-expanded="false"><b>${esc(v.name)}</b>
-      <span>${esc(v.city)}${v.drive?` · ~${fmtMins(v.drive.mins)}`:""}${v.year?` · since ${v.year}`:""}</span>
+      <span>${esc(v.city)}${v.drive?` · ${v.drive.real?"":"~"}${fmtMins(v.drive.mins)}`:""}${v.year?` · since ${v.year}`:""}</span>
       <em class="bvibe">${esc(vibeLine(v))}</em>
       <small>${n?`${v.inR.length&&r?"":"Next "}${esc(when)}: ${esc(n.title)}${v.inR.length>1?` +${v.inR.length-1} more`:""}`:"No shows listed"}</small>
       ${tags?`<span class="vtags">${tags}</span>`:""}</button>

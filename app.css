@@ -606,3 +606,14 @@ body.neb .vcard .vf .vopen b{text-shadow:0 1px 3px rgba(0,0,0,.85),0 0 10px rgba
 body.neb .vcard .vf .vopen span,body.neb .vcard .vf .vopen small{color:#DCD2F2;text-shadow:0 1px 2px rgba(0,0,0,.9)}
 body.neb .vcard .vf .vpin{opacity:.7}
 body.neb .vcard .vf .bvibe{color:#EDE6FF;opacity:1;text-shadow:0 1px 3px rgba(0,0,0,.9)}
+
+/* Google venue details (google.js) */
+.gplace{min-height:1px}
+.gplace:not(:empty){margin:6px 0 2px;display:grid;gap:4px;font-size:13px}
+.gp-row{display:flex;flex-wrap:wrap;align-items:center;gap:4px}
+.gp-star{font-weight:600;color:var(--bee)}
+.gp-mut,.gp-dot{color:var(--muted)}
+.gp-warn{color:var(--sold,#C0392B);font-weight:600}
+.gp-links{display:flex;flex-wrap:wrap;gap:12px}
+.gp-links a{color:inherit;font-weight:600}
+.gp-src{font-size:11px;color:var(--muted)}

@@ -38,6 +38,7 @@ function savePrefs(){try{localStorage.setItem("radar-prefs",JSON.stringify({kind
 
 function driveEstimate(lat,lon){
   if(!origin||typeof origin.lat!=="number"||typeof lat!=="number"||typeof lon!=="number") return null;
+  const real=window.realDrive&&window.realDrive(lat,lon); if(real) return real;   // Google road time (google.js)
   const R=3958.8, toR=d=>d*Math.PI/180;
   const dLat=toR(lat-origin.lat), dLon=toR(lon-origin.lon);
   const a=Math.sin(dLat/2)**2+Math.cos(toR(origin.lat))*Math.cos(toR(lat))*Math.sin(dLon/2)**2;
@@ -423,7 +424,8 @@ function venueHeader(k){
     <div class="vtop"><button type="button" class="chip" data-allven="1">← All venues</button>
       <button type="button" class="vpin${pin?" on":""}" data-pinv="${esc(k)}" aria-pressed="${pin}">${ni("pin")}${pin?" Pinned":" Pin"}</button></div>
     <h2>${esc(v.name)}</h2><p class="vcity">${esc(v.city)} · ${v.evs.length} upcoming show${v.evs.length===1?"":"s"}</p>
-    ${row("Drive",v.drive?`~${fmtMins(v.drive.mins)} · ${v.drive.miles} mi`:"set a start point")}
+    ${row("Drive",v.drive?`${v.drive.real?"":"~"}${fmtMins(v.drive.mins)} · ${v.drive.miles} mi${v.drive.real?" by road":""}`:"set a start point")}
+    <div class="gplace" data-gq="${esc(v.name+", "+v.city)}"></div>
     ${v.year?row("Opened",v.year+" · "+(new Date().getFullYear()-v.year||"<1")+" yr"+((new Date().getFullYear()-v.year)===1?"":"s")+" old"):""}
     ${row("Size",esc(v.tier)+(v.cap?` · ~${v.cap} people`:""))}
     ${row("Parking",v.tier==="Small / DIY"?"usually street or small lots · ~$"+park:"typically ~$"+park+" · lots fill up before big shows")}
@@ -462,7 +464,7 @@ function renderVenues(){
         <div class="vlinks"><a href="${maps}" target="_blank" rel="noopener">${ni("car")} Directions</a><a href="${maps.replace("travelmode=driving","travelmode=transit")}" target="_blank" rel="noopener">${ni("train")} Transit</a><button type="button" class="vbeen${been?" on":""}" data-been="${esc(v.k)}" aria-pressed="${been}">${been?"✓ Been here":"I've been here"}</button><button type="button" class="vall" data-venue="${esc(v.k)}">All ${v.evs.length} show${v.evs.length===1?"":"s"} →</button></div>
       </div>`;
     return `<div class="vcard"><div class="vf"><button type="button" class="vopen" data-vmore="1" aria-expanded="false"><b>${esc(v.name)}</b>
-      <span>${esc(v.city)}${v.drive?` · ~${fmtMins(v.drive.mins)}`:""}${v.year?` · since ${v.year}`:""}</span>
+      <span>${esc(v.city)}${v.drive?` · ${v.drive.real?"":"~"}${fmtMins(v.drive.mins)}`:""}${v.year?` · since ${v.year}`:""}</span>
       <small>${v.evs.length} show${v.evs.length===1?"":"s"}${n?` · next ${esc(nd)}: ${esc(n.title)}`:""}</small>
       ${tags?`<span class="vtags">${tags}</span>`:""}</button>
       <button type="button" class="vpin${isPinned(v.k)?" on":""}" data-pinv="${esc(v.k)}" aria-pressed="${isPinned(v.k)}" aria-label="${isPinned(v.k)?"Unpin":"Pin"} ${esc(v.name)}">${ni("pin")}</button></div>${more}</div>`;};
@@ -532,7 +534,7 @@ function cardHtml(e){
     const leaveHtml = lb ? `<span class="leave">Leave by ${lb}</span>` : "";
     const al = alertOf(e).map(a=>`<span class="badge ${a.c}">${a.c==="sale"?ni("ticket")+" ":""}${a.t}</span>`).join("");
     const ag = ageOf(e); const extraTags = (isSmall(e)?`<span class="tag local">${ni("home")} Small &amp; local</span>`:"")+(ag?`<span class="tag age">${ag==="all"?"All ages":ag}</span>`:"")+(transitOf(e)?`<span class="tag transit">${ni("sprout")} ${transitOf(e)}</span>`:"");
-    const drv = e._drive ? `<span class="drive">~${fmtMins(e._drive.mins)} · ${e._drive.miles} mi</span>` : (origin ? '<span class="na">n/a</span>' : '<span class="na">Set start point</span>');
+    const drv = e._drive ? `<span class="drive">${e._drive.real?"":"~"}${fmtMins(e._drive.mins)} · ${e._drive.miles} mi</span>` : (origin ? '<span class="na">n/a</span>' : '<span class="na">Set start point</span>');
     const su=mic?signupOf(e):null, micTime=String(e.time||"").replace(/\s*\(?sign[- ]?up[^)]*\)?/i,"").trim();
     const time = mic ? `<span>${esc(e.recurrence?.text||"")}${micTime?" · "+esc(micTime):""}</span>${su!=null?`<span class="signup">${ni("mic")} Sign-up ${fmtClock(su)}</span>`:`<span class="signup none">${ni("mic")} Sign-up: arrive early</span>`}` : e.time ? `<span>${esc(e.time)}</span>` : '<span class="na">Time TBA</span>';
     const tix=safeUrl(e.url)||(mic?null:safeUrl("https://www.google.com/search?q="+encodeURIComponent([e.title,e.venue,e.city,"tickets"].filter(Boolean).join(" "))));
