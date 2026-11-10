@@ -10,6 +10,10 @@ const GKEY = "AIzaSyA2xKGmdvsTlSvaqBcW7nwdKnAza5QmmyE";
 // Cost guards. Each new start point asks Google for at most DRIVE_MAX venues (one "element" each),
 // picking the closest ones within DRIVE_WITHIN_MIN by the old estimate. Everything else keeps the estimate.
 const DRIVE_MAX = 60, DRIVE_WITHIN_MIN = 120, CHUNK = 25;
+// Per-visit limits so one visitor can't run up the bill: at most DRIVE_SYNCS start points get
+// Google drive times, and at most PLACE_MAX venues get Google details, PLACE_GAP_MS apart.
+const DRIVE_SYNCS = 3, PLACE_MAX = 25, PLACE_GAP_MS = 1500;
+let driveSyncs = 0, placeCalls = 0, placeLast = 0;
 
 let ok = !!GKEY && !GKEY.startsWith("__");
 window.gm_authFailure = () => { ok = false; console.warn("[shack-google] key rejected; using estimates"); };
@@ -32,6 +36,8 @@ window.realDrive = (lat,lon) => {
 async function syncDrives(){
   const ok2 = oKey();
   if (!ok || !ok2 || drive.o===ok2 || busy===ok2) return;
+  if (driveSyncs >= DRIVE_SYNCS) return;      // keep estimates for the rest of this visit
+  driveSyncs++;
   busy = ok2;
   // Unique venue spots, nearest first by the old estimate.
   const seen = new Map();
@@ -78,7 +84,12 @@ const FIELDS = ["displayName","rating","userRatingCount","regularOpeningHours","
 
 async function lookPlace(q){
   if (placeMem.has(q)) return placeMem.get(q);
+  if (placeCalls >= PLACE_MAX) return null;   // visit limit reached: skip Google details quietly
+  placeCalls++;
   const p = (async()=>{
+    const wait = placeLast + PLACE_GAP_MS - Date.now();
+    placeLast = Math.max(Date.now(), placeLast + PLACE_GAP_MS);
+    if (wait > 0) await new Promise(r=>setTimeout(r, wait));
     const {Place} = await lib("places");
     const {places} = await Place.searchByText({textQuery:q+", CA", fields:FIELDS, maxResultCount:1});
     const pl = places && places[0]; if (!pl) return null;
