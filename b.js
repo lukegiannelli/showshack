@@ -35,6 +35,7 @@ function segHtml(){return WHEN.map(([v,l])=>`<button type="button" data-when="${
   el.addEventListener("click",ev=>{const b=ev.target.closest("[data-when]");if(!b)return;state.when=b.dataset.when;savePrefs();render();});});
 if(!["tonight","weekend","any"].includes(state.when))state.when="any";
 
+state.poolOn=false; // the separate Pool layer is gone (pool shows under Afters); clear old saved prefs
 /* ---- vibe tiles ---- */
 $("bTiles").innerHTML=VIBES.map(v=>`<button type="button" class="btile t-${v.k}" data-vibe="${v.k}" style="--vc:${v.c}">
   <svg viewBox="0 0 24 24" aria-hidden="true">${v.icon}</svg><span><b>${v.name}</b><small data-count="${v.k}">&nbsp;</small></span></button>`).join("");
@@ -236,7 +237,7 @@ function mapGroups(){const g={};(state._up||[]).forEach(e=>{if(typeof e.lat!=="n
     const top=Object.entries(cnt).sort((a,b)=>b[1]-a[1])[0];x.v=VIBES.find(v=>top&&v.k===top[0])||VIBES[0];x.d=driveEstimate(x.lat,x.lon);return x;});}
 function drawMapUI(){
   $("bMapChips").innerHTML=`<button type="button" class="chip" data-mv="all" aria-pressed="${MAPV.vibe==="all"}">All</button>`+VIBES.map(v=>`<button type="button" class="chip bmc" data-mv="${v.k}" style="--vc:${v.c}" aria-pressed="${MAPV.vibe===v.k}"><i></i>${v.name.split(" & ")[0]}</button>`).join("")
-    +`<button type="button" class="chip poolchip" data-mpool="1" aria-pressed="${!!state.poolOn}">${NEON8} Pool</button>`+(window.NIGHT?NIGHT.chip():"");
+    +(window.NIGHT?NIGHT.chip():"");   // pool lives inside 🌙 Afters now
   $("bMapStart").hidden=!!origin;
   loadLeaflet().then(drawMap).catch(()=>{$("bMapCanvas").innerHTML='<p class="bmap-err">The map couldn\'t load. Check your connection and tap Map again.</p>';});}
 function drawMap(){const L=window.L;
