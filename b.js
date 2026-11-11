@@ -24,6 +24,10 @@ tools.insertBefore($("maxDrive").closest("label"),$("bFilt"));
 tools.insertBefore($("sortBy").closest("label"),$("bFilt"));
 const flags=$("flagRow"); flags.hidden=true; bar.appendChild(flags);
 $("bHome").appendChild($("disco"));
+// bottom of the Plan page: the same ball, as the globe (plans a whole night). Flick it up there to get the disco ball back.
+document.querySelector("section.add").insertAdjacentHTML("afterend",`<section class="bplanglobe" id="bPlanGlobe" aria-label="Plan a random night"><div class="bdisco-h"><h2 class="bsec">Spin up a whole night</h2><p></p></div></section>`);
+function placeBall(s){const d=$("disco"),to=s==="budget"?$("bPlanGlobe"):s==="home"?$("bHome"):null;if(!d||!to)return;
+  if(d.parentNode!==to)to.appendChild(d);if(window.DISCO)DISCO.set(s==="budget"?"globe":"disco");}
 document.querySelector(".wrap").insertBefore($("budgetBar"),$("alertBar"));
 const bStart=document.createElement("button");bStart.type="button";bStart.className="chip bstart";bStart.textContent="Set your start point for drive times";tools.appendChild(bStart);
 bStart.onclick=()=>{state.view="list";show("budget");setTimeout(()=>{const b=$("startEdit");if(b)b.click();},80);};
@@ -105,6 +109,7 @@ function show(s,noPush){
   const tab=s==="home"||s==="results"||s==="spots"?"shows":s;
   document.querySelectorAll("#bTabs [data-tab]").forEach(b=>{if(b.dataset.tab===tab)b.setAttribute("aria-current","page");else b.removeAttribute("aria-current");});
   bar.hidden=!(s==="results"||s==="saved");
+  placeBall(s);
   if(s!=="home"&&!noPush&&!pushed){try{history.pushState({b:1},"");pushed=true;}catch(e){}}
   if(s==="home"&&pushed&&!noPush){pushed=false;try{history.back();}catch(e){}}
   render(); window.scrollTo(0,0);

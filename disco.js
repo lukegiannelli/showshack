@@ -176,18 +176,22 @@
     gn.gain.value=.13;sr.connect(fl);fl.connect(gn);gn.connect(ac.destination);sr.start(t);            // lift-off
     const e=echoOut();bell(1046.5,t+.18,1.3,.12,e);bell(830.6,t+.42,1.3,.11,e);bell(1396.9,t+.66,2,.13,e);}   // C6, Ab5, F6: "your night is boarding"
   // flick the ball up: it flies off and the other one drops in
-  const hintEl=document.querySelector(".bdisco-h p");
   const HINT={disco:"Swipe the disco ball sideways four times for a random show. Flick it up to swap in the globe.",
     globe:"Swipe the globe sideways four times and it plans a whole night: food, a show and afters. Flick it up to bring back the disco ball."};
-  if(hintEl)hintEl.textContent=HINT.disco;
+  // the hint lives next to wherever the ball is (home, or the bottom of the Plan page)
+  const hint=()=>document.querySelectorAll(".bdisco-h p").forEach(p=>p.textContent=HINT[mode]);
+  hint();
   ball.style.touchAction="none";
+  function apply(to){mode=to;setLv(0);th=mode==="globe"?HOME_TH:-.05;spin=BASE[0];dir=1;CR=[];
+    ball.classList.toggle("globe",mode==="globe");ball.setAttribute("aria-label",mode==="globe"?"Plan a night: swipe the globe sideways four times":"Surprise me: swipe the disco ball sideways four times");hint();}
+  // b.js calls this when the ball moves between Home (disco ball) and Plan (globe)
+  window.DISCO={get mode(){return mode;},set(to){if(to===mode||busy)return;apply(to);draw();}};
   function flip(){if(busy)return;busy=true;audio();
     if(ac){const t=ac.currentTime+.003,o=ac.createOscillator(),gn=ac.createGain();o.type="sine";o.frequency.setValueAtTime(300,t);o.frequency.exponentialRampToValueAtTime(1400,t+.28);
       gn.gain.setValueAtTime(.0001,t);gn.gain.exponentialRampToValueAtTime(.08,t+.05);gn.gain.exponentialRampToValueAtTime(.0001,t+.32);o.connect(gn);gn.connect(ac.destination);o.start(t);o.stop(t+.35);}
     buzz(15);ball.classList.remove("lv1","lv2","dropin");ball.classList.add("flyup");
-    setTimeout(()=>{mode=mode==="globe"?"disco":"globe";setLv(0);th=mode==="globe"?HOME_TH:-.05;spin=BASE[0];dir=1;
-      ball.classList.toggle("globe",mode==="globe");ball.setAttribute("aria-label",mode==="globe"?"Plan a night: swipe the globe sideways four times":"Surprise me: swipe the disco ball sideways four times");
-      if(hintEl)hintEl.textContent=HINT[mode];ball.classList.remove("flyup");void ball.offsetWidth;ball.classList.add("dropin");draw();
+    setTimeout(()=>{apply(mode==="globe"?"disco":"globe");
+      ball.classList.remove("flyup");void ball.offsetWidth;ball.classList.add("dropin");draw();
       if(ac){mode==="globe"?ping(1):tick(1);}
       setTimeout(()=>{ball.classList.remove("dropin");busy=false;},560);},320);}
   let ys=0,onBall=false,xt=0;
