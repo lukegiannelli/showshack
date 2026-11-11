@@ -1,5 +1,5 @@
 {
-"note": "Afters spots for the Night Card. h = hours text; til = usual latest close on the 24h clock, past midnight keeps counting (26 = 2 AM); hq '~' = sources disagree or only third-party listings. No h = hours unknown. Food spots marked src 'osm' were matched on OpenStreetMap (name, address, hours). pp = estimated per-person food price before tax and tip (not quoted by the place); svc 'sit' or 'counter' overrides the category default. c 'hotel' = hotel bars and rooftops with music nights open to non-guests; h is the music schedule, u is where it came from. Checked Nov 2026; always check before you go.",
+"note": "Afters spots for the Night Card. h = hours text; til = usual latest close on the 24h clock, past midnight keeps counting (26 = 2 AM); hq '~' = sources disagree or only third-party listings. No h = hours unknown. Food spots marked src 'osm' were matched on OpenStreetMap (name, address, hours). pp = estimated per-person food price before tax and tip (not quoted by the place); svc 'sit' or 'counter' overrides the category default. c 'hotel' = hotel bars and rooftops with music nights open to non-guests; h is the music schedule, u is where it came from. diet = dietary options tagged on OpenStreetMap. Checked Nov 2026; always check before you go.",
 "places": [
 {
 "n": "Baekjeong Irvine",
@@ -1431,7 +1431,11 @@
 "til": 23,
 "hq": "~",
 "geo": "amenity",
-"src": "osm"
+"src": "osm",
+"diet": [
+"Vegan (limited)",
+"Gluten-free"
+]
 },
 {
 "n": "Tacos 1986",
@@ -1667,7 +1671,10 @@
 "til": 22,
 "hq": "~",
 "geo": "amenity",
-"src": "osm"
+"src": "osm",
+"diet": [
+"Vegetarian"
+]
 },
 {
 "n": "Ramen Yamadaya",
@@ -2318,6 +2325,386 @@
 "u": "https://marriott.com/en-us/hotels/laxav-ac-hotel-downtown-los-angeles/experiences",
 "geo": "amenity",
 "src": "web"
+},
+{
+"n": "Lunasia Dim Sum House",
+"c": "dimsum",
+"city": "Alhambra",
+"zip": "91801",
+"a": "500 W Main St",
+"t": [
+"Dim sum all day"
+],
+"lat": 34.09244,
+"lon": -118.13223,
+"h": "10:30 AM to 8:30 PM (from 9:30 AM weekends)",
+"til": 20.5,
+"hq": "~",
+"geo": "amenity",
+"src": "osm"
+},
+{
+"n": "Sea Harbour Seafood",
+"c": "dimsum",
+"city": "Rosemead",
+"zip": "91770",
+"a": "3939 Rosemead Blvd",
+"t": [
+"Order-off-the-sheet dim sum"
+],
+"lat": 34.07983,
+"lon": -118.07347,
+"geo": "amenity",
+"src": "osm"
+},
+{
+"n": "Capital Seafood",
+"c": "dimsum",
+"city": "Irvine",
+"zip": "92618",
+"a": "757-777 Spectrum Center Dr",
+"t": [
+"Irvine Spectrum"
+],
+"lat": 33.64932,
+"lon": -117.74333,
+"geo": "amenity",
+"src": "osm"
+},
+{
+"n": "Elite Restaurant",
+"c": "dimsum",
+"city": "Monterey Park",
+"zip": "91754",
+"a": "700 El Portal Pl",
+"t": [
+"Weekend dim sum crowds"
+],
+"lat": 34.05369,
+"lon": -118.13587,
+"h": "9 AM to 3 PM and 5:30 to 8:30 PM (9 PM weekends)",
+"til": 21,
+"hq": "~",
+"geo": "amenity",
+"src": "osm"
+},
+{
+"n": "Din Tai Fung",
+"c": "dimsum",
+"city": "Arcadia",
+"zip": "91007",
+"a": "400 S Baldwin Ave",
+"t": [
+"Soup dumplings",
+"Westfield Santa Anita"
+],
+"lat": 34.13517,
+"lon": -118.05189,
+"h": "11 AM to 9:30 PM (10 PM Fri and Sat)",
+"til": 22,
+"hq": "~",
+"geo": "amenity",
+"src": "osm"
+},
+{
+"n": "Jitlada",
+"c": "thai",
+"city": "Los Angeles",
+"zip": "90027",
+"a": "5233 1/2 W Sunset Blvd",
+"t": [
+"Thai Town",
+"Southern Thai, very spicy"
+],
+"lat": 34.0986,
+"lon": -118.30402,
+"h": "11 AM to 3 PM and 5 to 10 PM, closed Mon",
+"til": 22,
+"hq": "~",
+"geo": "amenity",
+"src": "osm"
+},
+{
+"n": "Night + Market Song",
+"c": "thai",
+"city": "Los Angeles",
+"zip": "90026",
+"a": "3322 W Sunset Blvd",
+"t": [
+"Silver Lake",
+"Party Thai"
+],
+"lat": 34.08692,
+"lon": -118.27584,
+"h": "5 to 10 PM, closed Wed and Thu",
+"til": 22,
+"hq": "~",
+"geo": "amenity",
+"src": "osm"
+},
+{
+"n": "Sapp Coffee Shop",
+"c": "thai",
+"city": "Los Angeles",
+"zip": "90027",
+"a": "5183 Hollywood Blvd",
+"t": [
+"Thai Town",
+"Boat noodles"
+],
+"lat": 34.10208,
+"lon": -118.30327,
+"h": "10:30 AM to 7 PM (9 PM Fri to Sun), closed Wed",
+"til": 21,
+"hq": "~",
+"geo": "amenity",
+"src": "osm"
+},
+{
+"n": "Ruen Pair",
+"c": "thai",
+"city": "Los Angeles",
+"zip": "90027",
+"a": "5257 Hollywood Blvd",
+"t": [
+"Thai Town"
+],
+"lat": 34.10206,
+"lon": -118.3055,
+"geo": "amenity",
+"src": "osm"
+},
+{
+"n": "Luv2eat Thai Bistro",
+"c": "thai",
+"city": "Los Angeles",
+"zip": "90028",
+"a": "6660 W Sunset Blvd",
+"t": [
+"Hollywood"
+],
+"lat": 34.09772,
+"lon": -118.33588,
+"h": "11 AM to 10 PM",
+"til": 22,
+"hq": "~",
+"geo": "amenity",
+"src": "osm"
+},
+{
+"n": "Pizzanista!",
+"c": "pizza",
+"city": "Los Angeles",
+"zip": "90021",
+"a": "2019 E 7th St",
+"t": [
+"Arts District",
+"By the slice"
+],
+"lat": 34.03476,
+"lon": -118.23162,
+"h": "11 AM to midnight Tue to Sat (10 PM Sun), closed Mon",
+"til": 24,
+"hq": "~",
+"geo": "amenity",
+"src": "osm"
+},
+{
+"n": "Joe's Pizza",
+"c": "pizza",
+"city": "Beverly Hills",
+"zip": "90210",
+"a": "9527 S Santa Monica Blvd",
+"t": [
+"New York slices"
+],
+"lat": 34.07032,
+"lon": -118.40499,
+"h": "9:30 AM to 11 PM (12:30 AM Fri and Sat)",
+"til": 24.5,
+"hq": "~",
+"geo": "amenity",
+"src": "osm"
+},
+{
+"n": "Prince Street Pizza",
+"c": "pizza",
+"city": "Pasadena",
+"zip": "91105",
+"a": "49 E Colorado Blvd",
+"t": [
+"Old Pasadena",
+"Square pepperoni slices"
+],
+"lat": 34.14605,
+"lon": -118.14938,
+"h": "11 AM to 11 PM (2 AM Fri and Sat)",
+"til": 26,
+"hq": "~",
+"geo": "amenity",
+"src": "osm"
+},
+{
+"n": "Bronx Pizza",
+"c": "pizza",
+"city": "San Diego",
+"zip": "92103",
+"a": "111 Washington St",
+"t": [
+"Hillcrest",
+"By the slice"
+],
+"lat": 32.74969,
+"lon": -117.16344,
+"geo": "amenity",
+"src": "osm"
+},
+{
+"n": "SomiSomi",
+"c": "dessert",
+"city": "Los Angeles",
+"zip": "90025",
+"a": "11311 Mississippi Ave",
+"t": [
+"Sawtelle",
+"Taiyaki soft serve"
+],
+"lat": 34.03946,
+"lon": -118.44288,
+"h": "Noon to midnight (11:30 PM Sun)",
+"til": 24,
+"hq": "~",
+"geo": "amenity",
+"src": "osm"
+},
+{
+"n": "Salt & Straw",
+"c": "dessert",
+"city": "Pasadena",
+"zip": "91105",
+"a": "39 W Colorado Blvd",
+"t": [
+"Old Pasadena",
+"Ice cream"
+],
+"lat": 34.14593,
+"lon": -118.15137,
+"h": "11 AM to 11 PM",
+"til": 23,
+"hq": "~",
+"geo": "amenity",
+"src": "osm"
+},
+{
+"n": "Salt & Straw",
+"c": "dessert",
+"city": "West Hollywood",
+"zip": "90069",
+"a": "8949 Santa Monica Blvd",
+"t": [
+"Ice cream"
+],
+"lat": 34.08418,
+"lon": -118.38556,
+"h": "Noon to 11 PM",
+"til": 23,
+"hq": "~",
+"geo": "amenity",
+"src": "osm"
+},
+{
+"n": "Bottega Louie",
+"c": "dessert",
+"city": "Los Angeles",
+"zip": "90017",
+"a": "700 S Grand Ave",
+"t": [
+"Downtown",
+"Macarons and pastries"
+],
+"lat": 34.04704,
+"lon": -118.25657,
+"h": "8 AM to 10 PM (11 PM Fri and Sat)",
+"til": 23,
+"hq": "~",
+"pp": [
+10,
+25
+],
+"geo": "amenity",
+"src": "osm"
+},
+{
+"n": "7 Leaves Cafe",
+"c": "dessert",
+"city": "Garden Grove",
+"zip": "92843",
+"a": "13481 Euclid St",
+"t": [
+"Little Saigon",
+"Boba and tea"
+],
+"lat": 33.7672,
+"lon": -117.9382,
+"h": "7 AM to 10 PM (11 PM Fri and Sat)",
+"til": 23,
+"hq": "~",
+"geo": "amenity",
+"src": "osm"
+},
+{
+"n": "Grand Central Market",
+"c": "hall",
+"city": "Los Angeles",
+"zip": "90013",
+"a": "317 S Broadway",
+"t": [
+"Downtown",
+"Dozens of stalls"
+],
+"lat": 34.05082,
+"lon": -118.24893,
+"h": "8 AM to 9 PM",
+"til": 21,
+"hq": "~",
+"geo": "amenity",
+"src": "osm"
+},
+{
+"n": "Liberty Public Market",
+"c": "hall",
+"city": "San Diego",
+"zip": "92106",
+"a": "2820 Historic Decatur Rd",
+"t": [
+"Liberty Station",
+"Food hall"
+],
+"lat": 32.7402,
+"lon": -117.21124,
+"h": "10:30 AM to 9 PM",
+"til": 21,
+"hq": "~",
+"geo": "amenity",
+"src": "osm"
+},
+{
+"n": "Smorgasburg LA",
+"c": "hall",
+"city": "Los Angeles",
+"zip": "90021",
+"a": "777 S Alameda St",
+"t": [
+"ROW DTLA",
+"Sunday food market"
+],
+"lat": 34.03472,
+"lon": -118.24181,
+"h": "Sundays 10 AM to 4 PM",
+"til": 16,
+"hq": "~",
+"geo": "amenity",
+"src": "osm"
 }
 ]
 }
