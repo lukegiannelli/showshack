@@ -331,6 +331,10 @@
       ball.classList.remove("flydown");void ball.offsetWidth;ball.classList.add("dropin");draw();
       if(ac){mode==="ramen"?bloop(1):mode==="globe"?ping(1):tick(1);}
       setTimeout(()=>{ball.classList.remove("dropin");busy=false;},560);},320);}
+  // first visit: a ghost finger acts out the gestures until you touch the ball once (most people never find hidden swipes)
+  let ghost=null;try{if(!localStorage.getItem("shack-ballhint")){ghost=document.createElement("div");ghost.className="dghost";ghost.setAttribute("aria-hidden","true");
+    ghost.innerHTML='<i>👆</i><span>swipe ↔ · pull ↓ · flick ↑</span>';box.querySelector(".dstage").appendChild(ghost);}}catch(e){}
+  const unghost=()=>{if(!ghost)return;ghost.classList.add("bye");const gh=ghost;ghost=null;setTimeout(()=>gh.remove(),300);try{localStorage.setItem("shack-ballhint","1");}catch(e){}};
   let ys=0,onBall=false,xt=0;
   let tx=.0,ty=.0;
   function mark(e){const rc=ball.getBoundingClientRect();tx=(e.clientX-rc.left-rc.width/2)/(rc.width/2);ty=-(e.clientY-rc.top-rc.height/2)/(rc.height/2);}
@@ -341,7 +345,7 @@
   let trk=[];
   let fired=false;
   const vel=()=>{const a=trk[0],z=trk[trk.length-1],dtm=Math.max(16,z[1]-a[1]);return (z[0]-a[0])/dtm;};   // px per ms
-  box.addEventListener("pointerdown",e=>{if(busy)return;audio();x0=e.clientX;xs=x0;ys=e.clientY;onBall=!!e.target.closest(".dball");moved=0;fired=false;trk=[[e.clientX,performance.now()]];mark(e);try{box.setPointerCapture(e.pointerId);}catch(_){}});
+  box.addEventListener("pointerdown",e=>{unghost();if(busy)return;audio();x0=e.clientX;xs=x0;ys=e.clientY;onBall=!!e.target.closest(".dball");moved=0;fired=false;trk=[[e.clientX,performance.now()]];mark(e);try{box.setPointerCapture(e.pointerId);}catch(_){}});
   box.addEventListener("pointermove",e=>{if(x0==null)return;const dx=e.clientX-x0;moved=Math.max(moved,Math.abs(e.clientX-xs));
     th+=dx*.0128;x0=e.clientX;if(dx)dir=dx>0?1:-1;mark(e);const n=performance.now();trk.push([e.clientX,n]);while(trk.length>2&&n-trk[0][1]>90)trk.shift();spin=0;if(still)draw();
     if(!fired&&moved>=24&&Math.abs(e.clientX-xs)>Math.abs(e.clientY-ys)){fired=true;const v=vel();if(Math.abs(v)>.05)dir=v>0?1:-1;swipe(dir,.12);spin=0;}});   // sound + crack right as the swipe registers
@@ -351,5 +355,5 @@
       if(fired){spin=sp;idle=performance.now();}else swipe(dir,sp);}};   // already sounded mid-swipe: just hand over the finger's speed   // .0128 rad per px * 16.7 ms = .214 rad per frame per px/ms
   box.addEventListener("touchend",()=>{audio();},{passive:true});   // iPhone only allows sound to start on a finger-up inside the disco area
   box.addEventListener("pointerup",end);box.addEventListener("pointercancel",()=>{x0=null;});
-  ball.addEventListener("keydown",e=>{if(e.key==="ArrowUp"){e.preventDefault();flip();return;}if(e.key==="ArrowDown"){e.preventDefault();bowl();return;}if(e.key==="Enter"||e.key===" "){e.preventDefault();tx=(Math.random()-.5)*1.1;ty=(Math.random()-.5)*1.1;swipe(1);}});
+  ball.addEventListener("keydown",e=>{unghost();if(e.key==="ArrowUp"){e.preventDefault();flip();return;}if(e.key==="ArrowDown"){e.preventDefault();bowl();return;}if(e.key==="Enter"||e.key===" "){e.preventDefault();tx=(Math.random()-.5)*1.1;ty=(Math.random()-.5)*1.1;swipe(1);}});
 })();

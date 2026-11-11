@@ -526,3 +526,26 @@ body.neb .vcard .vf .bvibe{color:#EDE6FF;opacity:1;text-shadow:0 1px 3px rgba(0,
 .ui-b .bplog-f input[name=t]{grid-column:1/-1}
 .ui-b .bplog-f button{height:42px;padding:0 14px;border-radius:999px;border:0;background:var(--sc);color:#160a2e;font:700 14px var(--body);cursor:pointer}
 .ui-b .vlogadd{all:unset;cursor:pointer;color:#FFC66B;font-weight:600;text-decoration:underline;text-underline-offset:2px}
+/* price dropped row */
+.ui-b .bdrop .bfc-tag{background:#7ee0b8;color:#0f2a1f}
+.ui-b .bdrop .bpicks-h .blbl{font:600 12px var(--mono);color:#7ee0b8}
+/* map: Now button next to the time slider, Build a night here */
+.ui-b .bmap-timew{display:flex;align-items:center;gap:8px}
+.ui-b .bmap-timew .bmap-time{flex:1;min-width:0}
+.ui-b .bmap-now{flex:none;height:36px;font-weight:700}
+.ui-b .bms-build{display:flex;flex-direction:column;align-items:flex-start;gap:2px;width:100%;margin:6px 0 8px;padding:10px 14px;border-radius:14px;border:0;cursor:pointer;
+  background:linear-gradient(90deg,#ffd38a,#ff7ab8);color:#1d1030;font:700 15px var(--body);text-align:left}
+.ui-b .bms-build small{font:600 12px var(--body);opacity:.75}
+/* venues: crawl tag */
+.ui-b .tag.bcrawl{border-color:#7ee0b8;color:#7ee0b8}
+/* passport compare */
+.bcmp-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;text-align:center}
+.bcmp-stats span{display:flex;flex-direction:column;padding:10px;border-radius:14px;background:rgba(255,255,255,.06);font:600 12px var(--mono);color:#cfc6ea}
+.bcmp-stats b{font:900 30px var(--display,var(--body));color:#fff}
+.bcmp h3{margin:6px 0 0;font:700 13px var(--mono);color:#FFC66B;text-transform:uppercase;letter-spacing:.4px}
+.bcmp ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
+.bcmp li{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:8px 12px;border-radius:12px;background:rgba(255,255,255,.05)}
+.bcmp li span{display:flex;flex-direction:column;min-width:0}
+.bcmp li small{color:#a59cc4;font-size:12px}
+.bcmp li button{flex:none;min-height:34px;padding:0 12px;border-radius:999px;border:1px solid #ff8ad8;background:none;color:#ff8ad8;font:600 12.5px var(--body);cursor:pointer}
+.bcmp li button[aria-pressed="true"]{background:#ff8ad8;color:#1d1030}

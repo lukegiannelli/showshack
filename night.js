@@ -101,6 +101,13 @@ function useNight(id,p){plan=cleanPlan(p||{});planId=id||newId();openI=-1;pickK=
 /* ---------- link encoding: JSON → deflate → base64url ("1…"), or plain base64url ("0…") where the browser can't compress ---------- */
 const b64u=b=>{let s="";for(let i=0;i<b.length;i+=0x8000)s+=String.fromCharCode.apply(null,b.subarray(i,i+0x8000));return btoa(s).replace(/\+/g,"-").replace(/\//g,"_").replace(/=+$/,"");};
 const unb64u=s=>{s=s.replace(/-/g,"+").replace(/_/g,"/");const r=atob(s+"===".slice((s.length+3)%4));return Uint8Array.from(r,c=>c.charCodeAt(0));};
+async function pack(obj){const s=JSON.stringify(obj);
+  if(window.CompressionStream){try{const st=new Blob([s]).stream().pipeThrough(new CompressionStream("deflate-raw"));return "1"+b64u(new Uint8Array(await new Response(st).arrayBuffer()));}catch(e){}}
+  return "0"+b64u(new TextEncoder().encode(s));}
+async function unpack(code){const f=code[0],b=unb64u(code.slice(1));let s;
+  if(f==="1"){const st=new Blob([b]).stream().pipeThrough(new DecompressionStream("deflate-raw"));s=await new Response(st).text();}
+  else if(f==="0")s=new TextDecoder().decode(b);else throw new Error("bad");
+  if(s.length>40000)throw new Error("big");return JSON.parse(s);}
 async function encode(p){const s=JSON.stringify(cleanPlan(p));
   if(window.CompressionStream){try{const st=new Blob([s]).stream().pipeThrough(new CompressionStream("deflate-raw"));return "1"+b64u(new Uint8Array(await new Response(st).arrayBuffer()));}catch(e){}}
   return "0"+b64u(new TextEncoder().encode(s));}
@@ -209,13 +216,15 @@ document.addEventListener("click",ev=>{const b=ev.target.closest("[data-mafter],
 let openI=-1,pickK="";
 function mount(){if($("bNight"))return;const h=document.querySelector(".bbudget-h");if(!h)return;
   h.insertAdjacentHTML("afterend",`<section class="bnight" id="bNight" aria-label="Your night"></section>`);
-  const el=$("bNight");el.addEventListener("input",onInput);el.addEventListener("change",onInput);el.addEventListener("click",onClick);drawBuilder();}
+  const el=$("bNight");el.addEventListener("input",onInput);el.addEventListener("change",onInput);el.addEventListener("click",onClick);
+  el.addEventListener("pointerdown",dragStart);el.addEventListener("pointermove",dragMove);el.addEventListener("pointerup",dragEnd);el.addEventListener("pointercancel",dragEnd);drawBuilder();}
 function stopRow(s,i){const T=TYPES[s.k],open=i===openI,f=(n,l,v,x)=>`<label class="bn-f"><span>${l}</span><input data-f="${n}" value="${esc(v??"")}" ${x||""}></label>`;
   const head=`<button type="button" class="bn-sh" data-open="${i}" aria-expanded="${open}"><span class="bn-ic">${tic(s.k)}</span><span class="bn-tm">${s.tm?fmtT(s.tm):"—"}</span><span class="bn-nm"><b>${esc(s.n||T[1])}</b>${s.p||s.a?`<small>${esc(s.p||s.a)}</small>`:s.k==="house"?"<small>Address stays in your group chat</small>":""}</span><span class="bn-ch">${open?"▴":"▾"}</span></button>`;
   const del=QUICKDEL.has(s.k)?`<button type="button" class="bn-trash" data-qdel="${i}" aria-label="Remove ${esc(s.n||T[1])} from your night">${tic("trash")}</button>`:"";
-  const cls=QUICKDEL.has(s.k)?" hasdel":"";
-  if(!open)return `<li class="bn-stop${cls}" style="--sc:${T[2]}">${head}${del}</li>`;
-  return `<li class="bn-stop open${cls}" style="--sc:${T[2]}" data-i="${i}">${head}${del}<div class="bn-ed">
+  const cls=(QUICKDEL.has(s.k)?" hasdel":"")+(plan.s.length>1?" hasgrip":"");
+  const grip=plan.s.length>1?`<span class="bn-grip" data-grip="${i}" role="button" tabindex="-1" aria-label="Drag to reorder ${esc(s.n||T[1])}"><i></i><i></i><i></i><i></i><i></i><i></i></span>`:"";
+  if(!open)return `<li class="bn-stop${cls}" style="--sc:${T[2]}">${grip}${head}${del}</li>`;
+  return `<li class="bn-stop open${cls}" style="--sc:${T[2]}" data-i="${i}">${grip}${head}${del}<div class="bn-ed">
     <div class="bn-two">${f("n","What",s.n,`placeholder="${esc(T[1])}" maxlength="80"`)}${f("tm","Time",s.tm,'type="time"')}</div>
     ${s.k==="house"?`<p class="bn-hint">${tic("house","sm")} No address here on purpose. Links get forwarded, so drop the address in your group chat.</p>${f("p","Whose place",s.p,'placeholder="e.g. Sam\'s place" maxlength="90"')}`
       :`${f("p","Where",s.p,'placeholder="Place name" maxlength="90"')}${f("a","Address (optional)",s.a,'placeholder="Street, city" maxlength="120"')}`}
@@ -278,7 +287,8 @@ function backHtml(){const p=plan,S=p.s,st=typeof state!=="undefined"?state:{};
     ${pays.length?`<h3 class="bn-sub">Pay back</h3><ul class="bn-list">${pays.join("")}</ul>`:""}
     ${notes.length?`<h3 class="bn-sub">Heads up</h3><ul class="bn-notes">${notes.map(x=>`<li>${esc(x)}</li>`).join("")}</ul>`:""}
     ${tot?`<h3 class="bn-sub">Total per person</h3><ul class="bn-list bn-tot">${[[tic("show","sm")+" Tickets",bucket.show],[tic("eat","sm")+" Food",bucket.eat],[tic("after","sm")+" Afters",bucket.after],[tic("other","sm")+" Other",bucket.other],[tic("gas","sm")+" Gas",mi>=1?gasEach:0]].filter(x=>x[1]>0).map(([l,v])=>`<li><span>${l}</span><b>$${v%1?v.toFixed(2):v}</b></li>`).join("")}<li class="sum"><span>Total</span><b>${approx?"≈ ":""}$${tot.toFixed(2)}</b></li></ul>`:""}
-    <div class="bn-go"><button type="button" class="bn-send" data-send="1">Send the link</button><button type="button" data-flip="1">↻ Back to the plan</button></div>`;}
+    <div class="bn-go"><button type="button" class="bn-send" data-send="1">Send the link</button><button type="button" data-split="1">💸 Split it evenly</button><button type="button" data-flip="1">↻ Back to the plan</button></div>
+    <p class="bn-fine">Split it evenly fills in "Pay back" on every stop with its cost each, so friends know what to send. Edit any stop to change it.</p>`;}
 // no cost entered: a rough typical spend, clearly marked as a guess
 // a listed spot's guess = middle of its price range with tax and tip (see PRICE)
 const spotGuess=s=>{const a=allAfters().find(x=>x.n===s.n&&(!s.p||s.p.startsWith(x.a||"")));const c=a&&cost(a);return c?Math.round((c.all[0]+c.all[1])/2):null;};
@@ -313,6 +323,7 @@ function drawBuilder(){const el=$("bNight");if(!el)return;const n=plan.s.length,
   el.innerHTML=`<div class="bn-h">${n?`<button type="button" class="bn-flipb" data-flip="1">${tic("money","sm")} Costs ↻</button>`:""}<h2>Your night</h2><p>Pre-game to afters, then send one link. No sign-in. The whole plan lives in the link.</p></div>
     ${NIGHTS.length>1||(NIGHTS.length===1&&NIGHTS[0].id!==planId)?`<div class="bn-nights" role="group" aria-label="Your saved nights">${NIGHTS.map(x=>`<button type="button" class="chip" data-nuse="${esc(x.id)}" aria-pressed="${x.id===planId}">${esc(nName(x.p))}</button>`).join("")}<button type="button" class="chip bn-nnew" data-nnew="1">＋ New</button></div>`:""}
     <div class="bn-meta"><input data-m="t" value="${esc(plan.t)}" placeholder="Name the night" maxlength="70" aria-label="Name the night"><label class="bn-dw${plan.d?"":" empty"}"><input data-m="d" type="date" value="${esc(plan.d)}" aria-label="Date"></label></div>
+    <p class="bn-wx" id="bnWx" hidden></p>
     ${n?`<ol class="bn-stops">${plan.s.map(stopRow).join("")}</ol>`:`<p class="bn-empty">Nothing yet. Add stops below, or tap <b>＋ My night</b> on any show.</p>`}
     <div class="bn-add">${["meet","eat","show","after"].map(k=>`<button type="button" class="chip bn-addc" data-addk="${k}" aria-pressed="${pickK===k}">${tic(k,"sm")} ${TYPES[k][1]}</button>`).join("")}</div>
     ${picker()}
@@ -322,7 +333,27 @@ function drawBuilder(){const el=$("bNight");if(!el)return;const n=plan.s.length,
     ${n?`<div class="bn-sum">${n} stop${n>1?"s":""}${tot?` · ≈ $${Math.round(tot)} each`:""}</div>`:""}
     <div class="bn-go"><button type="button" class="bn-send" data-send="1"${n?"":" disabled"}>Send the link</button><button type="button" data-prev="1"${n?"":" disabled"}>Preview</button>${n?'<button type="button" class="bn-clr" data-nnew="1">＋ New night</button>':""}</div>
     ${NIGHTS.length?`<p class="bn-fine">Every night you build is kept in <button type="button" class="bn-lnk" data-gosaved="1">Saved → Your nights</button>.</p>`:""}
-    <p class="bn-fine">Changed something after you sent it? Send the new link. Every card shows when it was last updated, so the newest one is easy to spot.</p>`;}
+    <p class="bn-fine">Changed something after you sent it? Send the new link. Every card shows when it was last updated, so the newest one is easy to spot.</p>`;
+  nightWx();}
+/* weather for the night: forecast at the show (or the first stop with a place, or your start) when the date is within ~11 days */
+function nightWx(){const el=$("bnWx");if(!el||!plan.d||typeof wxGet!=="function")return;
+  const days=Math.round((new Date(plan.d+"T12:00")-new Date(todayISO()+"T12:00"))/864e5);if(days<0||days>11)return;
+  const s=plan.s.find(x=>x.k==="show"&&typeof x.la==="number")||plan.s.find(x=>typeof x.la==="number");
+  const la=s?s.la:(typeof origin!=="undefined"&&origin&&origin.lat),lo=s?s.lo:(origin&&origin.lon);if(typeof la!=="number")return;
+  const d0=plan.d;wxGet(la.toFixed(2)+","+lo.toFixed(2)).then(d=>{if(!d||!el.isConnected||plan.d!==d0)return;const i=d.time.indexOf(d0);if(i<0)return;
+    const hi=Math.round(d.temperature_2m_max[i]),low=Math.round(d.temperature_2m_min[i]),rain=d.precipitation_probability_max[i];
+    el.innerHTML=`${wxIcon(d.weather_code[i])} <b>${hi}°/${low}°</b>${rain>=20?` · ${rain}% rain`:""}${low<60?" · bring a layer":""}<small>${esc(s?(s.p||s.n||"").split(",")[0]:"near you")}</small>`;el.hidden=false;});}
+/* drag a stop by its grip to reorder (the ↑↓ buttons inside a stop still work too) */
+let drag=null;
+function dragStart(ev){const g=ev.target.closest("[data-grip]");if(!g)return;ev.preventDefault();const li=g.closest(".bn-stop"),ol=li.parentNode,items=[...ol.children];
+  const from=items.indexOf(li),rects=items.map(x=>x.getBoundingClientRect()),h=rects[from].height+8;
+  drag={li,items,from,to:from,rects,h,y0:ev.clientY,id:ev.pointerId};li.classList.add("dragging");try{g.setPointerCapture(ev.pointerId);}catch(e){}
+  try{navigator.vibrate&&navigator.vibrate(8);}catch(e){}}
+function dragMove(ev){if(!drag||ev.pointerId!==drag.id)return;const dy=ev.clientY-drag.y0,{items,from,rects,h}=drag;drag.li.style.transform=`translateY(${dy}px)`;
+  const mid=rects[from].top+rects[from].height/2+dy;let to=from;rects.forEach((r,j)=>{const m=r.top+r.height/2;if(j<from&&mid<m)to=Math.min(to,j);if(j>from&&mid>m)to=Math.max(to,j);});
+  drag.to=to;items.forEach((x,j)=>{if(j===from)return;x.style.transform=j>=to&&j<from?`translateY(${h}px)`:j<=to&&j>from?`translateY(${-h}px)`:"";});}
+function dragEnd(ev){if(!drag||ev.pointerId!==drag.id)return;const {from,to,items}=drag;drag=null;items.forEach(x=>{x.style.transform="";x.classList.remove("dragging");});
+  if(to!==from){const [m]=plan.s.splice(from,1);plan.s.splice(to,0,m);openI=-1;plan.up=Date.now();save();drawBuilder();toast("Moved "+esc(m.n||TYPES[m.k][1]));}}
 function sortStops(){let last=-1;const k=plan.s.map((x,i)=>{if(x.tm){let [h,m]=x.tm.split(":").map(Number);if(h<5)h+=24;last=h*60+m;}return {x,i,t:last};});
   const open=plan.s[openI];k.sort((a,b)=>a.t-b.t||a.i-b.i);plan.s=k.map(o=>o.x);if(open)openI=plan.s.indexOf(open);}
 function onInput(ev){const t=ev.target;
@@ -333,6 +364,12 @@ function onInput(ev){const t=ev.target;
   if(ev.type==="change"&&(t.dataset.f==="w"||t.dataset.f==="tm")){if(t.dataset.f==="tm")sortStops();save();drawBuilder();}}
 async function onClick(ev){const b=ev.target.closest("button");if(!b)return;const d=b.dataset;
   if(d.flip){flipTo(!flipped);return;}
+  if(d.split){const st=typeof state!=="undefined"?state:{},h=plan.s.find(x=>x.vh||x.ch);let n=0;
+    plan.s.forEach(x=>{let v=x.k==="show"?showPrice(x).v:x.c!=null&&x.c!==""?+x.c:(guessCost(x,st)||{}).v;v=Math.round(v||0);if(!v)return;
+      x.amt=v;if(!x.vh&&!x.ch&&h){if(h.vh)x.vh=h.vh;else x.ch=h.ch;}n++;});
+    if(!n){toast("No costs to split yet. Add \"Cost each\" to a stop");return;}
+    plan.s=plan.s.map(cleanStop);plan.up=Date.now();save();drawBuilder();
+    toast(h?`Pay back filled on ${n} stop${n>1?"s":""}, all to ${esc(h.vh?"@"+h.vh:"$"+h.ch)}`:`Pay back filled on ${n} stop${n>1?"s":""}. Add a Venmo or Cash App handle so friends can pay`);return;}
   if(d.addk){const k=d.addk;if(k==="show"||k==="after"||k==="eat"){pickK=pickK===k?"":k;pickK2="";drawBuilder();return;}
     if(addStop({k},true)){openI=plan.s.indexOf(lastAdded);pickK="";drawBuilder();focusFirst();}return;}
   if("cat" in d){pickK2=d.cat;drawBuilder();return;}   // "" = Closest (all categories)
@@ -408,11 +445,7 @@ addEventListener("hashchange",ev=>fromHash(new URL(ev.newURL).hash));
 const plusMin=(t,m)=>{let [h,x]=t.split(":").map(Number);let v=((h*60+x+m)%1440+1440)%1440;return String(v/60|0).padStart(2,"0")+":"+String(v%60).padStart(2,"0");};
 const addDays=(iso,n)=>{const [y,m,d]=iso.split("-").map(Number),x=new Date(y,m-1,d+n);return x.getFullYear()+"-"+String(x.getMonth()+1).padStart(2,"0")+"-"+String(x.getDate()).padStart(2,"0");};
 let spun=[];
-function surpriseNight(){const now=todayISO(),hasO=typeof origin!=="undefined"&&origin&&typeof origin.lat==="number";
-  let pool=allEv().filter(e=>typeof e.lat==="number"&&e.start&&(e.end||e.start)>=now&&e.start<=addDays(now,14)&&!["openmic","contact"].includes(e.kind)&&!(typeof priceInfo==="function"&&priceInfo(e).sold)&&!spun.includes(hid(e)));
-  if(hasO){const near=pool.filter(e=>{const d=driveEstimate(e.lat,e.lon);return d&&d.mins<=50;});if(near.length>=5)pool=near;}
-  if(!pool.length){spun=[];toast("No shows to spin right now");return;}
-  const e=pool[Math.floor(Math.random()*pool.length)];spun=[hid(e),...spun].slice(0,8);
+function nightFor(e){const now=todayISO();
   const show=showStop(e,true),st=show.tm||"20:00";show.tm=st;
   const near=nearAfters(e.lat,e.lon,60,12),rnd=a=>a[Math.floor(Math.random()*a.length)];
   const food=near.filter(x=>grp(x.p)==="food"&&EXP[x.p.c]!=="splurge"&&x.mi<=6).slice(0,3),fp=food.length?rnd(food).p:null;
@@ -422,7 +455,15 @@ function surpriseNight(){const now=todayISO(),hasO=typeof origin!=="undefined"&&
   const after=opts.length?afterStop(rnd(opts).p):{k:"after",n:"Late eats",u:"https://www.google.com/maps/search/?api=1&query="+encodeURIComponent("late night food near "+show.p)};
   after.tm=plusMin(st,150);
   const d=e.start<now?now:e.start,short=String(e.title).split(/[:(–—-]/)[0].trim().slice(0,40);
-  view(cleanPlan({t:short+" night",d,up:Date.now(),s:[eat,show,after]}),"auto");}
+  return cleanPlan({t:short+" night",d,up:Date.now(),s:[eat,show,after]});}
+// map: "Build a night here" → a fresh saved night (food → this show → afters), opened in the Plan tab
+function nightAt(e){if(!e||typeof e.lat!=="number")return;useNight(newId(),nightFor(e));openPlan();toast("Night built around "+esc(String(e.title).slice(0,40))+". Your other nights are in Saved");}
+function surpriseNight(){const now=todayISO(),hasO=typeof origin!=="undefined"&&origin&&typeof origin.lat==="number";
+  let pool=allEv().filter(e=>typeof e.lat==="number"&&e.start&&(e.end||e.start)>=now&&e.start<=addDays(now,14)&&!["openmic","contact"].includes(e.kind)&&!(typeof priceInfo==="function"&&priceInfo(e).sold)&&!spun.includes(hid(e)));
+  if(hasO){const near=pool.filter(e=>{const d=driveEstimate(e.lat,e.lon);return d&&d.mins<=50;});if(near.length>=5)pool=near;}
+  if(!pool.length){spun=[];toast("No shows to spin right now");return;}
+  const e=pool[Math.floor(Math.random()*pool.length)];spun=[hid(e),...spun].slice(0,8);
+  view(nightFor(e),"auto");}
 
 /* ---------- Saved tab: "Your nights" (every plan you've built, newest first) ---------- */
 function nName(p){return p.t||(p.s.find(x=>x.k==="show")||{}).n||(p.d?"Night of "+fmtD(p.d):"Untitled night");}
@@ -445,12 +486,19 @@ function drawSaved(){if(!savedOn)return;let el=$("bNights");const list=$("list")
         NIGHTS=NIGHTS.filter(n=>n.id!==x.id);if(x.id===planId){plan=cleanPlan({});planId=newId();try{localStorage.setItem(KEY,JSON.stringify(plan));}catch(e){}drawBuilder();}
         putNights();drawSaved();toast(`Deleted ${esc(nName(x.p))}`,"Undo",()=>{NIGHTS.push(x);NIGHTS.sort((a,b)=>(b.p.up||0)-(a.p.up||0));putNights();drawSaved();drawBuilder();});}});}
   el.hidden=false;
+  const today=todayISO(),past=NIGHTS.filter(x=>x.p.d&&x.p.d<today),up=NIGHTS.filter(x=>!(x.p.d&&x.p.d<today))
+    .sort((a,b)=>(a.p.d||"9999").localeCompare(b.p.d||"9999")||(b.p.up||0)-(a.p.up||0));
   el.innerHTML=`<div class="bpicks-h"><h2 class="bsec">${tic("after","sm")} Your nights${NIGHTS.length?` · ${NIGHTS.length}`:""}</h2><button type="button" class="blink" data-nnew="1">＋ New night</button></div>
-    ${NIGHTS.length?`<div class="bnc-row">${NIGHTS.map(nightCard).join("")}</div>`:`<p class="bnone">Nights you build in the Plan tab land here, so you can work on a few and flip between them.</p>`}
+    ${up.length?`<h3 class="bnc-h">Coming up · soonest first</h3><div class="bnc-row">${up.map(nightCard).join("")}</div>`:NIGHTS.length?"":`<p class="bnone">Nights you build in the Plan tab land here, so you can work on a few and flip between them.</p>`}
+    ${past.length?`<h3 class="bnc-h">Past nights · their shows are in your Show passport</h3><div class="bnc-row bnc-past">${past.map(nightCard).join("")}</div>`:""}
     <h2 class="bsec bnights-sh">${tic("show","sm")} Saved shows</h2>`;}
 function savedRow(on){savedOn=on;if(on)drawSaved();else{const el=$("bNights");if(el)el.hidden=true;}}
 
-window.NIGHT={spots:allAfters,savedRow,stopFor:afterStop,toast,AC,IC,ic,EXP,cost,hrs,grp,ready:()=>AFTERS.length>0,surpriseNight,chip,map,sheet,encode,decode,cleanPlan,addStop,view,get plan(){return plan;}};
+// backup / restore (b.js passport file carries your nights too)
+const allNights=()=>NIGHTS.map(x=>({id:x.id,p:cleanPlan(x.p)}));
+function mergeNights(arr){if(!Array.isArray(arr))return 0;let n=0;arr.slice(0,MAXN).forEach(x=>{if(!x||typeof x.id!=="string"||NIGHTS.some(y=>y.id===x.id))return;NIGHTS.push({id:x.id.slice(0,20),p:cleanPlan(x.p)});n++;});
+  NIGHTS.sort((a,b)=>(b.p.up||0)-(a.p.up||0));if(NIGHTS.length>MAXN)NIGHTS.length=MAXN;putNights();drawSaved();drawBuilder();return n;}
+window.NIGHT={spots:allAfters,savedRow,stopFor:afterStop,toast,nightAt,allNights,mergeNights,pack,unpack,AC,IC,ic,EXP,cost,hrs,grp,ready:()=>AFTERS.length>0,surpriseNight,chip,map,sheet,encode,decode,cleanPlan,addStop,view,get plan(){return plan;}};
 if(keep(plan)&&!NIGHTS.some(x=>x.id===planId))upsertNight();else putNights();
 const go=()=>{mount();inject(document.body);fromHash(window.NIGHT_HASH||location.hash);};
 if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",go);else go();

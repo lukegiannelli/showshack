@@ -188,3 +188,16 @@ html.nview-on,html.nview-on body{overflow:hidden}
 .bnc-act>button.bnc-open{background:linear-gradient(90deg,#ffd38a,#ff7ab8);color:#1d1030;border:0}
 .bnc-del{position:static;margin-left:auto;width:38px;height:38px}
 .bnc-del.sure .nic{filter:drop-shadow(0 0 3px #FF5C8A) drop-shadow(0 0 10px #FF5C8A)}
+/* drag to reorder: grip on the left of each stop */
+.bn-stop.hasgrip .bn-sh{padding-left:34px}
+.bn-grip{position:absolute;left:2px;top:0;bottom:0;margin:auto 0;width:30px;height:44px;display:grid;grid-template-columns:repeat(2,4px);grid-auto-rows:4px;gap:4px;place-content:center;cursor:grab;touch-action:none;z-index:2}
+.bn-grip i{width:4px;height:4px;border-radius:50%;background:#b9b0d4;box-shadow:0 0 4px var(--sc)}
+.bn-stop{transition:transform .18s ease}
+.bn-stop.dragging{transition:none;z-index:5;box-shadow:0 10px 30px rgba(0,0,0,.5),0 0 18px -6px var(--sc);border-color:var(--sc);cursor:grabbing}
+/* weather for the night */
+.bn-wx{display:flex;align-items:center;flex-wrap:wrap;gap:6px;margin:-4px 0 12px;font-size:13.5px;color:#e4dcf5}
+.bn-wx .ni{width:20px;height:20px}
+.bn-wx small{margin-left:auto;font:500 11.5px var(--mono);color:#a59cc4}
+/* Saved: coming up / past */
+.bnc-h{margin:2px 0 -2px;font:700 12px var(--mono);letter-spacing:.4px;text-transform:uppercase;color:#cfc6ea}
+.bnc-past .bnc{opacity:.78}
