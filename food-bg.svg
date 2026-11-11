@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 600" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <!-- Food backdrop: neon-outline steaming bowl with chopsticks, a taco, a coffee cup, warm glow. Faded in by spots.css. -->
+  <defs>
+    <filter id="g" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="2.2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+    <linearGradient id="fade" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FF8A5C" stop-opacity="0"/><stop offset=".6" stop-color="#FF8A5C" stop-opacity=".1"/><stop offset="1" stop-color="#FFC66B" stop-opacity=".2"/></linearGradient>
+  </defs>
+  <rect x="0" y="300" width="400" height="300" fill="url(#fade)"/>
+  <g filter="url(#g)">
+    <!-- big bowl -->
+    <path d="M90 430h220a110 110 0 0 1-220 0Z" stroke="#FF8A5C" stroke-width="2.4"/>
+    <path d="M130 470h140" stroke="#FF8A5C" stroke-width="1.6" opacity=".6"/>
+    <!-- steam -->
+    <g stroke="#FFC66B" stroke-width="2">
+      <path d="M160 400c0-18 14-18 14-36s-14-18-14-36"/><path d="M200 400c0-18 14-18 14-36s-14-18-14-36"/><path d="M240 400c0-18 14-18 14-36s-14-18-14-36"/>
+    </g>
+    <!-- chopsticks -->
+    <path d="M232 450 330 300M252 452 352 308" stroke="#FF6FA5" stroke-width="2.2"/>
+    <!-- taco -->
+    <path d="M30 220a50 50 0 0 1 100 0Z" stroke="#FFD84D" stroke-width="2"/>
+    <path d="M48 202c6-7 12-1 18-7s12-1 18-7 12-1 18-7" stroke="#7EE0B8" stroke-width="1.8"/>
+    <!-- coffee cup -->
+    <path d="M300 160h50v26a25 25 0 0 1-25 25 25 25 0 0 1-25-25Z" stroke="#7FD4FF" stroke-width="2"/>
+    <path d="M350 168h8a10 10 0 0 1 0 20h-8M318 140c0-8 6-8 6-16M334 140c0-8 6-8 6-16" stroke="#7FD4FF" stroke-width="1.8"/>
+    <!-- sparkles -->
+    <g stroke="#FFE7C2" stroke-width="1.6"><path d="M200 80v10M195 85h10"/><path d="M80 320v8M76 324h8"/><path d="M360 380v8M356 384h8"/><path d="M180 250v6M177 253h6"/></g>
+  </g>
+</svg>

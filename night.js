@@ -5,13 +5,25 @@ if(!window.NIGHT_BETA)return;
 const $=id=>document.getElementById(id);
 const KEY="shack-night", MAXS=12;
 const TYPES={meet:["📍","Meet up","#7ee0b8"],eat:["🍜","Eat","#FFC66B"],show:["🎟️","Show","#FF6FA5"],after:["🌙","Afters","#b48cff"],house:["🏠","Someone's place","#7fd4ff"],other:["✨","Other","#e6dcff"]};
-const AC={kbbq:["🥩","Korean BBQ"],karaoke:["🎤","Karaoke"],arcade:["🕹️","Arcades & barcades"],bowl:["🎳","Bowling"],spa:["♨️","24h Korean spa"],jazz:["🎷","Jazz & listening bars"],roof:["🌃","Rooftops"],stars:["🔭","Stargazing"],beach:["🌊","Beaches"],pool:["🎱","Pool"]};
+const AC={kbbq:["🥩","Korean BBQ"],karaoke:["🎤","Karaoke"],arcade:["🕹️","Arcades & barcades"],bowl:["🎳","Bowling"],spa:["♨️","24h Korean spa"],jazz:["🎷","Jazz & listening bars"],roof:["🌃","Rooftops"],stars:["🔭","Stargazing"],beach:["🌊","Beaches"],pool:["🎱","Pool"],
+  ramen:["🍜","Ramen"],tacos:["🌮","Tacos & Mexican"],pho:["🍲","Pho & Vietnamese"],korean:["🥘","Korean comfort food"],diner:["🍳","24h diners"]};
+/* Typical SoCal prices per person (estimates, not from the places themselves). svc: sit = 20% tip on food, bar = 20% on drinks,
+   counter = tip optional, none = no tip. A place can override with pp:[lo,hi] and svc in afters.json. */
+const PRICE={kbbq:[35,50,"sit","All-you-can-eat"],ramen:[17,24,"sit","Bowl and a side"],tacos:[10,18,"counter","3 or 4 tacos and a drink"],
+  pho:[15,22,"sit","Big bowl and a drink"],korean:[18,28,"sit","Main dish, banchan included"],diner:[16,26,"sit","Plate and coffee"],
+  karaoke:[12,25,"none","Room split 4 ways, about 2 hrs"],arcade:[15,30,"none","Game card"],bowl:[18,30,"none","2 games and shoes"],
+  spa:[25,40,"none","Day entry"],jazz:[20,40,"bar","Cover and a drink or two"],roof:[30,45,"bar","Two cocktails"],
+  pool:[8,15,"none","Table split 2 ways, about 1.5 hrs"],stars:[0,0,"none","Free"],beach:[0,0,"none","Free, parking may cost"]};
+const TAX=.09,TIP=.2;
+function cost(p){const r=PRICE[p.c];if(!r&&!p.pp)return null;const [lo,hi]=p.pp||r,svc=p.svc||(r?r[2]:"sit"),what=r&&!p.pp?r[3]:"Food";
+  const tip=svc==="sit"||svc==="bar"?TIP:0,f=x=>Math.round(x);
+  return {lo,hi,svc,what,tax:[f(lo*TAX),f(hi*TAX)],tip:[f(lo*tip),f(hi*tip)],all:[f(lo*(1+TAX+tip)),f(hi*(1+TAX+tip))],free:!hi};}
 const GO={drive:"🚗",ride:"🚕",walk:"🚶",transit:"🚇",there:"📍"};
 const GOW={drive:"Driving",ride:"Rideshare",walk:"Walk",transit:"Transit",there:"Meet there"};
 let AFTERS=[];
-fetch("afters.json?v=3").then(r=>r.ok?r.json():{}).then(j=>{AFTERS=((j||{}).places||[]).filter(p=>typeof p.lat==="number"&&!p.gone);if(mapOn)drawLayer();document.dispatchEvent(new Event("shack:spots"));}).catch(()=>{});
+fetch("afters.json?v=4").then(r=>r.ok?r.json():{}).then(j=>{AFTERS=((j||{}).places||[]).filter(p=>typeof p.lat==="number"&&!p.gone);if(mapOn)drawLayer();document.dispatchEvent(new Event("shack:spots"));}).catch(()=>{});
 const allAfters=()=>[...AFTERS,...(typeof POOL!=="undefined"?POOL:[]).map(p=>({...p,c:"pool",t:[p.c==="hall"?"Pool hall":"Bar with pool",...(p.t||[])]}))];
-const GRP={kbbq:"food",beach:"chill",stars:"chill"},grp=p=>GRP[p.c]||"after";
+const GRP={kbbq:"food",ramen:"food",tacos:"food",pho:"food",korean:"food",diner:"food",beach:"chill",stars:"chill"},grp=p=>GRP[p.c]||"after";
 const icon=c=>c==="pool"&&typeof NEON8==="string"?NEON8:`<span class="nemo">${(AC[c]||TYPES.other)[0]}</span>`;
 // hours label: firm, "usually" (sources disagree / third-party only), or unknown
 const hrs=p=>!p.h?"Hours not listed, check before you go":p.hq?`Usually ${p.h[0].toLowerCase()+p.h.slice(1)}, check before you go`:p.h;
@@ -72,7 +84,7 @@ const evById=h=>allEv().find(e=>hid(e)===h);
 function showStop(e,quiet){const st={k:"show",n:e.title,p:[e.venue,e.city].filter(Boolean).join(", "),tm:parseTime(e.time),u:e.url,la:e.lat,lo:e.lon};
   try{const pi=priceInfo(e);if(pi.free)st.c=0;else if(!pi.sold&&!pi.none&&pi.lo)st.c=Math.round(pi.lo);}catch(_){}
   if(!quiet&&!plan.d&&e.start&&e.start>=todayISO())plan.d=e.start;return st;}
-function afterStop(p){return {k:p.c==="pool"?"after":"after",n:p.n,p:[p.a,p.city].filter(Boolean).join(", "),la:p.lat,lo:p.lon,no:"Hours: "+hrs(p)};}
+function afterStop(p){return {k:grp(p)==="food"?"eat":"after",n:p.n,p:[p.a,p.city].filter(Boolean).join(", "),la:p.lat,lo:p.lon,no:"Hours: "+hrs(p)};}
 const todayISO=()=>{const d=new Date();return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");};
 // capture phase so the flip cards / card toggles never see these taps
 document.addEventListener("click",ev=>{const b=ev.target.closest("[data-nadd],[data-naft]");if(!b)return;ev.stopPropagation();ev.preventDefault();
@@ -182,9 +194,10 @@ function backHtml(){const p=plan,S=p.s,st=typeof state!=="undefined"?state:{};
     ${tot?`<h3 class="bn-sub">Total per person</h3><ul class="bn-list bn-tot">${[["🎟️ Tickets",bucket.show],["🍜 Food",bucket.eat],["🌙 Afters",bucket.after],["✨ Other",bucket.other],["⛽ Gas",mi>=1?gasEach:0]].filter(x=>x[1]>0).map(([l,v])=>`<li><span>${l}</span><b>$${v%1?v.toFixed(2):v}</b></li>`).join("")}<li class="sum"><span>Total</span><b>${approx?"≈ ":""}$${tot.toFixed(2)}</b></li></ul>`:""}
     <div class="bn-go"><button type="button" class="bn-send" data-send="1">Send the link</button><button type="button" data-flip="1">↻ Back to the plan</button></div>`;}
 // no cost entered: a rough typical spend, clearly marked as a guess
-const GUESS={kbbq:40,karaoke:15,arcade:20,bowl:20,spa:35,jazz:25,roof:25,pool:15,stars:0,beach:0};
-function guessCost(s,st){if(s.k==="eat"){const bbq=/bbq|korean/i.test((s.n||"")+(s.no||""));const v=bbq?40:(st.food||30);return {v,txt:`≈$${v} guess`,g:1};}
-  if(s.k==="after"){const a=allAfters().find(x=>x.n===s.n);const v=a&&GUESS[a.c]!=null?GUESS[a.c]:20;return v?{v,txt:`≈$${v} guess`,g:1}:{v:0,txt:"Free"};}
+// a listed spot's guess = middle of its price range with tax and tip (see PRICE)
+const spotGuess=s=>{const a=allAfters().find(x=>x.n===s.n&&(!s.p||s.p.startsWith(x.a||"")));const c=a&&cost(a);return c?Math.round((c.all[0]+c.all[1])/2):null;};
+function guessCost(s,st){if(s.k==="eat"){const g=spotGuess(s);if(g!=null)return {v:g,txt:`≈$${g} guess`,g:1};const bbq=/bbq|korean/i.test((s.n||"")+(s.no||""));const v=bbq?40:(st.food||30);return {v,txt:`≈$${v} guess`,g:1};}
+  if(s.k==="after"){const g=spotGuess(s),v=g!=null?g:20;return v?{v,txt:`≈$${v} guess`,g:1}:{v:0,txt:"Free"};}
   return null;}
 const near0=()=>{const s=plan.s.find(x=>x.k==="show"&&x.p);return s?s.p:"";};
 function anchor(){const s=[...plan.s].reverse().find(x=>typeof x.la==="number");if(s)return [s.la,s.lo];if(typeof origin!=="undefined"&&origin&&typeof origin.lat==="number")return [origin.lat,origin.lon];return null;}
@@ -305,8 +318,8 @@ function surpriseNight(){const now=todayISO(),hasO=typeof origin!=="undefined"&&
   const e=pool[Math.floor(Math.random()*pool.length)];spun=[hid(e),...spun].slice(0,8);
   const show=showStop(e,true),st=show.tm||"20:00";show.tm=st;
   const near=nearAfters(e.lat,e.lon,60,12),rnd=a=>a[Math.floor(Math.random()*a.length)];
-  const food=near.filter(x=>x.p.c==="kbbq"&&x.mi<=6).slice(0,3);
-  const eat=food.length?{...afterStop(rnd(food).p),k:"eat",no:"Korean BBQ before the show"}:{k:"eat",n:"Dinner near the venue",u:"https://www.google.com/maps/search/?api=1&query="+encodeURIComponent("restaurants near "+show.p)};
+  const food=near.filter(x=>grp(x.p)==="food"&&x.mi<=6).slice(0,3),fp=food.length?rnd(food).p:null;
+  const eat=fp?{...afterStop(fp),k:"eat",no:AC[fp.c][1]+" before the show"}:{k:"eat",n:"Dinner near the venue",u:"https://www.google.com/maps/search/?api=1&query="+encodeURIComponent("restaurants near "+show.p)};
   eat.tm=plusMin(st,-90);
   const late=new Set(["karaoke","arcade","bowl","spa","jazz","roof","pool"]),opts=near.filter(x=>late.has(x.p.c)&&!(x.p.til&&x.p.til<23)).slice(0,6);
   const after=opts.length?afterStop(rnd(opts).p):{k:"after",n:"Late eats",u:"https://www.google.com/maps/search/?api=1&query="+encodeURIComponent("late night food near "+show.p)};
@@ -314,7 +327,7 @@ function surpriseNight(){const now=todayISO(),hasO=typeof origin!=="undefined"&&
   const d=e.start<now?now:e.start,short=String(e.title).split(/[:(–—-]/)[0].trim().slice(0,40);
   view(cleanPlan({t:short+" night",d,up:Date.now(),s:[eat,show,after]}),"auto");}
 
-window.NIGHT={spots:allAfters,AC,hrs,grp,ready:()=>AFTERS.length>0,surpriseNight,chip,map,sheet,encode,decode,cleanPlan,addStop,view,get plan(){return plan;}};
+window.NIGHT={spots:allAfters,AC,cost,hrs,grp,ready:()=>AFTERS.length>0,surpriseNight,chip,map,sheet,encode,decode,cleanPlan,addStop,view,get plan(){return plan;}};
 const go=()=>{mount();inject(document.body);fromHash(window.NIGHT_HASH||location.hash);};
 if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",go);else go();
 })();

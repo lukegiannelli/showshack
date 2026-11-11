@@ -6,15 +6,52 @@
 .bsp-note{margin:4px 0 0;color:var(--muted);font-size:12px}
 .spc-list{display:flex;flex-direction:column;gap:10px}
 
-/* Afters screen: a faint neon skyline + moon + 8-ball pinned behind the cards; cards go slightly see-through */
-.bspots[data-k="after"]{position:relative;z-index:0}   /* own layer, so the backdrop paints above the page sky (#bgfx) */
-.bspots[data-k="after"]::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
-  background:url("afters-bg.svg?v=1") center bottom/contain no-repeat;opacity:.38;
+/* Afters + Food screens: a faint neon scene pinned behind the cards (skyline/moon/8-ball, or bowl/taco/coffee); cards go slightly see-through */
+.bspots[data-k="after"]{--bgimg:url("afters-bg.svg?v=1")}
+.bspots[data-k="food"]{--bgimg:url("food-bg.svg?v=1")}
+.bspots[data-k="after"],.bspots[data-k="food"]{position:relative;z-index:0}   /* own layer, so the backdrop paints above the page sky (#bgfx) */
+.bspots[data-k="after"]::before,.bspots[data-k="food"]::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
+  background:var(--bgimg) center bottom/contain no-repeat;opacity:.38;
   -webkit-mask-image:linear-gradient(to bottom,transparent 0,#000 30%);mask-image:linear-gradient(to bottom,transparent 0,#000 30%)}
-.bspots[data-k="after"] .spc{background:color-mix(in srgb,color-mix(in srgb,var(--vc) 12%,var(--surface)) 80%,transparent);
+.bspots[data-k="after"] .spc,.bspots[data-k="food"] .spc{background:color-mix(in srgb,color-mix(in srgb,var(--vc) 12%,var(--surface)) 80%,transparent);
   -webkit-backdrop-filter:blur(2px);backdrop-filter:blur(2px)}
-:root[data-theme="light"] .bspots[data-k="after"]::before{opacity:.3}
-@media (prefers-color-scheme:light){:root:not([data-theme="dark"]) .bspots[data-k="after"]::before{opacity:.3}}
+:root[data-theme="light"] .bspots[data-k]::before{opacity:.3}
+@media (prefers-color-scheme:light){:root:not([data-theme="dark"]) .bspots[data-k]::before{opacity:.3}}
+
+/* neon line icons */
+.nic{width:20px;height:20px;flex:none;fill:none;stroke:var(--ic,currentColor);stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;
+  filter:drop-shadow(0 0 2px var(--ic,currentColor)) drop-shadow(0 0 5px color-mix(in srgb,var(--ic,currentColor) 55%,transparent))}
+.nic.sm{width:15px;height:15px;stroke-width:2;filter:drop-shadow(0 0 2px color-mix(in srgb,var(--ic,currentColor) 70%,transparent))}
+.spchip{display:inline-flex;align-items:center;gap:7px}
+.spchip .nic{width:18px;height:18px}
+.spc-badge{flex:none;display:grid;place-items:center;width:38px;height:38px;border-radius:11px;
+  background:color-mix(in srgb,var(--ic) 10%,rgba(10,6,20,.55));border:1px solid color-mix(in srgb,var(--ic) 55%,transparent);
+  box-shadow:0 0 12px -4px var(--ic),inset 0 0 10px -6px var(--ic)}
+.spc-badge .nic{width:22px;height:22px}
+.spc-top .spc-cat{flex:1;color:color-mix(in srgb,var(--ic) 75%,var(--ink))}
+.spc-dr{display:inline-flex;align-items:center;gap:5px;--ic:var(--drive)}
+.spc-facts{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px}
+.spc-f{display:inline-flex;align-items:center;gap:6px;--ic:var(--muted)}
+.spc-late{font:600 11px var(--mono);padding:2px 8px;border-radius:999px;color:#E6DCFF;background:color-mix(in srgb,#B48CFF 25%,transparent);border:1px solid color-mix(in srgb,#B48CFF 55%,transparent)}
+
+/* price: total per person up front, breakdown under it */
+.spc-price{display:grid;grid-template-columns:auto 1fr;align-items:baseline;column-gap:8px;row-gap:2px;padding:9px 11px;border-radius:12px;
+  background:color-mix(in srgb,#7EE0B8 7%,rgba(10,6,20,.35));border:1px solid color-mix(in srgb,#7EE0B8 30%,transparent)}
+.spc-price b{font:700 17px var(--mono);color:#9FF0CC;text-shadow:0 0 8px color-mix(in srgb,#7EE0B8 50%,transparent)}
+.spc-price span{font-size:12px;color:var(--muted)}
+.spc-price small{grid-column:1/-1;font:500 12px var(--mono);color:color-mix(in srgb,var(--ink) 80%,var(--muted))}
+.spc-price .spc-svc{font-family:var(--body);color:var(--muted)}
+:root[data-theme="light"] .spc-price{background:color-mix(in srgb,#7EE0B8 12%,#fff)}
+:root[data-theme="light"] .spc-price b{color:#13805a;text-shadow:none}
+@media (prefers-color-scheme:light){:root:not([data-theme="dark"]) .spc-price{background:color-mix(in srgb,#7EE0B8 12%,#fff)}
+  :root:not([data-theme="dark"]) .spc-price b{color:#13805a;text-shadow:none}}
+
+/* "see drive times" prompt above the list when no start point is set */
+.spc-start{display:flex;align-items:center;gap:12px;padding:11px 14px;border-radius:14px;cursor:pointer;text-align:left;color:var(--ink);--ic:#7EE0B8;
+  background:color-mix(in srgb,#7EE0B8 8%,transparent);border:1px dashed color-mix(in srgb,#7EE0B8 55%,transparent)}
+.spc-start span{display:flex;flex-direction:column}
+.spc-start b{font:700 14px var(--body)}
+.spc-start small{font-size:12px;color:var(--muted)}
 
 .spc{--vc:#B48CFF;display:flex;flex-direction:column;gap:6px;padding:14px;border-radius:16px;color:var(--ink);
   background:color-mix(in srgb,var(--vc) 12%,var(--surface));border:1px solid color-mix(in srgb,var(--vc) 45%,transparent);
@@ -32,7 +69,9 @@
 .spc-act{display:flex;flex-wrap:wrap;gap:8px;margin-top:4px;align-items:center}
 .spc-act a,.spc-act .nadd{display:inline-flex;align-items:center;height:36px;padding:0 12px;border-radius:10px;font:600 13px var(--body);text-decoration:none;
   color:var(--ink);background:var(--chip);border:1px solid var(--line);cursor:pointer}
-.spc-act .nadd{margin-left:auto;background:color-mix(in srgb,var(--vc) 30%,var(--chip));border-color:color-mix(in srgb,var(--vc) 55%,transparent)}
+.spc-act .nadd{margin-left:auto;font-weight:700;background:color-mix(in srgb,var(--vc) 32%,var(--chip));border-color:color-mix(in srgb,var(--vc) 70%,transparent);
+  box-shadow:0 0 12px -5px var(--vc)}
+.spc-act .nadd.done{background:color-mix(in srgb,#7EE0B8 25%,var(--chip));border-color:#7EE0B8}
 
 /* chill spots: a sideways row on the Chill & community results */
 .bchill{display:flex;flex-direction:column;gap:8px;margin-bottom:6px}
