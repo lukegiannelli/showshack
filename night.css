@@ -65,6 +65,16 @@
 .naf-row svg.neon8{width:24px;height:24px;flex:none}
 .nemo{font-size:20px;flex:none;width:24px;text-align:center}
 .naf-w{background:none;border:0}
+/* Plan page: neon icons in place of emoji */
+.bn-ic .nic{width:22px;height:22px}
+.bnight .nic.sm{width:16px;height:16px;vertical-align:-3px}
+.bn-addc{display:inline-flex;align-items:center;gap:6px}
+.bn-list li span{display:inline-flex;align-items:center;gap:6px}
+.bn-pi-ic{display:flex!important;align-items:center;gap:10px;text-align:left}
+.bn-pi-ic>.nic{width:24px;height:24px;flex:none}
+.bn-pi-ic>span{display:flex;flex-direction:column;min-width:0}
+.bn-cats .spchip{display:inline-flex;align-items:center;gap:6px}
+.bn-flipb{display:inline-flex;align-items:center;gap:5px}
 /* map markers: neon line icon in a dark round badge ringed in the category's color; food gets a rounded square */
 .naf{--ic:#b48cff;display:grid;place-items:center;width:30px;height:30px;border-radius:50%;background:rgba(14,8,30,.88);
   border:1.5px solid var(--ic);box-shadow:0 0 10px -1px var(--ic),inset 0 0 8px -4px var(--ic)}
