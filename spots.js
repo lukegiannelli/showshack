@@ -34,9 +34,8 @@ function card({p,i,d},vc){const [em,cat]=label(p),q=encodeURIComponent([p.n,p.a,
   const sub=p.bt||(p.c==="pool"?(p.t||[])[0]:"");
   const tags=(p.t||[]).filter(t=>t!==sub).slice(0,3);
   const hrs=!p.h?`<span class="spc-hrs none">Hours not listed</span>`:`<span class="spc-hrs${p.hq?" est":""}">${esc(p.h)}${p.hq?" <em>usually</em>":""}</span>`;
-  const icc=(IC[p.c]||["#E6DCFF"])[0],x=(N.EXP||{})[p.c];
-  return `<article class="spc${x?" exp exp-"+x:""}" style="--vc:${vc};--ic:${icc}">
-    ${x?`<span class="spc-exp">${XLBL[x]}</span>`:""}
+  const icc=(IC[p.c]||["#E6DCFF"])[0];
+  return `<article class="spc" style="--vc:${vc};--ic:${icc}">
     <div class="spc-top"><span class="spc-badge">${em}</span><span class="spc-cat">${esc(cat)}${sub?` · ${esc(sub)}`:""}</span>${d?`<span class="spc-dr">${ic("drive","sm")}${fmtMins(d.mins)} · ${d.miles} mi</span>`:""}</div>
     <h3>${esc(p.n)}</h3>
     <p class="spc-where">${esc([p.a,p.city].filter(Boolean).join(", "))}</p>
@@ -45,9 +44,6 @@ function card({p,i,d},vc){const [em,cat]=label(p),q=encodeURIComponent([p.n,p.a,
     ${tags.length?`<div class="spc-tags">${tags.map(t=>`<i>${esc(t)}</i>`).join("")}</div>`:""}
     <div class="spc-act"><a href="https://www.google.com/maps/dir/?api=1&destination=${q}" target="_blank" rel="noopener">Directions</a>${p.u&&safeUrl(p.u)?`<a href="${esc(safeUrl(p.u))}" target="_blank" rel="noopener">Schedule ↗</a>`:`<a href="https://www.google.com/maps/search/?api=1&query=${q}" target="_blank" rel="noopener">Hours ↗</a>`}<button type="button" class="nadd" data-naft="${i}">＋ Add to my night</button></div>
   </article>`;}
-const XLBL={fun:"✦ Fun experience",splurge:"✦ Splurge"};
-const XROW={fun:["Fun experiences","Crack crab with your hands, watch noodles fly, grill it yourself. A show of its own without the big bill."],
-  splurge:["Splurge-worthy","Tasting menus for a big night. Book ahead, and check the menu price first."]};
 const CLOCK='<svg class="nic sm" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>';
 
 /* ---- home tiles (after the four vibes, same look) ---- */
@@ -56,7 +52,11 @@ function tiles(){const t=$("bTiles");if(!t||t.querySelector("[data-spots]"))retu
     <svg viewBox="0 0 24 24" aria-hidden="true">${v.icon}</svg><span><b>${v.name}</b><small data-scount="${k}">&nbsp;</small></span></button>`).join(""));
   t.addEventListener("click",ev=>{const b=ev.target.closest("[data-spots]");if(b){ev.stopPropagation();open(b.dataset.spots);}},true);
   // Food and Afters arrive after the four vibe tiles: restart every tile's shimmer at once so all six stay in step
-  const all=t.querySelectorAll(".btile");all.forEach(b=>b.classList.add("bt-sync"));void t.offsetWidth;all.forEach(b=>b.classList.remove("bt-sync"));}
+  const all=t.querySelectorAll(".btile");all.forEach(b=>b.classList.add("bt-sync"));void t.offsetWidth;all.forEach(b=>b.classList.remove("bt-sync"));
+  // tell each tile where it sits in the grid, so its sheen layer lines up into one band across all six
+  const measure=()=>{const g=t.getBoundingClientRect();if(!g.width)return;t.style.setProperty("--gw",g.width+"px");t.style.setProperty("--gh",g.height+"px");
+    t.querySelectorAll(".btile").forEach(b=>{const r=b.getBoundingClientRect();b.style.setProperty("--tx",(r.left-g.left)+"px");b.style.setProperty("--ty",(r.top-g.top)+"px");});};
+  measure();if(window.ResizeObserver)new ResizeObserver(measure).observe(t);}
 function home(){tiles();if(!N.ready())return;
   for(const k in KINDS){const xs=list(k),el=document.querySelector(`[data-scount="${k}"]`);if(!el)continue;
     const l=xs.filter(x=>late24(x.p)).length;el.textContent=xs.length+" spots"+(k==="after"&&l?` · ${l} past midnight`:"");}}
@@ -80,22 +80,13 @@ function draw(){mount();const K=SCR(cur),all=list(cur);
   // Pool goes right after "All" so it isn't lost off the end of the scrolling chip row
   const FRONT=["pool","hotel"],fr=c=>{const i=FRONT.indexOf(c);return i<0?99:i;};   // Pool and Hotel first so they aren't lost off the end of the row
   const cats=[...new Set(all.map(x=>x.p.c))].sort((a,b)=>fr(a)-fr(b));
-  // Food: two "experience" chips up front, then the categories
-  const xch=cur==="food"?[["x:fun",ic("boil"),"Fun experiences"],["x:splurge",ic("fine"),"Splurge"]]:[];
-  $("bSpSubs").innerHTML=(cats.length>1?[["","","All"],...xch,...cats.map(c=>[c,...label({c})])]:[]).map(([v,i,l])=>`<button type="button" class="chip spchip" data-ssub="${v}" aria-pressed="${v===sub}">${i}${esc(l)}</button>`).join("")
+  $("bSpSubs").innerHTML=(cats.length>1?[["","","All"],...cats.map(c=>[c,...label({c})])]:[]).map(([v,i,l])=>`<button type="button" class="chip spchip" data-ssub="${v}" aria-pressed="${v===sub}">${i}${esc(l)}</button>`).join("")
     +(cur!=="food"?`<button type="button" class="chip" data-slate="1" aria-pressed="${late}">🌙 ${cur==="chill"?"Open till midnight":"Past midnight"}</button>`:"")
     +(cur==="chill"?TAGF.map(t=>`<button type="button" class="chip" data-stag="${t}" aria-pressed="${tag===t}">${t==="Fire rings"?"🔥":t==="Tide pools"?"🦀":"🌅"} ${t}</button>`).join(""):"");
-  const E=N.EXP||{},subOk=p=>!sub||(sub.startsWith("x:")?E[p.c]===sub.slice(2):p.c===sub);
-  const xs=sorted(all.filter(x=>subOk(x.p)&&(!late||late24(x.p))&&(!tag||hasTag(x.p,tag))));
+  const xs=sorted(all.filter(x=>(!sub||x.p.c===sub)&&(!late||late24(x.p))&&(!tag||hasTag(x.p,tag))));
   $("bSpCount").textContent=xs.length+(xs.length===1?" spot":" spots")+(origin?" · closest first":"");
   const hint=origin?"":`<button type="button" class="spc-start" data-sstart>${ic("drive")}<span><b>See drive times</b><small>Set where you're starting from</small></span></button>`;
-  // Food, All: the experiences get their own glowing rows up top, then everything
-  const XORD=["boil","hotpot","hibachi","kbbq","fine"];   // no start point yet: lead with the boils and hot pot
-  let top="";if(cur==="food"&&!sub)top=["fun","splurge"].map(t=>{const r=xs.filter(x=>E[x.p.c]===t);if(!origin)r.sort((a,b)=>XORD.indexOf(a.p.c)-XORD.indexOf(b.p.c));return r.length?`<section class="spx spx-${t}">
-      <div class="bpicks-h"><h2 class="bsec">${XROW[t][0]} · ${r.length}</h2><button type="button" class="blink" data-ssub="x:${t}">See all</button></div>
-      <p class="bsp-note">${XROW[t][1]}</p><div class="spc-row">${r.slice(0,10).map(x=>card(x,K.c)).join("")}</div></section>`:"";}).join("")
-    +(xs.length?`<h2 class="bsec spx-all">Everything · ${xs.length}</h2>`:"");
-  $("bSpList").innerHTML=hint+top+(xs.length?xs.map(x=>card(x,K.c)).join(""):'<p class="bnone">Nothing here yet.</p>');}
+  $("bSpList").innerHTML=hint+(xs.length?xs.map(x=>card(x,K.c)).join(""):'<p class="bnone">Nothing here yet.</p>');}
 
 /* ---- Chill & community results: a row of chill spots (beaches, stargazing) above the events ---- */
 function chillRow(on){let el=$("bChillSpots");
