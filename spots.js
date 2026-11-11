@@ -56,7 +56,9 @@ function mount(){if($("bSpots"))return;const sec=document.createElement("section
 function open(k){cur=k;sub="";late=false;tag="";mount();BUI.show("spots");}
 function draw(){mount();const K=SCR(cur),all=list(cur);
   $("bSpTitle").textContent=K.title;$("bSpBlurb").textContent=K.blurb;
-  const cats=[...new Set(all.map(x=>x.p.c))];
+  $("bSpots").dataset.k=cur;
+  // Pool goes right after "All" so it isn't lost off the end of the scrolling chip row
+  const cats=[...new Set(all.map(x=>x.p.c))].sort((a,b)=>(b==="pool")-(a==="pool"));
   $("bSpSubs").innerHTML=(cats.length>1?[["","All"],...cats.map(c=>[c,label({c}).join(" ")])]:[]).map(([v,l])=>`<button type="button" class="chip" data-ssub="${v}" aria-pressed="${v===sub}">${esc(l)}</button>`).join("")
     +(cur!=="food"?`<button type="button" class="chip" data-slate="1" aria-pressed="${late}">🌙 ${cur==="chill"?"Open till midnight":"Past midnight"}</button>`:"")
     +(cur==="chill"?TAGF.map(t=>`<button type="button" class="chip" data-stag="${t}" aria-pressed="${tag===t}">${t==="Fire rings"?"🔥":t==="Tide pools"?"🦀":"🌅"} ${t}</button>`).join(""):"");

@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 600" preserveAspectRatio="xMidYMax slice" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <!-- Afters backdrop: neon-outline night skyline, crescent moon, stars, an 8-ball. Faded in by spots.css. -->
+  <defs>
+    <filter id="g" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="2.2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+    <linearGradient id="fade" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#B48CFF" stop-opacity="0"/><stop offset=".55" stop-color="#B48CFF" stop-opacity=".12"/><stop offset="1" stop-color="#FF6FA5" stop-opacity=".22"/></linearGradient>
+  </defs>
+  <rect x="0" y="300" width="400" height="300" fill="url(#fade)"/>
+  <g filter="url(#g)">
+    <!-- moon -->
+    <path d="M338 92a34 34 0 1 1-30-50 27 27 0 0 0 30 50Z" stroke="#FFC66B" stroke-width="2"/>
+    <!-- stars -->
+    <g stroke="#E6DCFF" stroke-width="1.6">
+      <path d="M60 70v10M55 75h10"/><path d="M150 40v8M146 44h8"/><path d="M250 120v8M246 124h8"/>
+      <path d="M95 170v6M92 173h6"/><path d="M370 200v8M366 204h8"/><path d="M200 220v6M197 223h6"/>
+    </g>
+    <!-- skyline -->
+    <path d="M0 520h28v-60h34v-40h18v40h22v-90h40v60h16v-120l20-24 20 24v100h26v-56h36v76h18v-130h44v50h20v-30h30v84h28v100" stroke="#B48CFF" stroke-width="2.2"/>
+    <!-- lit windows -->
+    <g stroke="#FF6FA5" stroke-width="2.4">
+      <path d="M112 386h6M126 386h6M112 404h6M126 404h6M112 422h6"/>
+      <path d="M170 352h6M186 352h6M170 372h6M186 372h6M178 392h6"/>
+      <path d="M300 356h6M318 356h6M300 376h6M318 376h6M309 396h6"/>
+    </g>
+    <!-- 8-ball -->
+    <circle cx="70" cy="290" r="24" stroke="#7FD4FF" stroke-width="2"/>
+    <circle cx="74" cy="284" r="9" stroke="#7FD4FF" stroke-width="1.6"/>
+    <path d="M74 279.5a2.6 2.6 0 1 1 0 .1M74 284.5a3.4 3.4 0 1 1 0 .1" stroke="#7FD4FF" stroke-width="1.2"/>
+    <!-- cue -->
+    <path d="M100 272 192 214" stroke="#7FD4FF" stroke-width="2" opacity=".7"/>
+  </g>
+</svg>

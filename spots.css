@@ -6,6 +6,16 @@
 .bsp-note{margin:4px 0 0;color:var(--muted);font-size:12px}
 .spc-list{display:flex;flex-direction:column;gap:10px}
 
+/* Afters screen: a faint neon skyline + moon + 8-ball pinned behind the cards; cards go slightly see-through */
+.bspots[data-k="after"]{position:relative;z-index:0}   /* own layer, so the backdrop paints above the page sky (#bgfx) */
+.bspots[data-k="after"]::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
+  background:url("afters-bg.svg?v=1") center bottom/contain no-repeat;opacity:.38;
+  -webkit-mask-image:linear-gradient(to bottom,transparent 0,#000 30%);mask-image:linear-gradient(to bottom,transparent 0,#000 30%)}
+.bspots[data-k="after"] .spc{background:color-mix(in srgb,color-mix(in srgb,var(--vc) 12%,var(--surface)) 80%,transparent);
+  -webkit-backdrop-filter:blur(2px);backdrop-filter:blur(2px)}
+:root[data-theme="light"] .bspots[data-k="after"]::before{opacity:.3}
+@media (prefers-color-scheme:light){:root:not([data-theme="dark"]) .bspots[data-k="after"]::before{opacity:.3}}
+
 .spc{--vc:#B48CFF;display:flex;flex-direction:column;gap:6px;padding:14px;border-radius:16px;color:var(--ink);
   background:color-mix(in srgb,var(--vc) 12%,var(--surface));border:1px solid color-mix(in srgb,var(--vc) 45%,transparent);
   box-shadow:0 0 14px -8px color-mix(in srgb,var(--vc) 70%,transparent)}
