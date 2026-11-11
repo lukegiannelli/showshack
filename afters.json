@@ -1,5 +1,5 @@
 {
-"note": "Afters spots for the Night Card. h = hours text; til = usual latest close on the 24h clock, past midnight keeps counting (26 = 2 AM); hq '~' = sources disagree or only third-party listings. No h = hours unknown. Checked Nov 2026; always check before you go.",
+"note": "Afters spots for the Night Card. h = hours text; til = usual latest close on the 24h clock, past midnight keeps counting (26 = 2 AM); hq '~' = sources disagree or only third-party listings. No h = hours unknown. Food spots marked src 'osm' were matched on OpenStreetMap (name, address, hours). pp = per-person food price range before tax and tip; svc 'sit' or 'counter' overrides the category default. Checked Nov 2026; always check before you go.",
 "places": [
 {
 "n": "Baekjeong Irvine",
@@ -1226,6 +1226,284 @@
 "h": "~6 AM–10 PM",
 "til": 22,
 "hq": "~"
+},
+{
+"n": "Phở 79",
+"c": "pho",
+"city": "Garden Grove",
+"zip": "92843",
+"a": "9941 Hazard Ave",
+"t": [
+"Little Saigon classic"
+],
+"lat": 33.75244,
+"lon": -117.95574,
+"h": "7 AM to 9 PM, closed Tue",
+"til": 21,
+"hq": "~",
+"geo": "amenity",
+"src": "osm"
+},
+{
+"n": "Brodard Chateau",
+"c": "pho",
+"city": "Garden Grove",
+"zip": "92844",
+"a": "9100 Trask Ave",
+"t": [
+"Nem nướng rolls",
+"Sit-down"
+],
+"lat": 33.76628,
+"lon": -117.97061,
+"h": "10:30 AM to 9:30 PM (10 PM Fri and Sat)",
+"til": 22,
+"hq": "~",
+"geo": "amenity",
+"src": "osm"
+},
+{
+"n": "Daikokuya",
+"c": "ramen",
+"city": "Los Angeles",
+"zip": "90013",
+"a": "327 E 1st St",
+"t": [
+"Little Tokyo",
+"Expect a line"
+],
+"lat": 34.04997,
+"lon": -118.24008,
+"h": "11 AM to 10 PM (midnight Fri and Sat)",
+"til": 24,
+"hq": "~",
+"geo": "amenity",
+"src": "osm"
+},
+{
+"n": "Kitakata Ramen Ban Nai",
+"c": "ramen",
+"city": "Costa Mesa",
+"zip": "92626",
+"a": "891 Baker St",
+"t": [
+"Shoyu ramen"
+],
+"lat": 33.67948,
+"lon": -117.89376,
+"geo": "amenity",
+"src": "osm"
+},
+{
+"n": "HiroNori Craft Ramen",
+"c": "ramen",
+"city": "Irvine",
+"a": "2222 Michelson Dr",
+"t": [
+"Vegan ramen too"
+],
+"lat": 33.67632,
+"lon": -117.85562,
+"h": "11 AM to 9 PM",
+"til": 21,
+"hq": "~",
+"geo": "amenity",
+"src": "osm"
+},
+{
+"n": "Norms",
+"c": "diner",
+"city": "Los Angeles",
+"zip": "91405",
+"a": "13636 Sherman Way",
+"t": [
+"Van Nuys",
+"Breakfast all night"
+],
+"lat": 34.20095,
+"lon": -118.4304,
+"h": "Open 24 hours",
+"til": 30,
+"hq": "~",
+"geo": "amenity",
+"src": "osm"
+},
+{
+"n": "Norms",
+"c": "diner",
+"city": "Downey",
+"zip": "90241",
+"a": "7955 Firestone Blvd",
+"t": [
+"Breakfast all night"
+],
+"lat": 33.94331,
+"lon": -118.13849,
+"h": "Open 24 hours",
+"til": 30,
+"hq": "~",
+"geo": "amenity",
+"src": "osm"
+},
+{
+"n": "Sonoratown",
+"c": "tacos",
+"city": "Los Angeles",
+"zip": "90019",
+"a": "5610 San Vicente Blvd",
+"t": [
+"Flour tortillas",
+"Counter service"
+],
+"lat": 34.05391,
+"lon": -118.35532,
+"h": "11 AM to 10 PM",
+"til": 22,
+"hq": "~",
+"geo": "amenity",
+"src": "osm"
+},
+{
+"n": "Sonoratown",
+"c": "tacos",
+"city": "Long Beach",
+"zip": "90802",
+"a": "244 E 3rd St",
+"t": [
+"Flour tortillas",
+"Counter service"
+],
+"lat": 33.77037,
+"lon": -118.18996,
+"h": "11 AM to 10 PM",
+"til": 22,
+"hq": "~",
+"geo": "amenity",
+"src": "osm"
+},
+{
+"n": "Guisados",
+"c": "tacos",
+"city": "Los Angeles",
+"zip": "90013",
+"a": "541 S Spring St",
+"t": [
+"Downtown",
+"Stew tacos"
+],
+"lat": 34.0466,
+"lon": -118.25065,
+"h": "9 AM to 10 PM (1:30 AM Fri and Sat)",
+"til": 25.5,
+"hq": "~",
+"geo": "amenity",
+"src": "osm"
+},
+{
+"n": "Guisados",
+"c": "tacos",
+"city": "West Hollywood",
+"zip": "90069",
+"a": "8935 Santa Monica Blvd",
+"t": [
+"Stew tacos"
+],
+"lat": 34.08442,
+"lon": -118.38523,
+"h": "11 AM to midnight (2 AM Fri and Sat, 8 PM Sun)",
+"til": 26,
+"hq": "~",
+"geo": "amenity",
+"src": "osm"
+},
+{
+"n": "Taco Mesa",
+"c": "tacos",
+"city": "Costa Mesa",
+"zip": "92627",
+"a": "647 W 19th St",
+"t": [
+"Counter service"
+],
+"lat": 33.64324,
+"lon": -117.92529,
+"h": "8 AM to 11 PM",
+"til": 23,
+"hq": "~",
+"geo": "amenity",
+"src": "osm"
+},
+{
+"n": "Tacos 1986",
+"c": "tacos",
+"city": "Los Angeles",
+"zip": "90024",
+"a": "10874 Kinross Ave",
+"t": [
+"Westwood",
+"Counter service"
+],
+"lat": 34.06067,
+"lon": -118.44469,
+"h": "11 AM to 10 PM",
+"til": 22,
+"hq": "~",
+"geo": "amenity",
+"src": "osm"
+},
+{
+"n": "Avila's El Ranchito",
+"c": "tacos",
+"city": "Santa Ana",
+"zip": "92705",
+"a": "2201 E 1st St",
+"t": [
+"Sit-down Mexican"
+],
+"lat": 33.74606,
+"lon": -117.83547,
+"svc": "sit",
+"pp": [
+18,
+28
+],
+"geo": "amenity",
+"src": "osm"
+},
+{
+"n": "BCD Tofu House",
+"c": "korean",
+"city": "Los Angeles",
+"zip": "90010",
+"a": "3575 Wilshire Blvd",
+"t": [
+"Koreatown",
+"Soondubu"
+],
+"lat": 34.06207,
+"lon": -118.30267,
+"h": "7 AM to 3 AM (4 AM Fri and Sat)",
+"til": 27,
+"hq": "~",
+"geo": "amenity",
+"src": "osm"
+},
+{
+"n": "Sun Nong Dan",
+"c": "korean",
+"city": "San Gabriel",
+"zip": "91776",
+"a": "927 E Las Tunas Dr",
+"t": [
+"Galbi jjim"
+],
+"lat": 34.10424,
+"lon": -118.08758,
+"h": "Open 24 hours",
+"til": 30,
+"hq": "~",
+"geo": "amenity",
+"src": "osm"
 }
 ]
 }
