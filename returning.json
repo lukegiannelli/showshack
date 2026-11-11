@@ -1,0 +1,9 @@
+{
+"note": "Yearly SoCal festivals that already ran in 2026 and have no 2027 dates yet. last = the 2026 edition. When 2027 dates are announced, add the festival to events.json and remove it here. Checked Nov 10, 2026.",
+"fests": [
+{"n": "HARD Summer", "venue": "Hollywood Park", "city": "Inglewood", "last": "Aug 1 and 2, 2026", "usual": "Early August", "g": "Electronic, hip-hop", "url": "https://www.hardsummer.com/"},
+{"n": "Just Like Heaven", "venue": "Brookside at the Rose Bowl", "city": "Pasadena", "last": "Aug 22, 2026", "usual": "Was in May through 2025, August in 2026", "g": "Indie, alt", "url": "https://www.aeggp.com/festivals/just-like-heaven"},
+{"n": "Nocturnal Wonderland", "venue": "", "city": "San Bernardino", "last": "September 2026", "usual": "September", "g": "Electronic", "url": "https://www.insomniac.com/events/festivals/"},
+{"n": "Ohana Festival", "venue": "Doheny State Beach", "city": "Dana Point", "last": "Sept 25 to 27, 2026", "usual": "Late September", "g": "Rock, indie", "url": "https://ohanafest.com/"}
+]
+}
