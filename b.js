@@ -270,7 +270,7 @@ function after(){
     const fr=bFreshPicks(up,new Set(wp?wp.picks.slice(0,5).map(p=>skey(p.e)):[]));
     const fsig=fr.map(skey).join("|")+(origin?"o":"");
     $("bFreshBox").hidden=!fr.length;
-    if(fsig!==$("bFresh").dataset.sig){$("bFresh").dataset.sig=fsig;
+    if(FRESH&&fsig!==$("bFresh").dataset.sig){$("bFresh").dataset.sig=fsig;   // FRESH (fresh.json) can arrive after the show list
       $("bFresh").innerHTML=fr.map(e=>flipCardHtml(e,`<i style="--vc:#7ee0b8"></i>${freshWord(FRESH.seen[e.id])}`)).join("");
       const wa=isoDay(new Date(Date.now()-6*864e5)),wk=up.filter(e=>!e.added&&FRESH.seen[e.id]>(FRESH.base||"")&&FRESH.seen[e.id]>=wa).length;$("bFreshN").textContent=wk?wk+" new this week":"";}
     trust();
