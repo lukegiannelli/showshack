@@ -71,6 +71,26 @@ function bFreshPicks(up,skip){if(!FRESH)return [];const S=FRESH.seen,base=FRESH.
 
 /* ---- flip cards: real event cards in a row; tap flips to the details right there ---- */
 const LISTEN=q=>[["YouTube Music","https://music.youtube.com/search?q="],["Spotify","https://open.spotify.com/search/"],["Apple Music","https://music.apple.com/us/search?term="],["SoundCloud","https://soundcloud.com/search/people?q="]].map(([n,u])=>`<a href="${u+encodeURIComponent(q)}" target="_blank" rel="noopener">${n}</a>`).join("");
+/* ---- artist preview: a 30-second clip from Apple's free iTunes Search API (no key; falls back to JSONP if fetch is blocked) ---- */
+const MUSIC_K=new Set(["concert","club","festival"]);
+const artistQ=e=>String(e.title||"").replace(/\s*\(.*?\)\s*/g," ").split(/:| & Friends| w\/ | with | \+ | - | – | \| /i)[0].trim();
+const pvNorm=s=>String(s||"").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^a-z0-9]+/g," ").trim();
+const PVC={};let PV={a:null,btn:null};
+function itunes(q){if(PVC[q])return PVC[q];const u="https://itunes.apple.com/search?media=music&entity=song&limit=8&country=US&term="+encodeURIComponent(q);
+  return PVC[q]=fetch(u).then(r=>r.ok?r.json():Promise.reject()).catch(()=>new Promise(res=>{const cb="shackIt"+Math.random().toString(36).slice(2);const sc=document.createElement("script");
+    const done=j=>{res(j);try{delete window[cb];}catch(e){}sc.remove();};window[cb]=done;sc.onerror=()=>done(null);sc.src=u+"&callback="+cb;document.head.appendChild(sc);setTimeout(()=>done(null),7000);}))
+    .then(j=>{const want=pvNorm(q),hits=((j&&j.results)||[]).filter(r=>r.previewUrl&&(pvNorm(r.artistName)===want||pvNorm(r.artistName).startsWith(want)||want.startsWith(pvNorm(r.artistName))));return hits[0]||null;});}
+function pvStop(){if(PV.a){PV.a.pause();PV.a=null;}if(PV.btn){PV.btn.classList.remove("on");PV.btn.innerHTML=PV.btn.dataset.lbl;PV.btn=null;}}
+async function pvPlay(btn,e){if(PV.btn===btn){pvStop();return;}pvStop();btn.dataset.lbl=btn.dataset.lbl||btn.innerHTML;btn.textContent="Finding a preview…";
+  const q=artistQ(e),t=await itunes(q);const note=btn.parentNode.parentNode.querySelector(".bpv-note")||btn.closest(".bfc-b,article.card")?.querySelector(".bpv-note");
+  if(!t){btn.innerHTML=btn.dataset.lbl;if(note){note.hidden=false;note.textContent=`No preview found for ${q}.`;}return;}
+  try{try{if(navigator.audioSession)navigator.audioSession.type="playback";}catch(_){}const a=new Audio(t.previewUrl);a.volume=.9;await a.play();PV={a,btn};btn.classList.add("on");btn.textContent="⏸ Stop preview";
+    a.onended=pvStop;if(note){note.hidden=false;note.innerHTML=`♪ “${esc(t.trackName)}” · ${esc(t.artistName)} · <a href="${esc(t.trackViewUrl||"#")}" target="_blank" rel="noopener">Apple Music preview ↗</a>`;}}
+  catch(err){btn.innerHTML=btn.dataset.lbl;if(note){note.hidden=false;note.textContent="Couldn't play the preview. Check your connection.";}}}
+document.addEventListener("click",ev=>{const b=ev.target.closest("[data-apv]");if(!b)return;ev.stopPropagation();ev.preventDefault();
+  const e=(state._up||[]).find(x=>hid(x)===b.dataset.apv)||(state.events||[]).find(x=>hid(x)===b.dataset.apv);if(e)pvPlay(b,e);},true);
+document.addEventListener("visibilitychange",()=>{if(document.hidden)pvStop();});
+window.SHACK_PV=e=>MUSIC_K.has(e.kind)&&!!artistQ(e)?`<button type="button" class="bpv" data-apv="${esc(hid(e))}">▶&#xFE0E; 30s preview</button>`:"";
 function backSide(e){const pi=priceInfo(e),d=parseDay(e.start);
   const tix=safeUrl(e.url),dest=encodeURIComponent((e.venue||"")+", "+(e.city||""));
   const maps=`https://www.google.com/maps/dir/?api=1${origin&&origin.address?"&origin="+encodeURIComponent(origin.address):""}&destination=${dest}&travelmode=driving`;
@@ -82,7 +102,8 @@ function backSide(e){const pi=priceInfo(e),d=parseDay(e.start);
     <div class="bfb-price">${esc(pr)}</div>
     ${note?`<p class="bfb-note">${esc(note)}</p>`:""}
     <div class="bfb-acts">${tix?`<a class="bfb-main" href="${esc(tix)}" target="_blank" rel="noopener">${tixWord(e,pi)} ↗</a>`:""}<a href="${maps}" target="_blank" rel="noopener">Directions</a>
-      ${lq?`<button type="button" class="bfb-listen" aria-expanded="false"><span class="lt">▶&#xFE0E; Listen</span></button>`:""}<button type="button" data-share="${esc(skey(e))}">Share</button></div>
+      ${window.SHACK_PV(e)}${lq?`<button type="button" class="bfb-listen" aria-expanded="false"><span class="lt">Listen on…</span></button>`:""}<button type="button" data-share="${esc(skey(e))}">Share</button></div>
+    <p class="bpv-note" hidden></p>
     ${lq?`<div class="bfb-lm" hidden>${LISTEN(lq)}</div>`:""}
     <div class="bfb-foot"><button type="button" class="bfb-full" data-full="${esc(hid(e))}">Full card</button><span class="bfb-hint">Tap to flip back ↻</span></div>`;}
 function flipCardHtml(e,tag){const front=cardHtml(e).replace(/^\s*<article id="[^"]*"/,'<article').replace(/class="card( flipped)?"/,'class="card"');
@@ -291,7 +312,7 @@ $("bNew").addEventListener("click",ev=>{const d=$("bNew");if(ev.target===d||ev.t
   const b=ev.target.closest("[data-wn]");if(b){dlgClose(d);WHATSNEW[+b.dataset.wn][3]();}});
 /* ---- Settings → Your data ---- */
 function setStats(){const nn=window.NIGHT&&NIGHT.allNights?NIGHT.allNights().length:0;
-  $("bSetStats").innerHTML=[[state.stars.size,"starred"],[nn,"nights"],[BEEN.size,"stamps"],[showCount(),"shows logged"],[WANT.size,"bucket list"],[(state.pinV||[]).length,"following"]].map(([n,l])=>`<span><b>${n}</b>${l}</span>`).join("");}
+  $("bSetStats").innerHTML=[[state.stars.size,"starred"],[nn,"nights"],[BEEN.size,"stamps"],[showCount(),"shows logged"],[(state.pinV||[]).length,"following"]].map(([n,l])=>`<span><b>${n}</b>${l}</span>`).join("");}
 $("bSetBtn").onclick=()=>{setStats();$("bSetMsg").textContent="";const c=$("bSet").querySelector("[data-sclear]");c.classList.remove("sure");c.textContent="Clear everything on this phone";dlgOpen($("bSet"));};
 $("bSet").addEventListener("click",ev=>{const d=$("bSet");if(ev.target===d||ev.target.closest("[data-close]")){dlgClose(d);return;}
   if(ev.target.closest("[data-sback]")){backupPassport();$("bSetMsg").textContent="Backup file saved. Keep it somewhere safe (Files, iCloud, email to yourself).";return;}
@@ -460,6 +481,15 @@ function drawTransit(){const L=window.L;if(!LMG)return;LMG.transit.clearLayers()
         <p class="bms-more bms-late">🌙 Last train home: ${esc((window.NIGHT&&NIGHT.LASTTRAIN&&NIGHT.LASTTRAIN[s.s])||"trains can stop early at night")}. Check the last one on the agency's site before you go.</p>
         <div class="bms-night"><a href="https://www.google.com/maps/dir/?api=1&destination=${q}&travelmode=transit" target="_blank" rel="noopener">🚆 Transit directions</a></div>`);});
     mk.addTo(LMG.transit);});}
+function walkScore(lat,lon){if(typeof lat!=="number")return null;const W=.27;
+  const A=window.NIGHT&&NIGHT.ready()?NIGHT.spots():[],near=A.filter(p=>miles(lat,lon,p.lat,p.lon)<=W);
+  const food=near.filter(p=>NIGHT.grp(p)==="food"),aft=near.filter(p=>NIGHT.grp(p)==="after"),late=near.filter(p=>p.til>=24).length;
+  const st=STA?STA.find(s=>miles(lat,lon,s.lat,s.lon)<=.45):null;
+  const vens=new Set((state._up||[]).filter(e=>typeof e.lat==="number"&&miles(lat,lon,e.lat,e.lon)<=W).map(venueKey)).size-1;
+  const score=Math.min(100,Math.min(40,food.length*8)+Math.min(25,aft.length*9)+(st?20:0)+Math.min(10,Math.max(0,vens)*5)+(late?5:0));
+  const word=score>=70?"Great on foot":score>=40?"Some walkable":score>=15?"A little nearby":"Car night";
+  return {score,word,food:food.length,aft:aft.length,late,st,vens:Math.max(0,vens)};}
+const walkHtml=w=>w?`<div class="bwalk" style="--ws:${w.score}%"><b>🚶 Walk score ${w.score}<small>/100 · ${esc(w.word)}</small></b><span>Within a 5-min walk: ${w.food} food · ${w.aft} afters${w.late?` (${w.late} open past midnight)`:""}${w.vens?` · ${w.vens} other venue${w.vens>1?"s":""}`:""}${w.st?` · 🚆 ${esc(w.st.n)}`:""}</span></div>`:"";
 function nearSta(lat,lon){if(!STA)return null;let b=null;STA.forEach(s=>{const mi=miles(lat,lon,s.lat,s.lon);if(mi<=1.5&&(!b||mi<b.mi))b={s,mi};});return b;}
 function openSheet(g){const e0=g.evs[0],name=g.k.split(" · ")[0],city=g.k.split(" · ")[1]||e0.city||"";
   const dest=encodeURIComponent(name+", "+city);
@@ -475,6 +505,7 @@ function openSheet(g){const e0=g.evs[0],name=g.k.split(" · ")[0],city=g.k.split
   const fol=isPinned(g.k);
   sheetOpen(`<div class="bms-h bms-hic" style="--pc:${g.v.c}">${vIcon(g.v,"bms-ic")}<div><b>${esc(name)}</b><span>${esc(city)}${g.d?` · ${g.d.real?"":"~"}${fmtMins(g.d.mins)} · ${g.d.miles} mi${g.d.real?" by road":""}`:""}</span></div><button type="button" class="bms-fol${fol?" on":""}" data-mfol="${esc(g.k)}" aria-pressed="${fol}">${ni("bell")} ${fol?"Following":"Follow"}</button></div>
     <div class="gplace" data-gq="${esc(name+", "+city)}"></div>
+    ${walkHtml(walkScore(g.lat,g.lon))}
     <div class="bms-list">${rows}${more}</div>
     <h3 class="bms-sub">Build your night here</h3>
     ${window.NIGHT&&NIGHT.nightAt?`<button type="button" class="bms-build" data-mbuild="1">🌙 Build a night here <small>food → ${esc(String((g.evs.find(inWhen)||g.evs[0]).title).slice(0,28))} → afters</small></button>`:""}
@@ -515,9 +546,9 @@ $("bMapStart").onclick=()=>{state.view="list";show("budget");setTimeout(()=>{con
 
 /* ---- venues: what's playing first, a one-line personality, follow + new-show dots, passport, jump to map ---- */
 let VQ="";const QUIET={};   // venue search text; venues.json spots with no listed shows (key → {c,ad,la,lo})
-/* ---- Show passport extras: log (rating + note per stamp), bucket list, badges, backup/restore. All on this device only. ---- */
+/* ---- Show passport extras: log (rating + note per stamp), badges, backup/restore. All on this device only. ---- */
 const ld=(k,d)=>{try{return JSON.parse(localStorage.getItem(k)||"null")||d;}catch(e){return d;}};
-const PLOG=ld("shack-plog",{}),WANT=new Set(ld("shack-want",[]));let PASS=null;
+const PLOG=ld("shack-plog",{});let PASS=null;try{localStorage.removeItem("shack-want");}catch(e){}
 // past shows you've seen, per stamped venue: {venueKey: [{t:title, d:"YYYY-MM-DD", id}]}. Starred shows that already happened join in on their own.
 const PSHOWS=ld("shack-pshows",{});let PSEL="",PALL=false;
 const savePshows=()=>{try{localStorage.setItem("shack-pshows",JSON.stringify(PSHOWS));}catch(e){}};
@@ -532,12 +563,11 @@ function importNights(){if(!window.NIGHT||!NIGHT.allNights)return;const today=to
   if(ch){try{localStorage.setItem("shack-nimp",JSON.stringify([...NIMP]));}catch(e){}savePshows();saveBeen();}}
 const showCount=()=>[...BEEN].reduce((n,k)=>n+pastShows(k).length,0);
 const savePlog=()=>{try{localStorage.setItem("shack-plog",JSON.stringify(PLOG));}catch(e){}};
-const saveWant=()=>{try{localStorage.setItem("shack-want",JSON.stringify([...WANT]));}catch(e){}};
 function badges(infos){const bv=infos.filter(v=>BEEN.has(v.k)),n=BEEN.size,rg=new Set([...BEEN].map(regionOfK).filter(r=>r!=="Other")),cnt=f=>bv.filter(f).length;
   return [[ni("ticket"),"First stamp","Stamp 1 venue",n>=1],[ni("chart"),"Regular","Stamp 10 venues",n>=10],[ni("map"),"Region hopper","Stamps in 3 regions",rg.size>=3],
     [ni("palm"),"All of SoCal","Stamps in all 6 regions",rg.size>=6],[ni("sun"),"Desert trip","Stamp a desert venue",rg.has("Desert")],
     [ni("home"),"Small & local","Stamp 5 small venues",cnt(v=>v.evs.some(isSmall))>=5],[ni("venue"),"Big room","Stamp an arena or stadium",cnt(v=>(+v.cap||0)>6000||/arena|stadium|forum|bowl|dome/i.test(v.name))>=1],
-    [ni("mic"),"Comedy regular","Stamp 3 comedy clubs",cnt(v=>v.evs.some(e=>e.kind==="comedy"))>=3],[ni("bell"),"Bucket list hit","Stamp a bucket-list venue",[...WANT].some(k=>BEEN.has(k))],[ni("list"),"Stub collector","Log 10 past shows",showCount()>=10],
+    [ni("mic"),"Comedy regular","Stamp 3 comedy clubs",cnt(v=>v.evs.some(e=>e.kind==="comedy"))>=3],[ni("list"),"Stub collector","Log 10 past shows",showCount()>=10],
     ["🔥","On a roll","3 weeks in a row out",streak().best>=3],["🌋","Hot streak","8 weeks in a row out",streak().best>=8],
     ["⛺","First festival","Stamp a festival venue",cnt(v=>v.evs.some(e=>e.kind==="festival"))>=1],["🔔","Sound bath","Stamp a sound-bath space",cnt(v=>v.evs.some(e=>e.kind==="sound"))>=1],
     ["💃","Free mover","Stamp an ecstatic dance or contact improv space",cnt(v=>v.evs.some(e=>e.kind==="dance"||e.kind==="contact"))>=1],
@@ -546,12 +576,12 @@ function badges(infos){const bv=infos.filter(v=>BEEN.has(v.k)),n=BEEN.size,rg=ne
     ["🌙","Night architect","Plan 3 nights that happened",window.NIGHT&&NIGHT.allNights?NIGHT.allNights().filter(x=>x.p.d&&x.p.d<todayStr()).length>=3:false]]
     .map(([ic,n2,how,on])=>({ic,n:n2,how,on}));}
 // backup = a small JSON file you keep; restore merges it back in (nothing is uploaded anywhere)
-function backupPassport(){const data={app:"show-shack-passport",v:3,saved:new Date().toISOString(),been:[...BEEN],starven:starVen,want:[...WANT],log:PLOG,shows:PSHOWS,nights:window.NIGHT&&NIGHT.allNights?NIGHT.allNights():[]};
+function backupPassport(){const data={app:"show-shack-passport",v:3,saved:new Date().toISOString(),been:[...BEEN],starven:starVen,log:PLOG,shows:PSHOWS,nights:window.NIGHT&&NIGHT.allNights?NIGHT.allNights():[]};
   const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([JSON.stringify(data,null,1)],{type:"application/json"}));a.download=`show-passport-${todayStr()}.json`;
   document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove();},800);}
 async function restorePassport(f){let msg="Restored ✓";
   try{const d=JSON.parse(await f.text());if(!d||d.app!=="show-shack-passport")throw new Error("not a passport file");
-    const ok=k=>typeof k==="string"&&k.length<200;(d.been||[]).filter(ok).forEach(k=>BEEN.add(k));(d.want||[]).filter(ok).forEach(k=>WANT.add(k));
+    const ok=k=>typeof k==="string"&&k.length<200;(d.been||[]).filter(ok).forEach(k=>BEEN.add(k));
     if(d.log&&typeof d.log==="object")for(const [k,o] of Object.entries(d.log))if(ok(k)&&o&&typeof o==="object")PLOG[k]={r:Math.min(5,Math.max(0,Math.round(+o.r||0))),n:String(o.n||"").slice(0,140)};
     if(d.starven&&typeof d.starven==="object")for(const [k,o] of Object.entries(d.starven))if(ok(k))starVen[k]=o;
     if(d.shows&&typeof d.shows==="object")for(const [k,a] of Object.entries(d.shows))if(ok(k)&&Array.isArray(a)){const have=PSHOWS[k]=PSHOWS[k]||[];
@@ -577,7 +607,7 @@ function syncFollowDot(){if(!(state._up||[]).length)return;let n=0;(state.pinV||
 /* ---- venue filter chips (like Food / Afters): one type, any number of quick toggles, one region ---- */
 const VF={t:"",f:new Set(),rg:""};
 const allAgesV=e=>{const a=ageOf(e);return a==="all"||(!a&&likelyAllAges(e));};
-const VQF=[["fol",ni("bell")+" Following",v=>isPinned(v.k)],["been","✓ Been here",v=>BEEN.has(v.k)],["want","♡ Bucket list",v=>WANT.has(v.k)],
+const VQF=[["fol",ni("bell")+" Following",v=>isPinned(v.k)],["been","✓ Been here",v=>BEEN.has(v.k)],
   ["small",ni("home")+" Small &amp; local",v=>v.evs.some(isSmall)],["free","Free shows",v=>v.evs.some(e=>priceInfo(e).free)],
   ["all","All ages",v=>v.evs.some(allAgesV)],["21","21+",v=>v.evs.some(e=>ageOf(e)==="21+")],["out",ni("sun")+" Open-air",v=>v.evs.some(isOutdoor)],
   ["acc",ni("hand")+" Access info",v=>!!(VOPEN[v.name]||{}).a],["crawl","🚶 Walkable crawl",v=>CRAWL.has(v.k)]];
@@ -597,7 +627,7 @@ function vChips(infos){const n=f=>infos.filter(f).length;
   return typ+`<div class="bsubs bvf bvf2" role="group" aria-label="Venue filters">${vfOn()?`<button type="button" class="chip bvf-x" data-vfx="1">✕ Clear</button>`:""}${quick}<i class="bvf-sep" aria-hidden="true"></i>${regs}</div>`;}
 // quiet-venue nudge: remember (on this device) the last day each venue had shows listed
 const VLAST=ld("shack-vlast",{});
-renderVenues=function(){const list=$("list");
+renderVenues=function(){const list=$("list");loadStations();
   const keys=[...new Set((state._up||[]).filter(e=>e.kind!=="art"&&e.kind!=="volunteer").map(venueKey))];
   // venues.json places with a city + coordinates but nothing listed right now still get a card
   const named=new Set(keys.map(k=>k.split(" · ")[0]));
@@ -614,11 +644,12 @@ renderVenues=function(){const list=$("list");
   const card=v=>{const n=v.inR[0]||v.evs[0],when=n?parseDay(n.start).toLocaleDateString("en-US",{weekday:"short",month:"short",day:"numeric"})+(n.time?" · "+String(n.time).replace(/\s*\(.*\)/,""):""):"";
     const fol=isPinned(v.k),nw=fol?newCount(v):0,been=BEEN.has(v.k);
     const prices=v.evs.map(priceInfo).filter(p=>p&&!p.sold&&!p.none&&p.lo!=null).map(p=>p.lo);
-    const tags=[nw?`<span class="tag bnew">● ${nw} new</span>`:"",been?`<span class="tag been">✓ Been here${(PLOG[v.k]||{}).r?" · "+"★".repeat(PLOG[v.k].r):""}</span>`:"",!been&&WANT.has(v.k)?`<span class="tag bwant">♡ Bucket list</span>`:"",v.evs.some(isSmall)?`<span class="tag local">${ni("home")} Small &amp; local</span>`:"",VF.f.has("crawl")&&CRAWL.has(v.k)?`<span class="tag bcrawl">🚶 ${CRAWL.get(v.k).length} more in walking distance: ${esc(CRAWL.get(v.k).slice(0,3).join(", "))}</span>`:"",prices.length&&Math.min(...prices)===0?`<span class="tag">Free shows</span>`:"",quietTag(v)?`<span class="tag bquiet-t">${esc(quietTag(v))}</span>`:""].filter(Boolean).join("");
+    const tags=[nw?`<span class="tag bnew">● ${nw} new</span>`:"",been?`<span class="tag been">✓ Been here${(PLOG[v.k]||{}).r?" · "+"★".repeat(PLOG[v.k].r):""}</span>`:"",v.evs.some(isSmall)?`<span class="tag local">${ni("home")} Small &amp; local</span>`:"",VF.f.has("crawl")&&CRAWL.has(v.k)?`<span class="tag bcrawl">🚶 ${CRAWL.get(v.k).length} more in walking distance: ${esc(CRAWL.get(v.k).slice(0,3).join(", "))}</span>`:"",prices.length&&Math.min(...prices)===0?`<span class="tag">Free shows</span>`:"",quietTag(v)?`<span class="tag bquiet-t">${esc(quietTag(v))}</span>`:""].filter(Boolean).join("");
     const vo=VOPEN[v.name]||{},eats=vo.e||[],acc=vo.a||null,tips=(vo.w||[]).slice(1);
     const eatQ=u=>"https://www.google.com/maps/search/?api=1&query="+encodeURIComponent(u+" near "+v.name+", "+v.city);
     const fmt=e=>parseDay(e.start).toLocaleDateString("en-US",{weekday:"short",month:"short",day:"numeric"});
     const more=`<div class="vmore" hidden>
+      ${walkHtml(walkScore(v.lat,v.lon))}
       ${tips.length?`<div class="vsec"><span class="sl">${ni("car")} Getting there</span><ul>${tips.map(t=>`<li>${esc(t)}</li>`).join("")}</ul></div>`:""}
       ${eats.length?`<div class="vsec"><span class="sl">${ni("food")} Local eats</span><ul>${eats.map(x=>`<li><a href="${eatQ(x.n)}" target="_blank" rel="noopener"><b>${esc(x.n)}</b></a> · ${esc(x.d)}</li>`).join("")}</ul></div>`:""}
       ${acc?`<div class="vsec"><span class="sl">${ni("hand")} Accessibility</span><p class="vacc">${esc(acc.t)}${acc.u?` <a href="${esc(acc.u)}" target="_blank" rel="noopener">Venue's access page ↗</a>`:""}</p></div>`:""}
@@ -627,7 +658,7 @@ renderVenues=function(){const list=$("list");
       ${been?`<div class="vsec vlog"><span class="sl">★ Your log</span><div class="vrate" role="group" aria-label="Rate ${esc(v.name)}">${[1,2,3,4,5].map(x=>`<button type="button" data-rate="${x}" data-rk="${esc(v.k)}" aria-pressed="${(PLOG[v.k]||{}).r>=x}" aria-label="${x} star${x>1?"s":""}">★</button>`).join("")}</div>
         <input class="vnote" data-vnote="${esc(v.k)}" maxlength="140" value="${esc((PLOG[v.k]||{}).n||"")}" placeholder="Who you went with, best moment, what you saw…" aria-label="Note for ${esc(v.name)}">
         ${(()=>{const xs=pastShows(v.k);return `<p class="vacc">${xs.length?`Seen here: ${xs.slice(0,3).map(x=>esc(x.t)).join(" · ")}${xs.length>3?` +${xs.length-3}`:""}. `:""}<button type="button" class="vlogadd" data-pstamp="${esc(v.k)}">＋ Log a past show</button></p>`;})()}</div>`:""}
-      <div class="vlinks">${been?"":`<button type="button" class="vwant${WANT.has(v.k)?" on":""}" data-want="${esc(v.k)}" aria-pressed="${WANT.has(v.k)}">${WANT.has(v.k)?"✓ On my bucket list":"♡ Bucket list"}</button>`}${v.evs.length?`<button type="button" class="bvmap" data-vmap="${esc(v.k)}">${ni("map")} On the map</button>`:`<a class="bvmap" href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(v.name+", "+(v.addr||"")+", "+v.city)}" target="_blank" rel="noopener">${ni("map")} Map ↗</a>`}<button type="button" class="vbeen${been?" on":""}" data-been="${esc(v.k)}" aria-pressed="${been}">${been?"✓ Been here":"I've been here"}</button>${v.evs.length?`<button type="button" class="vall" data-venue="${esc(v.k)}">All ${v.evs.length} show${v.evs.length===1?"":"s"} →</button>`:""}</div></div>`;
+      <div class="vlinks">${v.evs.length?`<button type="button" class="bvmap" data-vmap="${esc(v.k)}">${ni("map")} On the map</button>`:`<a class="bvmap" href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(v.name+", "+(v.addr||"")+", "+v.city)}" target="_blank" rel="noopener">${ni("map")} Map ↗</a>`}<button type="button" class="vbeen${been?" on":""}" data-been="${esc(v.k)}" aria-pressed="${been}">${been?"✓ Been here":"I've been here"}</button>${v.evs.length?`<button type="button" class="vall" data-venue="${esc(v.k)}">All ${v.evs.length} show${v.evs.length===1?"":"s"} →</button>`:""}</div></div>`;
     return `<div class="vcard${nw?" hasnew":""}"><div class="vf"><button type="button" class="vopen" data-vmore="1" aria-expanded="false"><b>${esc(v.name)}</b>
       <span>${esc(v.city)}${v.drive?` · ${v.drive.real?"":"~"}${fmtMins(v.drive.mins)}`:""}${v.year?` · since ${v.year}`:""}</span>
       <em class="bvibe">${esc(v.evs.length||VOPEN[v.name]?.w?vibeLine(v):(v.addr||""))}</em>
@@ -648,14 +679,13 @@ renderVenues=function(){const list=$("list");
         :`<p class="bplog-none">No shows logged here yet. Who did you see?</p>`}
       <form class="bplog-f" data-pform="${esc(selV.k)}"><input name="t" maxlength="100" required placeholder="Artist or show, e.g. Khruangbin" aria-label="Show you saw" autocomplete="off"><input name="d" type="date" required max="${todayStr()}" aria-label="Date you went"><button type="submit">＋ Add to passport</button></form>
     </div>`;})():"";
-  const bdg=badges(infos),wantV=[...WANT],wantDone=wantV.filter(k=>BEEN.has(k)).length;PASS={bdg,regs,n:BEEN.size};
+  const bdg=badges(infos);PASS={bdg,regs,n:BEEN.size};
   const pass=`<div class="vcard bpass"><div class="vf"><div class="bpass-in">
     <div class="bpass-h"><span class="bpass-k"><img class="bshack-ic" src="hut.webp?v=2" alt="">Show passport</span><b>${beenV.length} <small>of ${tot} venues${(()=>{const n=showCount();return n?` · ${n} show${n===1?"":"s"}`:"";})()}</small></b></div>
     ${beenV.length?`<p class="bpass-tip">Tap a stamp to log shows you've seen there.</p><div class="bstamps">${stamps}</div>${plogPanel}<div class="bpass-regs">${regs.filter(x=>x[1]).map(([rg,a,b])=>`<span style="--pp:${Math.round(a/b*100)}%">${esc(rg)} <b>${a}</b>/${b}</span>`).join("")}</div>`
       :`<p>Tap <b>I've been here</b> on any venue you've been to. Shows you star stamp themselves the day after.</p>`}
     ${(()=>{const on=bdg.filter(b=>b.on),lk=bdg.length-on.length;return `<p class="bbadge-n">${on.length?`${on.length} badge${on.length>1?"s":""} earned`:"No badges yet"}${lk?` · <span>🔒 ${lk} more hidden until you unlock them</span>`:""}</p>`;})()}
     <div class="bbadges">${bdg.filter(b=>b.on).map(b=>`<span class="bbadge${b.on?" on":""}" title="${esc(b.how)}"><i>${b.ic}</i><b>${esc(b.n)}</b><small>${esc(b.on?"Earned":b.how)}</small></span>`).join("")}</div>
-    ${wantV.length?`<p class="bwant-p">♡ Bucket list: <b>${wantDone}</b> of ${wantV.length} done${wantV.length-wantDone?` · next up: ${esc(wantV.filter(k=>!BEEN.has(k)).slice(0,3).map(k=>k.split(" · ")[0]).join(", "))}`:""}</p>`:`<p class="bwant-p">Tap <b>♡ Bucket list</b> on venues you want to hit. They show up here.</p>`}
     <div class="bpass-acts">${beenV.length?`<button type="button" class="bpass-share" data-pshare="1">${ni("share")} Share my year</button><button type="button" class="bpass-share" data-ppmap="1">${ni("map")} Passport map</button><button type="button" class="bpass-share" data-pcmp="1">↔ Compare with a friend</button>`:""}
       <button type="button" class="bpass-share" data-pback="1">Back up passport + nights</button><label class="bpass-share">Restore<input type="file" accept="application/json,.json" data-prest hidden></label></div>
   </div></div></div>`;
@@ -717,7 +747,6 @@ $("list").addEventListener("click",ev=>{if(screen!=="venues")return;
   // show log: star rating per stamped venue
   const rt=ev.target.closest("[data-rate]");if(rt){ev.stopPropagation();const k=rt.dataset.rk,x=+rt.dataset.rate,o=PLOG[k]||{};o.r=o.r===x?0:x;PLOG[k]=o;savePlog();
     rt.parentNode.querySelectorAll("[data-rate]").forEach(b=>b.setAttribute("aria-pressed",String(o.r>=+b.dataset.rate)));return;}
-  const wn=ev.target.closest("[data-want]");if(wn){ev.stopPropagation();const k=wn.dataset.want;WANT.has(k)?WANT.delete(k):WANT.add(k);saveWant();render();return;}
   const stp=ev.target.closest("[data-pstamp]");if(stp){ev.stopPropagation();const fromCard=stp.classList.contains("vlogadd");
     PSEL=fromCard?stp.dataset.pstamp:PSEL===stp.dataset.pstamp?"":stp.dataset.pstamp;
     if(fromCard){VF.t="";VF.f.clear();VF.rg="";VQ="";}   // the passport hides while filtering or searching
@@ -765,15 +794,14 @@ async function compareFrom(code){let d;try{d=await NIGHT.unpack(code);}catch(e){
   const ok=k=>typeof k==="string"&&k.length<200&&k.includes(" · ");
   const theirs=new Map((Array.isArray(d.b)?d.b:[]).slice(0,300).filter(x=>Array.isArray(x)&&ok(x[0])).map(x=>[x[0],Math.max(0,Math.min(999,+x[1]||0))]));
   const who=String(d.h||"").replace(/[<>]/g,"").slice(0,30)||"Your friend",both=[...theirs.keys()].filter(k=>BEEN.has(k)),onlyT=[...theirs.keys()].filter(k=>!BEEN.has(k)),onlyY=[...BEEN].filter(k=>!theirs.has(k));
-  const nm=k=>esc(k.split(" · ")[0]),row=(k,btn)=>`<li><span><b>${nm(k)}</b><small>${esc(k.split(" · ")[1]||"")}${theirs.get(k)?` · ${theirs.get(k)} show${theirs.get(k)>1?"s":""} for them`:""}</small></span>${btn?`<button type="button" data-cwant="${esc(k)}" aria-pressed="${WANT.has(k)}">${WANT.has(k)?"✓ Bucket list":"♡ Bucket list"}</button>`:""}</li>`;
+  const nm=k=>esc(k.split(" · ")[0]),row=(k,btn)=>`<li><span><b>${nm(k)}</b><small>${esc(k.split(" · ")[1]||"")}${theirs.get(k)?` · ${theirs.get(k)} show${theirs.get(k)>1?"s":""} for them`:""}</small></span></li>`;
   let el=$("bCmp");if(!el){el=document.createElement("div");el.id="bCmp";el.className="rpop bcmp";el.setAttribute("role","dialog");el.setAttribute("aria-modal","true");document.body.appendChild(el);
-    el.addEventListener("click",ev=>{if(ev.target===el||ev.target.closest("[data-cx]")){el.hidden=true;document.documentElement.classList.remove("rpop-on");return;}
-      const w=ev.target.closest("[data-cwant]");if(w){const k=w.dataset.cwant;WANT.has(k)?WANT.delete(k):WANT.add(k);saveWant();w.setAttribute("aria-pressed",String(WANT.has(k)));w.textContent=WANT.has(k)?"✓ Bucket list":"♡ Bucket list";}});}
+    el.addEventListener("click",ev=>{if(ev.target===el||ev.target.closest("[data-cx]")){el.hidden=true;document.documentElement.classList.remove("rpop-on");return;}});}
   el.setAttribute("aria-label","Compare passports");
   el.innerHTML=`<div class="rpop-in"><div class="rpop-top"><span class="rpop-k">↔ ${esc(who)} vs you</span><button type="button" class="rpop-x" data-cx aria-label="Close">✕</button></div>
     <div class="bcmp-stats"><span><b>${theirs.size}</b>theirs</span><span><b>${both.length}</b>both</span><span><b>${BEEN.size}</b>yours</span></div>
     ${both.length?`<h3>You've both been to</h3><ul>${both.map(k=>row(k)).join("")}</ul>`:""}
-    ${onlyT.length?`<h3>Only ${esc(who)} has been to · add them to your bucket list</h3><ul>${onlyT.map(k=>row(k,1)).join("")}</ul>`:""}
+    ${onlyT.length?`<h3>Only ${esc(who)} has been to · ideas for your next night</h3><ul>${onlyT.map(k=>row(k,1)).join("")}</ul>`:""}
     ${onlyY.length?`<h3>Only you</h3><ul>${onlyY.slice(0,40).map(k=>row(k)).join("")}</ul>`:""}
     <p class="rpop-fine">The link carried their stamps. Nothing was uploaded and nothing about you was sent back.</p></div>`;
   el.hidden=false;document.documentElement.classList.add("rpop-on");}
@@ -807,7 +835,7 @@ function karmaSound(ctx,dest){const t=ctx.currentTime+.02,sr=ctx.sampleRate,D=3,
     const v=ctx.createOscillator(),vg=gn(6*m);v.frequency.value=7;v.connect(vg).connect(o.frequency);v.start(t);v.stop(end);
     const og=gn(g);o.connect(og).connect(wg);o.start(t);o.stop(end);});}
 window.karmaSound=karmaSound;
-function evWhoosh(){try{AC=AC||new (window.AudioContext||window.webkitAudioContext)();if(AC.state==="suspended")AC.resume();karmaSound(AC,AC.destination);}catch(e){}}
+function evWhoosh(){try{try{if(navigator.audioSession)navigator.audioSession.type="ambient";}catch(_){}AC=AC||new (window.AudioContext||window.webkitAudioContext)();if(AC.state==="suspended")AC.resume();karmaSound(AC,AC.destination);}catch(e){}}
 const fx=document.createElement("div");fx.className="bcarfx";document.body.appendChild(fx);
 function puff(x,y,big){const m=document.createElement("i");m.className="bmist";m.style.left=x+"px";m.style.top=y+"px";m.style.setProperty("--h",Math.round(Math.random()*360));
   if(big)m.style.setProperty("--s",1.6);fx.appendChild(m);setTimeout(()=>m.remove(),1300);}

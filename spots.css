@@ -122,7 +122,7 @@
 @media (prefers-reduced-motion:reduce){.ui-b .btile::before{animation:none}}
 
 /* ===== space ramen: the bowl (disco.js draws it) + the food / afters pop-up ===== */
-.dball.ramen,.dball.ramen.lv1,.dball.ramen.lv2{box-shadow:none;border-radius:0}
+.dball.ramen,.dball.ramen.lv1,.dball.ramen.lv2{box-shadow:none;transition:none}   /* no fade: the round glow fading out under the bowl read as a square */
 .dball.ramen{filter:drop-shadow(0 6px 18px rgba(255,150,60,.25))}
 .dball.ramen.lv2{filter:drop-shadow(0 6px 26px rgba(255,170,70,.55))}
 .dball.flydown{animation:dflydown .32s cubic-bezier(.5,0,.9,.5) forwards}

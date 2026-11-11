@@ -514,6 +514,9 @@ function fillWx(){
       const hi=Math.round(d.temperature_2m_max[i]),lo=Math.round(d.temperature_2m_min[i]),rain=d.precipitation_probability_max[i];
       sp.innerHTML=`${wxIcon(d.weather_code[i])} ${hi}°/${lo}°${rain>=20?` · ${rain}% rain`:""}${lo<60?" · bring a layer":""}`;
       sp.title="Forecast for the venue on show day";});});}
+// "Bring a first-timer": community formats that welcome newcomers, plus any listing that says beginners / all levels / intro
+const FIRST_KINDS=new Set(["dance","contact","sound","drum","social","openmic","volunteer"]),FIRST_RE=/\b(beginners?|all levels|all-levels|newcomers?|first[- ]timers?|intro(?:duction)? to|no experience|lesson included|free lesson|open to all|welcoming)\b/i;
+function firstTimer(e){if(FIRST_KINDS.has(e.kind))return true;return FIRST_RE.test([e.title,e.artists,e.note,e.priceNote].join(" "));}
 function cardHtml(e){
     const isPin=!!e.added;
     const d=parseDay(e.start), end=parseDay(e.end);
@@ -535,7 +538,7 @@ function cardHtml(e){
     const nightHtml = `<div class="flipbar"><button type="button" class="nightbtn" data-flip="1">🌙 Night out <b>≈ $${nc.n>1?nc.each+" each":nc.total}${nc.partial?"+":""}</b></button></div>`;
     const leaveHtml = lb ? `<span class="leave">Leave by ${lb}</span>` : "";
     const al = alertOf(e).map(a=>`<span class="badge ${a.c}">${a.c==="sale"?ni("ticket")+" ":""}${a.t}</span>`).join("");
-    const ag = ageOf(e); const extraTags = (isSmall(e)?`<span class="tag local">${ni("home")} Small &amp; local</span>`:"")+(ag?`<span class="tag age">${ag==="all"?"All ages":ag}</span>`:"")+(transitOf(e)?`<span class="tag transit">${ni("sprout")} ${transitOf(e)}</span>`:"");
+    const ag = ageOf(e); const extraTags = (firstTimer(e)?`<span class="tag first">👋 First-timer friendly</span>`:"")+(isSmall(e)?`<span class="tag local">${ni("home")} Small &amp; local</span>`:"")+(ag?`<span class="tag age">${ag==="all"?"All ages":ag}</span>`:"")+(transitOf(e)?`<span class="tag transit">${ni("sprout")} ${transitOf(e)}</span>`:"");
     const drv = e._drive ? `<span class="drive">${e._drive.real?"":"~"}${fmtMins(e._drive.mins)} · ${e._drive.miles} mi</span>` : (origin ? '<span class="na">n/a</span>' : '<span class="na">Set start point</span>');
     const su=mic?signupOf(e):null, micTime=String(e.time||"").replace(/\s*\(?sign[- ]?up[^)]*\)?/i,"").trim();
     const time = mic ? `<span>${esc(e.recurrence?.text||"")}${micTime?" · "+esc(micTime):""}</span>${su!=null?`<span class="signup">${ni("mic")} Sign-up ${fmtClock(su)}</span>`:`<span class="signup none">${ni("mic")} Sign-up: arrive early</span>`}` : e.time ? `<span>${esc(e.time)}</span>` : '<span class="na">Time TBA</span>';

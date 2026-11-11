@@ -78,6 +78,8 @@ const hhmm=v=>/^([01]\d|2[0-3]):[0-5]\d$/.test(v||"")?v:"";
 function cleanStop(s){s=s||{};const k=TYPES[s.k]?s.k:"other";
   const o={k,n:S(s.n,80),p:S(s.p,90),a:k==="house"?"":S(s.a,120),tm:hhmm(s.tm),w:GO[s.w]?s.w:"",dr:S(s.dr,30),vh:handle(s.vh),ch:handle(s.ch).replace(/-/g,""),amt:num(s.amt),c:num(s.c),no:S(s.no,200),u:""};
   if(s.u&&typeof safeUrl==="function"){const u=safeUrl(s.u);if(u)o.u=String(u).slice(0,300);}
+  if(k==="show"&&/^\d{4}-\d\d-\d\d$/.test(s.sd||""))o.sd=s.sd;
+  if(typeof s.cl==="number"&&s.cl>=12&&s.cl<=36)o.cl=s.cl;
   if(k!=="house"&&typeof s.la==="number"&&typeof s.lo==="number"&&Math.abs(s.la)<=90&&Math.abs(s.lo)<=180){o.la=Math.round(s.la*1e5)/1e5;o.lo=Math.round(s.lo*1e5)/1e5;}
   Object.keys(o).forEach(x=>{if(o[x]===""||o[x]==null)delete o[x];});o.k=k;return o;}
 function cleanPlan(p){p=p||{};return {v:1,t:S(p.t,70),d:/^\d{4}-\d\d-\d\d$/.test(p.d||"")?p.d:"",h:S(p.h,30),ph:S(p.ph,20).replace(/[^0-9+]/g,""),up:typeof p.up==="number"?p.up:0,s:(Array.isArray(p.s)?p.s:[]).slice(0,MAXS).map(cleanStop)};}
@@ -149,15 +151,25 @@ const TP={meet:'<path d="M12 21s-6.5-5.6-6.5-11a6.5 6.5 0 0 1 13 0c0 5.4-6.5 11-
   search:'<circle cx="10.5" cy="10.5" r="6"/><path d="m15 15 5.5 5.5"/>',
   trash:'<path d="M4 6.5h16M9.5 6.5V4.5h5v2M6 6.5l1 13a1.5 1.5 0 0 0 1.5 1.4h7a1.5 1.5 0 0 0 1.5-1.4l1-13"/><path d="M10 10.5v6.5M14 10.5v6.5"/>'};
 const TPC={gas:"#7FD4FF",money:"#7EE0B8",search:"#FFC66B",trash:"#FF5C8A"};
-const QUICKDEL=new Set(["eat","show","after"]);   // food, show and afters stops get a one-tap trash can
+const QUICKDEL=new Set(["meet","eat","show","after"]);   // meet-up, food, show and afters stops get a one-tap trash can
 const tic=(k,cls="")=>`<svg class="nic ${cls}" viewBox="0 0 24 24" aria-hidden="true" style="--ic:${(TYPES[k]||[])[2]||TPC[k]||"#e6dcff"}">${TP[k]||TP.other}</svg>`;
 // Eat and Afters land around the show: a timed show gives them times (eat 90 min before, afters ~2.5 h after);
 // without a show time they're slotted just before / just after it in the list
 const shiftT=(tm,m)=>{const [h,mm]=tm.split(":").map(Number);const t=(((h*60+mm+m)%1440)+1440)%1440;return String(Math.floor(t/60)).padStart(2,"0")+":"+String(t%60).padStart(2,"0");};
 const AROUND={eat:-90,after:150};
 let lastAdded=null;
+// the night's name and date follow its show: set when a show is added (unless you typed your own), reset when it's removed
+const autoT=n=>{const t=String(n||"").split(/[:(–—]| - /)[0].trim().slice(0,40);return t?t+" night":"";};
+function nameFromShow(c){if(!c.n)return;const shows=plan.s.filter(x=>x.k==="show");
+  if(!plan.t||shows.some(x=>autoT(x.n)===plan.t))plan.t=autoT(c.n);
+  if(c.sd&&(!plan.d||shows.some(x=>x.sd===plan.d)))plan.d=c.sd;}
+function unnameShow(r){if(!r||r.k!=="show")return;const rest=plan.s.filter(x=>x.k==="show");
+  if(plan.t&&plan.t===autoT(r.n))plan.t=rest.length?autoT(rest[0].n):"";
+  if(r.sd&&plan.d===r.sd)plan.d=(rest.find(x=>x.sd)||{}).sd||"";}
 function addStop(st,quiet){if(plan.s.length>=MAXS){toast("A night tops out at "+MAXS+" stops");return false;}
   const c=cleanStop(st),sh=plan.s.find(x=>x.k==="show");let at=-1;
+  if(c.k==="show")nameFromShow(c);
+  if(c.k==="meet")at=0;
   if(c.k==="show"&&c.tm)plan.s.forEach(x=>{if(!x.tm&&AROUND[x.k]!=null)x.tm=shiftT(c.tm,AROUND[x.k]);});
   if(sh&&!c.tm&&AROUND[c.k]!=null){if(sh.tm)c.tm=shiftT(sh.tm,AROUND[c.k]);else at=c.k==="eat"?plan.s.indexOf(sh):plan.s.lastIndexOf(plan.s.filter(x=>x.k==="show").pop())+1;}
   if(at>=0)plan.s.splice(at,0,c);else plan.s.push(c);lastAdded=c;sortStops();plan.up=Date.now();save();drawBuilder();
@@ -166,8 +178,8 @@ const allEv=()=>[...((typeof state!=="undefined"&&state.events)||[]),...((typeof
 const evById=h=>allEv().find(e=>hid(e)===h);
 function showStop(e,quiet){const st={k:"show",n:e.title,p:[e.venue,e.city].filter(Boolean).join(", "),tm:parseTime(e.time),u:e.url,la:e.lat,lo:e.lon};
   try{const pi=priceInfo(e);if(pi.free)st.c=0;else if(!pi.sold&&!pi.none&&pi.lo)st.c=Math.round(pi.lo);}catch(_){}
-  if(!quiet&&!plan.d&&e.start&&e.start>=todayISO())plan.d=e.start;return st;}
-function afterStop(p){return {k:grp(p)==="food"?"eat":"after",n:p.n,p:[p.a,p.city].filter(Boolean).join(", "),la:p.lat,lo:p.lon,no:"Hours: "+hrs(p)};}
+  if(e.start)st.sd=e.start<todayISO()?todayISO():String(e.start).slice(0,10);return st;}
+function afterStop(p){return {cl:typeof p.til==="number"?p.til:undefined,k:grp(p)==="food"?"eat":"after",n:p.n,p:[p.a,p.city].filter(Boolean).join(", "),la:p.lat,lo:p.lon,no:"Hours: "+hrs(p)};}
 const todayISO=()=>{const d=new Date();return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");};
 // capture phase so the flip cards / card toggles never see these taps
 document.addEventListener("click",ev=>{const b=ev.target.closest("[data-nadd],[data-naft]");if(!b)return;ev.stopPropagation();ev.preventDefault();
@@ -188,7 +200,8 @@ document.addEventListener("click",ev=>{const b=ev.target.closest("[data-ncal]");
 // inject "+ My night" into flip-card backs, full cards, and map-sheet rows as they appear
 function inject(root){
   root.querySelectorAll(".bfb-foot:not([data-nx])").forEach(f=>{f.dataset.nx=1;const full=f.querySelector("[data-full]");if(full)full.insertAdjacentHTML("afterend",addBtn(full.dataset.full));});
-  root.querySelectorAll("article.card[id] .links.wide:not([data-nx])").forEach(l=>{l.dataset.nx=1;const c=l.closest("article.card");if(/^[ep]-/.test(c.id))l.insertAdjacentHTML("beforeend",addBtn(c.id));});
+  root.querySelectorAll("article.card[id] .links.wide:not([data-nx])").forEach(l=>{l.dataset.nx=1;const c=l.closest("article.card");if(!/^[ep]-/.test(c.id))return;l.insertAdjacentHTML("beforeend",addBtn(c.id));
+    const e=evById(c.id),pv=e&&window.SHACK_PV?window.SHACK_PV(e):"";if(pv)l.insertAdjacentHTML("beforeend",pv+'<p class="bpv-note" hidden></p>');});
   root.querySelectorAll(".bms-a:not([data-nx])").forEach(a=>{a.dataset.nx=1;const c=a.querySelector("[data-card]");if(c)a.insertAdjacentHTML("beforeend",addBtn(c.dataset.card));});}
 let iq=0;new MutationObserver(()=>{if(iq)return;iq=1;queueMicrotask(()=>{iq=0;inject(document.body);});}).observe(document.body,{childList:true,subtree:true});
 
@@ -229,10 +242,25 @@ function mount(){if($("bNight"))return;const h=document.querySelector(".bbudget-
   h.insertAdjacentHTML("afterend",`<section class="bnight" id="bNight" aria-label="Your night"></section>`);
   const el=$("bNight");el.addEventListener("input",onInput);el.addEventListener("change",onInput);el.addEventListener("click",onClick);
   el.addEventListener("pointerdown",dragStart);el.addEventListener("pointermove",dragMove);el.addEventListener("pointerup",dragEnd);el.addEventListener("pointercancel",dragEnd);drawBuilder();}
+const MINSTAY={meet:10,eat:40,show:90,after:30,house:30,other:15};
+const go2=(a,b)=>typeof a.la==="number"&&typeof b.la==="number"?(road(a.la,a.lo,b.la,b.lo)<.5?10:legMin(road(a.la,a.lo,b.la,b.lo))):15;
+const clk=m=>fmtT(String(Math.floor(((m%1440)+1440)%1440/60)).padStart(2,"0")+":"+String(((m%60)+60)%60).padStart(2,"0"));
+let CHK={rows:[],list:[],home:""};
+function checkNight(){const S=plan.s,rows=S.map(()=>({})),list=[];
+  S.forEach((s,i)=>{if(!s.tm)return;const t=tmin(s.tm),nm=esc(s.n||TYPES[s.k][1]);
+    if(s.cl!=null&&t>=s.cl*60){rows[i].err=1;list.push({e:1,i,txt:`${nm} closes around ${clk(s.cl*60)}, but you'd get there at ${clk(t)}.`});}
+    else if(s.cl!=null&&t+MINSTAY[s.k]>s.cl*60){rows[i].warn=1;list.push({i,txt:`${nm} closes around ${clk(s.cl*60)}. You'd only get ${s.cl*60-t} min there.`});}
+    let j=i+1;while(j<S.length&&!S[j].tm)j++;if(j>=S.length)return;const n=S[j],tn=tmin(n.tm),leg=go2(s,n),leave=tn-leg,nn=esc(n.n||TYPES[n.k][1]);
+    rows[i].leave=`Leave by ${clk(leave)} for ${n.n?esc(String(n.n).slice(0,28)):TYPES[n.k][1]} (~${leg} min)`;
+    if(tn<t){rows[j].err=1;list.push({e:1,i:j,txt:`Out of order: ${nn} (${clk(tn)}) is listed after ${nm} (${clk(t)}).`});return;}
+    const stay=leave-t;if(stay<MINSTAY[s.k]){const miss=n.k==="show";rows[i][miss?"err":"warn"]=1;
+      list.push({e:miss,i,txt:miss?`You'd miss the start of ${nn}: ${stay<=0?"you can't even get there in time":`only ${stay} min at ${nm}`} with a ~${leg} min trip. Leave ${nm} by ${clk(leave)} or push things earlier.`:`Tight: only ${Math.max(0,stay)} min at ${nm} before you have to leave for ${nn}.`});}});
+  let home="";const f=S.find(x=>x.tm&&typeof x.la==="number");if(f&&typeof origin!=="undefined"&&origin&&typeof origin.lat==="number"){const leg=legMin(road(origin.lat,origin.lon,f.la,f.lo));home=`Leave home by ${clk(tmin(f.tm)-leg)} (~${leg} min to ${esc(String(f.n||"your first stop").slice(0,28))})`;}
+  CHK={rows,list,home};return CHK;}
 function stopRow(s,i){const T=TYPES[s.k],open=i===openI,f=(n,l,v,x)=>`<label class="bn-f"><span>${l}</span><input data-f="${n}" value="${esc(v??"")}" ${x||""}></label>`;
-  const head=`<button type="button" class="bn-sh" data-open="${i}" aria-expanded="${open}"><span class="bn-ic">${tic(s.k)}</span><span class="bn-tm">${s.tm?fmtT(s.tm):"—"}</span><span class="bn-nm"><b>${esc(s.n||T[1])}</b>${s.p||s.a?`<small>${esc(s.p||s.a)}</small>`:s.k==="house"?"<small>Address stays in your group chat</small>":""}</span><span class="bn-ch">${open?"▴":"▾"}</span></button>`;
+  const head=`<button type="button" class="bn-sh" data-open="${i}" aria-expanded="${open}"><span class="bn-ic">${tic(s.k)}</span><span class="bn-tm">${s.tm?fmtT(s.tm):"—"}</span><span class="bn-nm"><b>${esc(s.n||T[1])}</b>${s.p||s.a?`<small>${esc(s.p||s.a)}</small>`:s.k==="house"?"<small>Address stays in your group chat</small>":""}${(CHK.rows[i]||{}).leave?`<small class="bn-leave${CHK.rows[i].err?" err":CHK.rows[i].warn?" warn":""}">🚶 ${CHK.rows[i].leave}</small>`:""}</span><span class="bn-ch">${open?"▴":"▾"}</span></button>`;
   const del=QUICKDEL.has(s.k)?`<button type="button" class="bn-trash" data-qdel="${i}" aria-label="Remove ${esc(s.n||T[1])} from your night">${tic("trash")}</button>`:"";
-  const cls=(QUICKDEL.has(s.k)?" hasdel":"")+(plan.s.length>1?" hasgrip":"");
+  const cls=(QUICKDEL.has(s.k)?" hasdel":"")+(plan.s.length>1?" hasgrip":"")+((CHK.rows[i]||{}).err?" bad":(CHK.rows[i]||{}).warn?" tight":"");
   const grip=plan.s.length>1?`<span class="bn-grip" data-grip="${i}" role="button" tabindex="-1" aria-label="Drag to reorder ${esc(s.n||T[1])}"><i></i><i></i><i></i><i></i><i></i><i></i></span>`:"";
   if(!open)return `<li class="bn-stop${cls}" style="--sc:${T[2]}">${grip}${head}${del}</li>`;
   return `<li class="bn-stop open${cls}" style="--sc:${T[2]}" data-i="${i}">${grip}${head}${del}<div class="bn-ed">
@@ -352,6 +380,8 @@ function drawBuilder(){const el=$("bNight");if(!el)return;const n=plan.s.length,
     ${NIGHTS.length>1||(NIGHTS.length===1&&NIGHTS[0].id!==planId)?`<div class="bn-nights" role="group" aria-label="Your saved nights">${NIGHTS.map(x=>`<button type="button" class="chip" data-nuse="${esc(x.id)}" aria-pressed="${x.id===planId}">${esc(nName(x.p))}</button>`).join("")}<button type="button" class="chip bn-nnew" data-nnew="1">＋ New</button></div>`:""}
     <div class="bn-meta"><input data-m="t" value="${esc(plan.t)}" placeholder="Name the night" maxlength="70" aria-label="Name the night"><label class="bn-dw${plan.d?"":" empty"}"><input data-m="d" type="date" value="${esc(plan.d)}" aria-label="Date"></label></div>
     <p class="bn-wx" id="bnWx" hidden></p>
+    ${(()=>{checkNight();const L=CHK.list;return (L.length?`<div class="bn-chk${L.some(x=>x.e)?" err":""}" role="alert"><b>${L.some(x=>x.e)?"⚠️ This night won't work as timed":"Heads up on timing"}</b><ul>${L.map(x=>`<li class="${x.e?"e":""}">${x.txt}</li>`).join("")}</ul>${n>1?`<small>Tap ⏱ Tighten the night to re-time it, or change a stop's time.</small>`:""}</div>`:"")
+      +(CHK.home?`<p class="bn-leavehome">🏠 ${CHK.home}</p>`:"");})()}
     ${n?`<ol class="bn-stops">${plan.s.map(stopRow).join("")}</ol>`:`<p class="bn-empty">Nothing yet. Add stops below, or tap <b>＋ My night</b> on any show.</p>`}
     ${n>1&&plan.s.some(x=>x.tm)?`<button type="button" class="bn-tight" data-tight="1">⏱ Tighten the night <small>re-time every stop from the drive times</small></button>`:""}
     <div class="bn-add">${["meet","eat","show","after"].map(k=>`<button type="button" class="chip bn-addc" data-addk="${k}" aria-pressed="${pickK===k}">${tic(k,"sm")} ${TYPES[k][1]}</button>`).join("")}</div>
@@ -382,7 +412,7 @@ function dragMove(ev){if(!drag||ev.pointerId!==drag.id)return;const dy=ev.client
   const mid=rects[from].top+rects[from].height/2+dy;let to=from;rects.forEach((r,j)=>{const m=r.top+r.height/2;if(j<from&&mid<m)to=Math.min(to,j);if(j>from&&mid>m)to=Math.max(to,j);});
   drag.to=to;items.forEach((x,j)=>{if(j===from)return;x.style.transform=j>=to&&j<from?`translateY(${h}px)`:j<=to&&j>from?`translateY(${-h}px)`:"";});}
 function dragEnd(ev){if(!drag||ev.pointerId!==drag.id)return;const {from,to,items}=drag;drag=null;items.forEach(x=>{x.style.transform="";x.classList.remove("dragging");});
-  if(to!==from){const [m]=plan.s.splice(from,1);plan.s.splice(to,0,m);const was=m.tm,now=retime(to);openI=-1;plan.up=Date.now();save();drawBuilder();
+  if(to!==from){const [m]=plan.s.splice(from,1);plan.s.splice(to,0,m);meetFirst();const was=m.tm,now=retime(plan.s.indexOf(m));openI=-1;plan.up=Date.now();save();drawBuilder();
     toast("Moved "+esc(m.n||TYPES[m.k][1])+(now&&now!==was?" · now "+fmtT(now):""),was&&now!==was?"Undo time":"",()=>{m.tm=was;sortStops();save();drawBuilder();});}}
 /* tighten: keep the show's time (or the first timed stop) fixed and lay every other stop around it, using how long each
    kind of stop usually takes plus the drive between them (5-minute steps) */
@@ -401,7 +431,9 @@ function retime(i){const s=plan.s[i];if(!s)return "";const tm=x=>x&&x.tm?tmin(x.
   if(s.tm&&tm(s)!=null&&(a==null||tm(s)>a)&&(b==null||tm(s)<b))return s.tm;   // its time already fits where it landed: leave it
   m=Math.round(m/15)*15;const h=Math.floor(((m%1440)+1440)%1440/60),mm=((m%60)+60)%60;s.tm=String(h).padStart(2,"0")+":"+String(mm).padStart(2,"0");return s.tm;}
 function sortStops(){let last=-1;const k=plan.s.map((x,i)=>{if(x.tm){let [h,m]=x.tm.split(":").map(Number);if(h<5)h+=24;last=h*60+m;}return {x,i,t:last};});
-  const open=plan.s[openI];k.sort((a,b)=>a.t-b.t||a.i-b.i);plan.s=k.map(o=>o.x);if(open)openI=plan.s.indexOf(open);}
+  const open=plan.s[openI];k.sort((a,b)=>(b.x.k==="meet")-(a.x.k==="meet")||a.t-b.t||a.i-b.i);plan.s=k.map(o=>o.x);if(open)openI=plan.s.indexOf(open);}
+// meet-up always leads the night, whatever gets dragged or moved
+function meetFirst(){const m=plan.s.filter(x=>x.k==="meet");if(!m.length)return;const open=plan.s[openI];plan.s=[...m,...plan.s.filter(x=>x.k!=="meet")];if(open)openI=plan.s.indexOf(open);}
 function onInput(ev){const t=ev.target;
   if(t.dataset.m){plan[t.dataset.m]=t.value;plan.up=Date.now();save();if(t.dataset.m==="d")t.parentNode.classList.toggle("empty",!t.value);return;}
   const li=t.closest("[data-i]");if(!li||!t.dataset.f)return;const s=plan.s[+li.dataset.i];s[t.dataset.f]=t.value;
@@ -426,11 +458,11 @@ async function onClick(ev){const b=ev.target.closest("button");if(!b)return;cons
   if(d.blank){if(addStop({k:d.blank},true)){openI=plan.s.indexOf(lastAdded);pickK="";drawBuilder();focusFirst();}return;}
   if(d.find){const t=document.querySelector('#bTabs [data-tab="shows"]');if(t)t.click();return;}
   if(d.open!=null){openI=openI===+d.open?-1:+d.open;drawBuilder();return;}
-  if(d.mv){const i=+b.closest("[data-i]").dataset.i,j=i+ +d.mv;if(j<0||j>=plan.s.length)return;[plan.s[i],plan.s[j]]=[plan.s[j],plan.s[i]];openI=j;plan.up=Date.now();save();drawBuilder();return;}
-  if(d.del!=null){plan.s.splice(+d.del,1);openI=-1;plan.up=Date.now();save();drawBuilder();return;}
+  if(d.mv){const i=+b.closest("[data-i]").dataset.i,j=i+ +d.mv;if(j<0||j>=plan.s.length)return;[plan.s[i],plan.s[j]]=[plan.s[j],plan.s[i]];openI=j;meetFirst();plan.up=Date.now();save();drawBuilder();return;}
+  if(d.del!=null){const [r]=plan.s.splice(+d.del,1);unnameShow(r);openI=-1;plan.up=Date.now();save();drawBuilder();return;}
   // neon trash: remove right from the row, with Undo in the toast
-  if(d.qdel!=null){const i=+d.qdel,gone=plan.s[i];if(!gone)return;const li=b.closest(".bn-stop"),done=()=>{plan.s.splice(plan.s.indexOf(gone),1);openI=-1;plan.up=Date.now();save();drawBuilder();
-      toast(`Removed ${esc(gone.n||TYPES[gone.k][1])}`,"Undo",()=>{if(plan.s.length>=MAXS)return;plan.s.splice(Math.min(i,plan.s.length),0,gone);sortStops();plan.up=Date.now();save();drawBuilder();});};
+  if(d.qdel!=null){const i=+d.qdel,gone=plan.s[i];if(!gone)return;const li=b.closest(".bn-stop"),t0=plan.t,d0=plan.d,done=()=>{plan.s.splice(plan.s.indexOf(gone),1);unnameShow(gone);openI=-1;plan.up=Date.now();save();drawBuilder();
+      toast(`Removed ${esc(gone.n||TYPES[gone.k][1])}`,"Undo",()=>{if(plan.s.length>=MAXS)return;plan.s.splice(Math.min(i,plan.s.length),0,gone);plan.t=t0;plan.d=d0;sortStops();plan.up=Date.now();save();drawBuilder();});};
     if(li&&li.animate&&!matchMedia("(prefers-reduced-motion: reduce)").matches)li.animate([{opacity:1,transform:"none"},{opacity:0,transform:"translateX(40px) scale(.96)"}],{duration:200,easing:"ease-in"}).onfinish=done;else done();return;}
   if(d.nnew){const had=keep(plan);useNight(newId(),{});if(had)toast("Your last night is kept in Saved","Open",goSaved);return;}
   if(d.nuse){const x=NIGHTS.find(n=>n.id===d.nuse);if(x&&x.id!==planId)useNight(x.id,x.p);return;}

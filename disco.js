@@ -209,7 +209,7 @@
   function tone(freq,at,len,vol,type){const o=ac.createOscillator(),gn=ac.createGain();o.type=type||"sine";o.frequency.value=freq;
     gn.gain.setValueAtTime(0,at);gn.gain.linearRampToValueAtTime(vol,at+.01);gn.gain.exponentialRampToValueAtTime(.0001,at+len);o.connect(gn);gn.connect(ac.destination);o.start(at);o.stop(at+len+.05);}
   function audio(){try{const AC=window.AudioContext||window.webkitAudioContext;if(!AC)return false;
-    try{if(navigator.audioSession)navigator.audioSession.type="playback";}catch(e){}   // iPhone: play even with the silent switch on
+    try{if(navigator.audioSession)navigator.audioSession.type="ambient";}catch(e){}   // iPhone: mix with whatever's already playing (YouTube, Spotify) instead of pausing it
     if(!ac){try{ac=new AC({latencyHint:"interactive"});}catch(e){ac=new AC();}const b=ac.createBuffer(1,1,22050),sr=ac.createBufferSource();sr.buffer=b;sr.connect(ac.destination);sr.start(0);}
     if(ac.state!=="running")ac.resume();loadChime();return true;}catch(e){return false;}}
   function whoosh(){if(!audio())return;const t=ac.currentTime+.01,len=ac.sampleRate*.5,bf=ac.createBuffer(1,len,ac.sampleRate),d=bf.getChannelData(0);

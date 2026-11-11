@@ -616,4 +616,4 @@ body.neb .vcard .vf .bvibe{color:#EDE6FF;opacity:1;text-shadow:0 1px 3px rgba(0,
 .gp-warn{color:var(--sold,#C0392B);font-weight:600}
 .gp-links{display:flex;flex-wrap:wrap;gap:12px}
 .gp-links a{color:inherit;font-weight:600}
-.gp-src{font-size:11px;color:var(--muted)}
+.gp-src{font-size:11px;color:var(--muted)}.tag.first{border-color:#7ee0b8;color:#7ee0b8}

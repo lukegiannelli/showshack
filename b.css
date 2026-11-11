@@ -586,3 +586,13 @@ body.neb .vcard .vf .bvibe{color:#EDE6FF;opacity:1;text-shadow:0 1px 3px rgba(0,
 .bset-acts .bset-clear{border-color:rgba(255,92,138,.6);color:#FF8AAE}
 .bset-acts .bset-clear.sure{background:#FF5C8A;color:#1d1030;border-color:#FF5C8A}
 .bset-msg{min-height:1.2em;margin:10px 0 0;font:600 13px var(--body);color:#7ee0b8}
+/* artist preview */
+.bpv{min-height:34px;padding:0 12px;border-radius:999px;border:1px solid #FF6FE0;background:rgba(255,111,224,.12);color:#FFB3F0;font:700 12.5px var(--body);cursor:pointer;white-space:nowrap}
+.bpv.on{background:#FF6FE0;color:#1d1030;box-shadow:0 0 14px -4px #FF6FE0}
+.bpv-note{margin:6px 0 0;font-size:12px;color:var(--muted,#cfc6ea);width:100%}
+.bpv-note a{color:#FFB3F0}
+/* walk score */
+.bwalk{display:flex;flex-direction:column;gap:3px;margin:8px 0;padding:9px 12px;border-radius:12px;font-size:12.5px;color:var(--muted,#cfc6ea);
+  background:linear-gradient(90deg,rgba(126,224,184,.16) var(--ws),rgba(255,255,255,.04) var(--ws));border:1px solid rgba(126,224,184,.35)}
+.bwalk b{font:700 14px var(--body);color:#7ee0b8}
+.bwalk b small{font:600 11.5px var(--mono);color:var(--muted,#cfc6ea);margin-left:4px}
