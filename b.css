@@ -549,3 +549,24 @@ body.neb .vcard .vf .bvibe{color:#EDE6FF;opacity:1;text-shadow:0 1px 3px rgba(0,
 .bcmp li small{color:#a59cc4;font-size:12px}
 .bcmp li button{flex:none;min-height:34px;padding:0 12px;border-radius:999px;border:1px solid #ff8ad8;background:none;color:#ff8ad8;font:600 12.5px var(--body);cursor:pointer}
 .bcmp li button[aria-pressed="true"]{background:#ff8ad8;color:#1d1030}
+/* home: streak + because you starred */
+.ui-b .bstreak{margin:8px 0 0;display:inline-block;padding:6px 12px;border-radius:999px;font:600 13px var(--body);color:var(--ink);background:color-mix(in srgb,#FF8A5C 16%,transparent);border:1px solid color-mix(in srgb,#FF8A5C 55%,transparent)}
+.ui-b .bstreak b{color:#FFC66B}
+.ui-b .bbecause .bfc-tag{background:#FFC66B;color:#2a1700;text-transform:capitalize}
+/* saved: month counts */
+.month .mcount{font:600 12px var(--mono);letter-spacing:0;text-transform:none;opacity:.7}
+/* map: heatmap glow, route costs, late-train notes */
+.bheat{mix-blend-mode:screen}
+.ui-b .bmap-route{display:flex;flex-direction:column;gap:4px;margin:8px 0 2px;padding:10px 14px;border-radius:14px;font-size:13.5px;color:var(--ink);background:color-mix(in srgb,#FFC66B 8%,var(--surface));border:1px solid color-mix(in srgb,#FFC66B 45%,transparent)}
+.ui-b .bmap-route>b{display:flex;align-items:center;gap:6px;font-weight:700}
+.ui-b .bmap-route .ni{width:16px;height:16px}
+.ui-b .bmap-route small{color:var(--muted);font-size:12px}
+.ui-b .bmr-warn,.ui-b .bmap-late{color:#FFC66B}
+.ui-b .bmap-late{margin:6px 0 0;font:600 12.5px var(--body)}
+.ui-b .brt-leg{white-space:nowrap}
+.bms-late{color:#FFC66B!important}
+/* venues: quiet nudge tag */
+.ui-b .tag.bquiet-t{border-color:#8FB4FF;color:#8FB4FF}
+/* passport: earned count, locked badges hidden */
+.ui-b .bbadge-n{font:600 12.5px var(--mono)!important;color:#FFC66B!important}
+.ui-b .bbadge-n span{color:#cfc6e8}

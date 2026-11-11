@@ -338,8 +338,9 @@ function render(){
     .filter(e=>!state.flags.transit||transitOf(e));
   state._shown=evs;
   const price=e=>{const m=pMid(priceInfo(e));return m??Infinity;};
-  evs.sort((a,b)=> state.sort==="drive" ? ((a._drive?.mins??1e9)-(b._drive?.mins??1e9)) || a.start.localeCompare(b.start)
-     : state.sort==="price" ? (price(a)-price(b)) || a.start.localeCompare(b.start)
+  const bySort=state.kind==="starred"?"date":state.sort;   // Saved always reads by date, grouped by month
+  evs.sort((a,b)=> bySort==="drive" ? ((a._drive?.mins??1e9)-(b._drive?.mins??1e9)) || a.start.localeCompare(b.start)
+     : bySort==="price" ? (price(a)-price(b)) || a.start.localeCompare(b.start)
      : a.start.localeCompare(b.start) || (a._drive?.mins??1e9)-(b._drive?.mins??1e9));
   document.getElementById("count").textContent = evs.length+" of "+upcoming+" shows · "+venueCount+" venues";
   updateAlertBar();
@@ -362,10 +363,11 @@ function render(){
   const more=n=>{let html="";const stop=Math.min(all.length,idx+n);for(;idx<stop;idx++){const e=all[idx];
     const isPin=!!e.added;
     const d=parseDay(e.start), end=parseDay(e.end);
-    const monthKey = state.sort==="date" && !isPin ? d.toLocaleDateString("en-US",{month:"long",year:"numeric"}) : "";
+    const monthKey = bySort==="date" && !isPin ? d.toLocaleDateString("en-US",{month:"long",year:"numeric"}) : "";
     if(!isPin && pinned.length && !restStarted && !monthKey){html+='<h2 class="month">All shows</h2>';}
     if(!isPin) restStarted=true;
-    if(monthKey && monthKey!==lastMonth){html+=`<h2 class="month">${esc(monthKey)}</h2>`;lastMonth=monthKey;}
+    if(monthKey && monthKey!==lastMonth){const mc=state.kind==="starred"?all.filter(x=>!x.added&&parseDay(x.start).getMonth()===d.getMonth()&&parseDay(x.start).getFullYear()===d.getFullYear()).length:0;
+      html+=`<h2 class="month">${esc(monthKey)}${mc?` <small class="mcount">· ${mc} saved</small>`:""}</h2>`;lastMonth=monthKey;}
     html+=cardHtml(e);
   }
   return html;};

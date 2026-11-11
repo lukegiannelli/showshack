@@ -106,6 +106,25 @@ function swapFlip(fc,on){fc.classList.toggle("on",on);fc.querySelector(".bfc-b")
 $("bPicks").addEventListener("click",flipRowClick,true);
 $("bFresh").addEventListener("click",flipRowClick,true);
 $("bDrop").addEventListener("click",flipRowClick,true);
+$("bBec").addEventListener("click",flipRowClick,true);
+/* ---- because you starred X: one of your starred shows (a new one each day), and upcoming shows that share its genre, venue or kind ---- */
+function bBecause(up){const starred=up.filter(e=>state.stars.has(skey(e)));if(!starred.length)return null;
+  const day=Math.floor(Date.now()/864e5),order=starred.map((e,i)=>starred[(i+day)%starred.length]);
+  for(const s of order){const g=new Set(s.genres||[]),vk=venueKey(s);
+    const xs=up.filter(e=>!state.stars.has(skey(e))&&!e.added&&!priceInfo(e).sold).map(e=>{let sc=0;(e.genres||[]).forEach(x=>{if(g.has(x))sc+=3;});
+      if(venueKey(e)===vk)sc+=2;if(e.kind===s.kind)sc+=1;if(e._drive&&e._drive.mins<=40)sc+=1;return {e,sc};}).filter(x=>x.sc>=3)
+      .sort((a,b)=>b.sc-a.sc||a.e.start.localeCompare(b.e.start)).slice(0,8).map(x=>x.e);
+    if(xs.length>=3)return {s,xs};}
+  return null;}
+/* ---- going-out streak: weeks in a row (Mon–Sun) with a night out: logged passport shows, starred shows that happened, past nights ---- */
+function weekNo(iso){const [y,m,d]=iso.split("-").map(Number),t=new Date(y,m-1,d);t.setDate(t.getDate()-((t.getDay()+6)%7));return Math.round(t.getTime()/6048e5);}
+function outDays(){const today=todayStr(),days=new Set();
+  for(const k of BEEN)pastShows(k).forEach(x=>{if(x.d<=today)days.add(x.d);});
+  if(window.NIGHT&&NIGHT.allNights)NIGHT.allNights().forEach(x=>{if(x.p.d&&x.p.d<=today&&x.p.s.length)days.add(x.p.d);});
+  return days;}
+function streak(){const wk=new Set([...outDays()].map(weekNo)),now=weekNo(todayStr());let w=wk.has(now)?now:now-1,n=0;while(wk.has(w)){n++;w--;}
+  let best=0,run=0;[...wk].sort((a,b)=>a-b).forEach((x,i,a)=>{run=i&&x===a[i-1]+1?run+1:1;best=Math.max(best,run);});
+  return {n,thisWeek:wk.has(now),best};}
 /* ---- price dropped: tickets that got cheaper since the Shack last checked (priceWas → priceFrom), biggest drop first ---- */
 function bDrops(up){return up.filter(e=>!e.added&&e.priceWas!=null&&e.priceFrom!=null&&Math.round(e.priceWas)>Math.round(e.priceFrom)&&!priceInfo(e).sold)
   .map(e=>({e,pct:(e.priceWas-e.priceFrom)/e.priceWas})).sort((a,b)=>b.pct-a.pct||a.e.start.localeCompare(b.e.start)).slice(0,8).map(x=>x.e);}
@@ -210,6 +229,11 @@ function after(){
     const sig=wp?wp.picks.slice(0,5).map(p=>skey(p.e)).join("|")+(origin?"o":""):"";
     if(sig!==$("bPicks").dataset.sig){$("bPicks").dataset.sig=sig;
       $("bPicks").innerHTML=wp?wp.picks.slice(0,5).map(p=>flipCardHtml(p.e,p.v?`<i style="--vc:${p.v.c}"></i>${p.v.name.split(" & ")[0]}`:"")).join(""):'<p class="bnone">Weekend picks show up here once the weekend list fills in.</p>';}
+    const st=streak(),sk=$("bStreak");sk.hidden=!st.n&&!st.best;
+    if(!sk.hidden)sk.innerHTML=st.n?`🔥 <b>${st.n} week${st.n>1?"s":""} in a row</b> out${st.thisWeek?"":" · nothing logged this week yet, keep it going"}${st.best>st.n?` · best ${st.best}`:""}`:`💤 Streak ended · your best was ${st.best} week${st.best>1?"s":""} in a row`;
+    const bc=bBecause(up),bsig=bc?skey(bc.s)+bc.xs.map(skey).join("|"):"";$("bBecBox").hidden=!bc;
+    if(bsig!==$("bBec").dataset.sig){$("bBec").dataset.sig=bsig;if(bc){const tt=String(bc.s.title).split(/[:(]/)[0].trim();$("bBecH").textContent="Because you starred "+(tt.length>30?tt.slice(0,30).replace(/\s+\S*$/,"")+"…":tt);
+      $("bBec").innerHTML=bc.xs.map(e=>flipCardHtml(e,`<i style="--vc:#FFC66B"></i>${esc((e.genres||[]).find(x=>(bc.s.genres||[]).includes(x))||(venueKey(e)===venueKey(bc.s)?"Same venue":"Same vibe"))}`)).join("");}}
     const dr=bDrops(up),dsig=dr.map(e=>skey(e)+e.priceFrom).join("|");$("bDropBox").hidden=!dr.length;
     if(dsig!==$("bDrop").dataset.sig){$("bDrop").dataset.sig=dsig;$("bDropN").textContent=dr.length?"cheaper than last check":"";
       $("bDrop").innerHTML=dr.map(e=>flipCardHtml(e,`<i style="--vc:#7ee0b8"></i>↓ $${Math.round(e.priceWas)} → $${Math.round(e.priceFrom)}`)).join("");}
@@ -258,7 +282,7 @@ $("bInfo").addEventListener("click",ev=>{const d=$("bInfo");if(ev.target===d||ev
 /* ---- map: dark street map + drive rings from your start point + "build your night" per venue ---- */
 // price: ""|"free"|"u30"; age: ""|"all"|"21"; t: time slider step (0 = any time); route: draw My night; half: friend's spot for Meet halfway (never saved)
 // pass: Passport map (stamped venues glow)
-const MAPV={vibe:"all",price:"",age:"",t:0,route:true,transit:false,half:null,pass:false};let LM=null,LMG=null,lfLoad=null,fitSig="",CUR=[];
+const MAPV={heat:false,vibe:"all",price:"",age:"",t:0,route:true,transit:false,half:null,pass:false};let LM=null,LMG=null,lfLoad=null,fitSig="",CUR=[];
 function loadLeaflet(){if(window.L)return Promise.resolve();if(lfLoad)return lfLoad;
   const l=document.createElement("link");l.rel="stylesheet";l.href="vendor/leaflet.css?v=1";document.head.appendChild(l);
   return lfLoad=new Promise((res,rej)=>{const sc=document.createElement("script");sc.src="vendor/leaflet.js?v=1";sc.onload=res;sc.onerror=()=>{lfLoad=null;rej();};document.head.appendChild(sc);});}
@@ -292,8 +316,9 @@ function drawMapUI(){
     +[["price","free","Free"],["price","u30","Under $30"],["age","all","All ages"],["age","21","21+"]].map(([k,v,l])=>`<button type="button" class="chip bmt" data-mf="${k}:${v}" aria-pressed="${MAPV[k]===v}">${l}</button>`).join("")
     +`<button type="button" class="chip bmt" data-mhalf aria-pressed="${!!MAPV.half}">↔ Meet halfway</button>`
     +`<button type="button" class="chip bmt" data-mtransit aria-pressed="${MAPV.transit}">${ni("train")} Transit</button>`
+    +`<button type="button" class="chip bmt" data-mheat aria-pressed="${MAPV.heat}">🔥 Tonight heatmap</button>`
     +`<button type="button" class="chip bmt bmt-pass" data-mpass aria-pressed="${MAPV.pass}">${ni("ticket")} Passport${MAPV.pass?` · ${BEEN.size} stamped`:""}</button>`;
-  const tr=$("bMapTime");tr.querySelector("input").value=MAPV.t;tr.querySelector("b").textContent=tLbl(MAPV.t);
+  const tr=$("bMapTime");tr.querySelector("input").value=MAPV.t;tr.querySelector("b").textContent=tLbl(MAPV.t);lateNote();
   $("bMapStart").hidden=!!origin;
   loadLeaflet().then(drawMap).catch(()=>{$("bMapCanvas").innerHTML='<p class="bmap-err">The map couldn\'t load. Check your connection and tap Map again.</p>';});}
 function drawMap(){const L=window.L;
@@ -302,7 +327,7 @@ function drawMap(){const L=window.L;
     L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png",{maxZoom:18,className:"bmap-tiles",
       attribution:'© <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors'}).addTo(LM);
     LM.attributionControl.setPrefix(false);
-    LMG={rings:L.layerGroup().addTo(LM),transit:L.layerGroup().addTo(LM),pool:L.layerGroup().addTo(LM),pins:L.layerGroup().addTo(LM),half:L.layerGroup().addTo(LM),route:L.layerGroup().addTo(LM)};
+    LMG={rings:L.layerGroup().addTo(LM),transit:L.layerGroup().addTo(LM),pool:L.layerGroup().addTo(LM),heat:L.layerGroup().addTo(LM),pins:L.layerGroup().addTo(LM),half:L.layerGroup().addTo(LM),route:L.layerGroup().addTo(LM)};
     LM.on("click",closeSheet);LM.on("zoomend",()=>{drawPins();drawTransit();});LM.on("moveend",()=>{if(MAPV.transit)drawTransit();});}
   setTimeout(()=>LM.invalidateSize(),0);
   const groups=mapGroups(),hasO=origin&&typeof origin.lat==="number";
@@ -312,7 +337,7 @@ function drawMap(){const L=window.L;
       L.circle([origin.lat,origin.lon],{radius:r,color:c,weight:1.5,dashArray:"5 7",fillColor:c,fillOpacity:.035,interactive:false,className:"bring"}).addTo(LMG.rings);
       L.marker([origin.lat+r/111320,origin.lon],{interactive:false,keyboard:false,icon:L.divIcon({className:"bring-l",html:`<span style="--rc:${c}">${m} min</span>`,iconSize:[60,18],iconAnchor:[30,9]})}).addTo(LMG.rings);});
     L.marker([origin.lat,origin.lon],{interactive:false,keyboard:false,zIndexOffset:900,icon:L.divIcon({className:"bmaphome",html:'<span></span>',iconSize:[16,16],iconAnchor:[8,8]})}).addTo(LMG.rings);}
-  CUR=groups.sort((a,b)=>a.evs.length-b.evs.length);drawPins();drawRoute();drawTransit();drawHalf();
+  CUR=groups.sort((a,b)=>a.evs.length-b.evs.length);drawHeat();drawPins();drawRoute();routeCost();drawTransit();drawHalf();
   if(state.poolOn&&POOL.length)POOL.forEach(p=>{const mk=L.marker([p.lat,p.lon],{title:p.n,icon:L.divIcon({className:"bpool-w",html:NEON8,iconSize:[22,22],iconAnchor:[11,11]})});
     mk.on("click",ev=>{L.DomEvent.stopPropagation(ev);openPool(p);});mk.addTo(LMG.pool);});
   if(window.NIGHT)NIGHT.map(L,LM,sheetOpen);
@@ -353,14 +378,32 @@ function pin(g,hasO){const L=window.L,n=g.evs.length,sz=Math.round(26+Math.min(1
     icon:L.divIcon({className:"bpin-w"+(far?" far":"")+(g.on?"":" dim"),html:`<span class="bpin${g.star?" star":""}${g.fol?" fol":""}${g.fair?" fair":""}${g.stamp?" stamp":""}" style="--pc:${g.v.c};--ps:${sz}px">${vIcon(g.v,"bpin-ic")}${n>1?`<b>${n}</b>`:""}${g.star?'<i class="bpin-star">★</i>':""}</span>`,iconSize:[sz,sz],iconAnchor:[sz/2,sz/2]})});
   mk.on("click",ev=>{L.DomEvent.stopPropagation(ev);openSheet(g);});mk.addTo(LMG.pins);}
 // My night: the Night Card's stops in order, joined by a dashed neon line with a rough drive time on each leg
+// tonight heatmap: every show on tonight (ignores the other filters) as soft stacked glows, so busy pockets light up
+function drawHeat(){const L=window.L;if(!LMG||!LMG.heat)return;LMG.heat.clearLayers();if(!MAPV.heat)return;const r=dayRange("tonight");if(!r)return;
+  const g={};(state._up||[]).forEach(e=>{if(typeof e.lat!=="number"||!(e.start<=r[1]&&(e.end||e.start)>=r[0]))return;const k=e.lat.toFixed(3)+","+e.lon.toFixed(3);(g[k]=g[k]||{la:e.lat,lo:e.lon,n:0}).n++;});
+  Object.values(g).forEach(p=>[[2600,.07],[1500,.1],[700,.16]].forEach(([rad,op],j)=>L.circle([p.la,p.lo],{radius:rad*(1+Math.min(1.5,Math.sqrt(p.n)*.35)),stroke:false,fillColor:j===2?"#FFE08A":j?"#FF8A5C":"#FF6FA5",fillOpacity:op,interactive:false,className:"bheat"}).addTo(LMG.heat)));}
 function drawRoute(fit){const L=window.L;if(!LMG)return;LMG.route.clearLayers();if(!MAPV.route||!window.NIGHT)return;
   const s=(NIGHT.plan.s||[]).filter(x=>typeof x.la==="number");if(!s.length)return;
   const hasO=origin&&typeof origin.lat==="number",pts=[...(hasO?[[origin.lat,origin.lon]]:[]),...s.map(x=>[x.la,x.lo])];
   if(pts.length>1)L.polyline(pts,{color:"#FFC66B",weight:3,opacity:.9,dashArray:"1 9",lineCap:"round",className:"broute",interactive:false}).addTo(LMG.route);
   for(let i=1;i<pts.length;i++){const a=pts[i-1],b=pts[i],m=estMin(a[0],a[1],b[0],b[1]);
-    L.marker([(a[0]+b[0])/2,(a[1]+b[1])/2],{interactive:false,keyboard:false,icon:L.divIcon({className:"brt-w",html:`<span class="brt-leg">~${fmtMins(m)}</span>`,iconSize:[70,18],iconAnchor:[35,9]})}).addTo(LMG.route);}
+    const rf=NIGHT.rideFare?NIGHT.rideFare(miles(a[0],a[1],b[0],b[1])*1.2):null;
+    L.marker([(a[0]+b[0])/2,(a[1]+b[1])/2],{interactive:false,keyboard:false,icon:L.divIcon({className:"brt-w",html:`<span class="brt-leg">~${fmtMins(m)}${rf?` · 🚕 $${rf[0]}–${rf[1]}`:""}</span>`,iconSize:[130,18],iconAnchor:[65,9]})}).addTo(LMG.route);}
   s.forEach((x,i)=>L.marker([x.la,x.lo],{title:`${i+1}. ${x.n}`,zIndexOffset:1000,icon:L.divIcon({className:"brt-w",html:`<span class="brt">${i+1}</span>`,iconSize:[24,24],iconAnchor:[12,12]})}).addTo(LMG.route));
   if(fit)LM.flyToBounds(L.latLngBounds(pts).pad(.25),{maxZoom:14,duration:.5});}
+// cost of getting around My night: rideshare for every leg (incl. home) vs driving (gas) + typical parking at the show
+function routeCost(){const el=$("bMapRoute");if(!el)return;const s=window.NIGHT?(NIGHT.plan.s||[]).filter(x=>typeof x.la==="number"):[];
+  if(!MAPV.route||!s.length||!NIGHT.rideFare){el.hidden=true;return;}
+  const hasO=origin&&typeof origin.lat==="number",pts=[...(hasO?[[origin.lat,origin.lon]]:[]),...s.map(x=>[x.la,x.lo]),...(hasO?[[origin.lat,origin.lon]]:[])];
+  let mi=0,lo=0,hi=0;for(let i=1;i<pts.length;i++){const m=miles(pts[i-1][0],pts[i-1][1],pts[i][0],pts[i][1])*1.2;mi+=m;if(m>=.5){const f=NIGHT.rideFare(m);lo+=f[0];hi+=f[1];}}
+  const ppl=Math.max(1,+(state.carLink||state.car||1)),gas=mi/(state.mpg||25)*(state.gas||5.85);
+  const sh=s.find(x=>x.k==="show"),e=sh&&(state._up||[]).find(x=>x.title===sh.n),pk=e?(PARK[tier(e)]??15):0;
+  const late=s.some(x=>x.tm&&+x.tm.slice(0,2)>=22||x.tm&&+x.tm.slice(0,2)<4);
+  el.hidden=false;el.innerHTML=`<b>${ni("pin")} My night · ${Math.round(mi)} mi${hasO?" round trip":" between stops"}</b>
+    <span>🚗 Drive: gas ~$${gas.toFixed(0)}${pk?` + parking ~$${pk}${e?` at ${esc(e.venue)}`:""}`:""} = <b>$${Math.round(gas+pk)}</b>${ppl>1?` ($${Math.round((gas+pk)/ppl)} each for ${ppl})`:""}</span>
+    <span>🚕 Rideshare every leg: <b>$${lo}–${hi}</b>${ppl>1?` ($${Math.round(lo/ppl)}–${Math.round(hi/ppl)} each if you share)`:""}</span>
+    ${late&&MAPV.transit?`<span class="bmr-warn">🌙 Taking the train home? ${esc(NIGHT.LASTTRAIN.Metro)}. Metrolink and Coaster are usually done by evening.</span>`:""}
+    <small>Rough estimates: straight-line miles, typical parking for the venue's size, rideshare before surge.</small>`;}
 // Meet halfway: your start point + a friend's spot (kept only while the page is open) → the 8 venues that are fairest for both
 function drawHalf(){const L=window.L;if(!LMG)return;LMG.half.clearLayers();if(!MAPV.half)return;
   L.marker([MAPV.half.lat,MAPV.half.lon],{interactive:false,keyboard:false,zIndexOffset:900,icon:L.divIcon({className:"bmaphome bfriend",html:'<span></span>',iconSize:[16,16],iconAnchor:[8,8]})}).addTo(LMG.half);}
@@ -390,7 +433,7 @@ function drawTransit(){const L=window.L;if(!LMG)return;LMG.transit.clearLayers()
   STA.forEach(s=>{if(!bb.contains([s.lat,s.lon]))return;const c=SYS[s.s]||"#cfc6e8";const mk=L.marker([s.lat,s.lon],{title:`${s.n} (${s.s})`,zIndexOffset:-1000,icon:L.divIcon({className:"bsta-w",html:`<span class="bsta" style="--ic:${c}"><svg viewBox="0 0 24 24" aria-hidden="true">${TRAIN}</svg></span>`,iconSize:[20,20],iconAnchor:[10,10]})});
     mk.on("click",ev=>{L.DomEvent.stopPropagation(ev);const q=encodeURIComponent(s.n+" station");
       sheetOpen(`<div class="bms-h" style="--pc:${c}"><i></i><div><b>${esc(s.n)}</b><span>${esc(s.s)}${s.l?" · "+esc(s.l):""}</span></div></div>
-        <p class="bms-more">Trains can stop early at night, so check the last one home with the agency before you go.</p>
+        <p class="bms-more bms-late">🌙 Last train home: ${esc((window.NIGHT&&NIGHT.LASTTRAIN&&NIGHT.LASTTRAIN[s.s])||"trains can stop early at night")}. Check the last one on the agency's site before you go.</p>
         <div class="bms-night"><a href="https://www.google.com/maps/dir/?api=1&destination=${q}&travelmode=transit" target="_blank" rel="noopener">🚆 Transit directions</a></div>`);});
     mk.addTo(LMG.transit);});}
 function nearSta(lat,lon){if(!STA)return null;let b=null;STA.forEach(s=>{const mi=miles(lat,lon,s.lat,s.lon);if(mi<=1.5&&(!b||mi<b.mi))b={s,mi};});return b;}
@@ -429,11 +472,15 @@ $("bMapChips").insertAdjacentHTML("afterend",`<div class="bmap-chips bmap-tools"
   <div class="bmap-timew"><label class="bmap-time" id="bMapTime"><span>${ni("moon")} What's on at</span><input type="range" min="0" max="17" step="1" value="0" aria-label="Time of night"><b>Any time</b></label><button type="button" class="chip bmap-now" id="bMapNow">Now</button></div>`);
 $("bMapTools").addEventListener("click",ev=>{const f=ev.target.closest("[data-mf]");
   if(f){const [k,v]=f.dataset.mf.split(":");MAPV[k]=MAPV[k]===v?"":v;closeSheet();drawMapUI();return;}
-  if(ev.target.closest("[data-mroute]")){MAPV.route=!MAPV.route;drawMapUI();setTimeout(()=>drawRoute(MAPV.route),120);return;}
+  if(ev.target.closest("[data-mroute]")){MAPV.route=!MAPV.route;routeCost();drawMapUI();setTimeout(()=>drawRoute(MAPV.route),120);return;}
   if(ev.target.closest("[data-mhalf]")){if(MAPV.half){MAPV.half=null;closeSheet();drawMapUI();}else halfForm();return;}
   if(ev.target.closest("[data-mtransit]")){MAPV.transit=!MAPV.transit;loadStations();drawMapUI();return;}
-  if(ev.target.closest("[data-mpass]")){MAPV.pass=!MAPV.pass;closeSheet();drawMapUI();}});
-$("bMapTime").querySelector("input").addEventListener("input",ev=>{MAPV.t=+ev.target.value;$("bMapTime").querySelector("b").textContent=tLbl(MAPV.t);
+  if(ev.target.closest("[data-mpass]")){MAPV.pass=!MAPV.pass;closeSheet();drawMapUI();return;}
+  if(ev.target.closest("[data-mheat]")){MAPV.heat=!MAPV.heat;if(MAPV.heat&&state.when!=="tonight"){state.when="tonight";savePrefs();render();}else drawMapUI();}});
+// past ~10:30 PM with Transit on: a heads-up that most trains are about done
+function lateNote(){let el=$("bMapLate");if(!el){el=document.createElement("p");el.id="bMapLate";el.className="bmap-late";$("bMapTime").closest(".bmap-timew").after(el);}
+  const T=tMin();el.hidden=!(MAPV.transit&&T!=null&&T>=22*60+30);if(!el.hidden&&window.NIGHT&&NIGHT.LASTTRAIN)el.textContent=`🌙 Late for trains: ${NIGHT.LASTTRAIN.Metro}; ${NIGHT.LASTTRAIN.Trolley.toLowerCase()}. Metrolink and Coaster are usually done by evening. Line up a ride home.`;}
+$("bMapTime").querySelector("input").addEventListener("input",ev=>{MAPV.t=+ev.target.value;$("bMapTime").querySelector("b").textContent=tLbl(MAPV.t);lateNote();
   window.MAPT=tMin();drawPins();if(window.NIGHT&&window.L&&LM)NIGHT.map(window.L,LM,sheetOpen);});
 // "Now": jump the slider to the current half hour (before 6 PM it lands on 6 PM; after 2 AM it goes back to Any time)
 $("bMapNow").onclick=()=>{const d=new Date();let m=d.getHours()*60+d.getMinutes();if(m<5*60)m+=24*60;
@@ -466,7 +513,13 @@ function badges(infos){const bv=infos.filter(v=>BEEN.has(v.k)),n=BEEN.size,rg=ne
   return [[ni("ticket"),"First stamp","Stamp 1 venue",n>=1],[ni("chart"),"Regular","Stamp 10 venues",n>=10],[ni("map"),"Region hopper","Stamps in 3 regions",rg.size>=3],
     [ni("palm"),"All of SoCal","Stamps in all 6 regions",rg.size>=6],[ni("sun"),"Desert trip","Stamp a desert venue",rg.has("Desert")],
     [ni("home"),"Small & local","Stamp 5 small venues",cnt(v=>v.evs.some(isSmall))>=5],[ni("venue"),"Big room","Stamp an arena or stadium",cnt(v=>(+v.cap||0)>6000||/arena|stadium|forum|bowl|dome/i.test(v.name))>=1],
-    [ni("mic"),"Comedy regular","Stamp 3 comedy clubs",cnt(v=>v.evs.some(e=>e.kind==="comedy"))>=3],[ni("bell"),"Bucket list hit","Stamp a bucket-list venue",[...WANT].some(k=>BEEN.has(k))],[ni("list"),"Stub collector","Log 10 past shows",showCount()>=10]]
+    [ni("mic"),"Comedy regular","Stamp 3 comedy clubs",cnt(v=>v.evs.some(e=>e.kind==="comedy"))>=3],[ni("bell"),"Bucket list hit","Stamp a bucket-list venue",[...WANT].some(k=>BEEN.has(k))],[ni("list"),"Stub collector","Log 10 past shows",showCount()>=10],
+    ["🔥","On a roll","3 weeks in a row out",streak().best>=3],["🌋","Hot streak","8 weeks in a row out",streak().best>=8],
+    ["⛺","First festival","Stamp a festival venue",cnt(v=>v.evs.some(e=>e.kind==="festival"))>=1],["🔔","Sound bath","Stamp a sound-bath space",cnt(v=>v.evs.some(e=>e.kind==="sound"))>=1],
+    ["💃","Free mover","Stamp an ecstatic dance or contact improv space",cnt(v=>v.evs.some(e=>e.kind==="dance"||e.kind==="contact"))>=1],
+    ["🥁","Drum circle","Stamp a drum circle",cnt(v=>v.evs.some(e=>e.kind==="drum"))>=1],["🤝","Community helper","Stamp a volunteer spot",cnt(v=>v.evs.some(e=>e.kind==="volunteer"))>=1],
+    ["🎤","Open mic brave","Stamp 3 open-mic spots",cnt(v=>v.evs.some(e=>e.kind==="openmic"))>=3],["🔁","Repeat customer","Log 3 shows at one venue",[...BEEN].some(k=>pastShows(k).length>=3)],
+    ["🌙","Night architect","Plan 3 nights that happened",window.NIGHT&&NIGHT.allNights?NIGHT.allNights().filter(x=>x.p.d&&x.p.d<todayStr()).length>=3:false]]
     .map(([ic,n2,how,on])=>({ic,n:n2,how,on}));}
 // backup = a small JSON file you keep; restore merges it back in (nothing is uploaded anywhere)
 function backupPassport(){const data={app:"show-shack-passport",v:3,saved:new Date().toISOString(),been:[...BEEN],starven:starVen,want:[...WANT],log:PLOG,shows:PSHOWS,nights:window.NIGHT&&NIGHT.allNights?NIGHT.allNights():[]};
@@ -518,6 +571,8 @@ function vChips(infos){const n=f=>infos.filter(f).length;
   const quick=VQF.map(([k,l,ok])=>{const c=n(x=>vMatch(x,k)&&ok(x));return c||VF.f.has(k)?`<button type="button" class="chip" data-vff="${k}" aria-pressed="${VF.f.has(k)}">${l}<small>${c}</small></button>`:"";}).join("");
   const regs=REGIONS.filter(r=>r!=="Other").map(r=>{const c=n(x=>vMatch(x,"rg")&&regionOfK(x.k)===r);return c||VF.rg===r?`<button type="button" class="chip" data-vfr="${esc(r)}" aria-pressed="${VF.rg===r}">${esc(RABBR[r]||r)}<small>${c}</small></button>`:"";}).join("");
   return typ+`<div class="bsubs bvf bvf2" role="group" aria-label="Venue filters">${vfOn()?`<button type="button" class="chip bvf-x" data-vfx="1">✕ Clear</button>`:""}${quick}<i class="bvf-sep" aria-hidden="true"></i>${regs}</div>`;}
+// quiet-venue nudge: remember (on this device) the last day each venue had shows listed
+const VLAST=ld("shack-vlast",{});
 renderVenues=function(){const list=$("list");
   const keys=[...new Set((state._up||[]).filter(e=>e.kind!=="art"&&e.kind!=="volunteer").map(venueKey))];
   // venues.json places with a city + coordinates but nothing listed right now still get a card
@@ -525,12 +580,17 @@ renderVenues=function(){const list=$("list");
   const quietK=Object.entries(VOPEN).filter(([n,o])=>o&&o.c&&typeof o.la==="number"&&!named.has(n)).map(([n,o])=>{const k=n+" · "+o.c;QUIET[k]=o;return k;});
   const infos=[...keys,...quietK].map(k=>{const v=venueInfo(k),o=QUIET[k];if(o&&!v.evs.length){v.lat=o.la;v.lon=o.lo;v.drive=driveEstimate(o.la,o.lo);v.addr=o.ad;}return v;}),r=dayRange(state.when);
   infos.forEach(v=>{v.inR=r?v.evs.filter(e=>e.start<=r[1]&&(e.end||e.start)>=r[0]):v.evs;});
+  {const t=todayStr();let ch=false;infos.forEach(v=>{if(v.evs.length&&VLAST[v.k]!==t){VLAST[v.k]=t;ch=true;}});if(ch)try{localStorage.setItem("shack-vlast",JSON.stringify(VLAST));}catch(e){}}
+  const quietTag=v=>{if(v.evs.length){const nx=v.evs[0].start,dd=Math.round((parseDay(nx)-parseDay(todayStr()))/864e5);return dd>=42?`💤 Next show is ${Math.round(dd/7)} weeks out`:"";}
+    const ls=VLAST[v.k];if(ls){const dd=Math.round((parseDay(todayStr())-parseDay(ls))/864e5);if(dd>=30)return `💤 No new shows in ${dd} days`;if(dd>=1)return `💤 Nothing listed since ${parseDay(ls).toLocaleDateString("en-US",{month:"short",day:"numeric"})}`;}
+    return "💤 Nothing listed right now";};
+  const socials=v=>`https://www.google.com/search?q=${encodeURIComponent(v.name+" "+v.city+" instagram")}`;
   const byNext=(a,b)=>(a.inR[0]?.start||"9").localeCompare(b.inR[0]?.start||"9")||(a.drive?.mins??1e9)-(b.drive?.mins??1e9);
   const byDrive=(a,b)=>origin?((a.drive?.mins??1e9)-(b.drive?.mins??1e9))||byNext(a,b):byNext(a,b);
   const card=v=>{const n=v.inR[0]||v.evs[0],when=n?parseDay(n.start).toLocaleDateString("en-US",{weekday:"short",month:"short",day:"numeric"})+(n.time?" · "+String(n.time).replace(/\s*\(.*\)/,""):""):"";
     const fol=isPinned(v.k),nw=fol?newCount(v):0,been=BEEN.has(v.k);
     const prices=v.evs.map(priceInfo).filter(p=>p&&!p.sold&&!p.none&&p.lo!=null).map(p=>p.lo);
-    const tags=[nw?`<span class="tag bnew">● ${nw} new</span>`:"",been?`<span class="tag been">✓ Been here${(PLOG[v.k]||{}).r?" · "+"★".repeat(PLOG[v.k].r):""}</span>`:"",!been&&WANT.has(v.k)?`<span class="tag bwant">♡ Bucket list</span>`:"",v.evs.some(isSmall)?`<span class="tag local">${ni("home")} Small &amp; local</span>`:"",VF.f.has("crawl")&&CRAWL.has(v.k)?`<span class="tag bcrawl">🚶 ${CRAWL.get(v.k).length} more in walking distance: ${esc(CRAWL.get(v.k).slice(0,3).join(", "))}</span>`:"",prices.length&&Math.min(...prices)===0?`<span class="tag">Free shows</span>`:""].filter(Boolean).join("");
+    const tags=[nw?`<span class="tag bnew">● ${nw} new</span>`:"",been?`<span class="tag been">✓ Been here${(PLOG[v.k]||{}).r?" · "+"★".repeat(PLOG[v.k].r):""}</span>`:"",!been&&WANT.has(v.k)?`<span class="tag bwant">♡ Bucket list</span>`:"",v.evs.some(isSmall)?`<span class="tag local">${ni("home")} Small &amp; local</span>`:"",VF.f.has("crawl")&&CRAWL.has(v.k)?`<span class="tag bcrawl">🚶 ${CRAWL.get(v.k).length} more in walking distance: ${esc(CRAWL.get(v.k).slice(0,3).join(", "))}</span>`:"",prices.length&&Math.min(...prices)===0?`<span class="tag">Free shows</span>`:"",quietTag(v)?`<span class="tag bquiet-t">${esc(quietTag(v))}</span>`:""].filter(Boolean).join("");
     const vo=VOPEN[v.name]||{},eats=vo.e||[],acc=vo.a||null,tips=(vo.w||[]).slice(1);
     const eatQ=u=>"https://www.google.com/maps/search/?api=1&query="+encodeURIComponent(u+" near "+v.name+", "+v.city);
     const fmt=e=>parseDay(e.start).toLocaleDateString("en-US",{weekday:"short",month:"short",day:"numeric"});
@@ -539,7 +599,7 @@ renderVenues=function(){const list=$("list");
       ${eats.length?`<div class="vsec"><span class="sl">${ni("food")} Local eats</span><ul>${eats.map(x=>`<li><a href="${eatQ(x.n)}" target="_blank" rel="noopener"><b>${esc(x.n)}</b></a> · ${esc(x.d)}</li>`).join("")}</ul></div>`:""}
       ${acc?`<div class="vsec"><span class="sl">${ni("hand")} Accessibility</span><p class="vacc">${esc(acc.t)}${acc.u?` <a href="${esc(acc.u)}" target="_blank" rel="noopener">Venue's access page ↗</a>`:""}</p></div>`:""}
       ${v.evs.length?`<div class="vsec"><span class="sl">${ni("ticket")} Coming up</span><ul>${v.evs.slice(0,3).map(e=>`<li><b>${esc(fmt(e))}</b> ${esc(e.title)}</li>`).join("")}${v.evs.length>3?`<li class="mut">+${v.evs.length-3} more</li>`:""}</ul></div>`
-        :`<div class="vsec"><span class="sl">${ni("ticket")} Coming up</span><p class="vacc">Nothing listed right now. Check the venue's own calendar.${v.addr?` ${esc(v.addr)}, ${esc(v.city)}.`:""}</p></div>`}
+        :`<div class="vsec"><span class="sl">${ni("ticket")} Coming up</span><p class="vacc">${esc(quietTag(v))}. They may just not post here: <a href="${socials(v)}" target="_blank" rel="noopener">check their socials ↗</a> or the venue's own calendar.${v.addr?` ${esc(v.addr)}, ${esc(v.city)}.`:""}</p></div>`}
       ${been?`<div class="vsec vlog"><span class="sl">★ Your log</span><div class="vrate" role="group" aria-label="Rate ${esc(v.name)}">${[1,2,3,4,5].map(x=>`<button type="button" data-rate="${x}" data-rk="${esc(v.k)}" aria-pressed="${(PLOG[v.k]||{}).r>=x}" aria-label="${x} star${x>1?"s":""}">★</button>`).join("")}</div>
         <input class="vnote" data-vnote="${esc(v.k)}" maxlength="140" value="${esc((PLOG[v.k]||{}).n||"")}" placeholder="Who you went with, best moment, what you saw…" aria-label="Note for ${esc(v.name)}">
         ${(()=>{const xs=pastShows(v.k);return `<p class="vacc">${xs.length?`Seen here: ${xs.slice(0,3).map(x=>esc(x.t)).join(" · ")}${xs.length>3?` +${xs.length-3}`:""}. `:""}<button type="button" class="vlogadd" data-pstamp="${esc(v.k)}">＋ Log a past show</button></p>`;})()}</div>`:""}
@@ -569,7 +629,8 @@ renderVenues=function(){const list=$("list");
     <div class="bpass-h"><span class="bpass-k"><img class="bshack-ic" src="hut.webp?v=2" alt="">Show passport</span><b>${beenV.length} <small>of ${tot} venues${(()=>{const n=showCount();return n?` · ${n} show${n===1?"":"s"}`:"";})()}</small></b></div>
     ${beenV.length?`<p class="bpass-tip">Tap a stamp to log shows you've seen there.</p><div class="bstamps">${stamps}</div>${plogPanel}<div class="bpass-regs">${regs.filter(x=>x[1]).map(([rg,a,b])=>`<span style="--pp:${Math.round(a/b*100)}%">${esc(rg)} <b>${a}</b>/${b}</span>`).join("")}</div>`
       :`<p>Tap <b>I've been here</b> on any venue you've been to. Shows you star stamp themselves the day after.</p>`}
-    <div class="bbadges">${bdg.map(b=>`<span class="bbadge${b.on?" on":""}" title="${esc(b.how)}"><i>${b.ic}</i><b>${esc(b.n)}</b><small>${esc(b.on?"Earned":b.how)}</small></span>`).join("")}</div>
+    ${(()=>{const on=bdg.filter(b=>b.on),lk=bdg.length-on.length;return `<p class="bbadge-n">${on.length?`${on.length} badge${on.length>1?"s":""} earned`:"No badges yet"}${lk?` · <span>🔒 ${lk} more hidden until you unlock them</span>`:""}</p>`;})()}
+    <div class="bbadges">${bdg.filter(b=>b.on).map(b=>`<span class="bbadge${b.on?" on":""}" title="${esc(b.how)}"><i>${b.ic}</i><b>${esc(b.n)}</b><small>${esc(b.on?"Earned":b.how)}</small></span>`).join("")}</div>
     ${wantV.length?`<p class="bwant-p">♡ Bucket list: <b>${wantDone}</b> of ${wantV.length} done${wantV.length-wantDone?` · next up: ${esc(wantV.filter(k=>!BEEN.has(k)).slice(0,3).map(k=>k.split(" · ")[0]).join(", "))}`:""}</p>`:`<p class="bwant-p">Tap <b>♡ Bucket list</b> on venues you want to hit. They show up here.</p>`}
     <div class="bpass-acts">${beenV.length?`<button type="button" class="bpass-share" data-pshare="1">${ni("share")} Share my year</button><button type="button" class="bpass-share" data-ppmap="1">${ni("map")} Passport map</button><button type="button" class="bpass-share" data-pcmp="1">↔ Compare with a friend</button>`:""}
       <button type="button" class="bpass-share" data-pback="1">Back up passport + nights</button><label class="bpass-share">Restore<input type="file" accept="application/json,.json" data-prest hidden></label></div>

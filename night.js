@@ -173,7 +173,18 @@ const todayISO=()=>{const d=new Date();return d.getFullYear()+"-"+String(d.getMo
 document.addEventListener("click",ev=>{const b=ev.target.closest("[data-nadd],[data-naft]");if(!b)return;ev.stopPropagation();ev.preventDefault();
   if(b.dataset.nadd){const e=evById(b.dataset.nadd);if(!e){toast("Couldn't find that show");return;}if(addStop(showStop(e))){b.classList.add("done");b.textContent="✓ In your night";}}
   else{const p=allAfters()[+b.dataset.naft];if(p&&addStop(afterStop(p))){b.classList.add("done");b.textContent="✓ Added";}}},true);
-const addBtn=h=>`<button type="button" class="nadd" data-nadd="${esc(h)}">＋ My night</button>`;
+const addBtn=h=>`<button type="button" class="nadd" data-nadd="${esc(h)}">＋ My night</button><button type="button" class="ncal" data-ncal="${esc(h)}" aria-label="Add to calendar">📅</button>`;
+// one show → a calendar file (start time from the listing, about 3 hours long; all-day when no time is listed)
+function evIcs(e){const pad=n=>String(n).padStart(2,"0"),[y,m,d]=String(e.start).split("-").map(Number),tm=parseTime(e.time);
+  const f=x=>x.getFullYear()+pad(x.getMonth()+1)+pad(x.getDate())+"T"+pad(x.getHours())+pad(x.getMinutes())+"00",escI=v=>String(v).replace(/\\/g,"\\\\").replace(/[,;]/g,c=>"\\"+c).replace(/\n/g,"\\n");
+  let a,b;if(tm){const [h,mi]=tm.split(":").map(Number);const st=new Date(y,m-1,d,h,mi);a="DTSTART:"+f(st);b="DTEND:"+f(new Date(st.getTime()+3*3600e3));}
+  else{const nx=new Date(y,m-1,d+1);a="DTSTART;VALUE=DATE:"+y+pad(m)+pad(d);b="DTEND;VALUE=DATE:"+nx.getFullYear()+pad(nx.getMonth()+1)+pad(nx.getDate());}
+  const u=e.url&&typeof safeUrl==="function"?safeUrl(e.url):"";
+  return ["BEGIN:VCALENDAR","VERSION:2.0","PRODID:-//The Show Shack//Show//EN","BEGIN:VEVENT","UID:"+hid(e)+"@showshack","DTSTAMP:"+new Date().toISOString().replace(/[-:]/g,"").replace(/\.\d+/,""),a,b,
+    "SUMMARY:"+escI(e.title),"LOCATION:"+escI([e.venue,e.city].filter(Boolean).join(", ")),"DESCRIPTION:"+escI((e.time?e.time+"\n":"")+(u?"Tickets: "+u+"\n":"")+"Check the seller's page before you go."),...(u?["URL:"+u]:[]),"END:VEVENT","END:VCALENDAR"].join("\r\n");}
+function saveIcs(text,name){const blob=new Blob([text],{type:"text/calendar"}),a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=name.replace(/[^\w-]+/g,"-").slice(0,40)+".ics";document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove();},1500);}
+document.addEventListener("click",ev=>{const b=ev.target.closest("[data-ncal]");if(!b)return;ev.stopPropagation();ev.preventDefault();const e=evById(b.dataset.ncal);
+  if(!e||!e.start){toast("No date for that show yet");return;}saveIcs(evIcs(e),e.title||"show");toast("Calendar file ready. Open it to add the show");},true);
 // inject "+ My night" into flip-card backs, full cards, and map-sheet rows as they appear
 function inject(root){
   root.querySelectorAll(".bfb-foot:not([data-nx])").forEach(f=>{f.dataset.nx=1;const full=f.querySelector("[data-full]");if(full)full.insertAdjacentHTML("afterend",addBtn(full.dataset.full));});
@@ -245,6 +256,11 @@ function flipTo(on){const el=$("bNight");if(!el)return;
     const a=el.animate([{transform:"scaleX(0.02)"},{transform:"scaleX(1)"}],{duration:170,easing:"cubic-bezier(.25,.6,.4,1)",fill:"forwards"});
     a.onfinish=()=>{a.cancel();el.getAnimations().forEach(x=>x.cancel());el._busy=false;const r=el.getBoundingClientRect();if(r.top<0)el.scrollIntoView({block:"start",behavior:"smooth"});};};}
 const road=(a,b,c,d)=>miles(a,b,c,d)*1.2,legMin=mi=>Math.max(5,Math.round((6+mi/55*60)/5)*5);
+// rough SoCal rideshare fare: ~$5 booking + base, ~$1.40/mi, ~$0.35/min, $10 minimum; late night often surges, so a range
+const rideFare=mi=>{const v=Math.max(10,5+1.4*mi+.35*legMin(mi));return [Math.round(v),Math.round(v*1.4)];};
+// last trains: honest, not exact (agencies change schedules); always point to the agency
+const LASTTRAIN={Metro:"Metro rail's last trains leave around midnight (a little later on some lines)",Trolley:"Trolley service mostly wraps up around midnight",
+  Metrolink:"Metrolink is a commuter line and is usually done by evening",NCTD:"Coaster and Sprinter trains are usually done by evening",Amtrak:"Amtrak has only a few trains a day"};
 const tmin=t=>{let [h,m]=t.split(":").map(Number);if(h<5)h+=24;return h*60+m;};
 function showPrice(s){if(s.c!=null&&s.c!=="")return {v:+s.c,txt:+s.c?`$${s.c}`:"Free"};
   const e=allEv().find(x=>x.title===s.n);if(e)try{const pi=priceInfo(e);
@@ -274,6 +290,15 @@ function backHtml(){const p=plan,S=p.s,st=typeof state!=="undefined"?state:{};
   const tms=S.map(s=>s.tm).filter(Boolean);let span="";if(tms.length>1){const a=tmin(tms[0]),z=tmin(tms[tms.length-1]);span=`${fmtT(tms[0])} → ${fmtT(tms[tms.length-1])}${z>a?` · ${Math.floor((z-a)/60)}h${(z-a)%60?" "+(z-a)%60+"m":""} of plans`:""}`;}
   const late=tms.some(t=>tmin(t)>=22*60);const drives=S.some(s=>s.w==="drive"),drinks=S.some(s=>/bar|karaoke|rooftop|barcade|jazz|lounge/i.test((s.n||"")+(s.no||"")))||S.some(s=>["after"].includes(s.k));
   const notes=[];
+  // getting home: drive (gas for the last leg ÷ carpool + parking at the show) vs rideshare (fare ÷ people riding)
+  let homeCmp="";const lastS=[...pts].pop();
+  if(hasO&&lastS){const hm=road(lastS.la,lastS.lo,origin.lat,origin.lon),gasH=hm/mpg*gal/ppl,shw=S.find(s=>s.k==="show"),pk=shw?parkFor(shw):0,rf=rideFare(hm);
+    const driveEach=gasH+pk/ppl,rideEach=[rf[0]/ppl,rf[1]/ppl],cheaper=driveEach<=rideEach[0]?"drive":"ride";
+    homeCmp=`<h3 class="bn-sub">Getting home: drive or rideshare?</h3><ul class="bn-list bn-home">
+      <li class="${cheaper==="drive"?"best":""}"><span>${tic("gas","sm")} Drive · gas ${Math.round(hm)} mi${ppl>1?` ÷ ${ppl}`:""}${pk?` + ~$${pk} parking`:""}</span><b>$${driveEach.toFixed(2)}</b></li>
+      <li class="${cheaper==="ride"?"best":""}"><span>🚕 Rideshare from ${esc(lastS.n||"the last stop")}${ppl>1?` ÷ ${ppl}`:""}</span><b>$${Math.round(rideEach[0])}–${Math.round(rideEach[1])}</b></li></ul>
+      <p class="bn-hint">${drinks?"There are drinks in this plan: if nobody's staying sober, rideshare is the answer whatever it costs. ":""}Rideshare is a rough range (late-night surge can push it higher). Driving counts gas for the ride home and typical parking at the show.</p>`;}
+  if(late&&st.home==="transit")notes.push("Taking transit home late: "+Object.values(LASTTRAIN).slice(0,3).join(". ")+". Check your line's last train on the agency's site before you go.");
   if(!hasO)notes.push("Set a start point below to add driving there and home.");
   if(guessed)notes.push("Prices marked \"guess\" are rough typical spends, not real prices. Tap a stop and fill in \"Cost each\" for the real number.");
   if(late&&(drives||drinks))notes.push("Late night: lock in a sober driver or a rideshare home before you go.");
@@ -284,6 +309,7 @@ function backHtml(){const p=plan,S=p.s,st=typeof state!=="undefined"?state:{};
     <div class="bn-big"><span>Each</span><b>${approx?"≈ ":""}$${Math.round(tot)}</b>${ppl>1?`<small>gas split ${ppl} ways</small>`:""}${B?`<small>${pct}% of your $${B} monthly fun budget</small>`:""}</div>
     ${rows.length?`<h3 class="bn-sub">Per person</h3><ul class="bn-list">${rows.join("")}</ul>`:'<p class="bn-hint">No costs yet. Add "Cost each" to a stop.</p>'}
     ${legs.length?`<h3 class="bn-sub">Getting around</h3><ul class="bn-list">${legs.join("")}</ul><p class="bn-hint">Straight-line estimates at ${mpg} mpg and $${(+gal).toFixed(2)}/gal, not live traffic.</p>`:""}
+    ${homeCmp}
     ${pays.length?`<h3 class="bn-sub">Pay back</h3><ul class="bn-list">${pays.join("")}</ul>`:""}
     ${notes.length?`<h3 class="bn-sub">Heads up</h3><ul class="bn-notes">${notes.map(x=>`<li>${esc(x)}</li>`).join("")}</ul>`:""}
     ${tot?`<h3 class="bn-sub">Total per person</h3><ul class="bn-list bn-tot">${[[tic("show","sm")+" Tickets",bucket.show],[tic("eat","sm")+" Food",bucket.eat],[tic("after","sm")+" Afters",bucket.after],[tic("other","sm")+" Other",bucket.other],[tic("gas","sm")+" Gas",mi>=1?gasEach:0]].filter(x=>x[1]>0).map(([l,v])=>`<li><span>${l}</span><b>$${v%1?v.toFixed(2):v}</b></li>`).join("")}<li class="sum"><span>Total</span><b>${approx?"≈ ":""}$${tot.toFixed(2)}</b></li></ul>`:""}
@@ -295,6 +321,8 @@ const spotGuess=s=>{const a=allAfters().find(x=>x.n===s.n&&(!s.p||s.p.startsWith
 function guessCost(s,st){if(s.k==="eat"){const g=spotGuess(s);if(g!=null)return {v:g,txt:`≈$${g} guess`,g:1};const bbq=/bbq|korean/i.test((s.n||"")+(s.no||""));const v=bbq?40:(st.food||30);return {v,txt:`≈$${v} guess`,g:1};}
   if(s.k==="after"){const g=spotGuess(s),v=g!=null?g:20;return v?{v,txt:`≈$${v} guess`,g:1}:{v:0,txt:"Free"};}
   return null;}
+// typical parking at a show stop: from the venue's size (app.js PARK / tier), 0 when unknown
+function parkFor(s){try{const e=allEv().find(x=>x.title===s.n&&s.p&&s.p.startsWith(x.venue||"\u0000"));return e&&typeof PARK!=="undefined"&&typeof tier==="function"?(PARK[tier(e)]??0):0;}catch(_){return 0;}}
 const near0=()=>{const s=plan.s.find(x=>x.k==="show"&&x.p);return s?s.p:"";};
 function anchor(){const s=[...plan.s].reverse().find(x=>typeof x.la==="number");if(s)return [s.la,s.lo];if(typeof origin!=="undefined"&&origin&&typeof origin.lat==="number")return [origin.lat,origin.lon];return null;}
 function picker(){if(pickK==="show"){
@@ -325,6 +353,7 @@ function drawBuilder(){const el=$("bNight");if(!el)return;const n=plan.s.length,
     <div class="bn-meta"><input data-m="t" value="${esc(plan.t)}" placeholder="Name the night" maxlength="70" aria-label="Name the night"><label class="bn-dw${plan.d?"":" empty"}"><input data-m="d" type="date" value="${esc(plan.d)}" aria-label="Date"></label></div>
     <p class="bn-wx" id="bnWx" hidden></p>
     ${n?`<ol class="bn-stops">${plan.s.map(stopRow).join("")}</ol>`:`<p class="bn-empty">Nothing yet. Add stops below, or tap <b>＋ My night</b> on any show.</p>`}
+    ${n>1&&plan.s.some(x=>x.tm)?`<button type="button" class="bn-tight" data-tight="1">⏱ Tighten the night <small>re-time every stop from the drive times</small></button>`:""}
     <div class="bn-add">${["meet","eat","show","after"].map(k=>`<button type="button" class="chip bn-addc" data-addk="${k}" aria-pressed="${pickK===k}">${tic(k,"sm")} ${TYPES[k][1]}</button>`).join("")}</div>
     ${picker()}
     <details class="bn-host"${plan.h||plan.ph?" open":""}><summary>Who's hosting (for "I'm in" texts)</summary>
@@ -355,6 +384,14 @@ function dragMove(ev){if(!drag||ev.pointerId!==drag.id)return;const dy=ev.client
 function dragEnd(ev){if(!drag||ev.pointerId!==drag.id)return;const {from,to,items}=drag;drag=null;items.forEach(x=>{x.style.transform="";x.classList.remove("dragging");});
   if(to!==from){const [m]=plan.s.splice(from,1);plan.s.splice(to,0,m);const was=m.tm,now=retime(to);openI=-1;plan.up=Date.now();save();drawBuilder();
     toast("Moved "+esc(m.n||TYPES[m.k][1])+(now&&now!==was?" · now "+fmtT(now):""),was&&now!==was?"Undo time":"",()=>{m.tm=was;sortStops();save();drawBuilder();});}}
+/* tighten: keep the show's time (or the first timed stop) fixed and lay every other stop around it, using how long each
+   kind of stop usually takes plus the drive between them (5-minute steps) */
+const STAY={meet:20,eat:75,show:150,after:120,house:90,other:45};
+function tighten(){const S=plan.s;if(S.length<2)return 0;let ai=S.findIndex(x=>x.k==="show"&&x.tm);if(ai<0)ai=S.findIndex(x=>x.tm);if(ai<0)return 0;
+  const go=(a,b)=>typeof a.la==="number"&&typeof b.la==="number"?(road(a.la,a.lo,b.la,b.lo)<.5?10:legMin(road(a.la,a.lo,b.la,b.lo))):15;
+  const t=[];t[ai]=tmin(S[ai].tm);for(let i=ai-1;i>=0;i--)t[i]=t[i+1]-go(S[i],S[i+1])-STAY[S[i].k];for(let i=ai+1;i<S.length;i++)t[i]=t[i-1]+STAY[S[i-1].k]+go(S[i-1],S[i]);
+  let ch=0;S.forEach((x,i)=>{const m=Math.round(t[i]/5)*5,v=String(Math.floor(((m%1440)+1440)%1440/60)).padStart(2,"0")+":"+String(((m%60)+60)%60).padStart(2,"0");if(x.tm!==v){x.tm=v;ch++;}});
+  if(ch)plan.up=Date.now();return ch;}
 /* dragging re-times the stop you moved so the night still runs in order: halfway between its new neighbours
    (rounded to 15 min), or an hour after the stop above / before the stop below when only one side has a time */
 function retime(i){const s=plan.s[i];if(!s)return "";const tm=x=>x&&x.tm?tmin(x.tm):null;
@@ -373,6 +410,9 @@ function onInput(ev){const t=ev.target;
   if(ev.type==="change"&&(t.dataset.f==="w"||t.dataset.f==="tm")){if(t.dataset.f==="tm")sortStops();save();drawBuilder();}}
 async function onClick(ev){const b=ev.target.closest("button");if(!b)return;const d=b.dataset;
   if(d.flip){flipTo(!flipped);return;}
+  if(d.tight){const before=plan.s.map(x=>x.tm),ch=tighten();
+    if(!ch){toast("Already tight. Nothing to change");return;}save();drawBuilder();
+    toast(`Re-timed ${ch} stop${ch>1?"s":""}`,"Undo",()=>{plan.s.forEach((x,i)=>{if(before[i])x.tm=before[i];else delete x.tm;});save();drawBuilder();});return;}
   if(d.split){const st=typeof state!=="undefined"?state:{},h=plan.s.find(x=>x.vh||x.ch);let n=0;
     plan.s.forEach(x=>{let v=x.k==="show"?showPrice(x).v:x.c!=null&&x.c!==""?+x.c:(guessCost(x,st)||{}).v;v=Math.round(v||0);if(!v)return;
       x.amt=v;if(!x.vh&&!x.ch&&h){if(h.vh)x.vh=h.vh;else x.ch=h.ch;}n++;});
@@ -483,13 +523,18 @@ function nightCard(x){const p=x.p,cur=x.id===planId,tot=each(p),sh=p.s.find(s=>s
     <div class="bnc-top">${cur?'<span class="bnc-tag">Editing now</span>':""}<b>${esc(nName(p))}</b><span>${esc(p.d?fmtD(p.d):"Date TBD")} · ${p.s.length} stop${p.s.length===1?"":"s"}${tot?` · ≈ $${Math.round(tot)} each`:""}</span></div>
     <ol class="bnc-stops">${p.s.slice(0,4).map(s=>`<li>${tic(s.k,"sm")}<span>${s.tm?`<em>${esc(fmtT(s.tm))}</em> `:""}${esc(s.n||TYPES[s.k][1])}</span></li>`).join("")}${p.s.length>4?`<li class="more">+${p.s.length-4} more</li>`:""}</ol>
     ${p.up?`<small class="bnc-up">Updated ${esc(fmtUp(p.up))}</small>`:""}
-    <div class="bnc-act"><button type="button" class="bnc-open" data-nopen="${esc(x.id)}">${cur?"Keep building":"Open in Plan"}</button><button type="button" data-nshare="${esc(x.id)}">Share</button><button type="button" class="bn-trash bnc-del" data-ndel="${esc(x.id)}" aria-label="Delete ${esc(nName(p))}">${tic("trash")}</button></div></article>`;}
+    <div class="bnc-act">${p.d&&p.d<todayISO()?`<button type="button" class="bnc-open" data-nagain="${esc(x.id)}">🔁 Do it again</button>`:`<button type="button" class="bnc-open" data-nopen="${esc(x.id)}">${cur?"Keep building":"Open in Plan"}</button>`}<button type="button" data-nshare="${esc(x.id)}">Share</button><button type="button" class="bn-trash bnc-del" data-ndel="${esc(x.id)}" aria-label="Delete ${esc(nName(p))}">${tic("trash")}</button></div></article>`;}
 function drawSaved(){if(!savedOn)return;let el=$("bNights");const list=$("list");if(!list)return;
   if(!el){el=document.createElement("section");el.id="bNights";el.className="bnights";el.setAttribute("aria-label","Your nights");list.before(el);
-    el.addEventListener("click",ev=>{const b=ev.target.closest("button");if(!b)return;const d=b.dataset,x=NIGHTS.find(n=>n.id===(d.nopen||d.nshare||d.ndel));
+    el.addEventListener("click",ev=>{const b=ev.target.closest("button");if(!b)return;const d=b.dataset,x=NIGHTS.find(n=>n.id===(d.nopen||d.nshare||d.ndel||d.nagain));
       if(d.nnew!=null){useNight(newId(),{});openPlan();return;}
       if(!x)return;
       if(d.nopen){if(x.id!==planId)useNight(x.id,x.p);openPlan();return;}
+      // same crew, same spots, next week: same weekday, the show slot opens up for a new pick
+      if(d.nagain){const [y,m,dd]=x.p.d.split("-").map(Number),wd=new Date(y,m-1,dd).getDay(),t=new Date();t.setHours(12);let k=(wd-t.getDay()+7)%7;if(k<2)k+=7;t.setDate(t.getDate()+k);
+        const s2=x.p.s.map(s=>s.k==="show"?{k:"show",tm:s.tm,no:"Last time: "+(s.n||"a show")+(s.p?" @ "+s.p:"")+". Pick this week's show."}:{...s});
+        useNight(newId(),{...x.p,t:(x.p.t||"Our night").replace(/ \(again\)$/,"")+" (again)",d:t.getFullYear()+"-"+String(t.getMonth()+1).padStart(2,"0")+"-"+String(t.getDate()).padStart(2,"0"),up:Date.now(),s:s2});
+        openPlan();toast("Copied for next "+t.toLocaleDateString("en-US",{weekday:"long"})+". Pick the show");return;}
       if(d.nshare){shareNight(x.p,b);return;}
       if(d.ndel){if(!b.classList.contains("sure")){b.classList.add("sure");b.setAttribute("aria-label","Tap again to delete");const c=b.closest(".bnc");c.classList.add("sure");setTimeout(()=>{b.classList.remove("sure");c.classList.remove("sure");},2500);return;}
         NIGHTS=NIGHTS.filter(n=>n.id!==x.id);if(x.id===planId){plan=cleanPlan({});planId=newId();try{localStorage.setItem(KEY,JSON.stringify(plan));}catch(e){}drawBuilder();}
@@ -507,7 +552,7 @@ function savedRow(on){savedOn=on;if(on)drawSaved();else{const el=$("bNights");if
 const allNights=()=>NIGHTS.map(x=>({id:x.id,p:cleanPlan(x.p)}));
 function mergeNights(arr){if(!Array.isArray(arr))return 0;let n=0;arr.slice(0,MAXN).forEach(x=>{if(!x||typeof x.id!=="string"||NIGHTS.some(y=>y.id===x.id))return;NIGHTS.push({id:x.id.slice(0,20),p:cleanPlan(x.p)});n++;});
   NIGHTS.sort((a,b)=>(b.p.up||0)-(a.p.up||0));if(NIGHTS.length>MAXN)NIGHTS.length=MAXN;putNights();drawSaved();drawBuilder();return n;}
-window.NIGHT={spots:allAfters,savedRow,stopFor:afterStop,toast,nightAt,allNights,mergeNights,pack,unpack,AC,IC,ic,EXP,cost,hrs,grp,ready:()=>AFTERS.length>0,surpriseNight,chip,map,sheet,encode,decode,cleanPlan,addStop,view,get plan(){return plan;}};
+window.NIGHT={rideFare,LASTTRAIN,spots:allAfters,savedRow,stopFor:afterStop,toast,nightAt,allNights,mergeNights,pack,unpack,AC,IC,ic,EXP,cost,hrs,grp,ready:()=>AFTERS.length>0,surpriseNight,chip,map,sheet,encode,decode,cleanPlan,addStop,view,get plan(){return plan;}};
 if(keep(plan)&&!NIGHTS.some(x=>x.id===planId))upsertNight();else putNights();
 const go=()=>{mount();inject(document.body);fromHash(window.NIGHT_HASH||location.hash);};
 if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",go);else go();

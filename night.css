@@ -201,3 +201,11 @@ html.nview-on,html.nview-on body{overflow:hidden}
 /* Saved: coming up / past */
 .bnc-h{margin:2px 0 -2px;font:700 12px var(--mono);letter-spacing:.4px;text-transform:uppercase;color:#cfc6ea}
 .bnc-past .bnc{opacity:.78}
+/* add to calendar (every card) */
+.ncal{min-height:32px;min-width:36px;padding:0 8px;border-radius:999px;border:1px solid rgba(126,224,184,.5);background:rgba(126,224,184,.1);font-size:15px;line-height:1;cursor:pointer;margin-left:6px}
+/* tighten the night */
+.bn-tight{display:flex;flex-direction:column;align-items:flex-start;gap:2px;width:100%;margin:0 0 10px;padding:10px 14px;border-radius:14px;border:1px dashed rgba(126,224,184,.6);background:rgba(126,224,184,.08);color:#7ee0b8;font:700 14px var(--body);cursor:pointer;text-align:left}
+.bn-tight small{font:500 12px var(--body);color:#b9b0d4}
+/* getting home: the cheaper option glows */
+.bn-home li.best{border-color:#7ee0b8!important;box-shadow:0 0 14px -8px #7ee0b8}
+.bn-home li.best b::after{content:" ✓ cheaper";font:600 11px var(--mono);color:#7ee0b8}
