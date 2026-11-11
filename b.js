@@ -305,6 +305,7 @@ $("bMapStart").onclick=()=>{state.view="list";show("budget");setTimeout(()=>{con
 
 
 /* ---- venues: what's playing first, a one-line personality, follow + new-show dots, passport, jump to map ---- */
+let VQ="";const QUIET={};   // venue search text; venues.json spots with no listed shows (key → {c,ad,la,lo})
 const FSEEN=(()=>{try{return JSON.parse(localStorage.getItem("shack-fseen")||"{}")||{};}catch(e){return {};}})();
 const saveSeen=()=>{try{localStorage.setItem("shack-fseen",JSON.stringify(FSEEN));}catch(e){}};
 const KIND_WORD={concert:"music room",club:"dance club",festival:"festival grounds",comedy:"comedy club",theater:"theater",openmic:"open-mic spot",social:"dance-social spot",dance:"ecstatic-dance space",contact:"movement studio",sound:"sound-bath space",drum:"drum-circle spot"};
@@ -322,7 +323,10 @@ function syncFollowDot(){if(!(state._up||[]).length)return;let n=0;(state.pinV||
   const t=document.querySelector('#bTabs [data-tab="venues"]');if(t)t.classList.toggle("bdot",n>0);}
 renderVenues=function(){const list=$("list");
   const keys=[...new Set((state._up||[]).filter(e=>e.kind!=="art"&&e.kind!=="volunteer").map(venueKey))];
-  const infos=keys.map(venueInfo),r=dayRange(state.when);
+  // venues.json places with a city + coordinates but nothing listed right now still get a card
+  const named=new Set(keys.map(k=>k.split(" · ")[0]));
+  const quietK=Object.entries(VOPEN).filter(([n,o])=>o&&o.c&&typeof o.la==="number"&&!named.has(n)).map(([n,o])=>{const k=n+" · "+o.c;QUIET[k]=o;return k;});
+  const infos=[...keys,...quietK].map(k=>{const v=venueInfo(k),o=QUIET[k];if(o&&!v.evs.length){v.lat=o.la;v.lon=o.lo;v.drive=driveEstimate(o.la,o.lo);v.addr=o.ad;}return v;}),r=dayRange(state.when);
   infos.forEach(v=>{v.inR=r?v.evs.filter(e=>e.start<=r[1]&&(e.end||e.start)>=r[0]):v.evs;});
   const byNext=(a,b)=>(a.inR[0]?.start||"9").localeCompare(b.inR[0]?.start||"9")||(a.drive?.mins??1e9)-(b.drive?.mins??1e9);
   const byDrive=(a,b)=>origin?((a.drive?.mins??1e9)-(b.drive?.mins??1e9))||byNext(a,b):byNext(a,b);
@@ -337,11 +341,12 @@ renderVenues=function(){const list=$("list");
       ${tips.length?`<div class="vsec"><span class="sl">${ni("car")} Getting there</span><ul>${tips.map(t=>`<li>${esc(t)}</li>`).join("")}</ul></div>`:""}
       ${eats.length?`<div class="vsec"><span class="sl">${ni("food")} Local eats</span><ul>${eats.map(x=>`<li><a href="${eatQ(x.n)}" target="_blank" rel="noopener"><b>${esc(x.n)}</b></a> · ${esc(x.d)}</li>`).join("")}</ul></div>`:""}
       ${acc?`<div class="vsec"><span class="sl">${ni("hand")} Accessibility</span><p class="vacc">${esc(acc.t)}${acc.u?` <a href="${esc(acc.u)}" target="_blank" rel="noopener">Venue's access page ↗</a>`:""}</p></div>`:""}
-      <div class="vsec"><span class="sl">${ni("ticket")} Coming up</span><ul>${v.evs.slice(0,3).map(e=>`<li><b>${esc(fmt(e))}</b> ${esc(e.title)}</li>`).join("")}${v.evs.length>3?`<li class="mut">+${v.evs.length-3} more</li>`:""}</ul></div>
-      <div class="vlinks"><button type="button" class="bvmap" data-vmap="${esc(v.k)}">${ni("map")} On the map</button><button type="button" class="vbeen${been?" on":""}" data-been="${esc(v.k)}" aria-pressed="${been}">${been?"✓ Been here":"I've been here"}</button><button type="button" class="vall" data-venue="${esc(v.k)}">All ${v.evs.length} show${v.evs.length===1?"":"s"} →</button></div></div>`;
+      ${v.evs.length?`<div class="vsec"><span class="sl">${ni("ticket")} Coming up</span><ul>${v.evs.slice(0,3).map(e=>`<li><b>${esc(fmt(e))}</b> ${esc(e.title)}</li>`).join("")}${v.evs.length>3?`<li class="mut">+${v.evs.length-3} more</li>`:""}</ul></div>`
+        :`<div class="vsec"><span class="sl">${ni("ticket")} Coming up</span><p class="vacc">Nothing listed right now. Check the venue's own calendar.${v.addr?` ${esc(v.addr)}, ${esc(v.city)}.`:""}</p></div>`}
+      <div class="vlinks">${v.evs.length?`<button type="button" class="bvmap" data-vmap="${esc(v.k)}">${ni("map")} On the map</button>`:`<a class="bvmap" href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(v.name+", "+(v.addr||"")+", "+v.city)}" target="_blank" rel="noopener">${ni("map")} Map ↗</a>`}<button type="button" class="vbeen${been?" on":""}" data-been="${esc(v.k)}" aria-pressed="${been}">${been?"✓ Been here":"I've been here"}</button>${v.evs.length?`<button type="button" class="vall" data-venue="${esc(v.k)}">All ${v.evs.length} show${v.evs.length===1?"":"s"} →</button>`:""}</div></div>`;
     return `<div class="vcard${nw?" hasnew":""}"><div class="vf"><button type="button" class="vopen" data-vmore="1" aria-expanded="false"><b>${esc(v.name)}</b>
       <span>${esc(v.city)}${v.drive?` · ${v.drive.real?"":"~"}${fmtMins(v.drive.mins)}`:""}${v.year?` · since ${v.year}`:""}</span>
-      <em class="bvibe">${esc(vibeLine(v))}</em>
+      <em class="bvibe">${esc(v.evs.length||VOPEN[v.name]?.w?vibeLine(v):(v.addr||""))}</em>
       <small>${n?`${v.inR.length&&r?"":"Next "}${esc(when)}: ${esc(n.title)}${v.inR.length>1?` +${v.inR.length-1} more`:""}`:"No shows listed"}</small>
       ${tags?`<span class="vtags">${tags}</span>`:""}</button>
       <button type="button" class="vpin bfollow${fol?" on":""}" data-pinv="${esc(v.k)}" aria-pressed="${fol}" aria-label="${fol?"Unfollow":"Follow"} ${esc(v.name)}">${ni("bell")}<span>${fol?"Following":"Follow"}</span></button></div>${more}</div>`;};
@@ -356,14 +361,24 @@ renderVenues=function(){const list=$("list");
   </div></div></div>`;
   const fol=infos.filter(v=>isPinned(v.k)).sort((a,b)=>newCount(b)-newCount(a)||byNext(a,b));
   const seg=`<div class="bseg bven-when">${WHEN.map(([w,l])=>`<button type="button" data-when="${w}" aria-pressed="${state.when===w}">${l}</button>`).join("")}</div>`;
-  let html=`<div class="venues bven">${seg}${pass}<h2 class="month pickh">${ni("bell")} Following</h2>`+(fol.length?fol.map(card).join(""):`<div class="empty"><strong>Follow your spots</strong>Tap Follow on a venue. When it adds a show, you'll see a dot on the Venues tab.</div>`);
+  const search=`<label class="bvsearch">${ni("search")}<input type="search" id="bVq" placeholder="Search ${tot} venues by name or city" value="${esc(VQ)}" autocomplete="off" enterkeyhint="search" aria-label="Search venues"><span id="bVqN" class="bvq-n" aria-live="polite"></span></label>`;
+  let html=`<div class="venues bven">${search}${seg}${pass}<h2 class="month pickh">${ni("bell")} Following</h2>`+(fol.length?fol.map(card).join(""):`<div class="empty"><strong>Follow your spots</strong>Tap Follow on a venue. When it adds a show, you'll see a dot on the Venues tab.</div>`);
   const rest=infos.filter(v=>!isPinned(v.k));
   if(r){const on=rest.filter(v=>v.inR.length).sort(byDrive);
     html+=`<h2 class="month">Playing ${WHEN_WORD[state.when]} · ${on.length}</h2>`+(on.length?on.map(card).join(""):`<div class="empty"><strong>Nothing listed ${WHEN_WORD[state.when]}</strong>Try This weekend or Anytime.</div>`);
     html+=`<h2 class="month bquiet">Quiet ${WHEN_WORD[state.when]}</h2>`;
     for(const rg of REGIONS){const vs=rest.filter(v=>!v.inR.length&&regionOfK(v.k)===rg).sort((a,b)=>(a.evs[0]?.start||"9").localeCompare(b.evs[0]?.start||"9"));if(vs.length)html+=`<h3 class="bvreg">${esc(rg)}</h3>`+vs.map(card).join("");}}
   else for(const rg of REGIONS){const vs=rest.filter(v=>regionOfK(v.k)===rg).sort(byNext);if(vs.length)html+=`<h2 class="month">${esc(rg)}</h2>`+vs.map(card).join("");}
-  list.innerHTML=html+`</div>`;syncFollowDot();};
+  list.innerHTML=html+`</div>`;syncFollowDot();vFilter();};
+/* venue search: filters the cards already on the page (no re-render, so the keyboard stays up) */
+const vnorm=s=>String(s||"").toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,"").replace(/[^a-z0-9]+/g," ").trim();
+function vFilter(){const box=$("list").querySelector(".bven");if(!box)return;const q=vnorm(VQ),words=q?q.split(" "):[];let n=0;
+  box.querySelectorAll(".vcard:not(.bpass)").forEach(c=>{const t=vnorm(c.querySelector(".vopen")?.textContent);const ok=words.every(w=>t.includes(w));c.hidden=!ok;if(ok)n++;});
+  box.classList.toggle("vsearching",!!q);
+  // hide section headings and empty notes whose cards are all filtered out
+  box.querySelectorAll("h2.month,h3.bvreg").forEach(h=>{let el=h.nextElementSibling,any=false;while(el&&!el.matches("h2,h3")){if(el.matches(".vcard:not([hidden])"))any=true;el=el.nextElementSibling;}h.hidden=!!q&&!any;});
+  const nEl=$("bVqN");if(nEl)nEl.textContent=q?(n?`${n} match${n===1?"":"es"}`:"No venues match"):"";}
+$("list").addEventListener("input",ev=>{if(ev.target.id!=="bVq")return;VQ=ev.target.value;vFilter();});
 const RABBR={"Orange County":"OC","Los Angeles":"LA","Inland Empire":"IE","San Diego":"SD","Desert":"DST","Ventura":"VC","Other":""};
 const STOPW=new Set(["the","of","at","and","a","an","on","in","&","+","-","·"]);
 function initials(v){const city=new Set(String(v.city||"").toLowerCase().split(/\s+/));
@@ -371,7 +386,8 @@ function initials(v){const city=new Set(String(v.city||"").toLowerCase().split(/
   const nc=w.filter(x=>!city.has(x.toLowerCase()));if(nc.length)w=nc;
   if(w.length===1)return w[0].slice(0,2).toUpperCase();
   return w.slice(0,3).map(x=>/^\d/.test(x)?x.replace(/\D.*$/,""):x[0]).join("").toUpperCase().slice(0,3);}
-function regionOfK(k){const e=(state._up||[]).find(x=>venueKey(x)===k);return e?region(e):"Other";}
+function regionOfK(k){const e=(state._up||[]).find(x=>venueKey(x)===k);if(e)return region(e);
+  const o=QUIET[k];return o?region({venue:k.split(" · ")[0],city:o.c,lat:o.la,lon:o.lo}):"Other";}
 // B-only clicks inside the venues list (capture so they run before app.js's handlers)
 $("list").addEventListener("click",ev=>{if(screen!=="venues")return;
   const w=ev.target.closest("[data-when]");if(w){ev.stopPropagation();state.when=w.dataset.when;savePrefs();render();return;}

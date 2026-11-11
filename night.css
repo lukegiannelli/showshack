@@ -65,9 +65,19 @@
 .naf-row svg.neon8{width:24px;height:24px;flex:none}
 .nemo{font-size:20px;flex:none;width:24px;text-align:center}
 .naf-w{background:none;border:0}
-.naf{display:grid;place-items:center;width:24px;height:24px;border-radius:50%;font-size:13px;background:rgba(30,16,60,.85);border:1.5px solid #b48cff;box-shadow:0 0 10px rgba(180,140,255,.8)}
-.naf-pool{border-color:#ff6fe0;box-shadow:0 0 10px rgba(255,111,224,.8)}
+/* map markers: neon line icon in a dark round badge ringed in the category's color; food gets a rounded square */
+.naf{--ic:#b48cff;display:grid;place-items:center;width:30px;height:30px;border-radius:50%;background:rgba(14,8,30,.88);
+  border:1.5px solid var(--ic);box-shadow:0 0 10px -1px var(--ic),inset 0 0 8px -4px var(--ic)}
+.naf-food{border-radius:9px}
+.naf .nic{width:18px;height:18px}
+.naf-row{--ic:#b48cff}
+.naf-row>.nic{width:24px;height:24px}
+.naf-h>.nic{width:28px;height:28px;flex:none}
+.naf-price{color:#9FF0CC!important;font-family:var(--mono)}
+.nafchip{display:inline-flex;align-items:center;gap:6px}
 .nafchip[aria-pressed="true"]{background:#b48cff!important;color:#160a2e!important}
+.nafchip[aria-pressed="true"] .nic{--ic:#160a2e!important;filter:none}
+.nfdchip[aria-pressed="true"]{background:#FF8A5C!important}
 
 /* toast */
 .ntoast{position:fixed;left:50%;bottom:calc(92px + env(safe-area-inset-bottom,0px));transform:translate(-50%,20px);opacity:0;pointer-events:none;z-index:1200;display:flex;align-items:center;gap:12px;padding:10px 14px;border-radius:999px;background:rgba(24,12,48,.96);border:1px solid rgba(180,140,255,.5);color:#fff;font:600 14px var(--body);box-shadow:0 8px 24px rgba(0,0,0,.4);transition:.25s}
