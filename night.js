@@ -128,7 +128,6 @@ const dirQ=s=>s.a?[s.p||s.n,s.a].filter(Boolean).join(", "):(s.p||s.n||"");
 const dirUrl=s=>`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(dirQ(s))}`;
 const venmo=s=>`https://venmo.com/u/${encodeURIComponent(s.vh)}`;
 const cash=s=>`https://cash.app/$${encodeURIComponent(s.ch)}${s.amt?"/"+s.amt:""}`;
-const each=p=>p.s.reduce((t,s)=>t+(+s.c||0),0);
 function parseTime(txt){const m=/(\d{1,2})(?::(\d\d))?\s*([ap])\.?m/i.exec(txt||"");if(!m)return "";let h=+m[1]%12;if(/p/i.test(m[3]))h+=12;return String(h).padStart(2,"0")+":"+(m[2]||"00");}
 function goLine(s){if(!s.w)return "";const w=s.w==="drive"&&s.dr?`${esc(s.dr)} is driving`:GOW[s.w];return `${GO[s.w]} ${w}`;}
 
@@ -294,7 +293,10 @@ function showPrice(s){if(s.c!=null&&s.c!=="")return {v:+s.c,txt:+s.c?`$${s.c}`:"
   const e=allEv().find(x=>x.title===s.n);if(e)try{const pi=priceInfo(e);
     if(pi.free)return {v:0,txt:"Free"};if(pi.sold)return {v:0,txt:"Sold out",warn:1};if(!pi.none&&pi.lo)return {v:Math.round(pi.lo),txt:(pi.est?"≈":"from ")+"$"+Math.round(pi.lo),est:1};}catch(_){}
   return {v:0,txt:"Price not listed",warn:1};}
-function backHtml(){const p=plan,S=p.s,st=typeof state!=="undefined"?state:{};
+// one source of truth for what a night costs each: the summary line, Saved cards, Night Cards and The damage all use it
+let DMG={tot:0,approx:false};
+function dmg(p){backHtml(p,"calc");return DMG;}
+function backHtml(p=plan,mode=""){const S=p.s,st=typeof state!=="undefined"?state:{},view=mode==="view";
   const ppl=Math.max(1,+(st.carLink||st.car||1)),mpg=st.mpg||25,gal=st.gas||5.85;
   const hasO=typeof origin!=="undefined"&&origin&&typeof origin.lat==="number";
   // money per person
@@ -333,7 +335,10 @@ function backHtml(){const p=plan,S=p.s,st=typeof state!=="undefined"?state:{};
   if(S.some(s=>s.k==="show"&&showPrice(s).warn))notes.push("A show price isn't listed. Check the ticket page.");
   if(S.some(s=>s.k==="after"&&!(s.no||"").startsWith("Hours")))notes.push("Afters hours aren't always listed. Check before you head over.");
   const B=st.budget||0,pct=B?Math.round(tot/B*100):0;
-  return `<div class="bn-h"><button type="button" class="bn-flipb" data-flip="1">↻ The plan</button><h2>The damage</h2><p>${esc(p.t||"Your night")}${p.d?" · "+esc(fmtD(p.d)):""}${span?"<br>"+esc(span):""}</p></div>
+  DMG={tot,approx};if(mode==="calc")return "";
+  if(view){const i=notes.indexOf("Set a start point below to add driving there and home.");if(i>=0)notes[i]="Set your start point in the Show Shack's Plan tab to add your drive there and home.";
+    const j=notes.findIndex(x=>x.startsWith("Prices marked"));if(j>=0)notes[j]="Prices marked \"guess\" are rough typical spends, not real prices.";}
+  return `<div class="bn-h"><button type="button" class="bn-flipb" ${view?'data-vflip="1"':'data-flip="1"'}>↻ The ${view?"night":"plan"}</button><h2>The damage</h2><p>${esc(p.t||"Your night")}${p.d?" · "+esc(fmtD(p.d)):""}${span?"<br>"+esc(span):""}</p></div>
     <div class="bn-big"><span>Each</span><b>${approx?"≈ ":""}$${Math.round(tot)}</b>${ppl>1?`<small>gas split ${ppl} ways</small>`:""}${B?`<small>${pct}% of your $${B} monthly fun budget</small>`:""}</div>
     ${rows.length?`<h3 class="bn-sub">Per person</h3><ul class="bn-list">${rows.join("")}</ul>`:'<p class="bn-hint">No costs yet. Add "Cost each" to a stop.</p>'}
     ${legs.length?`<h3 class="bn-sub">Getting around</h3><ul class="bn-list">${legs.join("")}</ul><p class="bn-hint">Straight-line estimates at ${mpg} mpg and $${(+gal).toFixed(2)}/gal, not live traffic.</p>`:""}
@@ -341,8 +346,8 @@ function backHtml(){const p=plan,S=p.s,st=typeof state!=="undefined"?state:{};
     ${pays.length?`<h3 class="bn-sub">Pay back</h3><ul class="bn-list">${pays.join("")}</ul>`:""}
     ${notes.length?`<h3 class="bn-sub">Heads up</h3><ul class="bn-notes">${notes.map(x=>`<li>${esc(x)}</li>`).join("")}</ul>`:""}
     ${tot?`<h3 class="bn-sub">Total per person</h3><ul class="bn-list bn-tot">${[[tic("show","sm")+" Tickets",bucket.show],[tic("eat","sm")+" Food",bucket.eat],[tic("after","sm")+" Afters",bucket.after],[tic("other","sm")+" Other",bucket.other],[tic("gas","sm")+" Gas",mi>=1?gasEach:0]].filter(x=>x[1]>0).map(([l,v])=>`<li><span>${l}</span><b>$${v%1?v.toFixed(2):v}</b></li>`).join("")}<li class="sum"><span>Total</span><b>${approx?"≈ ":""}$${tot.toFixed(2)}</b></li></ul>`:""}
-    <div class="bn-go"><button type="button" class="bn-send" data-send="1">Send the link</button><button type="button" data-split="1">💸 Split it evenly</button><button type="button" data-flip="1">↻ Back to the plan</button></div>
-    <p class="bn-fine">Split it evenly fills in "Pay back" on every stop with its cost each, so friends know what to send. Edit any stop to change it.</p>`;}
+    ${view?`<p class="bn-hint">Gas and getting home are worked out from your own start point and carpool settings on this phone, not the planner's.</p><div class="bn-go"><button type="button" data-vflip="1">↻ Back to the night</button></div>`:`<div class="bn-go"><button type="button" class="bn-send" data-send="1">Send the link</button><button type="button" data-split="1">💸 Split it evenly</button><button type="button" data-flip="1">↻ Back to the plan</button></div>`}
+    ${view?"":`<p class="bn-fine">Split it evenly fills in "Pay back" on every stop with its cost each, so friends know what to send. Edit any stop to change it.</p>`}`;}
 // no cost entered: a rough typical spend, clearly marked as a guess
 // a listed spot's guess = middle of its price range with tax and tip (see PRICE)
 const spotGuess=s=>{const a=allAfters().find(x=>x.n===s.n&&(!s.p||s.p.startsWith(x.a||"")));const c=a&&cost(a);return c?Math.round((c.all[0]+c.all[1])/2):null;};
@@ -372,7 +377,7 @@ function picker(){if(pickK==="show"){
       <div class="bn-row">${eat?`<button type="button" data-blank="eat">${tic("eat","sm")} Type one in</button>`:`<button type="button" data-blank="house">${tic("house","sm")} Someone's place</button><button type="button" data-blank="other">${tic("other","sm")} Other</button>`}<button type="button" data-pick="">Close</button></div></div>`;}
   return "";}
 let pickK2="";
-function drawBuilder(){const el=$("bNight");if(!el)return;const n=plan.s.length,tot=each(plan);
+function drawBuilder(){const el=$("bNight");if(!el)return;const n=plan.s.length,D=n?dmg(plan):{tot:0,approx:false},tot=D.tot;
   if(flipped&&!n)flipped=false;
   el.classList.toggle("flipped",flipped);
   if(flipped){el.innerHTML=backHtml();return;}
@@ -389,7 +394,7 @@ function drawBuilder(){const el=$("bNight");if(!el)return;const n=plan.s.length,
     <details class="bn-host"${plan.h||plan.ph?" open":""}><summary>Who's hosting (for "I'm in" texts)</summary>
       <div class="bn-two"><label class="bn-f"><span>Your name</span><input data-m="h" value="${esc(plan.h)}" maxlength="30"></label><label class="bn-f"><span>Phone (optional)</span><input data-m="ph" type="tel" value="${esc(plan.ph)}" maxlength="20"></label></div>
       <p class="bn-hint">Your number only goes inside the link you send, so friends' "I'm in" texts reach you. Leave it blank and they'll pick who to text.</p></details>
-    ${n?`<div class="bn-sum">${n} stop${n>1?"s":""}${tot?` · ≈ $${Math.round(tot)} each`:""}</div>`:""}
+    ${n?`<div class="bn-sum">${n} stop${n>1?"s":""}${tot?` · ${D.approx?"≈ ":""}$${Math.round(tot)} each`:""}<button type="button" class="bn-sumlink" data-flip="1">See the damage ↻</button></div>`:""}
     <div class="bn-go"><button type="button" class="bn-send" data-send="1"${n?"":" disabled"}>Send the link</button><button type="button" data-prev="1"${n?"":" disabled"}>Preview</button>${n?'<button type="button" class="bn-clr" data-nnew="1">＋ New night</button>':""}</div>
     ${NIGHTS.length?`<p class="bn-fine">Every night you build is kept in <button type="button" class="bn-lnk" data-gosaved="1">Saved → Your nights</button>.</p>`:""}
     <p class="bn-fine">Changed something after you sent it? Send the new link. Every card shows when it was last updated, so the newest one is easy to spot.</p>`;
@@ -484,7 +489,7 @@ function ics(p){const pad=n=>String(n).padStart(2,"0"),stamp=new Date().toISOStr
   const escI=s=>String(s).replace(/\\/g,"\\\\").replace(/[,;]/g,c=>"\\"+c).replace(/\n/g,"\\n");
   const desc=sumText(p)+"\n\n"+location.href;
   return ["BEGIN:VCALENDAR","VERSION:2.0","PRODID:-//The Show Shack//Night Card//EN","BEGIN:VEVENT","UID:night-"+Date.now()+"@showshack",`DTSTAMP:${stamp}`,`DTSTART:${f(startD)}`,`DTEND:${f(endD)}`,`SUMMARY:${escI("🌙 "+(p.t||"Our night"))}`,`DESCRIPTION:${escI(desc)}`,"END:VEVENT","END:VCALENDAR"].join("\r\n");}
-function view(p,preview){close();const auto=preview==="auto";const tot=each(p),ios=/iPhone|iPad|iPod/.test(navigator.userAgent);
+function view(p,preview){close();const auto=preview==="auto";const D=p.s.length?dmg(p):{tot:0,approx:false},tot=D.tot,ios=/iPhone|iPad|iPod/.test(navigator.userAgent);
   const body=encodeURIComponent(`I'm in for ${p.t||"the night"}${p.d?" ("+fmtD(p.d)+")":""}! 🙌`);
   const sms=`sms:${p.ph||""}${ios?"&":"?"}body=${body}`;
   const rows=p.s.map(s=>{const T=TYPES[s.k],u=s.u?safeUrl(s.u):"";
@@ -498,16 +503,17 @@ function view(p,preview){close();const auto=preview==="auto";const tot=each(p),i
       ${acts?`<div class="nv-acts">${acts}</div>`:""}</div></li>`;}).join("");
   const pays=p.s.some(s=>s.vh||s.ch);
   const el=document.createElement("div");el.id="nightView";el.className="nview";el.setAttribute("role","dialog");el.setAttribute("aria-modal","true");el.setAttribute("aria-label","Night Card");
-  el.innerHTML=`<div class="nv-card"><div class="nv-top"><span class="nv-kick">${auto?"🌍 Spun by the globe":"🌙 Night Card"+(preview?" · preview":"")}</span><button type="button" class="nv-x" aria-label="Close">✕</button></div>
+  el.innerHTML=`<div class="nv-card"><div class="nv-top"><span class="nv-kick">${auto?"🌍 Spun by the globe":"🌙 Night Card"+(preview?" · preview":"")}</span><span class="nv-topr">${tot?`<button type="button" class="nv-flipb" data-vflip="1">💸 The damage ↻</button>`:""}<button type="button" class="nv-x" aria-label="Close">✕</button></span></div>
     <h1 class="nv-title">${esc(p.t||"Our night")}</h1><p class="nv-date">${esc(fmtD(p.d)||"Date TBD")}${p.h?` · planned by ${esc(p.h)}`:""}</p>
     ${p.up?`<p class="nv-up">Updated ${esc(fmtUp(p.up))}</p>`:""}
     <ol class="nv-line">${rows||'<li><div class="nv-b"><b>No stops yet</b></div></li>'}</ol>
-    ${tot?`<div class="nv-sum">≈ $${Math.round(tot)} each for the whole night</div>`:""}
+    ${tot?`<button type="button" class="nv-sum" data-vflip="1">${D.approx?"≈ ":""}$${Math.round(tot)} each for the whole night <span>See the damage ↻</span></button>`:""}
     <div class="nv-main">${auto?'<button type="button" class="nv-in" data-vmine="1">✏️ Make it mine</button><button type="button" data-vspin="1">🌍 Spin again</button><button type="button" data-vshare="1">↗ Share</button>':`${preview?"":`<a class="nv-in" href="${esc(sms)}">🙌 I'm in${p.h?" (text "+esc(p.h)+")":""}</a>`}${p.d?'<button type="button" data-ics="1">📅 Add to calendar</button>':""}<button type="button" data-vshare="1">↗ Share</button>${preview?'<button type="button" data-vedit="1">✏️ Keep editing</button>':'<button type="button" data-vcopy="1">✏️ Make my own copy</button>'}`}</div>
     <p class="nv-priv">${auto?"Picked at random from real listings near the show. Food and afters times are suggestions, and hours aren't always listed, so check before you go.":`This plan lives only in this link. The Shack doesn't store it and nobody signs in.${pays?" Pay buttons open Venmo or Cash App: check the name there before you send money.":""}`}</p>
     ${preview?"":'<button type="button" class="nv-shack" data-vclose="1">🌴 Open the Show Shack</button>'}</div>`;
   document.body.appendChild(el);document.documentElement.classList.add("nview-on");
   el.addEventListener("click",async ev=>{if(ev.target===el){close();return;}const b=ev.target.closest("button");if(!b)return;
+    if(b.dataset.vflip){flipCard(el,p);return;}
     if(b.classList.contains("nv-x")||b.dataset.vclose||b.dataset.vedit){close();if(b.dataset.vedit)openPlan();return;}
     if(b.dataset.vshare){shareNight(p,b);return;}
     if(b.dataset.vspin){surpriseNight();return;}
@@ -515,6 +521,13 @@ function view(p,preview){close();const auto=preview==="auto";const tot=each(p),i
     if(b.dataset.ics){const blob=new Blob([ics(p)],{type:"text/calendar"}),a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=(p.t||"night").replace(/[^\w-]+/g,"-").slice(0,40)+".ics";document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove();},1500);return;}
     if(b.dataset.vcopy){useNight(newId(),{...p,up:Date.now()});close();openPlan();toast("Copied into your Plan tab. Your other nights are in Saved");}});
   el.querySelector(".nv-x").focus({preventScroll:true});}
+// Night Card ↔ The damage: same quarter-turn flip as the plan card
+function flipCard(el,p){const card=el.querySelector(".nv-card");if(!card||card._busy)return;
+  const swap=()=>{if(card.classList.contains("dmg")){card.classList.remove("dmg");card.innerHTML=card._front;}
+    else{card._front=card.innerHTML;card.classList.add("dmg");card.innerHTML=`<div class="bnight nv-dmg flipped">${backHtml(p,"view")}</div>`;}el.scrollTop=0;};
+  if(!card.animate||matchMedia("(prefers-reduced-motion: reduce)").matches){swap();return;}card._busy=true;
+  card.animate([{transform:"scaleX(1)"},{transform:"scaleX(0.02)"}],{duration:150,easing:"cubic-bezier(.5,0,.75,.4)",fill:"forwards"}).onfinish=()=>{swap();
+    const a=card.animate([{transform:"scaleX(0.02)"},{transform:"scaleX(1)"}],{duration:170,easing:"cubic-bezier(.25,.6,.4,1)",fill:"forwards"});a.onfinish=()=>{a.cancel();card.getAnimations().forEach(x=>x.cancel());card._busy=false;};};}
 function close(){const v=$("nightView");if(v){v.remove();document.documentElement.classList.remove("nview-on");}}
 document.addEventListener("keydown",ev=>{if(ev.key==="Escape")close();});
 async function fromHash(h){const m=/^#n=([01][A-Za-z0-9_-]+)$/.exec(h||"");if(!m)return;
@@ -550,7 +563,7 @@ function surpriseNight(){const now=todayISO(),hasO=typeof origin!=="undefined"&&
 function nName(p){return p.t||(p.s.find(x=>x.k==="show")||{}).n||(p.d?"Night of "+fmtD(p.d):"Untitled night");}
 const goSaved=()=>{const t=document.querySelector('#bTabs [data-tab="saved"]');if(t)t.click();setTimeout(()=>{const n=$("bNights");if(n)n.scrollIntoView({behavior:"smooth",block:"start"});},120);};
 let savedOn=false;
-function nightCard(x){const p=x.p,cur=x.id===planId,tot=each(p),sh=p.s.find(s=>s.k==="show");
+function nightCard(x){const p=x.p,cur=x.id===planId,tot=p.s.length?dmg(p).tot:0,sh=p.s.find(s=>s.k==="show");
   return `<article class="bnc${cur?" cur":""}" style="--sc:${sh?TYPES.show[2]:TYPES[(p.s[0]||{}).k||"other"][2]}">
     <div class="bnc-top">${cur?'<span class="bnc-tag">Editing now</span>':""}<b>${esc(nName(p))}</b><span>${esc(p.d?fmtD(p.d):"Date TBD")} · ${p.s.length} stop${p.s.length===1?"":"s"}${tot?` · ≈ $${Math.round(tot)} each`:""}</span></div>
     <ol class="bnc-stops">${p.s.slice(0,4).map(s=>`<li>${tic(s.k,"sm")}<span>${s.tm?`<em>${esc(fmtT(s.tm))}</em> `:""}${esc(s.n||TYPES[s.k][1])}</span></li>`).join("")}${p.s.length>4?`<li class="more">+${p.s.length-4} more</li>`:""}</ol>
