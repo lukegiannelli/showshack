@@ -353,7 +353,16 @@ function dragMove(ev){if(!drag||ev.pointerId!==drag.id)return;const dy=ev.client
   const mid=rects[from].top+rects[from].height/2+dy;let to=from;rects.forEach((r,j)=>{const m=r.top+r.height/2;if(j<from&&mid<m)to=Math.min(to,j);if(j>from&&mid>m)to=Math.max(to,j);});
   drag.to=to;items.forEach((x,j)=>{if(j===from)return;x.style.transform=j>=to&&j<from?`translateY(${h}px)`:j<=to&&j>from?`translateY(${-h}px)`:"";});}
 function dragEnd(ev){if(!drag||ev.pointerId!==drag.id)return;const {from,to,items}=drag;drag=null;items.forEach(x=>{x.style.transform="";x.classList.remove("dragging");});
-  if(to!==from){const [m]=plan.s.splice(from,1);plan.s.splice(to,0,m);openI=-1;plan.up=Date.now();save();drawBuilder();toast("Moved "+esc(m.n||TYPES[m.k][1]));}}
+  if(to!==from){const [m]=plan.s.splice(from,1);plan.s.splice(to,0,m);const was=m.tm,now=retime(to);openI=-1;plan.up=Date.now();save();drawBuilder();
+    toast("Moved "+esc(m.n||TYPES[m.k][1])+(now&&now!==was?" · now "+fmtT(now):""),was&&now!==was?"Undo time":"",()=>{m.tm=was;sortStops();save();drawBuilder();});}}
+/* dragging re-times the stop you moved so the night still runs in order: halfway between its new neighbours
+   (rounded to 15 min), or an hour after the stop above / before the stop below when only one side has a time */
+function retime(i){const s=plan.s[i];if(!s)return "";const tm=x=>x&&x.tm?tmin(x.tm):null;
+  let a=null,b=null;for(let j=i-1;j>=0;j--)if(tm(plan.s[j])!=null){a=tm(plan.s[j]);break;}
+  for(let j=i+1;j<plan.s.length;j++)if(tm(plan.s[j])!=null){b=tm(plan.s[j]);break;}
+  let m=a!=null&&b!=null?(b>a?(a+b)/2:a+15):a!=null?a+60:b!=null?b-60:null;if(m==null)return s.tm||"";
+  if(s.tm&&tm(s)!=null&&(a==null||tm(s)>a)&&(b==null||tm(s)<b))return s.tm;   // its time already fits where it landed: leave it
+  m=Math.round(m/15)*15;const h=Math.floor(((m%1440)+1440)%1440/60),mm=((m%60)+60)%60;s.tm=String(h).padStart(2,"0")+":"+String(mm).padStart(2,"0");return s.tm;}
 function sortStops(){let last=-1;const k=plan.s.map((x,i)=>{if(x.tm){let [h,m]=x.tm.split(":").map(Number);if(h<5)h+=24;last=h*60+m;}return {x,i,t:last};});
   const open=plan.s[openI];k.sort((a,b)=>a.t-b.t||a.i-b.i);plan.s=k.map(o=>o.x);if(open)openI=plan.s.indexOf(open);}
 function onInput(ev){const t=ev.target;

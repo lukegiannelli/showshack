@@ -504,10 +504,10 @@ const VQF=[["fol",ni("bell")+" Following",v=>isPinned(v.k)],["been","✓ Been he
   ["small",ni("home")+" Small &amp; local",v=>v.evs.some(isSmall)],["free","Free shows",v=>v.evs.some(e=>priceInfo(e).free)],
   ["all","All ages",v=>v.evs.some(allAgesV)],["21","21+",v=>v.evs.some(e=>ageOf(e)==="21+")],["out",ni("sun")+" Open-air",v=>v.evs.some(isOutdoor)],
   ["acc",ni("hand")+" Access info",v=>!!(VOPEN[v.name]||{}).a],["crawl","🚶 Walkable crawl",v=>CRAWL.has(v.k)]];
-// walkable crawl: venues with at least 2 other venues within ~0.6 mi (about a 10-minute walk)
+// walkable crawl: venues with at least 3 other venues within ~0.4 mi (about an 8-minute walk)
 let CRAWL=new Map();
 function crawlCalc(infos){CRAWL=new Map();const pts=infos.filter(v=>typeof v.lat==="number");
-  pts.forEach(v=>{const nb=pts.filter(w=>w!==v&&miles(v.lat,v.lon,w.lat,w.lon)<=.6);if(nb.length>=2)CRAWL.set(v.k,nb.map(w=>w.name));});}
+  pts.forEach(v=>{const nb=pts.filter(w=>w!==v&&miles(v.lat,v.lon,w.lat,w.lon)<=.4);if(nb.length>=3)CRAWL.set(v.k,nb.map(w=>w.name));});}
 const vfOn=()=>!!(VF.t||VF.f.size||VF.rg);
 function vMatch(v,skip){if(skip!=="t"&&VF.t&&!v.evs.some(e=>GROUPS[VF.t].has(e.kind)))return false;
   if(skip!=="rg"&&VF.rg&&regionOfK(v.k)!==VF.rg)return false;
