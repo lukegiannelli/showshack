@@ -228,7 +228,8 @@ $("bInfoBtn").onclick=()=>{trust();const d=$("bInfo");if(d.showModal)d.showModal
 $("bInfo").addEventListener("click",ev=>{const d=$("bInfo");if(ev.target===d||ev.target.closest("[data-close]")){d.close?d.close():d.removeAttribute("open");}});
 
 /* ---- map: dark street map + drive rings from your start point + "build your night" per venue ---- */
-const MAPV={vibe:"all"};let LM=null,LMG=null,lfLoad=null,fitSig="";
+// price: ""|"free"|"u30"; age: ""|"all"|"21"; t: time slider step (0 = any time); route: draw My night; half: friend's spot for Meet halfway (never saved)
+const MAPV={vibe:"all",price:"",age:"",t:0,route:true,transit:false,half:null};let LM=null,LMG=null,lfLoad=null,fitSig="",CUR=[];
 function loadLeaflet(){if(window.L)return Promise.resolve();if(lfLoad)return lfLoad;
   const l=document.createElement("link");l.rel="stylesheet";l.href="vendor/leaflet.css?v=1";document.head.appendChild(l);
   return lfLoad=new Promise((res,rej)=>{const sc=document.createElement("script");sc.src="vendor/leaflet.js?v=1";sc.onload=res;sc.onerror=()=>{lfLoad=null;rej();};document.head.appendChild(sc);});}
@@ -236,7 +237,18 @@ const RINGS=[[15,"#7ee0b8"],[30,"#FFC66B"],[60,"#FF6FA5"]];
 const ringM=m=>(m-6)*55/60/1.2*1609.34;            // inverse of driveEstimate()
 const vibeOf=e=>VIBES.find(v=>GROUPS[v.k].has(e.kind));
 function miles(a,b,c,d){const R=3958.8,t=x=>x*Math.PI/180,x=Math.sin(t(c-a)/2)**2+Math.cos(t(a))*Math.cos(t(c))*Math.sin(t(d-b)/2)**2;return 2*R*Math.asin(Math.sqrt(x));}
-function mapGroups(){const g={};(state._up||[]).forEach(e=>{if(typeof e.lat!=="number"||!inWhen(e))return;if(MAPV.vibe!=="all"&&!GROUPS[MAPV.vibe].has(e.kind))return;
+/* ---- map extras: filters, time slider, starred/followed pins, clusters, My night route, Meet halfway, transit ---- */
+const estMin=(a,b,c,d)=>{const r=miles(a,b,c,d)*1.2;return Math.max(5,Math.round((6+r/55*60)/5)*5);};   // same rough formula as driveEstimate()
+function startMin(e){const m=String(e.time||"").match(/(\d{1,2})(?::(\d\d))?\s*(AM|PM)/i);if(!m)return null;
+  let h=(+m[1])%12+(m[3].toUpperCase()==="PM"?12:0);if(h<6)h+=24;return h*60+(+m[2]||0);}   // minutes after midnight; 1 AM counts as 25:00
+const tMin=()=>MAPV.t?18*60+(MAPV.t-1)*30:null;   // slider steps: 6 PM, 6:30 … 2 AM
+const tLbl=v=>{if(!v)return "Any time";const m=18*60+(v-1)*30,h=Math.floor(m/60)%24,mm=m%60;return (h%12||12)+(mm?":"+String(mm).padStart(2,"0"):"")+(h<12?" AM":" PM");};
+const evOn=(e,T)=>{const s=startMin(e);return s!=null&&s<=T&&T<s+180;};   // a show "is on" from its start for about 3 hours
+function passF(e){const pi=priceInfo(e);
+  if(MAPV.price==="free"&&!pi.free)return false;
+  if(MAPV.price==="u30"&&!(pi.free||(!pi.none&&!pi.sold&&pi.lo!=null&&pi.lo<=30)))return false;
+  const a=ageOf(e);if(MAPV.age==="all"&&!(a==="all"||(!a&&likelyAllAges(e))))return false;if(MAPV.age==="21"&&a!=="21+")return false;return true;}
+function mapGroups(){const g={};(state._up||[]).forEach(e=>{if(typeof e.lat!=="number"||!inWhen(e)||!passF(e))return;if(MAPV.vibe!=="all"&&!GROUPS[MAPV.vibe].has(e.kind))return;
   const k=venueKey(e);(g[k]=g[k]||{k,lat:e.lat,lon:e.lon,evs:[]}).evs.push(e);});
   return Object.values(g).map(x=>{x.evs.sort((a,b)=>a.start.localeCompare(b.start));const cnt={};x.evs.forEach(e=>{const v=vibeOf(e);if(v)cnt[v.k]=(cnt[v.k]||0)+1;});
     const top=Object.entries(cnt).sort((a,b)=>b[1]-a[1])[0];x.v=VIBES.find(v=>top&&v.k===top[0])||VIBES[0];x.d=driveEstimate(x.lat,x.lon);return x;});}
@@ -245,6 +257,12 @@ const vIcon=(v,cls="bmc-ic")=>`<svg class="${cls}" viewBox="0 0 24 24" aria-hidd
 function drawMapUI(){
   $("bMapChips").innerHTML=`<button type="button" class="chip" data-mv="all" aria-pressed="${MAPV.vibe==="all"}">All</button>`+VIBES.map(v=>`<button type="button" class="chip bmc" data-mv="${v.k}" style="--vc:${v.c}" aria-pressed="${MAPV.vibe===v.k}">${vIcon(v)}${v.name.split(" & ")[0]}</button>`).join("")
     +(window.NIGHT?NIGHT.chip():"");   // pool lives inside 🌙 Afters now
+  const stops=window.NIGHT?(NIGHT.plan.s||[]).filter(s=>typeof s.la==="number"):[];
+  $("bMapTools").innerHTML=[["price","free","Free"],["price","u30","Under $30"],["age","all","All ages"],["age","21","21+"]].map(([k,v,l])=>`<button type="button" class="chip bmt" data-mf="${k}:${v}" aria-pressed="${MAPV[k]===v}">${l}</button>`).join("")
+    +(stops.length?`<button type="button" class="chip bmt bmt-route" data-mroute aria-pressed="${MAPV.route}">${ni("pin")} My night</button>`:"")
+    +`<button type="button" class="chip bmt" data-mhalf aria-pressed="${!!MAPV.half}">↔ Meet halfway</button>`
+    +`<button type="button" class="chip bmt" data-mtransit aria-pressed="${MAPV.transit}">${ni("train")} Transit</button>`;
+  const tr=$("bMapTime");tr.querySelector("input").value=MAPV.t;tr.querySelector("b").textContent=tLbl(MAPV.t);
   $("bMapStart").hidden=!!origin;
   loadLeaflet().then(drawMap).catch(()=>{$("bMapCanvas").innerHTML='<p class="bmap-err">The map couldn\'t load. Check your connection and tap Map again.</p>';});}
 function drawMap(){const L=window.L;
@@ -253,19 +271,17 @@ function drawMap(){const L=window.L;
     L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png",{maxZoom:18,className:"bmap-tiles",
       attribution:'© <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors'}).addTo(LM);
     LM.attributionControl.setPrefix(false);
-    LMG={rings:L.layerGroup().addTo(LM),pool:L.layerGroup().addTo(LM),pins:L.layerGroup().addTo(LM)};
-    LM.on("click",closeSheet);}
+    LMG={rings:L.layerGroup().addTo(LM),transit:L.layerGroup().addTo(LM),pool:L.layerGroup().addTo(LM),pins:L.layerGroup().addTo(LM),half:L.layerGroup().addTo(LM),route:L.layerGroup().addTo(LM)};
+    LM.on("click",closeSheet);LM.on("zoomend",()=>{drawPins();drawTransit();});LM.on("moveend",()=>{if(MAPV.transit)drawTransit();});}
   setTimeout(()=>LM.invalidateSize(),0);
   const groups=mapGroups(),hasO=origin&&typeof origin.lat==="number";
   LMG.rings.clearLayers();LMG.pins.clearLayers();LMG.pool.clearLayers();
+  loadStations();
   if(hasO){RINGS.forEach(([m,c])=>{const r=ringM(m);
       L.circle([origin.lat,origin.lon],{radius:r,color:c,weight:1.5,dashArray:"5 7",fillColor:c,fillOpacity:.035,interactive:false,className:"bring"}).addTo(LMG.rings);
       L.marker([origin.lat+r/111320,origin.lon],{interactive:false,keyboard:false,icon:L.divIcon({className:"bring-l",html:`<span style="--rc:${c}">${m} min</span>`,iconSize:[60,18],iconAnchor:[30,9]})}).addTo(LMG.rings);});
     L.marker([origin.lat,origin.lon],{interactive:false,keyboard:false,zIndexOffset:900,icon:L.divIcon({className:"bmaphome",html:'<span></span>',iconSize:[16,16],iconAnchor:[8,8]})}).addTo(LMG.rings);}
-  groups.sort((a,b)=>a.evs.length-b.evs.length).forEach(g=>{const n=g.evs.length,sz=Math.round(26+Math.min(10,Math.sqrt(n)*3));
-    const far=hasO&&g.d&&g.d.mins>60;
-    const mk=L.marker([g.lat,g.lon],{title:`${g.k.split(" · ")[0]}: ${n} show${n>1?"s":""}`,riseOnHover:true,icon:L.divIcon({className:"bpin-w"+(far?" far":""),html:`<span class="bpin" style="--pc:${g.v.c};--ps:${sz}px">${vIcon(g.v,"bpin-ic")}${n>1?`<b>${n}</b>`:""}</span>`,iconSize:[sz,sz],iconAnchor:[sz/2,sz/2]})});
-    mk.on("click",ev=>{L.DomEvent.stopPropagation(ev);openSheet(g);});mk.addTo(LMG.pins);});
+  CUR=groups.sort((a,b)=>a.evs.length-b.evs.length);drawPins();drawRoute();drawTransit();drawHalf();
   if(state.poolOn&&POOL.length)POOL.forEach(p=>{const mk=L.marker([p.lat,p.lon],{title:p.n,icon:L.divIcon({className:"bpool-w",html:NEON8,iconSize:[22,22],iconAnchor:[11,11]})});
     mk.on("click",ev=>{L.DomEvent.stopPropagation(ev);openPool(p);});mk.addTo(LMG.pool);});
   if(window.NIGHT)NIGHT.map(L,LM,sheetOpen);
@@ -281,6 +297,70 @@ function drawMap(){const L=window.L;
   else if(!carGo)$("bMapReach").innerHTML=`<b>${tot} ${tot===1?"show":"shows"} ${WHEN_WORD[state.when]}<button type="button" class="breach-btn${carOn?" on":""}" aria-label="The Fiscar (tap it)"><img class="breach-car" src="car.svg?v=2" alt=""></button></b><small>Tap a dot to see what's playing there and what's nearby. Set a start point to see what's in reach.</small>`;}
 function sheetOpen(html){const sh=$("bMapSheet");sh.innerHTML=`<button type="button" class="bms-x" aria-label="Close">✕</button>`+html;sh.hidden=false;sh.scrollTop=0;sh.querySelector(".bms-x").onclick=closeSheet;}
 function closeSheet(){$("bMapSheet").hidden=true;}
+// pins: starred shows glow brighter (★), followed venues get an outer ring, the time slider dims venues with nothing on,
+// and below street zoom, venues closer than ~38px share one numbered bubble (tap it to zoom in)
+function drawPins(){const L=window.L;if(!LM||!L||!LMG)return;LMG.pins.clearLayers();
+  const hasO=origin&&typeof origin.lat==="number",T=tMin(),z=LM.getZoom();
+  CUR.forEach(g=>{g.star=g.evs.some(e=>state.stars.has(skey(e)));g.fol=isPinned(g.k);g.on=T==null||g.evs.some(e=>evOn(e,T));g.fair=false;});
+  if(MAPV.half&&hasO){CUR.forEach(g=>{g.ya=estMin(origin.lat,origin.lon,g.lat,g.lon);g.fb=estMin(MAPV.half.lat,MAPV.half.lon,g.lat,g.lon);});
+    CUR.slice().sort((a,b)=>Math.max(a.ya,a.fb)-Math.max(b.ya,b.fb)||Math.abs(a.ya-a.fb)-Math.abs(b.ya-b.fb)).slice(0,8).forEach(g=>g.fair=true);}
+  const cells=[];
+  if(z<13){const used=new Set(),pts=CUR.map(g=>LM.latLngToLayerPoint([g.lat,g.lon]));
+    CUR.forEach((g,i)=>{if(used.has(i))return;used.add(i);const c=[g];if(!g.fair)CUR.forEach((h,j)=>{if(!used.has(j)&&!h.fair&&pts[i].distanceTo(pts[j])<38){used.add(j);c.push(h);}});cells.push(c);});}
+  else CUR.forEach(g=>cells.push([g]));
+  cells.forEach(c=>{if(c.length===1)return pin(c[0],hasO);
+    const n=c.reduce((s,g)=>s+g.evs.length,0),lat=c.reduce((s,g)=>s+g.lat,0)/c.length,lon=c.reduce((s,g)=>s+g.lon,0)/c.length;
+    const cnt={};c.forEach(g=>cnt[g.v.k]=(cnt[g.v.k]||0)+g.evs.length);const v=VIBES.find(x=>x.k===Object.entries(cnt).sort((a,b)=>b[1]-a[1])[0][0])||VIBES[0];
+    const sz=Math.round(36+Math.min(14,Math.sqrt(n)*1.6)),st=c.some(g=>g.star),on=c.some(g=>g.on);
+    const mk=L.marker([lat,lon],{title:`${c.length} venues, ${n} shows. Tap to zoom in.`,zIndexOffset:st?400:0,icon:L.divIcon({className:"bpin-w"+(on?"":" dim"),
+      html:`<span class="bclu${st?" star":""}" style="--pc:${v.c};--ps:${sz}px"><b>${n}</b><small>${c.length} spots</small></span>`,iconSize:[sz,sz],iconAnchor:[sz/2,sz/2]})});
+    mk.on("click",ev=>{L.DomEvent.stopPropagation(ev);LM.flyToBounds(L.latLngBounds(c.map(g=>[g.lat,g.lon])).pad(.35),{maxZoom:14,duration:.5});});mk.addTo(LMG.pins);});}
+function pin(g,hasO){const L=window.L,n=g.evs.length,sz=Math.round(26+Math.min(10,Math.sqrt(n)*3)),far=hasO&&g.d&&g.d.mins>60&&!g.fair;
+  const mk=L.marker([g.lat,g.lon],{title:`${g.k.split(" · ")[0]}: ${n} show${n>1?"s":""}`,riseOnHover:true,zIndexOffset:g.fair?800:g.star?500:g.fol?300:0,
+    icon:L.divIcon({className:"bpin-w"+(far?" far":"")+(g.on?"":" dim"),html:`<span class="bpin${g.star?" star":""}${g.fol?" fol":""}${g.fair?" fair":""}" style="--pc:${g.v.c};--ps:${sz}px">${vIcon(g.v,"bpin-ic")}${n>1?`<b>${n}</b>`:""}${g.star?'<i class="bpin-star">★</i>':""}</span>`,iconSize:[sz,sz],iconAnchor:[sz/2,sz/2]})});
+  mk.on("click",ev=>{L.DomEvent.stopPropagation(ev);openSheet(g);});mk.addTo(LMG.pins);}
+// My night: the Night Card's stops in order, joined by a dashed neon line with a rough drive time on each leg
+function drawRoute(fit){const L=window.L;if(!LMG)return;LMG.route.clearLayers();if(!MAPV.route||!window.NIGHT)return;
+  const s=(NIGHT.plan.s||[]).filter(x=>typeof x.la==="number");if(!s.length)return;
+  const hasO=origin&&typeof origin.lat==="number",pts=[...(hasO?[[origin.lat,origin.lon]]:[]),...s.map(x=>[x.la,x.lo])];
+  if(pts.length>1)L.polyline(pts,{color:"#FFC66B",weight:3,opacity:.9,dashArray:"1 9",lineCap:"round",className:"broute",interactive:false}).addTo(LMG.route);
+  for(let i=1;i<pts.length;i++){const a=pts[i-1],b=pts[i],m=estMin(a[0],a[1],b[0],b[1]);
+    L.marker([(a[0]+b[0])/2,(a[1]+b[1])/2],{interactive:false,keyboard:false,icon:L.divIcon({className:"brt-w",html:`<span class="brt-leg">~${fmtMins(m)}</span>`,iconSize:[70,18],iconAnchor:[35,9]})}).addTo(LMG.route);}
+  s.forEach((x,i)=>L.marker([x.la,x.lo],{title:`${i+1}. ${x.n}`,zIndexOffset:1000,icon:L.divIcon({className:"brt-w",html:`<span class="brt">${i+1}</span>`,iconSize:[24,24],iconAnchor:[12,12]})}).addTo(LMG.route));
+  if(fit)LM.flyToBounds(L.latLngBounds(pts).pad(.25),{maxZoom:14,duration:.5});}
+// Meet halfway: your start point + a friend's spot (kept only while the page is open) → the 8 venues that are fairest for both
+function drawHalf(){const L=window.L;if(!LMG)return;LMG.half.clearLayers();if(!MAPV.half)return;
+  L.marker([MAPV.half.lat,MAPV.half.lon],{interactive:false,keyboard:false,zIndexOffset:900,icon:L.divIcon({className:"bmaphome bfriend",html:'<span></span>',iconSize:[16,16],iconAnchor:[8,8]})}).addTo(LMG.half);}
+function halfList(){const fair=CUR.filter(g=>g.fair).sort((a,b)=>Math.max(a.ya,a.fb)-Math.max(b.ya,b.fb)||Math.abs(a.ya-a.fb)-Math.abs(b.ya-b.fb));
+  sheetOpen(`<div class="bms-h" style="--pc:#7ee0b8"><i></i><div><b>Fair for both of you</b><span>From your start and ${esc(MAPV.half.label||"your friend")} · rough drive times</span></div></div>
+    <div class="bms-list">${fair.map(g=>`<button type="button" class="bms-row bhalf-row" data-hk="${esc(g.k)}"><b>${esc(g.k.split(" · ")[0])}</b><span class="bms-d">${esc(g.k.split(" · ")[1]||"")} · ${g.evs.length} show${g.evs.length>1?"s":""}</span><span class="bms-p">You ~${fmtMins(g.ya)} · Them ~${fmtMins(g.fb)}</span></button>`).join("")||'<p class="bms-more">No venues match the current filters.</p>'}</div>
+    <div class="bms-night"><button type="button" data-hclear>Clear friend's spot</button></div>`);
+  const sh=$("bMapSheet");sh.querySelectorAll("[data-hk]").forEach(b=>b.onclick=()=>{const g=CUR.find(x=>x.k===b.dataset.hk);if(g){LM.setView([g.lat,g.lon],14);openSheet(g);}});
+  sh.querySelector("[data-hclear]").onclick=()=>{MAPV.half=null;closeSheet();drawMapUI();};}
+function halfForm(){if(!(origin&&typeof origin.lat==="number")){sheetOpen(`<div class="bms-h" style="--pc:#7ee0b8"><i></i><div><b>Meet halfway</b><span>Set your own start point first</span></div></div><div class="bms-night"><button type="button" data-hstart>📍 Set start point</button></div>`);
+    $("bMapSheet").querySelector("[data-hstart]").onclick=()=>$("bMapStart").click();return;}
+  sheetOpen(`<div class="bms-h" style="--pc:#7ee0b8"><i></i><div><b>Meet halfway</b><span>Where is your friend coming from? It stays on this screen and isn't saved.</span></div></div>
+    <form class="bhalf-f"><input type="text" id="bHalfIn" placeholder="City or address, e.g. Pasadena" autocomplete="off" aria-label="Friend's city or address"><button type="submit">Find</button></form><p class="bms-more" id="bHalfMsg"></p>`);
+  const f=$("bMapSheet").querySelector("form");f.onsubmit=async ev=>{ev.preventDefault();const t=$("bHalfIn").value.trim();if(!t)return;$("bHalfMsg").textContent="Finding that spot…";
+    const g=typeof geocode==="function"?await geocode(t):null;if(!g){$("bHalfMsg").textContent="Couldn't place that. Try a city name.";return;}
+    MAPV.half={lat:g.lat,lon:g.lon,label:g.label||t};drawMapUI();setTimeout(()=>{halfList();const fair=CUR.filter(x=>x.fair);
+      LM.flyToBounds(L.latLngBounds([[origin.lat,origin.lon],[g.lat,g.lon],...fair.map(x=>[x.lat,x.lon])]).pad(.15),{maxZoom:12,duration:.5});},150);};
+  setTimeout(()=>{const i=$("bHalfIn");if(i)i.focus();},50);}
+// Transit: rail stations from OpenStreetMap (stations.json), colored by system; the venue sheet names the nearest one
+let STA=null,staLoad=null;const SYS={Metro:"#FF8A5C",Metrolink:"#7FD4FF",Trolley:"#FF6B6B",NCTD:"#7EE0B8",Amtrak:"#B48CFF"};
+const TRAIN='<path d="M7 3h10a2 2 0 0 1 2 2v9a3 3 0 0 1-3 3H8a3 3 0 0 1-3-3V5a2 2 0 0 1 2-2Z"/><path d="M5 10h14M9 14h.01M15 14h.01M8 21l2-4M16 21l-2-4"/>';
+function loadStations(){if(STA||staLoad)return;staLoad=fetch("stations.json?v=1").then(r=>r.ok?r.json():{}).then(j=>{STA=(j&&j.stations)||[];if(MAPV.transit)drawTransit();}).catch(()=>{staLoad=null;});}
+function drawTransit(){const L=window.L;if(!LMG)return;LMG.transit.clearLayers();if(!MAPV.transit||!STA)return;
+  const z=LM.getZoom(),tb=$("bMapTools").querySelector("[data-mtransit]");if(tb)tb.lastChild.textContent=z<11?" Transit (zoom in)":" Transit";
+  if(z<11)return;   // zoomed out, 243 stations would bury the venue pins
+  const bb=LM.getBounds().pad(.2);
+  STA.forEach(s=>{if(!bb.contains([s.lat,s.lon]))return;const c=SYS[s.s]||"#cfc6e8";const mk=L.marker([s.lat,s.lon],{title:`${s.n} (${s.s})`,zIndexOffset:-1000,icon:L.divIcon({className:"bsta-w",html:`<span class="bsta" style="--ic:${c}"><svg viewBox="0 0 24 24" aria-hidden="true">${TRAIN}</svg></span>`,iconSize:[20,20],iconAnchor:[10,10]})});
+    mk.on("click",ev=>{L.DomEvent.stopPropagation(ev);const q=encodeURIComponent(s.n+" station");
+      sheetOpen(`<div class="bms-h" style="--pc:${c}"><i></i><div><b>${esc(s.n)}</b><span>${esc(s.s)}${s.l?" · "+esc(s.l):""}</span></div></div>
+        <p class="bms-more">Trains can stop early at night, so check the last one home with the agency before you go.</p>
+        <div class="bms-night"><a href="https://www.google.com/maps/dir/?api=1&destination=${q}&travelmode=transit" target="_blank" rel="noopener">🚆 Transit directions</a></div>`);});
+    mk.addTo(LMG.transit);});}
+function nearSta(lat,lon){if(!STA)return null;let b=null;STA.forEach(s=>{const mi=miles(lat,lon,s.lat,s.lon);if(mi<=1.5&&(!b||mi<b.mi))b={s,mi};});return b;}
 function openSheet(g){const e0=g.evs[0],name=g.k.split(" · ")[0],city=g.k.split(" · ")[1]||e0.city||"";
   const dest=encodeURIComponent(name+", "+city);
   const dir=`https://www.google.com/maps/dir/?api=1${origin&&origin.address?"&origin="+encodeURIComponent(origin.address):""}&destination=${dest}`;
@@ -298,6 +378,7 @@ function openSheet(g){const e0=g.evs[0],name=g.k.split(" · ")[0],city=g.k.split
     <div class="bms-list">${rows}${more}</div>
     <h3 class="bms-sub">Build your night here</h3>
     <div class="bms-night">${near("restaurants","Eat before","🍜")}${near("bars","Drinks after","🍸")}${near("parking","Parking","🅿️")}<a href="${dir}" target="_blank" rel="noopener">🧭 Directions</a></div>
+    ${(()=>{const ns=nearSta(g.lat,g.lon),pk=((VOPEN[name]||{}).w||[])[0];return ns||pk?`<div class="bms-go">${ns?`<p><b style="color:${SYS[ns.s.s]||"#cfc6e8"}">🚆 ${esc(ns.s.n)}</b> · ${esc(ns.s.s)} · ${ns.mi<.3?"steps away":ns.mi.toFixed(1)+" mi"}</p>`:""}${pk?`<p>🅿️ ${esc(pk)}</p>`:""}</div>`:"";})()}
     ${pools.length?`<div class="bms-pool">${pools.map(({p,mi})=>`<a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(p.n+", "+p.a+", "+p.city+", CA")}" target="_blank" rel="noopener">${NEON8}<span><b>${esc(p.n)}</b><small>${mi<1?"under a mile":mi.toFixed(1)+" mi"} away · ${p.c==="hall"?"pool hall":"bar with pool"}</small></span></a>`).join("")}</div>`:""}`);
   const fb=$("bMapSheet").querySelector("[data-mfol]");if(fb)fb.onclick=()=>{const k=fb.dataset.mfol,on=!isPinned(k);if(on)markSeen(k);togglePin(k);fb.classList.toggle("on",on);fb.setAttribute("aria-pressed",String(on));fb.innerHTML=ni("bell")+(on?" Following":" Follow");syncFollowDot();};
   $("bMapSheet").querySelectorAll("[data-card]").forEach(b=>b.onclick=()=>{state.when="any";state.view="list";openResults("all");openCard(b.dataset.card);});
@@ -308,6 +389,16 @@ function openPool(p){const d=driveEstimate(p.lat,p.lon);
     <div class="bms-night"><a href="https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(p.n+", "+p.a+", "+p.city+", CA")}" target="_blank" rel="noopener">🧭 Directions</a><a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(p.n+", "+p.a+", "+p.city+", CA")}" target="_blank" rel="noopener">🕘 Hours</a></div>`);}
 $("bMapChips").addEventListener("click",ev=>{const b=ev.target.closest("[data-mv]");if(b){MAPV.vibe=b.dataset.mv;closeSheet();drawMapUI();return;}
   if(ev.target.closest("[data-mpool]")){state.poolOn=!state.poolOn;savePrefs();drawMapUI();}});
+// second row: price + age filters, My night route, Meet halfway, Transit; then the time-of-night slider
+$("bMapChips").insertAdjacentHTML("afterend",`<div class="bmap-chips bmap-tools" id="bMapTools"></div>
+  <label class="bmap-time" id="bMapTime"><span>${ni("moon")} What's on at</span><input type="range" min="0" max="17" step="1" value="0" aria-label="Time of night"><b>Any time</b></label>`);
+$("bMapTools").addEventListener("click",ev=>{const f=ev.target.closest("[data-mf]");
+  if(f){const [k,v]=f.dataset.mf.split(":");MAPV[k]=MAPV[k]===v?"":v;closeSheet();drawMapUI();return;}
+  if(ev.target.closest("[data-mroute]")){MAPV.route=!MAPV.route;drawMapUI();setTimeout(()=>drawRoute(MAPV.route),120);return;}
+  if(ev.target.closest("[data-mhalf]")){if(MAPV.half){MAPV.half=null;closeSheet();drawMapUI();}else halfForm();return;}
+  if(ev.target.closest("[data-mtransit]")){MAPV.transit=!MAPV.transit;loadStations();drawMapUI();}});
+$("bMapTime").querySelector("input").addEventListener("input",ev=>{MAPV.t=+ev.target.value;$("bMapTime").querySelector("b").textContent=tLbl(MAPV.t);
+  window.MAPT=tMin();drawPins();if(window.NIGHT&&window.L&&LM)NIGHT.map(window.L,LM,sheetOpen);});
 $("bMapStart").onclick=()=>{state.view="list";show("budget");setTimeout(()=>{const b=$("startEdit");if(b)b.click();},80);};
 
 

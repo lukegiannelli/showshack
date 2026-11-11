@@ -238,6 +238,46 @@
 .bpin b{position:absolute;top:-6px;right:-7px;min-width:17px;height:17px;padding:0 4px;border-radius:9px;display:grid;place-items:center;
   background:var(--pc);color:#140b26;font:700 10px/1 var(--mono);box-shadow:0 0 0 1.5px #0d0820}
 .bpin-w:hover .bpin,.bpin-w:focus .bpin{transform:scale(1.15)}
+/* starred shows: brighter glow + a gold star; followed venues: an outer ring; Meet halfway picks: a mint ring that pulses */
+.bpin.star{box-shadow:0 0 0 2px #FFD27A,0 0 20px 4px color-mix(in srgb,var(--pc) 85%,transparent),inset 0 0 8px -3px var(--pc)}
+.bpin-star{position:absolute;bottom:-7px;left:-6px;font-style:normal;font-size:13px;line-height:1;color:#FFD27A;text-shadow:0 0 6px #FFD27A,0 0 2px #000}
+.bpin.fol{outline:2px dashed color-mix(in srgb,var(--pc) 80%,#fff);outline-offset:3px}
+.bpin.fair{box-shadow:0 0 0 3px #7ee0b8,0 0 18px 4px #7ee0b8;animation:bfair 1.8s ease-in-out infinite}
+@keyframes bfair{50%{box-shadow:0 0 0 3px #7ee0b8,0 0 26px 8px #7ee0b8}}
+.bpin-w.dim,.naf-w.dim{opacity:.22;filter:grayscale(.6)}
+/* clusters: a ring in the main vibe's color with the total shows and how many venues */
+.bclu{display:grid;place-content:center;justify-items:center;width:var(--ps);height:var(--ps);border-radius:50%;cursor:pointer;
+  background:radial-gradient(circle,rgba(14,8,30,.92) 58%,color-mix(in srgb,var(--pc) 35%,rgba(14,8,30,.9)));border:2px solid var(--pc);
+  box-shadow:0 0 16px 2px color-mix(in srgb,var(--pc) 60%,transparent);color:#fff;transition:transform .15s}
+.bclu b{font:800 13px/1 var(--mono);text-shadow:0 0 6px var(--pc)}
+.bclu small{font:600 8px/1.2 var(--mono);color:#cfc6e8}
+.bclu.star{border-color:#FFD27A}
+.bpin-w:hover .bclu{transform:scale(1.1)}
+/* My night route */
+.broute{filter:drop-shadow(0 0 4px #FFC66B)}
+.brt-w{background:none;border:0}
+.brt{display:grid;place-items:center;width:24px;height:24px;border-radius:50%;background:#FFC66B;color:#1a0f02;font:800 12px var(--mono);box-shadow:0 0 0 2px #0d0820,0 0 12px #FFC66B}
+.brt-leg{display:inline-block;padding:2px 7px;border-radius:9px;background:rgba(14,8,30,.88);border:1px solid #FFC66B;color:#FFE7A3;font:700 10px var(--mono);white-space:nowrap}
+.bfriend span{background:#7ee0b8!important;box-shadow:0 0 0 3px rgba(126,224,184,.35),0 0 12px #7ee0b8!important}
+/* transit stations */
+.bsta-w{background:none;border:0}
+.bsta{display:grid;place-items:center;width:20px;height:20px;border-radius:6px;background:rgba(14,8,30,.9);border:1.4px solid var(--ic);box-shadow:0 0 8px -1px var(--ic)}
+.bsta svg{width:13px;height:13px;fill:none;stroke:var(--ic);stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.bms-go{margin:8px 0 0;padding:8px 10px;border-radius:12px;background:rgba(255,255,255,.05);font-size:13px}
+.bms-go p{margin:2px 0}
+/* second chip row + time slider */
+.ui-b .bmap-tools{margin-top:6px}
+.ui-b .bmap-tools .bmt{height:34px;font-size:13px}
+.ui-b .bmt-route[aria-pressed="true"]{background:#FFC66B!important;color:#1a0f02!important}
+.ui-b .bmap-time{display:flex;align-items:center;gap:10px;margin:8px 0 2px;font:600 13px var(--body);color:var(--muted)}
+.ui-b .bmap-time span{display:inline-flex;align-items:center;gap:5px;flex:none}
+.ui-b .bmap-time .ni{width:16px;height:16px}
+.ui-b .bmap-time input{flex:1;min-width:0;accent-color:#B48CFF}
+.ui-b .bmap-time b{flex:none;min-width:64px;text-align:right;font:700 13px var(--mono);color:var(--ink)}
+.bhalf-f{display:flex;gap:8px;margin:10px 0 0}
+.bhalf-f input{flex:1;min-width:0;height:42px;padding:0 12px;border-radius:12px;border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.06);color:inherit;font:500 16px var(--body)}
+.bhalf-f button{height:42px;padding:0 16px;border-radius:12px;border:0;background:#7ee0b8;color:#0d2a20;font:700 14px var(--body);cursor:pointer}
+.bhalf-row{display:grid;width:100%;text-align:left;cursor:pointer;background:none;border:0;color:inherit;font:inherit}
 .bpin-w.far{opacity:.42}
 .bpool-w svg.neon8{width:22px;height:22px;filter:drop-shadow(0 0 5px #ff6fe0)}
 
