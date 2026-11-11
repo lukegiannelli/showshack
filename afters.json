@@ -1,5 +1,5 @@
 {
-"note": "Afters spots for the Night Card. h = hours text; til = usual latest close on the 24h clock, past midnight keeps counting (26 = 2 AM); hq '~' = sources disagree or only third-party listings. No h = hours unknown. Food spots marked src 'osm' were matched on OpenStreetMap (name, address, hours). pp = estimated per-person food price before tax and tip (not quoted by the place); svc 'sit' or 'counter' overrides the category default. Checked Nov 2026; always check before you go.",
+"note": "Afters spots for the Night Card. h = hours text; til = usual latest close on the 24h clock, past midnight keeps counting (26 = 2 AM); hq '~' = sources disagree or only third-party listings. No h = hours unknown. Food spots marked src 'osm' were matched on OpenStreetMap (name, address, hours). pp = estimated per-person food price before tax and tip (not quoted by the place); svc 'sit' or 'counter' overrides the category default. c 'hotel' = hotel bars and rooftops with music nights open to non-guests; h is the music schedule, u is where it came from. Checked Nov 2026; always check before you go.",
 "places": [
 {
 "n": "Baekjeong Irvine",
@@ -2193,6 +2193,131 @@
 "lon": -118.49137,
 "geo": "amenity",
 "src": "osm"
+},
+{
+"n": "Bar & Lounge at Hotel Bel-Air",
+"c": "hotel",
+"city": "Los Angeles",
+"zip": "90077",
+"a": "701 Stone Canyon Rd",
+"t": [
+"Jazz trio Fri and Sat",
+"Smart casual"
+],
+"lat": 34.0865,
+"lon": -118.44642,
+"h": "Jazz trio Fri and Sat, pianist Sun to Thu, from 7 PM",
+"u": "https://www.dorchestercollection.com/los-angeles/hotel-bel-air/whats-on/live-entertainment",
+"geo": "amenity",
+"src": "web"
+},
+{
+"n": "Riviera 31 at Sofitel Beverly Hills",
+"c": "hotel",
+"city": "Los Angeles",
+"zip": "90048",
+"a": "8555 Beverly Blvd",
+"t": [
+"Jazz Mondays",
+"Burlesque Fridays"
+],
+"lat": 34.07637,
+"lon": -118.37752,
+"h": "Jazz Mon (show 8:30 PM), burlesque Fri (show 7 PM), doors 5 PM",
+"u": "https://www.sofitel-los-angeles.com/dining-lounge/our-bar-riviera-31/",
+"geo": "amenity",
+"src": "web"
+},
+{
+"n": "Bar Lis at Thompson Hollywood",
+"c": "hotel",
+"city": "Los Angeles",
+"zip": "90028",
+"a": "1541 Wilcox Ave",
+"t": [
+"Rooftop",
+"Jazz Tuesdays",
+"Reserve a table"
+],
+"lat": 34.09894,
+"lon": -118.33136,
+"h": "Jazz Tue from about 8 PM",
+"hq": "~",
+"u": "https://hollywoodpartnership.com/go/bar-lis",
+"geo": "amenity",
+"src": "web"
+},
+{
+"n": "Gallery Bar at the Biltmore",
+"c": "hotel",
+"city": "Los Angeles",
+"zip": "90071",
+"a": "506 S Grand Ave",
+"t": [
+"Downtown",
+"1920s hotel bar",
+"Jazz Thursdays"
+],
+"lat": 34.0493,
+"lon": -118.25352,
+"h": "Jazz Thu 7:30 to 9:30 PM",
+"hq": "~",
+"u": "https://www.jazznearyou.com/losangeles/events/jazz-noir-trio-at-the-biltmore-los-angeles-on-july-23",
+"geo": "amenity",
+"src": "web"
+},
+{
+"n": "Amigo Room at Ace Hotel Palm Springs",
+"c": "hotel",
+"city": "Palm Springs",
+"zip": "92264",
+"a": "701 E Palm Canyon Dr",
+"t": [
+"DJs Fri and Sat",
+"21+",
+"Pool DJs Sat at noon"
+],
+"lat": 33.80089,
+"lon": -116.54028,
+"h": "DJs Fri and Sat from 8 PM, no cover Fri",
+"u": "https://acehotel.com/palm-springs/going-on/",
+"geo": "amenity",
+"src": "web"
+},
+{
+"n": "The Rooftop at Andaz San Diego",
+"c": "hotel",
+"city": "San Diego",
+"zip": "92101",
+"a": "600 F St",
+"t": [
+"Gaslamp",
+"Live music Thursdays",
+"21+"
+],
+"lat": 32.71388,
+"lon": -117.15881,
+"h": "Live music Thu 5 to 8 PM (through Feb 2027)",
+"u": "https://www.sandiego.org/events-festivals/live-music-at-the-rooftop/86d050b212a111f1b563",
+"geo": "amenity",
+"src": "web"
+},
+{
+"n": "La Lo La Rooftop at AC Hotel",
+"c": "hotel",
+"city": "Los Angeles",
+"zip": "90015",
+"a": "1260 S Figueroa St",
+"t": [
+"34th floor",
+"Sunday DJ brunch"
+],
+"lat": 34.04091,
+"lon": -118.26724,
+"h": "DJ brunch Sundays, other nights rotate",
+"u": "https://marriott.com/en-us/hotels/laxav-ac-hotel-downtown-los-angeles/experiences",
+"geo": "amenity",
+"src": "web"
 }
 ]
 }
