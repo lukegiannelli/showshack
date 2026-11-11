@@ -83,7 +83,20 @@ function cleanStop(s){s=s||{};const k=TYPES[s.k]?s.k:"other";
 function cleanPlan(p){p=p||{};return {v:1,t:S(p.t,70),d:/^\d{4}-\d\d-\d\d$/.test(p.d||"")?p.d:"",h:S(p.h,30),ph:S(p.ph,20).replace(/[^0-9+]/g,""),up:typeof p.up==="number"?p.up:0,s:(Array.isArray(p.s)?p.s:[]).slice(0,MAXS).map(cleanStop)};}
 function load(){try{return cleanPlan(JSON.parse(localStorage.getItem(KEY)||"null")||{});}catch(e){return cleanPlan({});}}
 let plan=load();
-function save(){try{localStorage.setItem(KEY,JSON.stringify(plan));}catch(e){}}
+/* ---------- saved nights: every plan you build is kept (this device only) so you can flip between several ---------- */
+const NKEY="shack-nights",IDKEY="shack-night-id",MAXN=24;
+const newId=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,6);
+let NIGHTS=(()=>{try{const a=JSON.parse(localStorage.getItem(NKEY)||"[]");return Array.isArray(a)?a.filter(x=>x&&typeof x.id==="string").map(x=>({id:x.id.slice(0,20),p:cleanPlan(x.p)})).slice(0,MAXN):[];}catch(e){return [];}})();
+let planId=(()=>{try{return localStorage.getItem(IDKEY)||"";}catch(e){return "";}})()||newId();
+const keep=p=>p.s.length>0||!!p.t;   // an empty, unnamed night isn't worth a slot
+function putNights(){try{localStorage.setItem(NKEY,JSON.stringify(NIGHTS));localStorage.setItem(IDKEY,planId);}catch(e){}}
+function upsertNight(){const i=NIGHTS.findIndex(x=>x.id===planId);
+  if(keep(plan)){const rec={id:planId,p:cleanPlan(plan)};if(i>=0)NIGHTS[i]=rec;else NIGHTS.unshift(rec);NIGHTS.sort((a,b)=>(b.p.up||0)-(a.p.up||0));if(NIGHTS.length>MAXN)NIGHTS.length=MAXN;}
+  else if(i>=0)NIGHTS.splice(i,1);
+  putNights();drawSaved();}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(plan));}catch(e){}upsertNight();}
+// switch the Plan tab to another night (the one you were on stays saved)
+function useNight(id,p){plan=cleanPlan(p||{});planId=id||newId();openI=-1;pickK="";flipped=false;save();drawBuilder();}
 
 /* ---------- link encoding: JSON → deflate → base64url ("1…"), or plain base64url ("0…") where the browser can't compress ---------- */
 const b64u=b=>{let s="";for(let i=0;i<b.length;i+=0x8000)s+=String.fromCharCode.apply(null,b.subarray(i,i+0x8000));return btoa(s).replace(/\+/g,"-").replace(/\//g,"_").replace(/=+$/,"");};
@@ -126,8 +139,10 @@ const TP={meet:'<path d="M12 21s-6.5-5.6-6.5-11a6.5 6.5 0 0 1 13 0c0 5.4-6.5 11-
   other:'<path d="M12 3v5M12 16v5M3 12h5M16 12h5M6 6l3 3M15 15l3 3M18 6l-3 3M9 15l-3 3"/>',
   gas:'<path d="M4 21V5a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v16M3 21h12M4 10h10"/><path d="M14 8h2a2 2 0 0 1 2 2v6a1.5 1.5 0 0 0 3 0V8l-3-3"/>',
   money:'<rect x="2.5" y="6" width="19" height="12" rx="2"/><circle cx="12" cy="12" r="2.5"/><path d="M6 9.5v5M18 9.5v5"/>',
-  search:'<circle cx="10.5" cy="10.5" r="6"/><path d="m15 15 5.5 5.5"/>'};
-const TPC={gas:"#7FD4FF",money:"#7EE0B8",search:"#FFC66B"};
+  search:'<circle cx="10.5" cy="10.5" r="6"/><path d="m15 15 5.5 5.5"/>',
+  trash:'<path d="M4 6.5h16M9.5 6.5V4.5h5v2M6 6.5l1 13a1.5 1.5 0 0 0 1.5 1.4h7a1.5 1.5 0 0 0 1.5-1.4l1-13"/><path d="M10 10.5v6.5M14 10.5v6.5"/>'};
+const TPC={gas:"#7FD4FF",money:"#7EE0B8",search:"#FFC66B",trash:"#FF5C8A"};
+const QUICKDEL=new Set(["eat","show","after"]);   // food, show and afters stops get a one-tap trash can
 const tic=(k,cls="")=>`<svg class="nic ${cls}" viewBox="0 0 24 24" aria-hidden="true" style="--ic:${(TYPES[k]||[])[2]||TPC[k]||"#e6dcff"}">${TP[k]||TP.other}</svg>`;
 // Eat and Afters land around the show: a timed show gives them times (eat 90 min before, afters ~2.5 h after);
 // without a show time they're slotted just before / just after it in the list
@@ -197,8 +212,10 @@ function mount(){if($("bNight"))return;const h=document.querySelector(".bbudget-
   const el=$("bNight");el.addEventListener("input",onInput);el.addEventListener("change",onInput);el.addEventListener("click",onClick);drawBuilder();}
 function stopRow(s,i){const T=TYPES[s.k],open=i===openI,f=(n,l,v,x)=>`<label class="bn-f"><span>${l}</span><input data-f="${n}" value="${esc(v??"")}" ${x||""}></label>`;
   const head=`<button type="button" class="bn-sh" data-open="${i}" aria-expanded="${open}"><span class="bn-ic">${tic(s.k)}</span><span class="bn-tm">${s.tm?fmtT(s.tm):"—"}</span><span class="bn-nm"><b>${esc(s.n||T[1])}</b>${s.p||s.a?`<small>${esc(s.p||s.a)}</small>`:s.k==="house"?"<small>Address stays in your group chat</small>":""}</span><span class="bn-ch">${open?"▴":"▾"}</span></button>`;
-  if(!open)return `<li class="bn-stop" style="--sc:${T[2]}">${head}</li>`;
-  return `<li class="bn-stop open" style="--sc:${T[2]}" data-i="${i}">${head}<div class="bn-ed">
+  const del=QUICKDEL.has(s.k)?`<button type="button" class="bn-trash" data-qdel="${i}" aria-label="Remove ${esc(s.n||T[1])} from your night">${tic("trash")}</button>`:"";
+  const cls=QUICKDEL.has(s.k)?" hasdel":"";
+  if(!open)return `<li class="bn-stop${cls}" style="--sc:${T[2]}">${head}${del}</li>`;
+  return `<li class="bn-stop open${cls}" style="--sc:${T[2]}" data-i="${i}">${head}${del}<div class="bn-ed">
     <div class="bn-two">${f("n","What",s.n,`placeholder="${esc(T[1])}" maxlength="80"`)}${f("tm","Time",s.tm,'type="time"')}</div>
     ${s.k==="house"?`<p class="bn-hint">${tic("house","sm")} No address here on purpose. Links get forwarded, so drop the address in your group chat.</p>${f("p","Whose place",s.p,'placeholder="e.g. Sam\'s place" maxlength="90"')}`
       :`${f("p","Where",s.p,'placeholder="Place name" maxlength="90"')}${f("a","Address (optional)",s.a,'placeholder="Street, city" maxlength="120"')}`}
@@ -294,6 +311,7 @@ function drawBuilder(){const el=$("bNight");if(!el)return;const n=plan.s.length,
   el.classList.toggle("flipped",flipped);
   if(flipped){el.innerHTML=backHtml();return;}
   el.innerHTML=`<div class="bn-h">${n?`<button type="button" class="bn-flipb" data-flip="1">${tic("money","sm")} Costs ↻</button>`:""}<h2>Your night</h2><p>Pre-game to afters, then send one link. No sign-in. The whole plan lives in the link.</p></div>
+    ${NIGHTS.length>1||(NIGHTS.length===1&&NIGHTS[0].id!==planId)?`<div class="bn-nights" role="group" aria-label="Your saved nights">${NIGHTS.map(x=>`<button type="button" class="chip" data-nuse="${esc(x.id)}" aria-pressed="${x.id===planId}">${esc(nName(x.p))}</button>`).join("")}<button type="button" class="chip bn-nnew" data-nnew="1">＋ New</button></div>`:""}
     <div class="bn-meta"><input data-m="t" value="${esc(plan.t)}" placeholder="Name the night" maxlength="70" aria-label="Name the night"><label class="bn-dw${plan.d?"":" empty"}"><input data-m="d" type="date" value="${esc(plan.d)}" aria-label="Date"></label></div>
     ${n?`<ol class="bn-stops">${plan.s.map(stopRow).join("")}</ol>`:`<p class="bn-empty">Nothing yet. Add stops below, or tap <b>＋ My night</b> on any show.</p>`}
     <div class="bn-add">${["meet","eat","show","after"].map(k=>`<button type="button" class="chip bn-addc" data-addk="${k}" aria-pressed="${pickK===k}">${tic(k,"sm")} ${TYPES[k][1]}</button>`).join("")}</div>
@@ -302,7 +320,8 @@ function drawBuilder(){const el=$("bNight");if(!el)return;const n=plan.s.length,
       <div class="bn-two"><label class="bn-f"><span>Your name</span><input data-m="h" value="${esc(plan.h)}" maxlength="30"></label><label class="bn-f"><span>Phone (optional)</span><input data-m="ph" type="tel" value="${esc(plan.ph)}" maxlength="20"></label></div>
       <p class="bn-hint">Your number only goes inside the link you send, so friends' "I'm in" texts reach you. Leave it blank and they'll pick who to text.</p></details>
     ${n?`<div class="bn-sum">${n} stop${n>1?"s":""}${tot?` · ≈ $${Math.round(tot)} each`:""}</div>`:""}
-    <div class="bn-go"><button type="button" class="bn-send" data-send="1"${n?"":" disabled"}>Send the link</button><button type="button" data-prev="1"${n?"":" disabled"}>Preview</button>${n?'<button type="button" class="bn-clr" data-clear="1">Start over</button>':""}</div>
+    <div class="bn-go"><button type="button" class="bn-send" data-send="1"${n?"":" disabled"}>Send the link</button><button type="button" data-prev="1"${n?"":" disabled"}>Preview</button>${n?'<button type="button" class="bn-clr" data-nnew="1">＋ New night</button>':""}</div>
+    ${NIGHTS.length?`<p class="bn-fine">Every night you build is kept in <button type="button" class="bn-lnk" data-gosaved="1">Saved → Your nights</button>.</p>`:""}
     <p class="bn-fine">Changed something after you sent it? Send the new link. Every card shows when it was last updated, so the newest one is easy to spot.</p>`;}
 function sortStops(){let last=-1;const k=plan.s.map((x,i)=>{if(x.tm){let [h,m]=x.tm.split(":").map(Number);if(h<5)h+=24;last=h*60+m;}return {x,i,t:last};});
   const open=plan.s[openI];k.sort((a,b)=>a.t-b.t||a.i-b.i);plan.s=k.map(o=>o.x);if(open)openI=plan.s.indexOf(open);}
@@ -323,8 +342,13 @@ async function onClick(ev){const b=ev.target.closest("button");if(!b)return;cons
   if(d.open!=null){openI=openI===+d.open?-1:+d.open;drawBuilder();return;}
   if(d.mv){const i=+b.closest("[data-i]").dataset.i,j=i+ +d.mv;if(j<0||j>=plan.s.length)return;[plan.s[i],plan.s[j]]=[plan.s[j],plan.s[i]];openI=j;plan.up=Date.now();save();drawBuilder();return;}
   if(d.del!=null){plan.s.splice(+d.del,1);openI=-1;plan.up=Date.now();save();drawBuilder();return;}
-  if(d.clear){if(!b.classList.contains("sure")){b.classList.add("sure");b.textContent="Tap again to clear";setTimeout(()=>{b.classList.remove("sure");b.textContent="Start over";},2500);return;}
-    plan=cleanPlan({});openI=-1;pickK="";save();drawBuilder();return;}
+  // neon trash: remove right from the row, with Undo in the toast
+  if(d.qdel!=null){const i=+d.qdel,gone=plan.s[i];if(!gone)return;const li=b.closest(".bn-stop"),done=()=>{plan.s.splice(plan.s.indexOf(gone),1);openI=-1;plan.up=Date.now();save();drawBuilder();
+      toast(`Removed ${esc(gone.n||TYPES[gone.k][1])}`,"Undo",()=>{if(plan.s.length>=MAXS)return;plan.s.splice(Math.min(i,plan.s.length),0,gone);sortStops();plan.up=Date.now();save();drawBuilder();});};
+    if(li&&li.animate&&!matchMedia("(prefers-reduced-motion: reduce)").matches)li.animate([{opacity:1,transform:"none"},{opacity:0,transform:"translateX(40px) scale(.96)"}],{duration:200,easing:"ease-in"}).onfinish=done;else done();return;}
+  if(d.nnew){const had=keep(plan);useNight(newId(),{});if(had)toast("Your last night is kept in Saved","Open",goSaved);return;}
+  if(d.nuse){const x=NIGHTS.find(n=>n.id===d.nuse);if(x&&x.id!==planId)useNight(x.id,x.p);return;}
+  if(d.gosaved){goSaved();return;}
   if(d.prev){view(cleanPlan({...plan,up:plan.up||Date.now()}),true);return;}
   if(d.send){if(!plan.up)plan.up=Date.now();save();shareNight(plan,b);return;}}
 function focusFirst(){setTimeout(()=>{const i=document.querySelector("#bNight .bn-stop.open input");if(i)i.focus({preventScroll:false});},30);}
@@ -369,11 +393,9 @@ function view(p,preview){close();const auto=preview==="auto";const tot=each(p),i
     if(b.classList.contains("nv-x")||b.dataset.vclose||b.dataset.vedit){close();if(b.dataset.vedit)openPlan();return;}
     if(b.dataset.vshare){shareNight(p,b);return;}
     if(b.dataset.vspin){surpriseNight();return;}
-    if(b.dataset.vmine){if(plan.s.length&&!b.classList.contains("sure")){b.classList.add("sure");b.textContent="Replaces your draft. Tap again";return;}
-      plan=cleanPlan({...p,up:Date.now()});save();close();drawBuilder();openPlan();toast("It's in your Plan tab. Tweak it, then send");return;}
+    if(b.dataset.vmine){useNight(newId(),{...p,up:Date.now()});close();openPlan();toast("It's in your Plan tab (and Saved). Tweak it, then send");return;}
     if(b.dataset.ics){const blob=new Blob([ics(p)],{type:"text/calendar"}),a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=(p.t||"night").replace(/[^\w-]+/g,"-").slice(0,40)+".ics";document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove();},1500);return;}
-    if(b.dataset.vcopy){if(plan.s.length&&!b.classList.contains("sure")){b.classList.add("sure");b.textContent="Replaces your draft. Tap again";return;}
-      plan=cleanPlan({...p,up:Date.now()});save();close();drawBuilder();openPlan();toast("Copied into your Plan tab");}});
+    if(b.dataset.vcopy){useNight(newId(),{...p,up:Date.now()});close();openPlan();toast("Copied into your Plan tab. Your other nights are in Saved");}});
   el.querySelector(".nv-x").focus({preventScroll:true});}
 function close(){const v=$("nightView");if(v){v.remove();document.documentElement.classList.remove("nview-on");}}
 document.addEventListener("keydown",ev=>{if(ev.key==="Escape")close();});
@@ -402,7 +424,34 @@ function surpriseNight(){const now=todayISO(),hasO=typeof origin!=="undefined"&&
   const d=e.start<now?now:e.start,short=String(e.title).split(/[:(–—-]/)[0].trim().slice(0,40);
   view(cleanPlan({t:short+" night",d,up:Date.now(),s:[eat,show,after]}),"auto");}
 
-window.NIGHT={spots:allAfters,AC,IC,ic,EXP,cost,hrs,grp,ready:()=>AFTERS.length>0,surpriseNight,chip,map,sheet,encode,decode,cleanPlan,addStop,view,get plan(){return plan;}};
+/* ---------- Saved tab: "Your nights" (every plan you've built, newest first) ---------- */
+function nName(p){return p.t||(p.s.find(x=>x.k==="show")||{}).n||(p.d?"Night of "+fmtD(p.d):"Untitled night");}
+const goSaved=()=>{const t=document.querySelector('#bTabs [data-tab="saved"]');if(t)t.click();setTimeout(()=>{const n=$("bNights");if(n)n.scrollIntoView({behavior:"smooth",block:"start"});},120);};
+let savedOn=false;
+function nightCard(x){const p=x.p,cur=x.id===planId,tot=each(p),sh=p.s.find(s=>s.k==="show");
+  return `<article class="bnc${cur?" cur":""}" style="--sc:${sh?TYPES.show[2]:TYPES[(p.s[0]||{}).k||"other"][2]}">
+    <div class="bnc-top">${cur?'<span class="bnc-tag">Editing now</span>':""}<b>${esc(nName(p))}</b><span>${esc(p.d?fmtD(p.d):"Date TBD")} · ${p.s.length} stop${p.s.length===1?"":"s"}${tot?` · ≈ $${Math.round(tot)} each`:""}</span></div>
+    <ol class="bnc-stops">${p.s.slice(0,4).map(s=>`<li>${tic(s.k,"sm")}<span>${s.tm?`<em>${esc(fmtT(s.tm))}</em> `:""}${esc(s.n||TYPES[s.k][1])}</span></li>`).join("")}${p.s.length>4?`<li class="more">+${p.s.length-4} more</li>`:""}</ol>
+    ${p.up?`<small class="bnc-up">Updated ${esc(fmtUp(p.up))}</small>`:""}
+    <div class="bnc-act"><button type="button" class="bnc-open" data-nopen="${esc(x.id)}">${cur?"Keep building":"Open in Plan"}</button><button type="button" data-nshare="${esc(x.id)}">Share</button><button type="button" class="bn-trash bnc-del" data-ndel="${esc(x.id)}" aria-label="Delete ${esc(nName(p))}">${tic("trash")}</button></div></article>`;}
+function drawSaved(){if(!savedOn)return;let el=$("bNights");const list=$("list");if(!list)return;
+  if(!el){el=document.createElement("section");el.id="bNights";el.className="bnights";el.setAttribute("aria-label","Your nights");list.before(el);
+    el.addEventListener("click",ev=>{const b=ev.target.closest("button");if(!b)return;const d=b.dataset,x=NIGHTS.find(n=>n.id===(d.nopen||d.nshare||d.ndel));
+      if(d.nnew!=null){useNight(newId(),{});openPlan();return;}
+      if(!x)return;
+      if(d.nopen){if(x.id!==planId)useNight(x.id,x.p);openPlan();return;}
+      if(d.nshare){shareNight(x.p,b);return;}
+      if(d.ndel){if(!b.classList.contains("sure")){b.classList.add("sure");b.setAttribute("aria-label","Tap again to delete");const c=b.closest(".bnc");c.classList.add("sure");setTimeout(()=>{b.classList.remove("sure");c.classList.remove("sure");},2500);return;}
+        NIGHTS=NIGHTS.filter(n=>n.id!==x.id);if(x.id===planId){plan=cleanPlan({});planId=newId();try{localStorage.setItem(KEY,JSON.stringify(plan));}catch(e){}drawBuilder();}
+        putNights();drawSaved();toast(`Deleted ${esc(nName(x.p))}`,"Undo",()=>{NIGHTS.push(x);NIGHTS.sort((a,b)=>(b.p.up||0)-(a.p.up||0));putNights();drawSaved();drawBuilder();});}});}
+  el.hidden=false;
+  el.innerHTML=`<div class="bpicks-h"><h2 class="bsec">${tic("after","sm")} Your nights${NIGHTS.length?` · ${NIGHTS.length}`:""}</h2><button type="button" class="blink" data-nnew="1">＋ New night</button></div>
+    ${NIGHTS.length?`<div class="bnc-row">${NIGHTS.map(nightCard).join("")}</div>`:`<p class="bnone">Nights you build in the Plan tab land here, so you can work on a few and flip between them.</p>`}
+    <h2 class="bsec bnights-sh">${tic("show","sm")} Saved shows</h2>`;}
+function savedRow(on){savedOn=on;if(on)drawSaved();else{const el=$("bNights");if(el)el.hidden=true;}}
+
+window.NIGHT={spots:allAfters,savedRow,stopFor:afterStop,toast,AC,IC,ic,EXP,cost,hrs,grp,ready:()=>AFTERS.length>0,surpriseNight,chip,map,sheet,encode,decode,cleanPlan,addStop,view,get plan(){return plan;}};
+if(keep(plan)&&!NIGHTS.some(x=>x.id===planId))upsertNight();else putNights();
 const go=()=>{mount();inject(document.body);fromHash(window.NIGHT_HASH||location.hash);};
 if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",go);else go();
 })();

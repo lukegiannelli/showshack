@@ -148,3 +148,43 @@ html.nview-on,html.nview-on body{overflow:hidden}
 .bn-tot li.sum{background:rgba(255,198,107,.16);border:1px solid rgba(255,198,107,.45)}
 .bn-tot li.sum span{font-weight:700}
 .bn-tot li.sum b{font-size:16px}
+/* one-tap neon trash on food / show / afters stops (right edge, past the ▾) */
+.bn-stop.hasdel .bn-sh{padding-right:52px}
+.bn-trash{all:unset;box-sizing:border-box;position:absolute;right:6px;top:0;bottom:0;margin:auto 0;width:42px;height:42px;display:grid;place-items:center;border-radius:12px;cursor:pointer}
+.bn-trash .nic{width:20px;height:20px;--ic:#FF5C8A}
+.bn-trash:hover .nic,.bn-trash:focus-visible .nic{filter:drop-shadow(0 0 3px #FF5C8A) drop-shadow(0 0 9px #FF5C8A)}
+.bn-trash:active{transform:scale(.88)}
+.bn-trash:focus-visible{outline:2px solid #FF5C8A;outline-offset:-2px}
+/* ---- saved nights: switcher chips on the Plan card + "Your nights" row on the Saved tab ---- */
+.bn-nights{display:flex;gap:6px;overflow-x:auto;margin:0 -16px 12px;padding:0 16px 2px;scrollbar-width:none}
+.bn-nights::-webkit-scrollbar{display:none}
+.bn-nights .chip{flex:none;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;height:34px;background:rgba(255,255,255,.07);color:#fff;border:1px solid rgba(255,255,255,.16)}
+.bn-nights .chip[aria-pressed="true"]{background:#FFC66B;color:#1d1030;border-color:#FFC66B}
+.bn-nights .bn-nnew{color:#7ee0b8;border-style:dashed}
+.bn-lnk{all:unset;cursor:pointer;color:#FFC66B;text-decoration:underline;text-underline-offset:2px}
+.bnights{display:none;flex-direction:column;gap:10px;margin-bottom:14px}
+.ui-b.b-saved .bnights:not([hidden]){display:flex}
+.bnights .bsec{display:inline-flex;align-items:center;gap:8px}
+.bnights-sh{margin-top:6px}
+.bnc-row{display:flex;gap:10px;overflow-x:auto;scroll-snap-type:x mandatory;margin:0 -16px;padding:2px 16px 6px;scrollbar-width:none}
+.bnc-row::-webkit-scrollbar{display:none}
+.bnc{flex:none;width:min(280px,80vw);scroll-snap-align:start;display:flex;flex-direction:column;gap:8px;padding:14px;border-radius:18px;
+  background:linear-gradient(160deg,rgba(180,140,255,.16),rgba(255,111,165,.08) 55%,rgba(126,224,184,.08)),rgba(14,8,32,.72);
+  border:1px solid color-mix(in srgb,var(--sc) 45%,transparent);box-shadow:0 0 18px -10px var(--sc);color:#fff;transition:border-color .2s,box-shadow .2s}
+.bnc.cur{border-color:#FFC66B;box-shadow:0 0 22px -8px #FFC66B}
+.bnc.sure{border-color:#FF5C8A;box-shadow:0 0 22px -6px #FF5C8A}
+.bnc-top{display:flex;flex-direction:column;gap:2px}
+.bnc-top b{font:700 17px/1.2 var(--body)}
+.bnc-top span{font:500 12px var(--mono);color:#cfc6ea}
+.bnc-top .bnc-tag{align-self:flex-start;margin-bottom:4px;font:700 10.5px var(--mono);letter-spacing:.5px;text-transform:uppercase;padding:2px 7px;border-radius:6px;background:#FFC66B;color:#1d1030}
+.bnc-stops{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:5px}
+.bnc-stops li{display:flex;align-items:center;gap:8px;font-size:13.5px;min-width:0}
+.bnc-stops li span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bnc-stops em{font:600 11.5px var(--mono);font-style:normal;color:#FFC66B}
+.bnc-stops .more{color:#a59cc4;font-size:12.5px;padding-left:23px}
+.bnc-up{font-size:11.5px;color:#a59cc4}
+.bnc-act{display:flex;align-items:center;gap:6px;margin-top:auto}
+.bnc-act>button:not(.bn-trash){min-height:36px;padding:0 12px;border-radius:999px;border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.07);color:#fff;font:600 13px var(--body);cursor:pointer}
+.bnc-act>button.bnc-open{background:linear-gradient(90deg,#ffd38a,#ff7ab8);color:#1d1030;border:0}
+.bnc-del{position:static;margin-left:auto;width:38px;height:38px}
+.bnc-del.sure .nic{filter:drop-shadow(0 0 3px #FF5C8A) drop-shadow(0 0 10px #FF5C8A)}

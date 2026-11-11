@@ -90,7 +90,7 @@ const BEEN=new Set(); let starVen={};
 try{(JSON.parse(localStorage.getItem("radar-been")||"[]")).forEach(k=>BEEN.add(k));starVen=JSON.parse(localStorage.getItem("radar-starven")||"{}")||{};}catch(e){}
 function saveBeen(){try{localStorage.setItem("radar-been",JSON.stringify([...BEEN]));localStorage.setItem("radar-starven",JSON.stringify(starVen));}catch(e){}}
 function syncBeen(up){const today=new Date().toISOString().slice(0,10);let ch=false;
-  for(const e of up||[]){const k=skey(e);if(state.stars.has(k)&&!starVen[k]){starVen[k]={v:venueKey(e),d:String(e.end||e.start).slice(0,10)};ch=true;}}
+  for(const e of up||[]){const k=skey(e);if(state.stars.has(k)&&(!starVen[k]||!starVen[k].t)){starVen[k]={v:venueKey(e),d:String(e.end||e.start).slice(0,10),t:String(e.title||"").slice(0,100)};ch=true;}}
   for(const [k,o] of Object.entries(starVen)){if(!state.stars.has(k)&&o.d>=today){delete starVen[k];ch=true;continue;}
     if(o.d<today&&state.stars.has(k)&&!BEEN.has(o.v)){BEEN.add(o.v);ch=true;}}
   if(ch)saveBeen();}

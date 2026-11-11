@@ -83,12 +83,8 @@ function tiles(){const t=$("bTiles");if(!t||t.querySelector("[data-spots]"))retu
   t.insertAdjacentHTML("beforeend",Object.entries(KINDS).map(([k,v])=>`<button type="button" class="btile t-${k}" data-spots="${k}" style="--vc:${v.c}">
     <svg viewBox="0 0 24 24" aria-hidden="true">${v.icon}</svg><span><b>${v.name}</b><small data-scount="${k}">&nbsp;</small></span></button>`).join(""));
   t.addEventListener("click",ev=>{const b=ev.target.closest("[data-spots]");if(b){ev.stopPropagation();open(b.dataset.spots);}},true);
-  // Food and Afters arrive after the four vibe tiles: restart every tile's shimmer at once so all six stay in step
-  const all=t.querySelectorAll(".btile");all.forEach(b=>b.classList.add("bt-sync"));void t.offsetWidth;all.forEach(b=>b.classList.remove("bt-sync"));
-  // tell each tile where it sits in the grid, so its sheen layer lines up into one band across all six
-  const measure=()=>{const g=t.getBoundingClientRect();if(!g.width)return;t.style.setProperty("--gw",g.width+"px");t.style.setProperty("--gh",g.height+"px");
-    t.querySelectorAll(".btile").forEach(b=>{const r=b.getBoundingClientRect();b.style.setProperty("--tx",(r.left-g.left)+"px");b.style.setProperty("--ty",(r.top-g.top)+"px");});};
-  measure();if(window.ResizeObserver)new ResizeObserver(measure).observe(t);}
+  // Food and Afters arrive after the four vibe tiles: restart every tile's glow at once so all six stay in step
+  const all=t.querySelectorAll(".btile");all.forEach(b=>b.classList.add("bt-sync"));void t.offsetWidth;all.forEach(b=>b.classList.remove("bt-sync"));}
 function home(){tiles();if(!N.ready())return;
   for(const k in KINDS){const xs=list(k),el=document.querySelector(`[data-scount="${k}"]`);if(!el)continue;
     const l=xs.filter(x=>late24(x.p)).length;el.textContent=xs.length+" spots"+(k==="after"&&l?` · ${l} past midnight`:"");}}
@@ -163,7 +159,40 @@ function backRow(on){let el=$("bBackFests");
       <p class="spc-where">Usually: ${esc(f.usual)} · <b>2027 dates TBA</b></p>
       <div class="spc-act"><a href="${esc(safeUrl(f.url)||"#")}" target="_blank" rel="noopener">Official site ↗</a></div></article>`).join("")}</div>`;}
 
-window.SPOTS={home,after(screen,c){if(screen==="spots")draw();chillRow(screen==="results"&&c==="chill");
+/* ---- space ramen (pull the disco ball down, swipe the bowl 4 times): a random food spot + an afters spot pop up ----
+   Food: within ~35 min if we know your start point. Afters: near that food spot when one is close, so the two make a night. */
+let RLAST=[];
+function ramenPick(){const rnd=a=>a[Math.floor(Math.random()*a.length)];
+  const near=xs=>{if(!origin)return xs;const n=xs.filter(x=>{const d=driveEstimate(x.p.lat,x.p.lon);return d&&d.mins<=35;});return n.length>=5?n:xs;};
+  let foods=near(list("food")).filter(x=>!RLAST.includes(x.i));if(!foods.length)foods=list("food");
+  const f=rnd(foods);if(!f)return null;
+  const aft=list("after").filter(x=>!RLAST.includes(x.i)),close=aft.filter(x=>mi2(f.p.lat,f.p.lon,x.p.lat,x.p.lon)<=6);
+  const a=rnd(close.length>=2?close:near(aft.length?aft:list("after")));
+  RLAST=[f.i,a&&a.i].filter(x=>x!=null);
+  return {f,a};}
+function ramenPop(){if(!N.ready())return;const pk=ramenPick();if(!pk)return;let el=$("rPop");
+  const keepCur=cur;cur="pop";   // pop-up cards skip the Food-screen extras (save heart, group bill)
+  const one=(x,vc,lbl)=>x?`<div class="rpop-slot"><span class="rpop-l" style="--vc:${vc}">${lbl}</span>${card({...x,d:driveEstimate(x.p.lat,x.p.lon)},vc)}</div>`:"";
+  const html=one(pk.f,KINDS.food.c,"🍜 Eat")+one(pk.a,KINDS.after.c,"🌙 Afters")+(pk.a&&pk.f?`<p class="rpop-gap">${(()=>{const m=mi2(pk.f.p.lat,pk.f.p.lon,pk.a.p.lat,pk.a.p.lon);return m<=1.2?`🚶 ~${Math.max(2,Math.round(m*20))} min walk between them`:`🚗 ~${fmtMins(Math.max(5,Math.round((6+m*1.2/55*60)/5)*5))} between them`;})()}</p>`:"");
+  cur=keepCur;
+  if(!el){el=document.createElement("div");el.id="rPop";el.className="rpop";el.setAttribute("role","dialog");el.setAttribute("aria-modal","true");el.setAttribute("aria-label","Space ramen picks");document.body.appendChild(el);
+    el.addEventListener("click",ev=>{if(ev.target===el||ev.target.closest("[data-rx]")){closePop();return;}
+      if(ev.target.closest("[data-ragain]")){ramenPop();return;}
+      const both=ev.target.closest("[data-rboth]");if(both&&N.addStop&&N.stopFor){const A=N.spots(),ids=[...el.querySelectorAll("[data-naft]")].map(b=>+b.dataset.naft);let n=0;
+        ids.forEach(i=>{const p=A[i];if(p&&N.addStop(N.stopFor(p),true))n++;});
+        el.querySelectorAll("[data-naft]").forEach(b=>{b.classList.add("done");b.textContent="✓ Added";});both.disabled=true;both.textContent=n?"✓ Both in your night":"Your night is full";
+        if(n&&N.toast)N.toast("Food and afters are in your night","Open",()=>{closePop();const t=document.querySelector('#bTabs [data-tab="budget"]');if(t)t.click();});}});
+    document.addEventListener("keydown",ev=>{if(ev.key==="Escape"&&$("rPop")&&!$("rPop").hidden)closePop();});}
+  el.innerHTML=`<div class="rpop-in"><div class="rpop-top"><span class="rpop-k">🍜 The bowl has spoken</span><button type="button" class="rpop-x" data-rx aria-label="Close">✕</button></div>
+    <div class="rpop-cards">${html}</div>
+    <div class="rpop-go"><button type="button" class="rpop-main" data-rboth>＋ Add both to my night</button><button type="button" data-ragain>🍜 Slurp again</button></div>
+    <p class="rpop-fine">Random picks from the Shack's food and afters lists. Hours and prices are typical, so check before you go.</p></div>`;
+  el.hidden=false;document.documentElement.classList.add("rpop-on");
+  const box=el.querySelector(".rpop-in");if(box.animate&&!matchMedia("(prefers-reduced-motion: reduce)").matches)box.animate([{transform:"translateY(40px) scale(.94)",opacity:0},{transform:"none",opacity:1}],{duration:320,easing:"cubic-bezier(.2,1.3,.4,1)"});
+  el.querySelector(".rpop-x").focus({preventScroll:true});}
+function closePop(){const el=$("rPop");if(el){el.hidden=true;document.documentElement.classList.remove("rpop-on");}}
+
+window.SPOTS={home,ramenPop,after(screen,c){if(screen==="spots")draw();chillRow(screen==="results"&&c==="chill");
   backRow(screen==="results"&&c==="music"&&state.sub==="festival");}};
 document.addEventListener("shack:spots",()=>{home();const s=BUI.screen;if(s==="spots")draw();else if(s==="results")render();});
 tiles();
