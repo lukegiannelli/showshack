@@ -68,7 +68,7 @@ const GRP={dimsum:"food",thai:"food",pizza:"food",dessert:"food",hall:"food",boi
 const icon=c=>c==="pool"&&typeof NEON8==="string"?NEON8:`<span class="nemo">${(AC[c]||TYPES.other)[0]}</span>`;
 // hours label: firm, "usually" (sources disagree / third-party only), or unknown
 const hrs=p=>!p.h?"Hours not listed, check before you go":p.hq?`Usually ${p.h[0].toLowerCase()+p.h.slice(1)}, check before you go`:p.h;
-function miles(a,b,c,d){const R=3958.8,t=x=>x*Math.PI/180,x=Math.sin(t(c-a)/2)**2+Math.cos(t(a))*Math.cos(t(c))*Math.sin(t(d-b)/2)**2;return 2*R*Math.asin(Math.sqrt(x));}
+function miles(a,b,c,d){return SH.miles(a,b,c,d);}
 
 /* ---------- plan model + cleaning (links come from other people, so everything is re-checked) ---------- */
 const S=(v,n)=>String(v??"").replace(/[\u0000-\u001f]/g," ").slice(0,n).trim();
@@ -83,20 +83,20 @@ function cleanStop(s){s=s||{};const k=TYPES[s.k]?s.k:"other";
   if(k!=="house"&&typeof s.la==="number"&&typeof s.lo==="number"&&Math.abs(s.la)<=90&&Math.abs(s.lo)<=180){o.la=Math.round(s.la*1e5)/1e5;o.lo=Math.round(s.lo*1e5)/1e5;}
   Object.keys(o).forEach(x=>{if(o[x]===""||o[x]==null)delete o[x];});o.k=k;return o;}
 function cleanPlan(p){p=p||{};return {v:1,t:S(p.t,70),d:/^\d{4}-\d\d-\d\d$/.test(p.d||"")?p.d:"",h:S(p.h,30),ph:S(p.ph,20).replace(/[^0-9+]/g,""),up:typeof p.up==="number"?p.up:0,s:(Array.isArray(p.s)?p.s:[]).slice(0,MAXS).map(cleanStop)};}
-function load(){try{return cleanPlan(JSON.parse(localStorage.getItem(KEY)||"null")||{});}catch(e){return cleanPlan({});}}
+function load(){try{return cleanPlan(JSON.parse(SH.store.raw(KEY)||"null")||{});}catch(e){return cleanPlan({});}}
 let plan=load();
 /* ---------- saved nights: every plan you build is kept (this device only) so you can flip between several ---------- */
 const NKEY="shack-nights",IDKEY="shack-night-id",MAXN=24;
 const newId=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,6);
-let NIGHTS=(()=>{try{const a=JSON.parse(localStorage.getItem(NKEY)||"[]");return Array.isArray(a)?a.filter(x=>x&&typeof x.id==="string").map(x=>({id:x.id.slice(0,20),p:cleanPlan(x.p)})).slice(0,MAXN):[];}catch(e){return [];}})();
-let planId=(()=>{try{return localStorage.getItem(IDKEY)||"";}catch(e){return "";}})()||newId();
+let NIGHTS=(()=>{try{const a=JSON.parse(SH.store.raw(NKEY)||"[]");return Array.isArray(a)?a.filter(x=>x&&typeof x.id==="string").map(x=>({id:x.id.slice(0,20),p:cleanPlan(x.p)})).slice(0,MAXN):[];}catch(e){return [];}})();
+let planId=(()=>{try{return SH.store.raw(IDKEY)||"";}catch(e){return "";}})()||newId();
 const keep=p=>p.s.length>0||!!p.t;   // an empty, unnamed night isn't worth a slot
-function putNights(){try{localStorage.setItem(NKEY,JSON.stringify(NIGHTS));localStorage.setItem(IDKEY,planId);}catch(e){}}
+function putNights(){try{SH.store.put(NKEY,JSON.stringify(NIGHTS));SH.store.put(IDKEY,planId);}catch(e){}}
 function upsertNight(){const i=NIGHTS.findIndex(x=>x.id===planId);
   if(keep(plan)){const rec={id:planId,p:cleanPlan(plan)};if(i>=0)NIGHTS[i]=rec;else NIGHTS.unshift(rec);NIGHTS.sort((a,b)=>(b.p.up||0)-(a.p.up||0));if(NIGHTS.length>MAXN)NIGHTS.length=MAXN;}
   else if(i>=0)NIGHTS.splice(i,1);
   putNights();drawSaved();}
-function save(){try{localStorage.setItem(KEY,JSON.stringify(plan));}catch(e){}upsertNight();}
+function save(){try{SH.store.put(KEY,JSON.stringify(plan));}catch(e){}upsertNight();}
 // switch the Plan tab to another night (the one you were on stays saved)
 function useNight(id,p){plan=cleanPlan(p||{});planId=id||newId();openI=-1;pickK="";flipped=false;save();drawBuilder();}
 
@@ -128,7 +128,7 @@ const dirQ=s=>s.a?[s.p||s.n,s.a].filter(Boolean).join(", "):(s.p||s.n||"");
 const dirUrl=s=>`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(dirQ(s))}`;
 const venmo=s=>`https://venmo.com/u/${encodeURIComponent(s.vh)}`;
 const cash=s=>`https://cash.app/$${encodeURIComponent(s.ch)}${s.amt?"/"+s.amt:""}`;
-function parseTime(txt){const m=/(\d{1,2})(?::(\d\d))?\s*([ap])\.?m/i.exec(txt||"");if(!m)return "";let h=+m[1]%12;if(/p/i.test(m[3]))h+=12;return String(h).padStart(2,"0")+":"+(m[2]||"00");}
+function parseTime(txt){return SH.hhmmOfText(txt);}
 function goLine(s){if(!s.w)return "";const w=s.w==="drive"&&s.dr?`${esc(s.dr)} is driving`:GOW[s.w];return `${GO[s.w]} ${w}`;}
 
 /* ---------- toast ---------- */
@@ -282,13 +282,13 @@ function flipTo(on){const el=$("bNight");if(!el)return;
   el.animate([{transform:"scaleX(1)"},{transform:"scaleX(0.02)"}],{duration:150,easing:"cubic-bezier(.5,0,.75,.4)",fill:"forwards"}).onfinish=()=>{flipped=on;drawBuilder();
     const a=el.animate([{transform:"scaleX(0.02)"},{transform:"scaleX(1)"}],{duration:170,easing:"cubic-bezier(.25,.6,.4,1)",fill:"forwards"});
     a.onfinish=()=>{a.cancel();el.getAnimations().forEach(x=>x.cancel());el._busy=false;const r=el.getBoundingClientRect();if(r.top<0)el.scrollIntoView({block:"start",behavior:"smooth"});};};}
-const road=(a,b,c,d)=>miles(a,b,c,d)*1.2,legMin=mi=>Math.max(5,Math.round((6+mi/55*60)/5)*5);
+const road=(a,b,c,d)=>SH.roadMi(a,b,c,d),legMin=mi=>SH.driveMin(mi);
 // rough SoCal rideshare fare: ~$5 booking + base, ~$1.40/mi, ~$0.35/min, $10 minimum; late night often surges, so a range
 const rideFare=mi=>{const v=Math.max(10,5+1.4*mi+.35*legMin(mi));return [Math.round(v),Math.round(v*1.4)];};
 // last trains: honest, not exact (agencies change schedules); always point to the agency
 const LASTTRAIN={Metro:"Metro rail's last trains leave around midnight (a little later on some lines)",Trolley:"Trolley service mostly wraps up around midnight",
   Metrolink:"Metrolink is a commuter line and is usually done by evening",NCTD:"Coaster and Sprinter trains are usually done by evening",Amtrak:"Amtrak has only a few trains a day"};
-const tmin=t=>{let [h,m]=t.split(":").map(Number);if(h<5)h+=24;return h*60+m;};
+const tmin=t=>SH.minOfHHMM(t);
 function showPrice(s){if(s.c!=null&&s.c!=="")return {v:+s.c,txt:+s.c?`$${s.c}`:"Free"};
   const e=allEv().find(x=>x.title===s.n);if(e)try{const pi=priceInfo(e);
     if(pi.free)return {v:0,txt:"Free"};if(pi.sold)return {v:0,txt:"Sold out",warn:1};if(!pi.none&&pi.lo)return {v:Math.round(pi.lo),txt:(pi.est?"≈":"from ")+"$"+Math.round(pi.lo),est:1};}catch(_){}
@@ -435,7 +435,7 @@ function retime(i){const s=plan.s[i];if(!s)return "";const tm=x=>x&&x.tm?tmin(x.
   let m=a!=null&&b!=null?(b>a?(a+b)/2:a+15):a!=null?a+60:b!=null?b-60:null;if(m==null)return s.tm||"";
   if(s.tm&&tm(s)!=null&&(a==null||tm(s)>a)&&(b==null||tm(s)<b))return s.tm;   // its time already fits where it landed: leave it
   m=Math.round(m/15)*15;const h=Math.floor(((m%1440)+1440)%1440/60),mm=((m%60)+60)%60;s.tm=String(h).padStart(2,"0")+":"+String(mm).padStart(2,"0");return s.tm;}
-function sortStops(){let last=-1;const k=plan.s.map((x,i)=>{if(x.tm){let [h,m]=x.tm.split(":").map(Number);if(h<5)h+=24;last=h*60+m;}return {x,i,t:last};});
+function sortStops(){let last=-1;const k=plan.s.map((x,i)=>{if(x.tm)last=SH.minOfHHMM(x.tm);return {x,i,t:last};});
   const open=plan.s[openI];k.sort((a,b)=>(b.x.k==="meet")-(a.x.k==="meet")||a.t-b.t||a.i-b.i);plan.s=k.map(o=>o.x);if(open)openI=plan.s.indexOf(open);}
 // meet-up always leads the night, whatever gets dragged or moved
 function meetFirst(){const m=plan.s.filter(x=>x.k==="meet");if(!m.length)return;const open=plan.s[openI];plan.s=[...m,...plan.s.filter(x=>x.k!=="meet")];if(open)openI=plan.s.indexOf(open);}
@@ -582,7 +582,7 @@ function drawSaved(){if(!savedOn)return;let el=$("bNights");const list=$("list")
         openPlan();toast("Copied for next "+t.toLocaleDateString("en-US",{weekday:"long"})+". Pick the show");return;}
       if(d.nshare){shareNight(x.p,b);return;}
       if(d.ndel){if(!b.classList.contains("sure")){b.classList.add("sure");b.setAttribute("aria-label","Tap again to delete");const c=b.closest(".bnc");c.classList.add("sure");setTimeout(()=>{b.classList.remove("sure");c.classList.remove("sure");},2500);return;}
-        NIGHTS=NIGHTS.filter(n=>n.id!==x.id);if(x.id===planId){plan=cleanPlan({});planId=newId();try{localStorage.setItem(KEY,JSON.stringify(plan));}catch(e){}drawBuilder();}
+        NIGHTS=NIGHTS.filter(n=>n.id!==x.id);if(x.id===planId){plan=cleanPlan({});planId=newId();try{SH.store.put(KEY,JSON.stringify(plan));}catch(e){}drawBuilder();}
         putNights();drawSaved();toast(`Deleted ${esc(nName(x.p))}`,"Undo",()=>{NIGHTS.push(x);NIGHTS.sort((a,b)=>(b.p.up||0)-(a.p.up||0));putNights();drawSaved();drawBuilder();});}});}
   el.hidden=false;
   const today=todayISO(),past=NIGHTS.filter(x=>x.p.d&&x.p.d<today),up=NIGHTS.filter(x=>!(x.p.d&&x.p.d<today))

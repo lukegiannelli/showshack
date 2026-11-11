@@ -209,8 +209,8 @@
   function tone(freq,at,len,vol,type){const o=ac.createOscillator(),gn=ac.createGain();o.type=type||"sine";o.frequency.value=freq;
     gn.gain.setValueAtTime(0,at);gn.gain.linearRampToValueAtTime(vol,at+.01);gn.gain.exponentialRampToValueAtTime(.0001,at+len);o.connect(gn);gn.connect(ac.destination);o.start(at);o.stop(at+len+.05);}
   function audio(){try{const AC=window.AudioContext||window.webkitAudioContext;if(!AC)return false;
-    try{if(navigator.audioSession)navigator.audioSession.type="ambient";}catch(e){}   // iPhone: mix with whatever's already playing (YouTube, Spotify) instead of pausing it
-    if(!ac){try{ac=new AC({latencyHint:"interactive"});}catch(e){ac=new AC();}const b=ac.createBuffer(1,1,22050),sr=ac.createBufferSource();sr.buffer=b;sr.connect(ac.destination);sr.start(0);}
+    SH.audio.mix();   // iPhone: mix with whatever's already playing (YouTube, Spotify) instead of pausing it
+    if(!ac){ac=SH.audio.ctx();if(!ac)return false;const b=ac.createBuffer(1,1,22050),sr=ac.createBufferSource();sr.buffer=b;sr.connect(ac.destination);sr.start(0);}
     if(ac.state!=="running")ac.resume();loadChime();return true;}catch(e){return false;}}
   function whoosh(){if(!audio())return;const t=ac.currentTime+.01,len=ac.sampleRate*.5,bf=ac.createBuffer(1,len,ac.sampleRate),d=bf.getChannelData(0);
     for(let i=0;i<len;i++)d[i]=(Math.random()*2-1)*Math.sin(Math.PI*i/len);
@@ -332,9 +332,9 @@
       if(ac){mode==="ramen"?bloop(1):mode==="globe"?ping(1):tick(1);}
       setTimeout(()=>{ball.classList.remove("dropin");busy=false;},560);},320);}
   // first visit: a ghost finger acts out the gestures until you touch the ball once (most people never find hidden swipes)
-  let ghost=null;try{if(!localStorage.getItem("shack-ballhint")){ghost=document.createElement("div");ghost.className="dghost";ghost.setAttribute("aria-hidden","true");
+  let ghost=null;try{if(!SH.store.raw("shack-ballhint")){ghost=document.createElement("div");ghost.className="dghost";ghost.setAttribute("aria-hidden","true");
     ghost.innerHTML='<i>👆</i><span>swipe ↔ · pull ↓ · flick ↑</span>';box.querySelector(".dstage").appendChild(ghost);}}catch(e){}
-  const unghost=()=>{if(!ghost)return;ghost.classList.add("bye");const gh=ghost;ghost=null;setTimeout(()=>gh.remove(),300);try{localStorage.setItem("shack-ballhint","1");}catch(e){}};
+  const unghost=()=>{if(!ghost)return;ghost.classList.add("bye");const gh=ghost;ghost=null;setTimeout(()=>gh.remove(),300);try{SH.store.put("shack-ballhint","1");}catch(e){}};
   let ys=0,onBall=false,xt=0;
   let tx=.0,ty=.0;
   function mark(e){const rc=ball.getBoundingClientRect();tx=(e.clientX-rc.left-rc.width/2)/(rc.width/2);ty=-(e.clientY-rc.top-rc.height/2)/(rc.height/2);}

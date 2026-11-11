@@ -84,7 +84,7 @@ function pvStop(){if(PV.a){PV.a.pause();PV.a=null;}if(PV.btn){PV.btn.classList.r
 async function pvPlay(btn,e){if(PV.btn===btn){pvStop();return;}pvStop();btn.dataset.lbl=btn.dataset.lbl||btn.innerHTML;btn.textContent="Finding a preview…";
   const q=artistQ(e),t=await itunes(q);const note=btn.parentNode.parentNode.querySelector(".bpv-note")||btn.closest(".bfc-b,article.card")?.querySelector(".bpv-note");
   if(!t){btn.innerHTML=btn.dataset.lbl;if(note){note.hidden=false;note.textContent=`No preview found for ${q}.`;}return;}
-  try{try{if(navigator.audioSession)navigator.audioSession.type="playback";}catch(_){}const a=new Audio(t.previewUrl);a.volume=.9;await a.play();PV={a,btn};btn.classList.add("on");btn.textContent="⏸ Stop preview";
+  try{SH.audio.solo();const a=new Audio(t.previewUrl);a.volume=.9;await a.play();PV={a,btn};btn.classList.add("on");btn.textContent="⏸ Stop preview";
     a.onended=pvStop;if(note){note.hidden=false;note.innerHTML=`♪ “${esc(t.trackName)}” · ${esc(t.artistName)} · <a href="${esc(t.trackViewUrl||"#")}" target="_blank" rel="noopener">Apple Music preview ↗</a>`;}}
   catch(err){btn.innerHTML=btn.dataset.lbl;if(note){note.hidden=false;note.textContent="Couldn't play the preview. Check your connection.";}}}
 document.addEventListener("click",ev=>{const b=ev.target.closest("[data-apv]");if(!b)return;ev.stopPropagation();ev.preventDefault();
@@ -269,7 +269,7 @@ function after(){
   }
   if(screen==="results"||screen==="saved"){
     const v=VIBES.find(x=>x.k===cur);
-    $("bTitle").textContent=screen==="saved"?"Saved":state.venue&&state.venue!=="all"?state.venue.split(" · ")[0]:v?v.name:cur==="surprise"?"Surprise pick":state.q?"Search":"All shows";
+    $("bTitle").textContent=cur==="ins"?"Hivemind808 insights":screen==="saved"?"Saved":state.venue&&state.venue!=="all"?state.venue.split(" · ")[0]:v?v.name:cur==="surprise"?"Surprise pick":state.q?"Search":"All shows";
     const n=(state._shown||[]).length;$("bCount").textContent=n+(n===1?" event":" events")+(screen==="saved"?"":" · "+WHEN_WORD[state.when]);
     const subs=$("bSubs");let items=null,key="sub";
     if(cur==="music"){if(state.genre==="electronic"){state.genre="all";state.sub="dj";}items=[["","All"],["k:festival","Festival"],["k:dj","DJ / rave"],...GENRES.filter(([g])=>g!=="all"&&g!=="electronic")];key="music";} else if(SUBS[cur])items=SUBS[cur];
@@ -278,8 +278,8 @@ function after(){
     if(items){const val=key==="music"?(state.sub?"k:"+state.sub:state.genre==="all"?"":state.genre):(state.sub||"");
       subs.innerHTML=items.map(([x,l])=>`<button type="button" class="chip" data-sub="${x}" data-key="${key}" aria-pressed="${x===val}">${esc(l)}</button>`).join("");}
     bStart.hidden=!!origin;
-    $("bWhenRes").hidden=screen==="saved";
-    tools.hidden=screen==="saved";
+    $("bWhenRes").hidden=screen==="saved"||cur==="ins";
+    tools.hidden=screen==="saved"||cur==="ins";if(cur==="ins")$("bCount").textContent="Only you see this";
   }
   if(window.SPOTS)SPOTS.after(screen,cur);
   if(window.NIGHT&&NIGHT.savedRow)NIGHT.savedRow(screen==="saved");
@@ -307,19 +307,21 @@ const WHATSNEW=[["🍜","Space ramen","Pull the disco ball down. Four swipes ser
   ["🔥","Map extras","Tonight heatmap, Now button, route costs and Build a night here.",()=>{MAPV.heat=true;state.when="tonight";const t=document.querySelector('#bTabs [data-tab="map"]');if(t)t.click();}]];
 const dlgOpen=d=>{if(d.showModal)d.showModal();else d.setAttribute("open","");},dlgClose=d=>{d.close?d.close():d.removeAttribute("open");};
 function whatsNew(){$("bNewList").innerHTML=WHATSNEW.map(([ic,t,p],i)=>`<li><i aria-hidden="true">${ic}</i><div><b>${esc(t)}</b><p>${esc(p)}</p></div><button type="button" data-wn="${i}">Show me</button></li>`).join("");dlgOpen($("bNew"));
-  try{localStorage.setItem("shack-new",WN_VER);}catch(e){}}
+  try{SH.store.put("shack-new",WN_VER);}catch(e){}}
 $("bNew").addEventListener("click",ev=>{const d=$("bNew");if(ev.target===d||ev.target.closest("[data-close]")){dlgClose(d);return;}
   const b=ev.target.closest("[data-wn]");if(b){dlgClose(d);WHATSNEW[+b.dataset.wn][3]();}});
 /* ---- Settings → Your data ---- */
 function setStats(){const nn=window.NIGHT&&NIGHT.allNights?NIGHT.allNights().length:0;
   $("bSetStats").innerHTML=[[state.stars.size,"starred"],[nn,"nights"],[BEEN.size,"stamps"],[showCount(),"shows logged"],[(state.pinV||[]).length,"following"]].map(([n,l])=>`<span><b>${n}</b>${l}</span>`).join("");}
-$("bSetBtn").onclick=()=>{setStats();$("bSetMsg").textContent="";const c=$("bSet").querySelector("[data-sclear]");c.classList.remove("sure");c.textContent="Clear everything on this phone";dlgOpen($("bSet"));};
+$("bSetBtn").onclick=()=>{setStats();$("bSetOwner").hidden=SH.store.raw("shack-owner")!=="1";$("bSetMsg").textContent="";const c=$("bSet").querySelector("[data-sclear]");c.classList.remove("sure");c.textContent="Clear everything on this phone";dlgOpen($("bSet"));};
 $("bSet").addEventListener("click",ev=>{const d=$("bSet");if(ev.target===d||ev.target.closest("[data-close]")){dlgClose(d);return;}
   if(ev.target.closest("[data-sback]")){backupPassport();$("bSetMsg").textContent="Backup file saved. Keep it somewhere safe (Files, iCloud, email to yourself).";return;}
   if(ev.target.closest("[data-snew]")){dlgClose(d);whatsNew();return;}
-  if(ev.target.closest("[data-stour]")){try{localStorage.removeItem("shack-ballhint");}catch(e){}$("bSetMsg").textContent="The ghost finger is back. Reloading…";setTimeout(()=>location.reload(),600);return;}
+  // owner only: the insights view (it lived behind a View bar this layout hides)
+  if(ev.target.closest("[data-sins]")){dlgClose(d);state.venue="all";state.kind="all";state.when="any";state.sub=null;state.surprise=null;cur="ins";show("results");state.view="ins";render();return;}
+  if(ev.target.closest("[data-stour]")){try{SH.store.del("shack-ballhint");}catch(e){}$("bSetMsg").textContent="The ghost finger is back. Reloading…";setTimeout(()=>location.reload(),600);return;}
   const c=ev.target.closest("[data-sclear]");if(c){if(!c.classList.contains("sure")){c.classList.add("sure");c.textContent="Tap again: wipes stars, nights, passport and settings";$("bSetMsg").textContent="Back up first if you might want any of it.";return;}
-    try{Object.keys(localStorage).filter(k=>/^(radar-|shack-)/.test(k)).forEach(k=>localStorage.removeItem(k));}catch(e){}$("bSetMsg").textContent="Cleared. Reloading…";setTimeout(()=>location.reload(),600);}});
+    try{SH.store.keys().filter(k=>/^(radar-|shack-)/.test(k)).forEach(k=>SH.store.del(k));}catch(e){}$("bSetMsg").textContent="Cleared. Reloading…";setTimeout(()=>location.reload(),600);}});
 $("bSet").addEventListener("change",async ev=>{const f=ev.target.closest("[data-srest]");if(!f||!f.files||!f.files[0])return;const m=await restorePassport(f.files[0]);$("bSetMsg").textContent=m||"Restored ✓";setStats();f.value="";});
 $("bInfoBtn").onclick=()=>{trust();const d=$("bInfo");if(d.showModal)d.showModal();else d.setAttribute("open","");};
 $("bInfo").addEventListener("click",ev=>{const d=$("bInfo");if(ev.target===d||ev.target.closest("[data-close]")){d.close?d.close():d.removeAttribute("open");}});
@@ -334,11 +336,10 @@ function loadLeaflet(){if(window.L)return Promise.resolve();if(lfLoad)return lfL
 const RINGS=[[15,"#7ee0b8"],[30,"#FFC66B"],[60,"#FF6FA5"]];
 const ringM=m=>(m-6)*55/60/1.2*1609.34;            // inverse of driveEstimate()
 const vibeOf=e=>VIBES.find(v=>GROUPS[v.k].has(e.kind));
-function miles(a,b,c,d){const R=3958.8,t=x=>x*Math.PI/180,x=Math.sin(t(c-a)/2)**2+Math.cos(t(a))*Math.cos(t(c))*Math.sin(t(d-b)/2)**2;return 2*R*Math.asin(Math.sqrt(x));}
+function miles(a,b,c,d){return SH.miles(a,b,c,d);}
 /* ---- map extras: filters, time slider, starred/followed pins, clusters, My night route, Meet halfway, transit ---- */
-const estMin=(a,b,c,d)=>{const r=miles(a,b,c,d)*1.2;return Math.max(5,Math.round((6+r/55*60)/5)*5);};   // same rough formula as driveEstimate()
-function startMin(e){const m=String(e.time||"").match(/(\d{1,2})(?::(\d\d))?\s*(AM|PM)/i);if(!m)return null;
-  let h=(+m[1])%12+(m[3].toUpperCase()==="PM"?12:0);if(h<6)h+=24;return h*60+(+m[2]||0);}   // minutes after midnight; 1 AM counts as 25:00
+const estMin=(a,b,c,d)=>SH.driveMin(SH.roadMi(a,b,c,d));   // same rough formula as driveEstimate()
+function startMin(e){return SH.minOfText(e.time);}   // minutes after midnight; 1 AM counts as 25:00
 const tMin=()=>MAPV.t?18*60+(MAPV.t-1)*30:null;   // slider steps: 6 PM, 6:30 … 2 AM
 const tLbl=v=>{if(!v)return "Any time";const m=18*60+(v-1)*30,h=Math.floor(m/60)%24,mm=m%60;return (h%12||12)+(mm?":"+String(mm).padStart(2,"0"):"")+(h<12?" AM":" PM");};
 const evOn=(e,T)=>{const s=startMin(e);return s!=null&&s<=T&&T<s+180;};   // a show "is on" from its start for about 3 hours
@@ -547,11 +548,11 @@ $("bMapStart").onclick=()=>{state.view="list";show("budget");setTimeout(()=>{con
 /* ---- venues: what's playing first, a one-line personality, follow + new-show dots, passport, jump to map ---- */
 let VQ="";const QUIET={};   // venue search text; venues.json spots with no listed shows (key → {c,ad,la,lo})
 /* ---- Show passport extras: log (rating + note per stamp), badges, backup/restore. All on this device only. ---- */
-const ld=(k,d)=>{try{return JSON.parse(localStorage.getItem(k)||"null")||d;}catch(e){return d;}};
-const PLOG=ld("shack-plog",{});let PASS=null;try{localStorage.removeItem("shack-want");}catch(e){}
+const ld=(k,d)=>{try{return JSON.parse(SH.store.raw(k)||"null")||d;}catch(e){return d;}};
+const PLOG=ld("shack-plog",{});let PASS=null;try{SH.store.del("shack-want");}catch(e){}
 // past shows you've seen, per stamped venue: {venueKey: [{t:title, d:"YYYY-MM-DD", id}]}. Starred shows that already happened join in on their own.
 const PSHOWS=ld("shack-pshows",{});let PSEL="",PALL=false;
-const savePshows=()=>{try{localStorage.setItem("shack-pshows",JSON.stringify(PSHOWS));}catch(e){}};
+const savePshows=()=>{try{SH.store.put("shack-pshows",JSON.stringify(PSHOWS));}catch(e){}};
 function pastShows(k){const today=todayStr(),mine=(PSHOWS[k]||[]).map(x=>({...x,own:1}));
   const starred=Object.entries(starVen).filter(([sk,o])=>o&&o.v===k&&o.d<today&&state.stars.has(sk)).map(([sk,o])=>({t:o.t||"A show you starred",d:o.d,star:1,id:sk}));
   return [...mine,...starred.filter(x=>!mine.some(m=>m.d===x.d&&m.t===x.t))].sort((a,b)=>b.d.localeCompare(a.d));}
@@ -560,9 +561,9 @@ function importNights(){if(!window.NIGHT||!NIGHT.allNights)return;const today=to
   NIGHT.allNights().forEach(x=>{if(!x.p.d||x.p.d>=today)return;x.p.s.forEach((s,i)=>{if(s.k!=="show"||!s.p)return;const id="n:"+x.id+":"+i;if(NIMP.has(id))return;NIMP.add(id);ch=true;
     const parts=s.p.split(", "),city=parts.length>1?parts.pop():"",k=parts.join(", ")+" · "+city;if(!city)return;
     const a=PSHOWS[k]=PSHOWS[k]||[];if(!a.some(y=>y.d===x.p.d&&y.t===(s.n||"")))a.push({t:String(s.n||"A show from your night").slice(0,100),d:x.p.d,id});BEEN.add(k);});});
-  if(ch){try{localStorage.setItem("shack-nimp",JSON.stringify([...NIMP]));}catch(e){}savePshows();saveBeen();}}
+  if(ch){try{SH.store.put("shack-nimp",JSON.stringify([...NIMP]));}catch(e){}savePshows();saveBeen();}}
 const showCount=()=>[...BEEN].reduce((n,k)=>n+pastShows(k).length,0);
-const savePlog=()=>{try{localStorage.setItem("shack-plog",JSON.stringify(PLOG));}catch(e){}};
+const savePlog=()=>{try{SH.store.put("shack-plog",JSON.stringify(PLOG));}catch(e){}};
 function badges(infos){const bv=infos.filter(v=>BEEN.has(v.k)),n=BEEN.size,rg=new Set([...BEEN].map(regionOfK).filter(r=>r!=="Other")),cnt=f=>bv.filter(f).length;
   return [[ni("ticket"),"First stamp","Stamp 1 venue",n>=1],[ni("chart"),"Regular","Stamp 10 venues",n>=10],[ni("map"),"Region hopper","Stamps in 3 regions",rg.size>=3],
     [ni("palm"),"All of SoCal","Stamps in all 6 regions",rg.size>=6],[ni("sun"),"Desert trip","Stamp a desert venue",rg.has("Desert")],
@@ -589,8 +590,8 @@ async function restorePassport(f){let msg="Restored ✓";
     if(Array.isArray(d.nights)&&window.NIGHT&&NIGHT.mergeNights){const n=NIGHT.mergeNights(d.nights);if(n)msg=`Restored ✓ (+${n} night${n>1?"s":""})`;}
     saveBeen();saveWant();savePlog();savePshows();}catch(e){msg="That file isn't a Show passport backup";}
   render();const box=$("list").querySelector(".bpass-acts");if(box)box.insertAdjacentHTML("beforeend",`<span class="bpass-msg">${esc(msg)}</span>`);return msg;}
-const FSEEN=(()=>{try{return JSON.parse(localStorage.getItem("shack-fseen")||"{}")||{};}catch(e){return {};}})();
-const saveSeen=()=>{try{localStorage.setItem("shack-fseen",JSON.stringify(FSEEN));}catch(e){}};
+const FSEEN=(()=>{try{return JSON.parse(SH.store.raw("shack-fseen")||"{}")||{};}catch(e){return {};}})();
+const saveSeen=()=>{try{SH.store.put("shack-fseen",JSON.stringify(FSEEN));}catch(e){}};
 const KIND_WORD={concert:"music room",club:"dance club",festival:"festival grounds",comedy:"comedy club",theater:"theater",openmic:"open-mic spot",social:"dance-social spot",dance:"ecstatic-dance space",contact:"movement studio",sound:"sound-bath space",drum:"drum-circle spot"};
 function vibeLine(v){const cnt={};v.evs.forEach(e=>cnt[e.kind]=(cnt[e.kind]||0)+1);
   const kind=Object.entries(cnt).sort((a,b)=>b[1]-a[1])[0];let type=kind?KIND_WORD[kind[0]]||"venue":"venue";
@@ -634,7 +635,7 @@ renderVenues=function(){const list=$("list");loadStations();
   const quietK=Object.entries(VOPEN).filter(([n,o])=>o&&o.c&&typeof o.la==="number"&&!named.has(n)).map(([n,o])=>{const k=n+" · "+o.c;QUIET[k]=o;return k;});
   const infos=[...keys,...quietK].map(k=>{const v=venueInfo(k),o=QUIET[k];if(o&&!v.evs.length){v.lat=o.la;v.lon=o.lo;v.drive=driveEstimate(o.la,o.lo);v.addr=o.ad;}return v;}),r=dayRange(state.when);
   infos.forEach(v=>{v.inR=r?v.evs.filter(e=>e.start<=r[1]&&(e.end||e.start)>=r[0]):v.evs;});
-  {const t=todayStr();let ch=false;infos.forEach(v=>{if(v.evs.length&&VLAST[v.k]!==t){VLAST[v.k]=t;ch=true;}});if(ch)try{localStorage.setItem("shack-vlast",JSON.stringify(VLAST));}catch(e){}}
+  {const t=todayStr();let ch=false;infos.forEach(v=>{if(v.evs.length&&VLAST[v.k]!==t){VLAST[v.k]=t;ch=true;}});if(ch)try{SH.store.put("shack-vlast",JSON.stringify(VLAST));}catch(e){}}
   const quietTag=v=>{if(v.evs.length){const nx=v.evs[0].start,dd=Math.round((parseDay(nx)-parseDay(todayStr()))/864e5);return dd>=42?`💤 Next show is ${Math.round(dd/7)} weeks out`:"";}
     const ls=VLAST[v.k];if(ls){const dd=Math.round((parseDay(todayStr())-parseDay(ls))/864e5);if(dd>=30)return `💤 No new shows in ${dd} days`;if(dd>=1)return `💤 Nothing listed since ${parseDay(ls).toLocaleDateString("en-US",{month:"short",day:"numeric"})}`;}
     return "💤 Nothing listed right now";};
@@ -835,7 +836,7 @@ function karmaSound(ctx,dest){const t=ctx.currentTime+.02,sr=ctx.sampleRate,D=3,
     const v=ctx.createOscillator(),vg=gn(6*m);v.frequency.value=7;v.connect(vg).connect(o.frequency);v.start(t);v.stop(end);
     const og=gn(g);o.connect(og).connect(wg);o.start(t);o.stop(end);});}
 window.karmaSound=karmaSound;
-function evWhoosh(){try{try{if(navigator.audioSession)navigator.audioSession.type="ambient";}catch(_){}AC=AC||new (window.AudioContext||window.webkitAudioContext)();if(AC.state==="suspended")AC.resume();karmaSound(AC,AC.destination);}catch(e){}}
+function evWhoosh(){try{SH.audio.mix();AC=SH.audio.ctx();if(AC.state==="suspended")AC.resume();karmaSound(AC,AC.destination);}catch(e){}}
 const fx=document.createElement("div");fx.className="bcarfx";document.body.appendChild(fx);
 function puff(x,y,big){const m=document.createElement("i");m.className="bmist";m.style.left=x+"px";m.style.top=y+"px";m.style.setProperty("--h",Math.round(Math.random()*360));
   if(big)m.style.setProperty("--s",1.6);fx.appendChild(m);setTimeout(()=>m.remove(),1300);}
@@ -870,5 +871,5 @@ const target=(location.hash||"").slice(1);
 if(/^pp=[01][A-Za-z0-9_-]+$/.test(target)){try{history.replaceState(null,"",location.pathname);}catch(e){}setTimeout(()=>compareFrom(target.slice(3)),300);}
 if(target&&/^[ep]-/.test(target)){cur="all";state.when="any";show("results",true);openCard(target);}
 else show("home",true);
-setTimeout(()=>{let seen="";try{seen=localStorage.getItem("shack-new")||"";}catch(e){}if(seen!==WN_VER&&screen==="home"&&!document.querySelector("dialog[open],#nightView,#bCmp:not([hidden])"))whatsNew();},1600);
+setTimeout(()=>{let seen="";try{seen=SH.store.raw("shack-new")||"";}catch(e){}if(seen!==WN_VER&&screen==="home"&&!document.querySelector("dialog[open],#nightView,#bCmp:not([hidden])"))whatsNew();},1600);
 })();

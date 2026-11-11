@@ -19,18 +19,18 @@ const SVC={sit:"Sit-down, 20% tip",bar:"20% tip on drinks",counter:"Counter serv
 const $r=(a,b)=>a===b?"$"+a:`$${a}–${b}`;
 /* ---- Food extras: plan around a show (near it / still open after), $–$$$, saved, dietary, group bill, booking, Feed me ---- */
 const F={show:"",open:false,price:"",diet:"",fav:false,spun:""};let LASTX=[];
-let PPL=1;try{PPL=Math.min(12,Math.max(1,+localStorage.getItem("shack-fppl")||1));}catch(e){}
-const FAV=new Set((()=>{try{return JSON.parse(localStorage.getItem("shack-favfood")||"[]");}catch(e){return [];}})());
-const saveFav=()=>{try{localStorage.setItem("shack-favfood",JSON.stringify([...FAV]));}catch(e){}};
+let PPL=1;try{PPL=Math.min(12,Math.max(1,+SH.store.raw("shack-fppl")||1));}catch(e){}
+const FAV=new Set((()=>{try{return JSON.parse(SH.store.raw("shack-favfood")||"[]");}catch(e){return [];}})());
+const saveFav=()=>{try{SH.store.put("shack-favfood",JSON.stringify([...FAV]));}catch(e){}};
 const fkey=p=>p.n+"|"+(p.a||"");
 const tierOf=p=>{const c=N.cost?N.cost(p):null;if(!c||c.free)return 1;const m=(c.all[0]+c.all[1])/2;return m<=25?1:m<=60?2:3;};   // $ ≤ $25, $$ ≤ $60, $$$ above (per person, all-in)
-function sMin(e){const m=String(e.time||"").match(/(\d{1,2})(?::(\d\d))?\s*(AM|PM)/i);if(!m)return null;let h=(+m[1])%12+(m[3].toUpperCase()==="PM"?12:0);if(h<6)h+=24;return h*60+(+m[2]||0);}
+function sMin(e){return SH.minOfText(e.time);}
 const clockS=m=>{const h=Math.floor(m/60)%24,mm=m%60;return (h%12||12)+(mm?":"+String(mm).padStart(2,"0"):"")+(h<12?" AM":" PM");};
 const showEnd=e=>{const s=sMin(e);return {end:(s??20*60)+150,guess:s==null};};   // about 2.5 hours after the listed start (8 PM if no time listed)
 const dayS=e=>parseDay(e.start).toLocaleDateString("en-US",{weekday:"short",month:"short",day:"numeric"});
-const mi2=(a,b,c,d)=>{const R=3958.8,t=x=>x*Math.PI/180,x=Math.sin(t(c-a)/2)**2+Math.cos(t(a))*Math.cos(t(c))*Math.sin(t(d-b)/2)**2;return 2*R*Math.asin(Math.sqrt(x));};
+const mi2=SH.miles;
 function fromShow(p,e){const m=mi2(e.lat,e.lon,p.lat,p.lon);
-  return m<=1.2?{mi:m,txt:`🚶 ~${Math.max(2,Math.round(m*20))} min walk from ${e.venue}`}:{mi:m,txt:`🚗 ~${fmtMins(Math.max(5,Math.round((6+m*1.2/55*60)/5)*5))} drive from ${e.venue}`};}
+  return m<=1.2?{mi:m,txt:`🚶 ~${Math.max(2,Math.round(m*20))} min walk from ${e.venue}`}:{mi:m,txt:`🚗 ~${fmtMins(SH.driveMin(m*1.2))} drive from ${e.venue}`};}
 const pickedShow=()=>F.show?(state._up||[]).find(e=>hid(e)===F.show)||null:null;
 function foodTools(all){const up=(state._up||[]).filter(e=>typeof e.lat==="number"),r=dayRange("tonight");
   const starred=up.filter(e=>state.stars.has(skey(e))).slice(0,15),tn=r?up.filter(e=>e.start<=r[1]&&(e.end||e.start)>=r[0]&&!state.stars.has(skey(e))).slice(0,25):[];
@@ -107,7 +107,7 @@ function mount(){if($("bSpots"))return;const sec=document.createElement("section
     const fp=ev.target.closest("[data-fprice]");if(fp){F.price=F.price===fp.dataset.fprice?"":fp.dataset.fprice;draw();return;}
     if(ev.target.closest("[data-ffav]")){F.fav=!F.fav;draw();return;}
     const fd=ev.target.closest("[data-fdiet]");if(fd){F.diet=F.diet===fd.dataset.fdiet?"":fd.dataset.fdiet;draw();return;}
-    const pp=ev.target.closest("[data-fppl]");if(pp){PPL=Math.min(12,Math.max(1,PPL+ +pp.dataset.fppl));try{localStorage.setItem("shack-fppl",PPL);}catch(e){}draw();return;}
+    const pp=ev.target.closest("[data-fppl]");if(pp){PPL=Math.min(12,Math.max(1,PPL+ +pp.dataset.fppl));try{SH.store.put("shack-fppl",PPL);}catch(e){}draw();return;}
     if(ev.target.closest("[data-fspin]")){const pool=LASTX.slice(0,12).filter(x=>fkey(x.p)!==F.spun);if(!pool.length)return;
       F.spun=fkey(pool[Math.floor(Math.random()*pool.length)].p);draw();const c=$("bSpList").querySelector(".spc.spun");if(c)c.scrollIntoView({behavior:"smooth",block:"center"});return;}});
   sec.addEventListener("change",ev=>{const s=ev.target.closest("[data-fshow]");if(s){F.show=s.value;F.open=false;F.spun="";draw();}});}

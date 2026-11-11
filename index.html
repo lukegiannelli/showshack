@@ -1,6 +1,6 @@
 <!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>The Show Shack</title>
 <link rel="stylesheet" href="app.css?v=26">
-<link rel="stylesheet" href="b.css?v=32">
+<link rel="stylesheet" href="b.css?v=33">
 <link rel="stylesheet" href="night.css?v=12">
 <link rel="stylesheet" href="spots.css?v=11">
 <script>window.NIGHT_BETA=true;window.NIGHT_HASH=location.hash;window.UI_B=true;document.documentElement.classList.add("ui-b");</script>
@@ -128,15 +128,6 @@
       <input id="q" type="text" inputmode="search" enterkeyhint="search" autocomplete="off" placeholder="Search artist, venue or city" aria-label="Search artist, venue or city">
       <button type="button" id="qClear" hidden>Clear</button>
     </label>
-    <div class="viewbar" id="viewBar"><span class="label">View</span>
-      <button type="button" class="chip" id="vList" aria-pressed="true"><svg class="ni ni-list" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-list"/></svg> List</button>
-      <button type="button" class="chip" id="vMap" aria-pressed="false"><svg class="ni ni-map" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-map"/></svg> Map</button>
-      <button type="button" class="chip" id="vVen" aria-pressed="false"><svg class="ni ni-venue" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-venue"/></svg> Venues</button>
-      <button type="button" class="chip" id="vIns" aria-pressed="false" hidden><svg class="ni ni-chart" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-chart"/></svg> Hivemind808 insights</button>
-    </div>
-    <div class="row" id="whenRow"><span class="label">When</span></div>
-    <div class="row" id="kindRow"><span class="label">Show</span></div>
-    <div class="row" id="genreRow"><span class="label">Genre</span></div>
     <div class="row">
       <label class="range" for="maxDrive"><span class="label">Max drive</span>
         <span class="rw"><input type="range" id="maxDrive" min="15" max="180" step="15" value="180"><i class="car" aria-hidden="true"></i></span>
@@ -218,6 +209,9 @@
       <button type="button" data-stour>Replay the disco ball tour</button>
       <button type="button" class="bset-clear" data-sclear>Clear everything on this phone</button>
     </div>
+    <div class="bset-acts bset-owner" id="bSetOwner" hidden><p class="bset-p">Owner tools (this phone opened #owner)</p>
+      <button type="button" data-sins>📊 Hivemind808 insights</button>
+      <a href="https://github.com/lukegiannelli/showshack/issues/new?template=add-show.yml" target="_blank" rel="noopener">＋ Add a show (GitHub form) ↗</a></div>
     <p class="bset-msg" id="bSetMsg" role="status"></p>
     <button type="button" class="binfo-ok" data-close>Done</button>
   </div>
@@ -229,10 +223,11 @@
   <button type="button" data-tab="saved"><svg class="ni" viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3.5 2.6 5.4 5.9.8-4.3 4.1 1 5.8L12 16.8l-5.2 2.8 1-5.8-4.3-4.1 5.9-.8Z"/></svg>Saved</button>
   <button type="button" data-tab="budget"><svg class="ni" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-cal"/></svg>Plan</button>
 </nav>
-<script src="app.js?v=27"></script>
-<script src="b.js?v=32"></script>
-<script src="night.js?v=21"></script>
-<script src="spots.js?v=11"></script>
+<script src="core.js?v=1"></script>
+<script src="app.js?v=28"></script>
+<script src="b.js?v=33"></script>
+<script src="night.js?v=22"></script>
+<script src="spots.js?v=12"></script>
 
 <div id="bgfx" aria-hidden="true"><canvas></canvas><div class="ovl"></div></div>
 <canvas id="nebfx" aria-hidden="true"></canvas>
@@ -240,7 +235,7 @@
 
 <script src="water.js?v=11"></script>
 
-<script src="disco.js?v=8"></script>
+<script src="disco.js?v=9"></script>
 <script src="nebula.js?v=13"></script>
 <script src="google.js?v=2"></script>
 </body></html>

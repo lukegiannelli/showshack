@@ -26,15 +26,15 @@ function nextOccurrence(r){
 }
 const GENRES = [["all","All"],["electronic","Electronic / house"],["hiphop","Hip-hop / R&B"],["indie","Indie / rock"],["reggae","Reggae / island"],["latin","Latin"],["pop","Pop / other"]];
 const state = {flipped:new Set(), kind:"all", genre:"all", venue:"all", maxDrive:180, sort:"date", events:[], picks:[], stars:new Set(), loaded:false};
-try{(JSON.parse(localStorage.getItem("radar-stars")||"[]")).forEach(k=>state.stars.add(String(k)));}catch(e){}
+try{(JSON.parse(SH.store.raw("radar-stars")||"[]")).forEach(k=>state.stars.add(String(k)));}catch(e){}
 let starRef=null, starBusy=false, starAgain=false, starT, starCount=0;
 function skey(e){return (e.added?"p:":"e:")+e.id;}
-function saveStars(){try{localStorage.setItem("radar-stars",JSON.stringify([...state.stars]));}catch(e){} clearTimeout(starT); starT=setTimeout(flushStars,500);}
+function saveStars(){try{SH.store.put("radar-stars",JSON.stringify([...state.stars]));}catch(e){} clearTimeout(starT); starT=setTimeout(flushStars,500);}
 async function flushStars(){if(!starRef)return; if(starBusy){starAgain=true;return;} starBusy=true; try{await starRef.set({ids:[...state.stars]});}catch(e){if(e&&e.code==="invalid_argument")starRef=null;} starBusy=false; if(starAgain){starAgain=false;flushStars();}}
 function updateStarChip(){const c=document.getElementById("kindRow-starred");if(c)c.textContent="★ Starred"+(starCount>0?" · "+starCount:"");}
-try{const s=JSON.parse(localStorage.getItem("radar-prefs")||"{}");Object.assign(state,{kind:s.kind||"all",genre:s.genre||"all",maxDrive:s.maxDrive||180,sort:s.sort||"date",venue:"all",hideTBA:!!s.hideTBA,when:s.when||"any",flags:s.flags||{},car:s.car||1,mpg:+s.mpg>0?+s.mpg:25,gas:+s.gas>0?+s.gas:5.85,food:s.food!=null?+s.food:0,drinks:s.drinks!=null?+s.drinks:0,home:s.home||"drive",budget:+s.budget>0?+s.budget:0,pinV:Array.isArray(s.pinV)?s.pinV:[],poolOn:!!s.poolOn});}catch(e){}
+try{const s=JSON.parse(SH.store.raw("radar-prefs")||"{}");Object.assign(state,{kind:s.kind||"all",genre:s.genre||"all",maxDrive:s.maxDrive||180,sort:s.sort||"date",venue:"all",hideTBA:!!s.hideTBA,when:s.when||"any",flags:s.flags||{},car:s.car||1,mpg:+s.mpg>0?+s.mpg:25,gas:+s.gas>0?+s.gas:5.85,food:s.food!=null?+s.food:0,drinks:s.drinks!=null?+s.drinks:0,home:s.home||"drive",budget:+s.budget>0?+s.budget:0,pinV:Array.isArray(s.pinV)?s.pinV:[],poolOn:!!s.poolOn});}catch(e){}
 if(String(state.kind).startsWith("g:"))state.kind="all";
-function savePrefs(){try{localStorage.setItem("radar-prefs",JSON.stringify({kind:state.kind,genre:state.genre,maxDrive:state.maxDrive,sort:state.sort,venue:state.venue,hideTBA:!!state.hideTBA,when:state.when,flags:state.flags,car:state.car,mpg:state.mpg,gas:state.gas,food:state.food,drinks:state.drinks,home:state.home,budget:state.budget,pinV:state.pinV,poolOn:!!state.poolOn}));}catch(e){}}
+function savePrefs(){try{SH.store.put("radar-prefs",JSON.stringify({kind:state.kind,genre:state.genre,maxDrive:state.maxDrive,sort:state.sort,venue:state.venue,hideTBA:!!state.hideTBA,when:state.when,flags:state.flags,car:state.car,mpg:state.mpg,gas:state.gas,food:state.food,drinks:state.drinks,home:state.home,budget:state.budget,pinV:state.pinV,poolOn:!!state.poolOn}));}catch(e){}}
 
 function driveEstimate(lat,lon){
   if(!origin||typeof origin.lat!=="number"||typeof lat!=="number"||typeof lon!=="number") return null;
@@ -55,7 +55,7 @@ const TICKET_RE=/(tickpick|ticketmaster|livenation|axs\.com|gametime\.co|vividse
 function safeUrl(u){try{const x=new URL(u);return (x.protocol==="https:"||x.protocol==="http:")?x.href:null;}catch(e){return null;}}
 
 function buildChips(rowId,items,key){
-  const row=document.getElementById(rowId);
+  const row=document.getElementById(rowId);if(!row)return;
   items.forEach(([v,l])=>{const b=document.createElement("button");b.className="chip";b.type="button";b.id=rowId+"-"+v;if(typeof l==="string"&&l.startsWith("<svg"))b.innerHTML=l;else b.textContent=l;
     b.setAttribute("aria-pressed",String(state[key]===v));
     b.onclick=()=>{state[key]=v;row.querySelectorAll(".chip").forEach(c=>c.setAttribute("aria-pressed",String(c===b)));savePrefs();render();};
@@ -87,8 +87,8 @@ sqc.onclick=()=>{sq.value="";setQ("");sq.focus();};
 function venueKey(e){return (e.venue||"")+" · "+(e.city||"");}
 // "Been here": venues you've marked, plus venues of starred shows whose date has passed (remembered when you star them).
 const BEEN=new Set(); let starVen={};
-try{(JSON.parse(localStorage.getItem("radar-been")||"[]")).forEach(k=>BEEN.add(k));starVen=JSON.parse(localStorage.getItem("radar-starven")||"{}")||{};}catch(e){}
-function saveBeen(){try{localStorage.setItem("radar-been",JSON.stringify([...BEEN]));localStorage.setItem("radar-starven",JSON.stringify(starVen));}catch(e){}}
+try{(JSON.parse(SH.store.raw("radar-been")||"[]")).forEach(k=>BEEN.add(k));starVen=JSON.parse(SH.store.raw("radar-starven")||"{}")||{};}catch(e){}
+function saveBeen(){try{SH.store.put("radar-been",JSON.stringify([...BEEN]));SH.store.put("radar-starven",JSON.stringify(starVen));}catch(e){}}
 function syncBeen(up){const today=new Date().toISOString().slice(0,10);let ch=false;
   for(const e of up||[]){const k=skey(e);if(state.stars.has(k)&&(!starVen[k]||!starVen[k].t)){starVen[k]={v:venueKey(e),d:String(e.end||e.start).slice(0,10),t:String(e.title||"").slice(0,100)};ch=true;}}
   for(const [k,o] of Object.entries(starVen)){if(!state.stars.has(k)&&o.d>=today){delete starVen[k];ch=true;continue;}
@@ -200,7 +200,7 @@ function dayRange(when){const t=new Date();t.setHours(0,0,0,0);const d=t.getDay(
   if(when==="weekend"){let a=new Date(t),b=new Date(t);if(d===0){}else if(d===6){b.setDate(t.getDate()+1);}else{a.setDate(t.getDate()+(5-d));b.setDate(t.getDate()+(7-d));}return [ymd(a),ymd(b)];}
   return null;}
 function fmtShort(s){const d=parseDay(String(s).slice(0,10));return d?d.toLocaleDateString("en-US",{month:"short",day:"numeric"}):"";}
-function parseTime(t){const m=String(t||"").match(/(\d{1,2})(?::(\d{2}))?\s*(AM|PM)/i);if(!m)return null;let h=+m[1]%12;if(/pm/i.test(m[3]))h+=12;return h*60+(+m[2]||0);}
+function parseTime(t){const c=SH.clock(t);return c?c.h*60+c.m:null;}   // plain clock minutes (no late-night shift); see core.js
 function fmtClock(mins){mins=((mins%1440)+1440)%1440;const h=Math.floor(mins/60),m=mins%60;return ((h%12)||12)+":"+String(m).padStart(2,"0")+(h<12?" AM":" PM");}
 // Open mics: the sign-up time matters more than the start (the list fills). "6:00 PM (sign-up 5:00)" or "Sign-up 6:00 PM".
 function signupOf(e){const m=String(e.time||"").match(/sign[- ]?up\s*(\d{1,2})(?::(\d{2}))?\s*(AM|PM)?/i);if(!m)return null;
@@ -226,8 +226,8 @@ const VIBES=[
   ["cheap","money","Free or cheap","#4FC7B6",e=>{const pi=priceInfo(e);return pi.free||(!pi.none&&!pi.sold&&pi.lo!=null&&pi.lo<=20);}],
   ["local","home","Small & local","#9B8CFF",e=>isSmall(e)]];
 const WILD=["wild","dice","Wildcard","#7FD4FF"];
-function wkGone(w){try{const g=JSON.parse(localStorage.getItem("radar-wkgone")||"{}");return g.w===w?new Set(g.gone||[]):new Set();}catch(e){return new Set();}}
-function wkSave(w,set){try{localStorage.setItem("radar-wkgone",JSON.stringify({w,gone:[...set]}));}catch(e){}}
+function wkGone(w){try{const g=JSON.parse(SH.store.raw("radar-wkgone")||"{}");return g.w===w?new Set(g.gone||[]):new Set();}catch(e){return new Set();}}
+function wkSave(w,set){try{SH.store.put("radar-wkgone",JSON.stringify({w,gone:[...set]}));}catch(e){}}
 function weekendPicks(evs){
   const r=dayRange("weekend"); if(!r)return null;
   const pool=evs.filter(e=>!e.added&&e.start<=r[1]&&(e.end||e.start)>=r[0]&&!priceInfo(e).sold);
@@ -344,7 +344,7 @@ function render(){
      : a.start.localeCompare(b.start) || (a._drive?.mins??1e9)-(b._drive?.mins??1e9));
   document.getElementById("count").textContent = evs.length+" of "+upcoming+" shows · "+venueCount+" venues";
   updateAlertBar();
-  if(state.view==="map"){renderMap(evs);return;}
+  if(state.view==="map")return;   // the Leaflet map (b.js) draws itself
   if(state.view==="ins"){renderInsights();return;}
   if(state.view==="venues"){renderVenues();return;}
   const vHead=state.venue!=="all"?venueHeader(state.venue):"";
@@ -436,48 +436,7 @@ function venueHeader(k){
     <p class="vnote">Parking prices are typical for this size of venue. Check the venue for tonight's actual rules.</p>
   </section>`;
 }
-function renderVenues(){
-  const list=document.getElementById("list");
-  const keys=[...new Set((state._up||[]).filter(e=>e.kind!=="art"&&e.kind!=="volunteer").map(venueKey))];
-  const infos=keys.map(venueInfo);
-  const sortV=(a,b)=>origin?((a.drive?.mins??1e9)-(b.drive?.mins??1e9))||a.name.localeCompare(b.name):a.name.localeCompare(b.name);
-  const card=v=>{const n=v.next,nd=n?parseDay(n.start).toLocaleDateString("en-US",{weekday:"short",month:"short",day:"numeric"}):"";
-    const prices=v.evs.map(e=>priceInfo(e)).filter(p=>p&&!p.sold&&!p.none&&p.lo!=null).map(p=>p.lo);
-    const lo=prices.length?Math.min(...prices):null;
-    const ages=v.evs.map(ageOf).filter(Boolean), allAges=ages.length&&ages.every(a=>a==="all"), over21=ages.length&&ages.every(a=>a==="21+");
-    const small=v.evs.length&&v.evs.some(isSmall), outdoor=v.evs.some(isOutdoor);
-    const been=BEEN.has(v.k);
-    const tags=[been?`<span class="tag been">✓ Been here</span>`:"",small?`<span class="tag local">${ni("home")} Small &amp; local</span>`:"",
-      allAges?`<span class="tag age">All ages</span>`:over21?`<span class="tag age">21+</span>`:"",
-      v.transit?`<span class="tag transit">${ni("sprout")} ${esc(v.transit)}</span>`:"",
-      outdoor?`<span class="tag">Outdoor</span>`:"",
-      v.cap?`<span class="tag">~${Number(v.cap).toLocaleString()} cap</span>`:"",
-      lo===0?`<span class="tag">Free shows</span>`:""].filter(Boolean).join("");
-    const vo=VOPEN[v.name]||{}, tips=vo.w||[], eats=vo.e||[], acc=vo.a||null;
-    const eatQ=u=>"https://www.google.com/maps/search/?api=1&query="+encodeURIComponent(u+" near "+v.name+", "+v.city);
-    const dest=encodeURIComponent(v.name+", "+v.city), org=origin&&origin.address?"&origin="+encodeURIComponent(origin.address):"";
-    const maps=`https://www.google.com/maps/dir/?api=1${org}&destination=${dest}&travelmode=driving`;
-    const fmt=e=>parseDay(e.start).toLocaleDateString("en-US",{weekday:"short",month:"short",day:"numeric"});
-    const more=`<div class="vmore" hidden>
-        ${tips.length?`<div class="vsec"><span class="sl">${ni("car")} Getting there</span><ul>${tips.map(t=>`<li>${esc(t)}</li>`).join("")}</ul></div>`:""}
-        ${eats.length?`<div class="vsec"><span class="sl">${ni("food")} Local eats</span><ul>${eats.map(x=>`<li><a href="${eatQ(x.n)}" target="_blank" rel="noopener"><b>${esc(x.n)}</b></a> · ${esc(x.d)}</li>`).join("")}</ul></div>`:""}
-        ${acc?`<div class="vsec"><span class="sl">${ni("hand")} Accessibility</span><p class="vacc">${esc(acc.t)}${acc.u?` <a href="${esc(acc.u)}" target="_blank" rel="noopener">Venue's access page ↗</a>`:""}</p></div>`:""}
-        <div class="vsec"><span class="sl">${ni("ticket")} Coming up</span><ul>${v.evs.slice(0,3).map(e=>`<li><b>${esc(fmt(e))}</b> ${esc(e.title)}</li>`).join("")}${v.evs.length>3?`<li class="mut">+${v.evs.length-3} more</li>`:""}</ul></div>
-        <div class="vlinks"><a href="${maps}" target="_blank" rel="noopener">${ni("car")} Directions</a><a href="${maps.replace("travelmode=driving","travelmode=transit")}" target="_blank" rel="noopener">${ni("train")} Transit</a><button type="button" class="vbeen${been?" on":""}" data-been="${esc(v.k)}" aria-pressed="${been}">${been?"✓ Been here":"I've been here"}</button><button type="button" class="vall" data-venue="${esc(v.k)}">All ${v.evs.length} show${v.evs.length===1?"":"s"} →</button></div>
-      </div>`;
-    return `<div class="vcard"><div class="vf"><button type="button" class="vopen" data-vmore="1" aria-expanded="false"><b>${esc(v.name)}</b>
-      <span>${esc(v.city)}${v.drive?` · ${v.drive.real?"":"~"}${fmtMins(v.drive.mins)}`:""}${v.year?` · since ${v.year}`:""}</span>
-      <small>${v.evs.length} show${v.evs.length===1?"":"s"}${n?` · next ${esc(nd)}: ${esc(n.title)}`:""}</small>
-      ${tags?`<span class="vtags">${tags}</span>`:""}</button>
-      <button type="button" class="vpin${isPinned(v.k)?" on":""}" data-pinv="${esc(v.k)}" aria-pressed="${isPinned(v.k)}" aria-label="${isPinned(v.k)?"Unpin":"Pin"} ${esc(v.name)}">${ni("pin")}</button></div>${more}</div>`;};
-  const pinned=infos.filter(v=>isPinned(v.k)).sort((a,b)=>(state.pinV.indexOf(a.k))-(state.pinV.indexOf(b.k)));
-  let html=`<div class="venues">`;
-  html+=`<h2 class="month pickh">${ni("pin")} Your venues</h2>`+(pinned.length?pinned.map(card).join(""):`<div class="empty"><strong>Pin your favorite spots</strong>Tap the pin on any venue and it stays at the top here.</div>`);
-  const regionOf=k=>{const e=(state._up||[]).find(x=>venueKey(x)===k);return e?region(e):"Other";};
-  for(const r of REGIONS){const vs=infos.filter(v=>!isPinned(v.k)&&regionOf(v.k)===r).sort(sortV);if(!vs.length)continue;
-    html+=`<h2 class="month">${esc(r)}</h2>`+vs.map(card).join("");}
-  list.innerHTML=html+`</div>`;
-}
+function renderVenues(){}   // the venues screen is built by b.js (it replaces this)
 document.getElementById("list").addEventListener("click",ev=>{
   const vm=ev.target.closest("[data-vmore]");
   if(vm){const c=vm.closest(".vcard"),m=c.querySelector(".vmore"),open=m.hidden;m.hidden=!open;vm.setAttribute("aria-expanded",String(open));c.classList.toggle("open",open);return;}
@@ -490,9 +449,9 @@ document.getElementById("list").addEventListener("click",ev=>{
   const pin=ev.target.closest("[data-pinv]");
   if(pin){togglePin(pin.dataset.pinv);render();return;}
   const all=ev.target.closest("[data-allven]");
-  if(all){state.venue="all";savePrefs();setView("venues");window.scrollTo({top:document.getElementById("viewBar").offsetTop-8,behavior:"smooth"});return;}
+  if(all){state.venue="all";savePrefs();setView("venues");window.scrollTo({top:0,behavior:"smooth"});return;}
   const v=ev.target.closest("[data-venue]");
-  if(v){state.venue=v.dataset.venue;state.surprise=null;savePrefs();setView("list");window.scrollTo({top:document.getElementById("viewBar").offsetTop-8,behavior:"smooth"});}
+  if(v){state.venue=v.dataset.venue;state.surprise=null;savePrefs();setView("list");window.scrollTo({top:0,behavior:"smooth"});}
 });
 /* ---- weather for outdoor shows in the next 10 days (Open-Meteo, free, no key) ---- */
 const OUTDOOR=/hollywood bowl|greek theat|amphithea|rady shell|humphreys|hollywood forever|ford theat|glen helen|frontwave|cal coast|dodger stadium|petco park|snapdragon|rose bowl|bmo stadium|grand park|marina green|city beach|aliso beach|state beach|\bpier\b|outdoor|lawn/i;
@@ -659,10 +618,7 @@ listEl.addEventListener("click",ev=>{const sp=ev.target.closest("[data-split],[d
   const b=ev.target.closest("[data-flip]");if(!b)return;flipCard(b.closest(".card"));});
 
 /* ---- views: list / map / insights ---- */
-const vL=document.getElementById("vList"),vM=document.getElementById("vMap"),vI=document.getElementById("vIns"),vV=document.getElementById("vVen");
-function setView(v){state.view=v;[vL,vM,vI,vV].forEach(b=>b.setAttribute("aria-pressed",String(b.id===({list:"vList",map:"vMap",ins:"vIns",venues:"vVen"})[v])));render();}
-vV.onclick=()=>{state.surprise=null;state.venue="all";savePrefs();setView("venues");};
-vL.onclick=()=>{state.surprise=null;if(state.venue!=="all"){state.venue="all";savePrefs();}setView("list");};vM.onclick=()=>setView("map");vI.onclick=()=>setView("ins");
+function setView(v){state.view=v;render();}
 const carSel=document.getElementById("carSel");carSel.value=String(state.car||1);carSel.onchange=()=>{state.carLink=null;state.car=+carSel.value;savePrefs();render();};
 const mpgIn=document.getElementById("mpgIn"),gasIn=document.getElementById("gasIn"),foodSel=document.getElementById("foodSel");
 mpgIn.value=state.mpg||25;gasIn.value=(state.gas||5.85).toFixed(2);foodSel.value=String(state.food??0);
@@ -680,7 +636,7 @@ homeSel.value=state.home||"drive";homeSel.onchange=()=>{state.home=homeSel.value
 budgetIn.value=state.budget||"";
 budgetIn.addEventListener("change",()=>{state.budget=Math.max(0,Math.round(+budgetIn.value||0));budgetIn.value=state.budget||"";savePrefs();updateBudget();});
 budgetIn.addEventListener("keydown",e=>{if(e.key==="Enter")budgetIn.blur();});
-document.getElementById("budgetBar").onclick=()=>{state.kind="starred";state.when="any";document.querySelectorAll("#kindRow .chip").forEach(c=>c.setAttribute("aria-pressed",String(c.id==="kindRow-starred")));document.querySelectorAll("#whenRow .chip").forEach(c=>c.setAttribute("aria-pressed",String(c.id==="whenRow-any")));savePrefs();setView("list");document.getElementById("viewBar").scrollIntoView({behavior:"smooth"});};
+document.getElementById("budgetBar").onclick=()=>{state.kind="starred";state.when="any";document.querySelectorAll("#kindRow .chip").forEach(c=>c.setAttribute("aria-pressed",String(c.id==="kindRow-starred")));document.querySelectorAll("#whenRow .chip").forEach(c=>c.setAttribute("aria-pressed",String(c.id==="whenRow-any")));savePrefs();setView("list");window.scrollTo({top:0,behavior:"smooth"});};
 const drinkSel=document.getElementById("drinkSel");drinkSel.value=String(state.drinks??0);drinkSel.onchange=()=>{state.drinks=+drinkSel.value;savePrefs();render();};
 [mpgIn,gasIn].forEach(i=>i.addEventListener("blur",()=>{costCommit();mpgIn.value=state.mpg;gasIn.value=state.gas.toFixed(2);}));
 /* alerts on starred shows */
@@ -689,42 +645,7 @@ function updateAlertBar(){const bar=document.getElementById("alertBar");
   if(!hits.length){bar.hidden=true;return;}
   bar.hidden=false;bar.innerHTML=`${ni("bell")} <span><b>${hits.length} update${hits.length>1?"s":""}</b> on your starred shows: ${hits.slice(0,3).map(e=>esc(e.title)+" ("+alertOf(e).map(a=>a.t).join(", ")+")").join(" · ")}${hits.length>3?" …":""}</span>`;
   bar.onclick=()=>{state.kind="starred";document.querySelectorAll("#kindRow .chip").forEach(c=>c.setAttribute("aria-pressed",String(c.id==="kindRow-starred")));savePrefs();setView("list");};}
-/* map */
-const COAST=[[35.1,-119.6],[34.39,-119.52],[34.27,-119.29],[34.15,-119.21],[34.08,-119.06],[34.03,-118.78],[34.01,-118.5],[33.98,-118.47],[33.84,-118.39],[33.74,-118.41],[33.71,-118.29],[33.76,-118.19],[33.74,-118.1],[33.65,-118.0],[33.6,-117.88],[33.54,-117.78],[33.46,-117.7],[33.42,-117.61],[33.37,-117.56],[33.19,-117.38],[33.16,-117.35],[33.04,-117.29],[32.96,-117.27],[32.85,-117.27],[32.79,-117.26],[32.75,-117.25],[32.67,-117.24],[32.71,-117.17],[32.68,-117.18],[32.58,-117.13],[32.53,-117.12],[32.2,-117.05],[32.2,-114.9],[35.1,-114.9]];
-const MAPCITIES=[["Ventura",34.27,-119.23],["Los Angeles",34.05,-118.24],["Long Beach",33.77,-118.19],["Pasadena",34.15,-118.14],["Santa Ana",33.75,-117.87],["Riverside",33.98,-117.38],["San Bernardino",34.11,-117.29],["Temecula",33.49,-117.15],["Oceanside",33.2,-117.38],["San Diego",32.72,-117.16],["Palm Springs",33.83,-116.55],["Indio",33.72,-116.22]];
-const MAPVIEWS=[["all","All",[32.45,-119.4,34.5,-116.0]],["oc","OC",[33.38,-118.25,34.0,-117.55]],["la","LA",[33.7,-118.6,34.3,-117.9]],["ie","Inland",[33.4,-117.8,34.25,-116.9]],["sd","San Diego",[32.55,-117.45,33.3,-116.9]],["desert","Desert",[33.5,-116.75,34.3,-116.0]]];
-state.mapView=state.mapView||"all";
-function renderMap(evs){const list=document.getElementById("list");
-  const bb=(MAPVIEWS.find(m=>m[0]===state.mapView)||MAPVIEWS[0])[2];const k=Math.cos(33.8*Math.PI/180);const W=1000;
-  const sx=W/((bb[3]-bb[1])*k);const H=Math.round((bb[2]-bb[0])*sx);
-  const X=lon=>((lon-bb[1])*k*sx).toFixed(1),Y=lat=>((bb[2]-lat)*sx).toFixed(1);
-  const groups={};evs.forEach(e=>{if(typeof e.lat!=="number")return;const key=venueKey(e);(groups[key]=groups[key]||{lat:e.lat,lon:e.lon,evs:[]}).evs.push(e);});
-  const scale=state.mapView==="all"?2.6:2.2;
-  let pins=Object.entries(groups).sort((a,b)=>b[1].evs.length-a[1].evs.length).map(([key,g])=>{const n=g.evs.length;const r=(5+Math.sqrt(n)*2.4)*scale;
-    const pm=Math.min(...g.evs.map(e=>pMid(priceInfo(e))??999));const col=pm<999?band(pm,P_STEPS).replace("/ var(--tintA)","/ 0.95"):"hsl(0 0% 60%)";
-    return `<g data-v="${esc(key)}" style="cursor:pointer"><circle class="pin" cx="${X(g.lon)}" cy="${Y(g.lat)}" r="${r.toFixed(1)}" fill="${col}"><title>${esc(key)} — ${n} show${n>1?"s":""}</title></circle>${n>1?`<text class="cnt" x="${X(g.lon)}" y="${(+Y(g.lat)+3.2*scale).toFixed(1)}" text-anchor="middle" style="font-size:${(9*scale).toFixed(1)}px">${n}</text>`:""}</g>`;}).join("");
-  const land=COAST.map(([la,lo])=>X(lo)+","+Y(la)).join(" ");
-  const cities=MAPCITIES.map(([n,la,lo])=>`<text class="city" x="${X(lo)}" y="${Y(la)}" ${+X(lo)>W*0.78?'dx="-8" text-anchor="end"':'dx="8"'} dy="-8" style="font-size:${(12*scale).toFixed(0)}px">${n}</text>`).join("");
-  const home=origin?`<circle class="home" cx="${X(origin.lon)}" cy="${Y(origin.lat)}" r="${(7*scale).toFixed(1)}"><title>Your start point</title></circle>`:"";
-  const btns=MAPVIEWS.map(([id,l])=>`<button type="button" class="chip" data-mv="${id}" aria-pressed="${state.mapView===id}">${l}</button>`).join("")
-    +`<button type="button" class="chip poolchip" data-pool-toggle="1" aria-pressed="${!!state.poolOn}">${NEON8} Pool</button>`;
-  let poolPins="",poolList="";
-  if(state.poolOn&&POOL.length){
-    const pr=7.5*scale;
-    poolPins=POOL.map((p,i)=>(p.lat<bb[0]||p.lat>bb[2]||p.lon<bb[1]||p.lon>bb[3])?"":`<g class="ppin ${p.c}" data-pool="${i}"><circle cx="${X(p.lon)}" cy="${Y(p.lat)}" r="${pr.toFixed(1)}"/><circle class="eye" cx="${X(p.lon)}" cy="${Y(p.lat)}" r="${(pr*.45).toFixed(1)}"/><title>${esc(p.n)}</title></g>`).join("");
-    const inView=p=>state.mapView==="all"||(p.lat>=bb[0]&&p.lat<=bb[2]&&p.lon>=bb[1]&&p.lon<=bb[3]);
-    const withD=POOL.map((p,i)=>({p,i,d:driveEstimate(p.lat,p.lon)})).filter(x=>inView(x.p)).sort((x,y)=>(x.d?.mins??1e9)-(y.d?.mins??1e9)||x.p.n.localeCompare(y.p.n));
-    const row=({p,i,d})=>{const dest=encodeURIComponent(p.n+", "+p.a+", "+p.city+", CA");
-      return `<div class="prow" id="pool-${i}"><span class="pdot ${p.c}"></span><div class="pmain"><b>${esc(p.n)}</b><span>${esc(p.city)}${d?" · ~"+fmtMins(d.mins):""}</span>${(p.t||[]).length?`<span class="ptags">${p.t.map(t=>`<i>${esc(t)}</i>`).join("")}</span>`:""}</div><div class="plinks"><a href="https://www.google.com/maps/dir/?api=1&destination=${dest}" target="_blank" rel="noopener">Directions</a><a href="https://www.google.com/maps/search/?api=1&query=${dest}" target="_blank" rel="noopener">Hours</a></div></div>`;};
-    const grp=(c,title)=>{const r=withD.filter(x=>x.p.c===c);return r.length?`<h3 class="ph"><span class="pdot ${c}"></span>${title} · ${r.length}</h3>${r.map(row).join("")}`:"";};
-    poolList=`<div class="pool">${grp("hall","Pool halls")}${grp("bar","Bars with pool")}</div>`;
-  }
-  list.innerHTML=`<div class="map"><div class="row">${btns}</div><svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Map of ${evs.length} shows"><rect class="sea" x="0" y="0" width="${W}" height="${H}"/><polygon class="land" points="${land}"/><line class="border" x1="${X(-117.12)}" y1="${Y(32.54)}" x2="${X(-114.9)}" y2="${Y(32.72)}"/>${cities}${home}${state.poolOn&&POOL.length?"":pins}${poolPins}</svg>${state.poolOn&&POOL.length?"":`<p class="mhint">Dots are venues; bigger = more shows, color = cheapest show there (same scale as the cards). Tap a dot to list that venue's shows. Map is a simple outline, not to street level.</p>`}</div>${poolList}`;
-  list.querySelectorAll("[data-mv]").forEach(b=>b.onclick=()=>{state.mapView=b.dataset.mv;render();});
-  const pt=list.querySelector("[data-pool-toggle]");if(pt)pt.onclick=()=>{state.poolOn=!state.poolOn;savePrefs();render();};
-  list.querySelectorAll("g[data-pool]").forEach(g=>g.onclick=ev=>{ev.stopPropagation();const r=document.getElementById("pool-"+g.dataset.pool);if(!r)return;
-    list.querySelectorAll(".prow.on").forEach(x=>x.classList.remove("on"));r.classList.add("on");r.scrollIntoView({behavior:"smooth",block:"center"});});
-  list.querySelectorAll("g[data-v]").forEach(g=>g.onclick=()=>{state.venue=g.dataset.v;savePrefs();setView("list");window.scrollTo({top:document.getElementById("viewBar").offsetTop-8,behavior:"smooth"});});}
+/* the map lives in b.js (Leaflet); the old SVG map that used to render here is gone */
 /* Hivemind808 insights (owner only) */
 function median(a){if(!a.length)return null;const s=[...a].sort((x,y)=>x-y),m=s.length>>1;return s.length%2?s[m]:(s[m-1]+s[m])/2;}
 function bars(rows,fmt){const mx=Math.max(...rows.map(r=>r.v||0),1);return rows.map(r=>`<div class="bar"><span class="k">${esc(r.k)}</span><span class="t"><i style="width:${Math.round((r.v||0)/mx*100)}%"></i></span><span class="v">${fmt(r)}</span></div>`).join("");}
@@ -843,7 +764,7 @@ function openForm(){sf.hidden=false;sv.hidden=true;sa.value=origin?.address||"";
 function closeForm(){sf.hidden=true;sv.hidden=false;}
 se.onclick=openForm; sc.onclick=closeForm;
 function applyOrigin(o){origin=o;showStart();render();}
-try{const s=JSON.parse(localStorage.getItem("radar-origin")||"null");if(s&&typeof s.lat==="number")origin=s;}catch(e){}
+try{const s=JSON.parse(SH.store.raw("radar-origin")||"null");if(s&&typeof s.lat==="number")origin=s;}catch(e){}
 showStart();
 async function geocode(text){
   if(sampleFn){
@@ -869,7 +790,7 @@ sf.addEventListener("submit",async ev=>{
   ss.disabled=false;
   if(!g){sm.textContent="Couldn't place that address. Try adding the city, like \"Main St, Costa Mesa\".";sm.classList.add("err");return;}
   const o={address:text,lat:g.lat,lon:g.lon,label:g.label||text,approx:!!g.approx};
-  try{localStorage.setItem("radar-origin",JSON.stringify(o));}catch(e){}
+  try{SH.store.put("radar-origin",JSON.stringify(o));}catch(e){}
   if(settingsRef){try{await settingsRef.set(o);}catch(e){}}
   applyOrigin(o); closeForm();
 });
@@ -948,12 +869,12 @@ if(!location.hash)addEventListener("pageshow",ev=>{if(!ev.persisted)scrollTo(0,0
 // Show links (#show-id) jump once. A link we've already jumped to, or a page reload / tab restore,
 // never jumps again, so reopening the app always starts at the top.
 const NAVT=(()=>{try{return performance.getEntriesByType("navigation")[0].type;}catch(e){return "navigate";}})();
-function jumped(){try{return JSON.parse(localStorage.getItem("radar-jumped")||"[]");}catch(e){return [];}}
+function jumped(){try{return JSON.parse(SH.store.raw("radar-jumped")||"[]");}catch(e){return [];}}
 function jumpToHash(id){const h=id||(location.hash||"").slice(1);if(!h||(!id&&h===hashDone))return;
   if(!id){const seen=jumped();
     if(location.hash||location.search)try{history.replaceState(null,"",location.pathname);}catch(e){}
     if(NAVT!=="navigate"||seen.includes(h)){hashDone=h;return;}
-    try{localStorage.setItem("radar-jumped",JSON.stringify([h,...seen].slice(0,30)));}catch(e){}}
+    try{SH.store.put("radar-jumped",JSON.stringify([h,...seen].slice(0,30)));}catch(e){}}
   let el=document.getElementById(h);while(!el&&state._more&&state._more())el=document.getElementById(h);if(!el)return;hashDone=h;el.scrollIntoView({behavior:"smooth",block:"center"});el.classList.add("hl");setTimeout(()=>el.classList.remove("hl"),4000);}
 let shownDay=todayStr();
 function dayCheck(){if(todayStr()!==shownDay){shownDay=todayStr();render();}}
@@ -976,7 +897,7 @@ async function copyOut(text,btn){
   const btn=document.getElementById("hutBtn"), img=btn.querySelector("img");
   const still=matchMedia("(prefers-reduced-motion: reduce)").matches;
   let ctx=null, buf=null, src=null, gain=null, el=null, playing=false, loading=false, t0=0;
-  try{if(navigator.audioSession)navigator.audioSession.type="playback";}catch(e){} // iPhone: play even with the silent switch on
+  SH.audio.solo(); // iPhone: play even with the silent switch on
   async function start(){
     if(loading)return; loading=true;
     try{
@@ -1078,12 +999,12 @@ async function copyOut(text,btn){
   const inApp=/Instagram|FBAN|FBAV|FB_IAB|TikTok|Line\/|Snapchat|LinkedInApp|Twitter/i.test(ua);
   let deferred=null, pointer=null;
   if(installed)return;
-  const snoozed=()=>{try{return +localStorage.getItem("shack-getapp-x")>Date.now();}catch(e){return false;}};
+  const snoozed=()=>{try{return +SH.store.raw("shack-getapp-x")>Date.now();}catch(e){return false;}};
   function showBar(){if(!snoozed())bar.hidden=false;}
   window.addEventListener("beforeinstallprompt",e=>{e.preventDefault();deferred=e;showBar();});   // Android / desktop Chrome
   window.addEventListener("appinstalled",()=>{bar.hidden=true;close();});
   if(iOS)showBar();
-  document.getElementById("getX").onclick=()=>{bar.hidden=true;try{localStorage.setItem("shack-getapp-x",String(Date.now()+14*864e5));}catch(e){}};
+  document.getElementById("getX").onclick=()=>{bar.hidden=true;try{SH.store.put("shack-getapp-x",String(Date.now()+14*864e5));}catch(e){}};
   function close(){sh.hidden=true;bg.hidden=true;if(pointer){pointer.remove();pointer=null;}}
   bg.onclick=close;document.getElementById("sheetDone").onclick=close;
   function open(){
@@ -1113,8 +1034,8 @@ document.getElementById("shareApp").addEventListener("click",ev=>{
   copyOut(text+"\n"+url,ev.currentTarget);
 });
 // Owner mode: open the site once with #owner to show the Add button on this device.
-try{if(location.hash==="#owner"){localStorage.setItem("shack-owner","1");history.replaceState(null,"",location.pathname);}
-  if(localStorage.getItem("shack-owner")==="1")document.getElementById("addOpen").hidden=false;}catch(e){}
+try{if(location.hash==="#owner"){SH.store.put("shack-owner","1");history.replaceState(null,"",location.pathname);}
+  if(SH.store.raw("shack-owner")==="1")document.getElementById("addOpen").hidden=false;}catch(e){}
 if("serviceWorker" in navigator&&location.protocol==="https:")navigator.serviceWorker.register("sw.js").catch(()=>{});
 // Shows come from events.json (works for everyone, no login). The database is only a fallback.
 const NEON8='<svg class="neon8" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" class="n8o"/><circle cx="12" cy="10.6" r="4.6" class="n8i"/><text x="12" y="13.4" text-anchor="middle" class="n8t">8</text></svg>';
@@ -1148,19 +1069,18 @@ let fileLoaded=false;
     const user=await window.claude.use("user");
     const uid = user ? await user.id() : null;
     myUid=uid; amOwner = user ? !!(await user.isOwner()) : false;
-    if(amOwner) document.getElementById("vIns").hidden=false;
     if(db&&uid){
       try{
         settingsRef=db.doc("data/users/"+uid+"/settings");
         const snap=await settingsRef.get();
-        if(snap.exists){const d=snap.data();if(typeof d.lat==="number"){applyOrigin(d);try{localStorage.setItem("radar-origin",JSON.stringify(d));}catch(e){}}}
+        if(snap.exists){const d=snap.data();if(typeof d.lat==="number"){applyOrigin(d);try{SH.store.put("radar-origin",JSON.stringify(d));}catch(e){}}}
       }catch(e){settingsRef=null;}
       try{
         starRef=db.doc("data/users/"+uid+"/starred");
         const ss=await starRef.get(); const ids=ss.exists?(ss.data().ids||[]):[];
         ids.forEach(k=>state.stars.add(String(k)));
         if(state.stars.size!==ids.length) flushStars();
-        try{localStorage.setItem("radar-stars",JSON.stringify([...state.stars]));}catch(e){}
+        try{SH.store.put("radar-stars",JSON.stringify([...state.stars]));}catch(e){}
         render();
       }catch(e){starRef=null;}
     }
