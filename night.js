@@ -6,14 +6,19 @@ const $=id=>document.getElementById(id);
 const KEY="shack-night", MAXS=12;
 const TYPES={meet:["📍","Meet up","#7ee0b8"],eat:["🍜","Eat","#FFC66B"],show:["🎟️","Show","#FF6FA5"],after:["🌙","Afters","#b48cff"],house:["🏠","Someone's place","#7fd4ff"],other:["✨","Other","#e6dcff"]};
 const AC={kbbq:["🥩","Korean BBQ"],karaoke:["🎤","Karaoke"],arcade:["🕹️","Arcades & barcades"],bowl:["🎳","Bowling"],spa:["♨️","24h Korean spa"],jazz:["🎷","Jazz & listening bars"],roof:["🌃","Rooftops"],stars:["🔭","Stargazing"],beach:["🌊","Beaches"],pool:["🎱","Pool"],
-  ramen:["🍜","Ramen"],tacos:["🌮","Tacos & Mexican"],pho:["🍲","Pho & Vietnamese"],korean:["🥘","Korean comfort food"],diner:["🍳","24h diners"]};
+  ramen:["🍜","Ramen"],tacos:["🌮","Tacos & Mexican"],pho:["🍲","Pho & Vietnamese"],korean:["🥘","Korean comfort food"],diner:["🍳","24h diners"],
+  boil:["🦀","Seafood boils"],hotpot:["🍲","Hot pot"],hibachi:["🔥","Hibachi"],fine:["🥂","Tasting menus"]};
+/* food that's an experience, not just a meal: fun = cheap-ish and hands-on, splurge = high-end night out */
+const EXP={kbbq:"fun",boil:"fun",hotpot:"fun",hibachi:"fun",fine:"splurge"};
 /* Typical SoCal prices per person (estimates, not from the places themselves). svc: sit = 20% tip on food, bar = 20% on drinks,
    counter = tip optional, none = no tip. A place can override with pp:[lo,hi] and svc in afters.json. */
 const PRICE={kbbq:[35,50,"sit","All-you-can-eat"],ramen:[17,24,"sit","Bowl and a side"],tacos:[10,18,"counter","3 or 4 tacos and a drink"],
   pho:[15,22,"sit","Big bowl and a drink"],korean:[18,28,"sit","Main dish, banchan included"],diner:[16,26,"sit","Plate and coffee"],
   karaoke:[12,25,"none","Room split 4 ways, about 2 hrs"],arcade:[15,30,"none","Game card"],bowl:[18,30,"none","2 games and shoes"],
   spa:[25,40,"none","Day entry"],jazz:[20,40,"bar","Cover and a drink or two"],roof:[30,45,"bar","Two cocktails"],
-  pool:[8,15,"none","Table split 2 ways, about 1.5 hrs"],stars:[0,0,"none","Free"],beach:[0,0,"none","Free, parking may cost"]};
+  pool:[8,15,"none","Table split 2 ways, about 1.5 hrs"],
+  boil:[25,40,"sit","A pound of seafood and sides"],hotpot:[30,50,"sit","Broth, meats and sides"],hibachi:[35,55,"sit","Hibachi dinner"],
+  fine:[175,350,"sit","Tasting menu before drinks (varies a lot)"],stars:[0,0,"none","Free"],beach:[0,0,"none","Free, parking may cost"]};
 const TAX=.09,TIP=.2;
 function cost(p){const r=PRICE[p.c];if(!r&&!p.pp)return null;const [lo,hi]=p.pp||r,svc=p.svc||(r?r[2]:"sit"),what=r&&!p.pp?r[3]:"Food";
   const tip=svc==="sit"||svc==="bar"?TIP:0,f=x=>Math.round(x);
@@ -38,13 +43,17 @@ const IC={
 const ic=(c,cls="")=>{const [col,d]=IC[c]||["#E6DCFF",'<path d="M12 3v6M12 15v6M3 12h6M15 12h6M6 6l3 3M15 15l3 3M18 6l-3 3M9 15l-3 3"/>'];
   return `<svg class="nic ${cls}" viewBox="0 0 24 24" aria-hidden="true" style="--ic:${col}">${d}</svg>`;};
 IC.drive=["#7EE0B8",'<path d="M5 16V11l2-5h10l2 5v5M3 16h18v3H3Z"/><circle cx="7.5" cy="19" r="1.5"/><circle cx="16.5" cy="19" r="1.5"/><path d="M5 11h14"/>'];
+IC.boil=["#FF6B6B",'<ellipse cx="12" cy="14" rx="6" ry="4.5"/><path d="M6.5 12.5 3 9.5l1.5-3M17.5 12.5 21 9.5l-1.5-3M3 9.5l2.5.5M21 9.5l-2.5.5M7 17.5l-2.5 2.5M17 17.5l2.5 2.5M10 10V8M14 10V8"/>'];
+IC.hotpot=["#FFC66B",'<path d="M3 11h18v2a7 7 0 0 1-7 7h-4a7 7 0 0 1-7-7Z"/><path d="M12 11v9M1.5 11h2M20.5 11h2M8 7.5c0-1.2 1-1.2 1-2.5M15 7.5c0-1.2 1-1.2 1-2.5"/>'];
+IC.hibachi=["#FF8A5C",'<path d="M2.5 20h19M5 20v-3h14v3"/><path d="M12 15c-3 0-4-2.2-3-4.5.7 1.2 1.6 1.4 1.6 1.4C10 9 11.5 6.5 13.5 5c-.4 2.2.8 3.2 1.6 4.4.9 1.4.6 5.6-3.1 5.6Z"/>'];
+IC.fine=["#FFE7A3",'<path d="M7 2.5h4l-.5 6a1.5 1.5 0 0 1-3 0Z"/><path d="M9 10v9.5M6.5 19.5h5"/><path d="M15.5 4h3.5l-.6 7.5a1.2 1.2 0 0 1-2.3 0Z"/><path d="M17.2 13v6.5M15 19.5h4.5"/><path d="M20.5 2l.6 1.2M22 4.5l-1.2.4" opacity=".8"/>'];
 IC.fest=["#FF6FA5",'<path d="M2.5 20.5 12 4l9.5 16.5Z"/><path d="M8.5 20.5 12 13l3.5 7.5M12 4V1.5l3 1-3 1"/>'];
 const GO={drive:"🚗",ride:"🚕",walk:"🚶",transit:"🚇",there:"📍"};
 const GOW={drive:"Driving",ride:"Rideshare",walk:"Walk",transit:"Transit",there:"Meet there"};
 let AFTERS=[];
-fetch("afters.json?v=5").then(r=>r.ok?r.json():{}).then(j=>{AFTERS=((j||{}).places||[]).filter(p=>typeof p.lat==="number"&&!p.gone);if(mapOn)drawLayer();document.dispatchEvent(new Event("shack:spots"));}).catch(()=>{});
+fetch("afters.json?v=6").then(r=>r.ok?r.json():{}).then(j=>{AFTERS=((j||{}).places||[]).filter(p=>typeof p.lat==="number"&&!p.gone);if(mapOn)drawLayer();document.dispatchEvent(new Event("shack:spots"));}).catch(()=>{});
 const allAfters=()=>[...AFTERS,...(typeof POOL!=="undefined"?POOL:[]).map(p=>({...p,c:"pool",t:[p.c==="hall"?"Pool hall":"Bar with pool",...(p.t||[])]}))];
-const GRP={kbbq:"food",ramen:"food",tacos:"food",pho:"food",korean:"food",diner:"food",beach:"chill",stars:"chill"},grp=p=>GRP[p.c]||"after";
+const GRP={boil:"food",hotpot:"food",hibachi:"food",fine:"food",kbbq:"food",ramen:"food",tacos:"food",pho:"food",korean:"food",diner:"food",beach:"chill",stars:"chill"},grp=p=>GRP[p.c]||"after";
 const icon=c=>c==="pool"&&typeof NEON8==="string"?NEON8:`<span class="nemo">${(AC[c]||TYPES.other)[0]}</span>`;
 // hours label: firm, "usually" (sources disagree / third-party only), or unknown
 const hrs=p=>!p.h?"Hours not listed, check before you go":p.hq?`Usually ${p.h[0].toLowerCase()+p.h.slice(1)}, check before you go`:p.h;
@@ -345,7 +354,7 @@ function surpriseNight(){const now=todayISO(),hasO=typeof origin!=="undefined"&&
   const e=pool[Math.floor(Math.random()*pool.length)];spun=[hid(e),...spun].slice(0,8);
   const show=showStop(e,true),st=show.tm||"20:00";show.tm=st;
   const near=nearAfters(e.lat,e.lon,60,12),rnd=a=>a[Math.floor(Math.random()*a.length)];
-  const food=near.filter(x=>grp(x.p)==="food"&&x.mi<=6).slice(0,3),fp=food.length?rnd(food).p:null;
+  const food=near.filter(x=>grp(x.p)==="food"&&EXP[x.p.c]!=="splurge"&&x.mi<=6).slice(0,3),fp=food.length?rnd(food).p:null;
   const eat=fp?{...afterStop(fp),k:"eat",no:AC[fp.c][1]+" before the show"}:{k:"eat",n:"Dinner near the venue",u:"https://www.google.com/maps/search/?api=1&query="+encodeURIComponent("restaurants near "+show.p)};
   eat.tm=plusMin(st,-90);
   const late=new Set(["karaoke","arcade","bowl","spa","jazz","roof","pool"]),opts=near.filter(x=>late.has(x.p.c)&&!(x.p.til&&x.p.til<23)).slice(0,6);
@@ -354,7 +363,7 @@ function surpriseNight(){const now=todayISO(),hasO=typeof origin!=="undefined"&&
   const d=e.start<now?now:e.start,short=String(e.title).split(/[:(–—-]/)[0].trim().slice(0,40);
   view(cleanPlan({t:short+" night",d,up:Date.now(),s:[eat,show,after]}),"auto");}
 
-window.NIGHT={spots:allAfters,AC,IC,ic,cost,hrs,grp,ready:()=>AFTERS.length>0,surpriseNight,chip,map,sheet,encode,decode,cleanPlan,addStop,view,get plan(){return plan;}};
+window.NIGHT={spots:allAfters,AC,IC,ic,EXP,cost,hrs,grp,ready:()=>AFTERS.length>0,surpriseNight,chip,map,sheet,encode,decode,cleanPlan,addStop,view,get plan(){return plan;}};
 const go=()=>{mount();inject(document.body);fromHash(window.NIGHT_HASH||location.hash);};
 if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",go);else go();
 })();

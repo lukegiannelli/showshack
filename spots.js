@@ -5,7 +5,7 @@
 if(!window.UI_B||!window.NIGHT||!window.BUI)return;
 const $=id=>document.getElementById(id), N=window.NIGHT;
 const KINDS={
-  food:{name:"Food & late eats",c:"#FF8A5C",title:"Food",blurb:"Eat before the show: Korean BBQ, ramen, tacos, pho and 24-hour diners.",
+  food:{name:"Food & late eats",c:"#FF8A5C",title:"Food",blurb:"Eat before the show: seafood boils, hot pot, Korean BBQ, ramen, tacos, pho, 24-hour diners and tasting menus.",
     icon:'<path d="M4 11h16a8 8 0 0 1-16 0Z"/><path d="M8 7c0-1.5 1-1.5 1-3M12 7c0-1.5 1-1.5 1-3M16 7c0-1.5 1-1.5 1-3"/>'},
   after:{name:"Afters & late night",c:"#B48CFF",title:"Afters",blurb:"Where the night goes after the show.",
     icon:'<path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5Z"/><path d="M17 3v4M15 5h4"/>'}};
@@ -34,8 +34,9 @@ function card({p,i,d},vc){const [em,cat]=label(p),q=encodeURIComponent([p.n,p.a,
   const sub=p.bt||(p.c==="pool"?(p.t||[])[0]:"");
   const tags=(p.t||[]).filter(t=>t!==sub).slice(0,3);
   const hrs=!p.h?`<span class="spc-hrs none">Hours not listed</span>`:`<span class="spc-hrs${p.hq?" est":""}">${esc(p.h)}${p.hq?" <em>usually</em>":""}</span>`;
-  const icc=(IC[p.c]||["#E6DCFF"])[0];
-  return `<article class="spc" style="--vc:${vc};--ic:${icc}">
+  const icc=(IC[p.c]||["#E6DCFF"])[0],x=(N.EXP||{})[p.c];
+  return `<article class="spc${x?" exp exp-"+x:""}" style="--vc:${vc};--ic:${icc}">
+    ${x?`<span class="spc-exp">${XLBL[x]}</span>`:""}
     <div class="spc-top"><span class="spc-badge">${em}</span><span class="spc-cat">${esc(cat)}${sub?` · ${esc(sub)}`:""}</span>${d?`<span class="spc-dr">${ic("drive","sm")}${fmtMins(d.mins)} · ${d.miles} mi</span>`:""}</div>
     <h3>${esc(p.n)}</h3>
     <p class="spc-where">${esc([p.a,p.city].filter(Boolean).join(", "))}</p>
@@ -44,6 +45,9 @@ function card({p,i,d},vc){const [em,cat]=label(p),q=encodeURIComponent([p.n,p.a,
     ${tags.length?`<div class="spc-tags">${tags.map(t=>`<i>${esc(t)}</i>`).join("")}</div>`:""}
     <div class="spc-act"><a href="https://www.google.com/maps/dir/?api=1&destination=${q}" target="_blank" rel="noopener">Directions</a><a href="https://www.google.com/maps/search/?api=1&query=${q}" target="_blank" rel="noopener">Hours ↗</a><button type="button" class="nadd" data-naft="${i}">＋ Add to my night</button></div>
   </article>`;}
+const XLBL={fun:"✦ Fun experience",splurge:"✦ Splurge"};
+const XROW={fun:["Fun experiences","Crack crab with your hands, watch noodles fly, grill it yourself. A show of its own without the big bill."],
+  splurge:["Splurge-worthy","Tasting menus for a big night. Book ahead, and check the menu price first."]};
 const CLOCK='<svg class="nic sm" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>';
 
 /* ---- home tiles (after the four vibes, same look) ---- */
@@ -73,13 +77,22 @@ function draw(){mount();const K=SCR(cur),all=list(cur);
   $("bSpots").dataset.k=cur;
   // Pool goes right after "All" so it isn't lost off the end of the scrolling chip row
   const cats=[...new Set(all.map(x=>x.p.c))].sort((a,b)=>(b==="pool")-(a==="pool"));
-  $("bSpSubs").innerHTML=(cats.length>1?[["","","All"],...cats.map(c=>[c,...label({c})])]:[]).map(([v,i,l])=>`<button type="button" class="chip spchip" data-ssub="${v}" aria-pressed="${v===sub}">${i}${esc(l)}</button>`).join("")
+  // Food: two "experience" chips up front, then the categories
+  const xch=cur==="food"?[["x:fun",ic("boil"),"Fun experiences"],["x:splurge",ic("fine"),"Splurge"]]:[];
+  $("bSpSubs").innerHTML=(cats.length>1?[["","","All"],...xch,...cats.map(c=>[c,...label({c})])]:[]).map(([v,i,l])=>`<button type="button" class="chip spchip" data-ssub="${v}" aria-pressed="${v===sub}">${i}${esc(l)}</button>`).join("")
     +(cur!=="food"?`<button type="button" class="chip" data-slate="1" aria-pressed="${late}">🌙 ${cur==="chill"?"Open till midnight":"Past midnight"}</button>`:"")
     +(cur==="chill"?TAGF.map(t=>`<button type="button" class="chip" data-stag="${t}" aria-pressed="${tag===t}">${t==="Fire rings"?"🔥":t==="Tide pools"?"🦀":"🌅"} ${t}</button>`).join(""):"");
-  const xs=sorted(all.filter(x=>(!sub||x.p.c===sub)&&(!late||late24(x.p))&&(!tag||hasTag(x.p,tag))));
+  const E=N.EXP||{},subOk=p=>!sub||(sub.startsWith("x:")?E[p.c]===sub.slice(2):p.c===sub);
+  const xs=sorted(all.filter(x=>subOk(x.p)&&(!late||late24(x.p))&&(!tag||hasTag(x.p,tag))));
   $("bSpCount").textContent=xs.length+(xs.length===1?" spot":" spots")+(origin?" · closest first":"");
   const hint=origin?"":`<button type="button" class="spc-start" data-sstart>${ic("drive")}<span><b>See drive times</b><small>Set where you're starting from</small></span></button>`;
-  $("bSpList").innerHTML=hint+(xs.length?xs.map(x=>card(x,K.c)).join(""):'<p class="bnone">Nothing here yet.</p>');}
+  // Food, All: the experiences get their own glowing rows up top, then everything
+  const XORD=["boil","hotpot","hibachi","kbbq","fine"];   // no start point yet: lead with the boils and hot pot
+  let top="";if(cur==="food"&&!sub)top=["fun","splurge"].map(t=>{const r=xs.filter(x=>E[x.p.c]===t);if(!origin)r.sort((a,b)=>XORD.indexOf(a.p.c)-XORD.indexOf(b.p.c));return r.length?`<section class="spx spx-${t}">
+      <div class="bpicks-h"><h2 class="bsec">${XROW[t][0]} · ${r.length}</h2><button type="button" class="blink" data-ssub="x:${t}">See all</button></div>
+      <p class="bsp-note">${XROW[t][1]}</p><div class="spc-row">${r.slice(0,10).map(x=>card(x,K.c)).join("")}</div></section>`:"";}).join("")
+    +(xs.length?`<h2 class="bsec spx-all">Everything · ${xs.length}</h2>`:"");
+  $("bSpList").innerHTML=hint+top+(xs.length?xs.map(x=>card(x,K.c)).join(""):'<p class="bnone">Nothing here yet.</p>');}
 
 /* ---- Chill & community results: a row of chill spots (beaches, stargazing) above the events ---- */
 function chillRow(on){let el=$("bChillSpots");

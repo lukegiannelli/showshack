@@ -73,6 +73,20 @@
   box-shadow:0 0 12px -5px var(--vc)}
 .spc-act .nadd.done{background:color-mix(in srgb,#7EE0B8 25%,var(--chip));border-color:#7EE0B8}
 
+/* "experience" food: gold (fun) or champagne-pink (splurge) neon edge that slowly breathes, plus a ribbon */
+.spc.exp{position:relative;--xc:#FFC66B;border-color:color-mix(in srgb,var(--xc) 75%,transparent);
+  box-shadow:0 0 0 1px color-mix(in srgb,var(--xc) 35%,transparent),0 0 18px -6px var(--xc);animation:spxglow 4.5s ease-in-out infinite}
+.spc.exp-splurge{--xc:#FFB3E6}
+.spc.exp{padding-top:28px}
+.spc-exp{position:absolute;top:-1px;left:14px;padding:3px 9px 4px;border-radius:0 0 9px 9px;font:700 11px var(--mono);letter-spacing:.04em;
+  color:#1a0f02;background:var(--xc);box-shadow:0 0 10px -2px var(--xc)}
+@keyframes spxglow{0%,100%{box-shadow:0 0 0 1px color-mix(in srgb,var(--xc) 30%,transparent),0 0 14px -8px var(--xc)}50%{box-shadow:0 0 0 1px color-mix(in srgb,var(--xc) 55%,transparent),0 0 22px -4px var(--xc)}}
+@media (prefers-reduced-motion:reduce){.spc.exp{animation:none}}
+.spx{display:flex;flex-direction:column;gap:6px;margin-bottom:6px}
+.spx .bsp-note{margin:-2px 0 4px}
+.spx .spc-row{padding-top:2px}
+.spx-all{margin:6px 0 0}
+
 /* chill spots: a sideways row on the Chill & community results */
 .bchill{display:flex;flex-direction:column;gap:8px;margin-bottom:6px}
 .bchill[hidden]{display:none}
