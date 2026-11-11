@@ -229,7 +229,8 @@ $("bInfo").addEventListener("click",ev=>{const d=$("bInfo");if(ev.target===d||ev
 
 /* ---- map: dark street map + drive rings from your start point + "build your night" per venue ---- */
 // price: ""|"free"|"u30"; age: ""|"all"|"21"; t: time slider step (0 = any time); route: draw My night; half: friend's spot for Meet halfway (never saved)
-const MAPV={vibe:"all",price:"",age:"",t:0,route:true,transit:false,half:null};let LM=null,LMG=null,lfLoad=null,fitSig="",CUR=[];
+// pass: Passport map (stamped venues glow)
+const MAPV={vibe:"all",price:"",age:"",t:0,route:true,transit:false,half:null,pass:false};let LM=null,LMG=null,lfLoad=null,fitSig="",CUR=[];
 function loadLeaflet(){if(window.L)return Promise.resolve();if(lfLoad)return lfLoad;
   const l=document.createElement("link");l.rel="stylesheet";l.href="vendor/leaflet.css?v=1";document.head.appendChild(l);
   return lfLoad=new Promise((res,rej)=>{const sc=document.createElement("script");sc.src="vendor/leaflet.js?v=1";sc.onload=res;sc.onerror=()=>{lfLoad=null;rej();};document.head.appendChild(sc);});}
@@ -261,7 +262,8 @@ function drawMapUI(){
   $("bMapTools").innerHTML=[["price","free","Free"],["price","u30","Under $30"],["age","all","All ages"],["age","21","21+"]].map(([k,v,l])=>`<button type="button" class="chip bmt" data-mf="${k}:${v}" aria-pressed="${MAPV[k]===v}">${l}</button>`).join("")
     +(stops.length?`<button type="button" class="chip bmt bmt-route" data-mroute aria-pressed="${MAPV.route}">${ni("pin")} My night</button>`:"")
     +`<button type="button" class="chip bmt" data-mhalf aria-pressed="${!!MAPV.half}">↔ Meet halfway</button>`
-    +`<button type="button" class="chip bmt" data-mtransit aria-pressed="${MAPV.transit}">${ni("train")} Transit</button>`;
+    +`<button type="button" class="chip bmt" data-mtransit aria-pressed="${MAPV.transit}">${ni("train")} Transit</button>`
+    +`<button type="button" class="chip bmt bmt-pass" data-mpass aria-pressed="${MAPV.pass}">${ni("ticket")} Passport${MAPV.pass?` · ${BEEN.size} stamped`:""}</button>`;
   const tr=$("bMapTime");tr.querySelector("input").value=MAPV.t;tr.querySelector("b").textContent=tLbl(MAPV.t);
   $("bMapStart").hidden=!!origin;
   loadLeaflet().then(drawMap).catch(()=>{$("bMapCanvas").innerHTML='<p class="bmap-err">The map couldn\'t load. Check your connection and tap Map again.</p>';});}
@@ -301,12 +303,14 @@ function closeSheet(){$("bMapSheet").hidden=true;}
 // and below street zoom, venues closer than ~38px share one numbered bubble (tap it to zoom in)
 function drawPins(){const L=window.L;if(!LM||!L||!LMG)return;LMG.pins.clearLayers();
   const hasO=origin&&typeof origin.lat==="number",T=tMin(),z=LM.getZoom();
-  CUR.forEach(g=>{g.star=g.evs.some(e=>state.stars.has(skey(e)));g.fol=isPinned(g.k);g.on=T==null||g.evs.some(e=>evOn(e,T));g.fair=false;});
+  CUR.forEach(g=>{g.star=g.evs.some(e=>state.stars.has(skey(e)));g.fol=isPinned(g.k);g.on=T==null||g.evs.some(e=>evOn(e,T));g.fair=false;
+    g.stamp=MAPV.pass&&BEEN.has(g.k);if(MAPV.pass&&!g.stamp)g.on=false;});
   if(MAPV.half&&hasO){CUR.forEach(g=>{g.ya=estMin(origin.lat,origin.lon,g.lat,g.lon);g.fb=estMin(MAPV.half.lat,MAPV.half.lon,g.lat,g.lon);});
     CUR.slice().sort((a,b)=>Math.max(a.ya,a.fb)-Math.max(b.ya,b.fb)||Math.abs(a.ya-a.fb)-Math.abs(b.ya-b.fb)).slice(0,8).forEach(g=>g.fair=true);}
   const cells=[];
   if(z<13){const used=new Set(),pts=CUR.map(g=>LM.latLngToLayerPoint([g.lat,g.lon]));
-    CUR.forEach((g,i)=>{if(used.has(i))return;used.add(i);const c=[g];if(!g.fair)CUR.forEach((h,j)=>{if(!used.has(j)&&!h.fair&&pts[i].distanceTo(pts[j])<38){used.add(j);c.push(h);}});cells.push(c);});}
+    const solo=g=>g.fair||g.stamp;   // Meet-halfway picks and stamped venues always get their own pin
+    CUR.forEach((g,i)=>{if(used.has(i))return;used.add(i);const c=[g];if(!solo(g))CUR.forEach((h,j)=>{if(!used.has(j)&&!solo(h)&&pts[i].distanceTo(pts[j])<38){used.add(j);c.push(h);}});cells.push(c);});}
   else CUR.forEach(g=>cells.push([g]));
   cells.forEach(c=>{if(c.length===1)return pin(c[0],hasO);
     const n=c.reduce((s,g)=>s+g.evs.length,0),lat=c.reduce((s,g)=>s+g.lat,0)/c.length,lon=c.reduce((s,g)=>s+g.lon,0)/c.length;
@@ -317,7 +321,7 @@ function drawPins(){const L=window.L;if(!LM||!L||!LMG)return;LMG.pins.clearLayer
     mk.on("click",ev=>{L.DomEvent.stopPropagation(ev);LM.flyToBounds(L.latLngBounds(c.map(g=>[g.lat,g.lon])).pad(.35),{maxZoom:14,duration:.5});});mk.addTo(LMG.pins);});}
 function pin(g,hasO){const L=window.L,n=g.evs.length,sz=Math.round(26+Math.min(10,Math.sqrt(n)*3)),far=hasO&&g.d&&g.d.mins>60&&!g.fair;
   const mk=L.marker([g.lat,g.lon],{title:`${g.k.split(" · ")[0]}: ${n} show${n>1?"s":""}`,riseOnHover:true,zIndexOffset:g.fair?800:g.star?500:g.fol?300:0,
-    icon:L.divIcon({className:"bpin-w"+(far?" far":"")+(g.on?"":" dim"),html:`<span class="bpin${g.star?" star":""}${g.fol?" fol":""}${g.fair?" fair":""}" style="--pc:${g.v.c};--ps:${sz}px">${vIcon(g.v,"bpin-ic")}${n>1?`<b>${n}</b>`:""}${g.star?'<i class="bpin-star">★</i>':""}</span>`,iconSize:[sz,sz],iconAnchor:[sz/2,sz/2]})});
+    icon:L.divIcon({className:"bpin-w"+(far?" far":"")+(g.on?"":" dim"),html:`<span class="bpin${g.star?" star":""}${g.fol?" fol":""}${g.fair?" fair":""}${g.stamp?" stamp":""}" style="--pc:${g.v.c};--ps:${sz}px">${vIcon(g.v,"bpin-ic")}${n>1?`<b>${n}</b>`:""}${g.star?'<i class="bpin-star">★</i>':""}</span>`,iconSize:[sz,sz],iconAnchor:[sz/2,sz/2]})});
   mk.on("click",ev=>{L.DomEvent.stopPropagation(ev);openSheet(g);});mk.addTo(LMG.pins);}
 // My night: the Night Card's stops in order, joined by a dashed neon line with a rough drive time on each leg
 function drawRoute(fit){const L=window.L;if(!LMG)return;LMG.route.clearLayers();if(!MAPV.route||!window.NIGHT)return;
@@ -396,7 +400,8 @@ $("bMapTools").addEventListener("click",ev=>{const f=ev.target.closest("[data-mf
   if(f){const [k,v]=f.dataset.mf.split(":");MAPV[k]=MAPV[k]===v?"":v;closeSheet();drawMapUI();return;}
   if(ev.target.closest("[data-mroute]")){MAPV.route=!MAPV.route;drawMapUI();setTimeout(()=>drawRoute(MAPV.route),120);return;}
   if(ev.target.closest("[data-mhalf]")){if(MAPV.half){MAPV.half=null;closeSheet();drawMapUI();}else halfForm();return;}
-  if(ev.target.closest("[data-mtransit]")){MAPV.transit=!MAPV.transit;loadStations();drawMapUI();}});
+  if(ev.target.closest("[data-mtransit]")){MAPV.transit=!MAPV.transit;loadStations();drawMapUI();return;}
+  if(ev.target.closest("[data-mpass]")){MAPV.pass=!MAPV.pass;closeSheet();drawMapUI();}});
 $("bMapTime").querySelector("input").addEventListener("input",ev=>{MAPV.t=+ev.target.value;$("bMapTime").querySelector("b").textContent=tLbl(MAPV.t);
   window.MAPT=tMin();drawPins();if(window.NIGHT&&window.L&&LM)NIGHT.map(window.L,LM,sheetOpen);});
 $("bMapStart").onclick=()=>{state.view="list";show("budget");setTimeout(()=>{const b=$("startEdit");if(b)b.click();},80);};
@@ -404,6 +409,28 @@ $("bMapStart").onclick=()=>{state.view="list";show("budget");setTimeout(()=>{con
 
 /* ---- venues: what's playing first, a one-line personality, follow + new-show dots, passport, jump to map ---- */
 let VQ="";const QUIET={};   // venue search text; venues.json spots with no listed shows (key → {c,ad,la,lo})
+/* ---- Show passport extras: log (rating + note per stamp), bucket list, badges, backup/restore. All on this device only. ---- */
+const ld=(k,d)=>{try{return JSON.parse(localStorage.getItem(k)||"null")||d;}catch(e){return d;}};
+const PLOG=ld("shack-plog",{}),WANT=new Set(ld("shack-want",[]));let PASS=null;
+const savePlog=()=>{try{localStorage.setItem("shack-plog",JSON.stringify(PLOG));}catch(e){}};
+const saveWant=()=>{try{localStorage.setItem("shack-want",JSON.stringify([...WANT]));}catch(e){}};
+function badges(infos){const bv=infos.filter(v=>BEEN.has(v.k)),n=BEEN.size,rg=new Set([...BEEN].map(regionOfK).filter(r=>r!=="Other")),cnt=f=>bv.filter(f).length;
+  return [[ni("ticket"),"First stamp","Stamp 1 venue",n>=1],[ni("chart"),"Regular","Stamp 10 venues",n>=10],[ni("map"),"Region hopper","Stamps in 3 regions",rg.size>=3],
+    [ni("palm"),"All of SoCal","Stamps in all 6 regions",rg.size>=6],[ni("sun"),"Desert trip","Stamp a desert venue",rg.has("Desert")],
+    [ni("home"),"Small & local","Stamp 5 small venues",cnt(v=>v.evs.some(isSmall))>=5],[ni("venue"),"Big room","Stamp an arena or stadium",cnt(v=>(+v.cap||0)>6000||/arena|stadium|forum|bowl|dome/i.test(v.name))>=1],
+    [ni("mic"),"Comedy regular","Stamp 3 comedy clubs",cnt(v=>v.evs.some(e=>e.kind==="comedy"))>=3],[ni("bell"),"Bucket list hit","Stamp a bucket-list venue",[...WANT].some(k=>BEEN.has(k))]]
+    .map(([ic,n2,how,on])=>({ic,n:n2,how,on}));}
+// backup = a small JSON file you keep; restore merges it back in (nothing is uploaded anywhere)
+function backupPassport(){const data={app:"show-shack-passport",v:1,saved:new Date().toISOString(),been:[...BEEN],starven:starVen,want:[...WANT],log:PLOG};
+  const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([JSON.stringify(data,null,1)],{type:"application/json"}));a.download=`show-passport-${todayStr()}.json`;
+  document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove();},800);}
+async function restorePassport(f){let msg="Restored ✓";
+  try{const d=JSON.parse(await f.text());if(!d||d.app!=="show-shack-passport")throw new Error("not a passport file");
+    const ok=k=>typeof k==="string"&&k.length<200;(d.been||[]).filter(ok).forEach(k=>BEEN.add(k));(d.want||[]).filter(ok).forEach(k=>WANT.add(k));
+    if(d.log&&typeof d.log==="object")for(const [k,o] of Object.entries(d.log))if(ok(k)&&o&&typeof o==="object")PLOG[k]={r:Math.min(5,Math.max(0,Math.round(+o.r||0))),n:String(o.n||"").slice(0,140)};
+    if(d.starven&&typeof d.starven==="object")for(const [k,o] of Object.entries(d.starven))if(ok(k))starVen[k]=o;
+    saveBeen();saveWant();savePlog();}catch(e){msg="That file isn't a Show passport backup";}
+  render();const box=$("list").querySelector(".bpass-acts");if(box)box.insertAdjacentHTML("beforeend",`<span class="bpass-msg">${esc(msg)}</span>`);}
 const FSEEN=(()=>{try{return JSON.parse(localStorage.getItem("shack-fseen")||"{}")||{};}catch(e){return {};}})();
 const saveSeen=()=>{try{localStorage.setItem("shack-fseen",JSON.stringify(FSEEN));}catch(e){}};
 const KIND_WORD={concert:"music room",club:"dance club",festival:"festival grounds",comedy:"comedy club",theater:"theater",openmic:"open-mic spot",social:"dance-social spot",dance:"ecstatic-dance space",contact:"movement studio",sound:"sound-bath space",drum:"drum-circle spot"};
@@ -431,7 +458,7 @@ renderVenues=function(){const list=$("list");
   const card=v=>{const n=v.inR[0]||v.evs[0],when=n?parseDay(n.start).toLocaleDateString("en-US",{weekday:"short",month:"short",day:"numeric"})+(n.time?" · "+String(n.time).replace(/\s*\(.*\)/,""):""):"";
     const fol=isPinned(v.k),nw=fol?newCount(v):0,been=BEEN.has(v.k);
     const prices=v.evs.map(priceInfo).filter(p=>p&&!p.sold&&!p.none&&p.lo!=null).map(p=>p.lo);
-    const tags=[nw?`<span class="tag bnew">● ${nw} new</span>`:"",been?`<span class="tag been">✓ Been here</span>`:"",v.evs.some(isSmall)?`<span class="tag local">${ni("home")} Small &amp; local</span>`:"",prices.length&&Math.min(...prices)===0?`<span class="tag">Free shows</span>`:""].filter(Boolean).join("");
+    const tags=[nw?`<span class="tag bnew">● ${nw} new</span>`:"",been?`<span class="tag been">✓ Been here${(PLOG[v.k]||{}).r?" · "+"★".repeat(PLOG[v.k].r):""}</span>`:"",!been&&WANT.has(v.k)?`<span class="tag bwant">♡ Bucket list</span>`:"",v.evs.some(isSmall)?`<span class="tag local">${ni("home")} Small &amp; local</span>`:"",prices.length&&Math.min(...prices)===0?`<span class="tag">Free shows</span>`:""].filter(Boolean).join("");
     const vo=VOPEN[v.name]||{},eats=vo.e||[],acc=vo.a||null,tips=(vo.w||[]).slice(1);
     const eatQ=u=>"https://www.google.com/maps/search/?api=1&query="+encodeURIComponent(u+" near "+v.name+", "+v.city);
     const fmt=e=>parseDay(e.start).toLocaleDateString("en-US",{weekday:"short",month:"short",day:"numeric"});
@@ -441,7 +468,9 @@ renderVenues=function(){const list=$("list");
       ${acc?`<div class="vsec"><span class="sl">${ni("hand")} Accessibility</span><p class="vacc">${esc(acc.t)}${acc.u?` <a href="${esc(acc.u)}" target="_blank" rel="noopener">Venue's access page ↗</a>`:""}</p></div>`:""}
       ${v.evs.length?`<div class="vsec"><span class="sl">${ni("ticket")} Coming up</span><ul>${v.evs.slice(0,3).map(e=>`<li><b>${esc(fmt(e))}</b> ${esc(e.title)}</li>`).join("")}${v.evs.length>3?`<li class="mut">+${v.evs.length-3} more</li>`:""}</ul></div>`
         :`<div class="vsec"><span class="sl">${ni("ticket")} Coming up</span><p class="vacc">Nothing listed right now. Check the venue's own calendar.${v.addr?` ${esc(v.addr)}, ${esc(v.city)}.`:""}</p></div>`}
-      <div class="vlinks">${v.evs.length?`<button type="button" class="bvmap" data-vmap="${esc(v.k)}">${ni("map")} On the map</button>`:`<a class="bvmap" href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(v.name+", "+(v.addr||"")+", "+v.city)}" target="_blank" rel="noopener">${ni("map")} Map ↗</a>`}<button type="button" class="vbeen${been?" on":""}" data-been="${esc(v.k)}" aria-pressed="${been}">${been?"✓ Been here":"I've been here"}</button>${v.evs.length?`<button type="button" class="vall" data-venue="${esc(v.k)}">All ${v.evs.length} show${v.evs.length===1?"":"s"} →</button>`:""}</div></div>`;
+      ${been?`<div class="vsec vlog"><span class="sl">★ Your log</span><div class="vrate" role="group" aria-label="Rate ${esc(v.name)}">${[1,2,3,4,5].map(x=>`<button type="button" data-rate="${x}" data-rk="${esc(v.k)}" aria-pressed="${(PLOG[v.k]||{}).r>=x}" aria-label="${x} star${x>1?"s":""}">★</button>`).join("")}</div>
+        <input class="vnote" data-vnote="${esc(v.k)}" maxlength="140" value="${esc((PLOG[v.k]||{}).n||"")}" placeholder="Who you went with, best moment, what you saw…" aria-label="Note for ${esc(v.name)}"></div>`:""}
+      <div class="vlinks">${been?"":`<button type="button" class="vwant${WANT.has(v.k)?" on":""}" data-want="${esc(v.k)}" aria-pressed="${WANT.has(v.k)}">${WANT.has(v.k)?"✓ On my bucket list":"♡ Bucket list"}</button>`}${v.evs.length?`<button type="button" class="bvmap" data-vmap="${esc(v.k)}">${ni("map")} On the map</button>`:`<a class="bvmap" href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(v.name+", "+(v.addr||"")+", "+v.city)}" target="_blank" rel="noopener">${ni("map")} Map ↗</a>`}<button type="button" class="vbeen${been?" on":""}" data-been="${esc(v.k)}" aria-pressed="${been}">${been?"✓ Been here":"I've been here"}</button>${v.evs.length?`<button type="button" class="vall" data-venue="${esc(v.k)}">All ${v.evs.length} show${v.evs.length===1?"":"s"} →</button>`:""}</div></div>`;
     return `<div class="vcard${nw?" hasnew":""}"><div class="vf"><button type="button" class="vopen" data-vmore="1" aria-expanded="false"><b>${esc(v.name)}</b>
       <span>${esc(v.city)}${v.drive?` · ${v.drive.real?"":"~"}${fmtMins(v.drive.mins)}`:""}${v.year?` · since ${v.year}`:""}</span>
       <em class="bvibe">${esc(v.evs.length||VOPEN[v.name]?.w?vibeLine(v):(v.addr||""))}</em>
@@ -452,10 +481,15 @@ renderVenues=function(){const list=$("list");
   const tot=infos.length,beenV=infos.filter(v=>BEEN.has(v.k));
   const regs=REGIONS.map(rg=>{const all=infos.filter(v=>regionOfK(v.k)===rg);return [rg,all.filter(v=>BEEN.has(v.k)).length,all.length];}).filter(x=>x[2]);
   const stamps=beenV.slice(0,10).map((v,i)=>`<span class="bstamp" style="--sr:${(i*37%30)-15}deg;--sc:${VIBES[i%4].c}" title="${esc(v.name)}"><b>${esc(initials(v))}</b><small>${RABBR[regionOfK(v.k)]||""}</small></span>`).join("")+(beenV.length>10?`<span class="bstamp more">+${beenV.length-10}</span>`:"");
+  const bdg=badges(infos),wantV=[...WANT],wantDone=wantV.filter(k=>BEEN.has(k)).length;PASS={bdg,regs,n:BEEN.size};
   const pass=`<div class="vcard bpass"><div class="vf"><div class="bpass-in">
     <div class="bpass-h"><span class="bpass-k"><img class="bshack-ic" src="hut.webp?v=2" alt="">Show passport</span><b>${beenV.length} <small>of ${tot} venues</small></b></div>
-    ${beenV.length?`<div class="bstamps">${stamps}</div><div class="bpass-regs">${regs.filter(x=>x[1]).map(([rg,a,b])=>`<span>${esc(rg)} <b>${a}</b>/${b}</span>`).join("")}</div><button type="button" class="bpass-share" data-pshare="1">${ni("share")} Share my passport</button>`
+    ${beenV.length?`<div class="bstamps">${stamps}</div><div class="bpass-regs">${regs.filter(x=>x[1]).map(([rg,a,b])=>`<span style="--pp:${Math.round(a/b*100)}%">${esc(rg)} <b>${a}</b>/${b}</span>`).join("")}</div>`
       :`<p>Tap <b>I've been here</b> on any venue you've been to. Shows you star stamp themselves the day after.</p>`}
+    <div class="bbadges">${bdg.map(b=>`<span class="bbadge${b.on?" on":""}" title="${esc(b.how)}"><i>${b.ic}</i><b>${esc(b.n)}</b><small>${esc(b.on?"Earned":b.how)}</small></span>`).join("")}</div>
+    ${wantV.length?`<p class="bwant-p">♡ Bucket list: <b>${wantDone}</b> of ${wantV.length} done${wantV.length-wantDone?` · next up: ${esc(wantV.filter(k=>!BEEN.has(k)).slice(0,3).map(k=>k.split(" · ")[0]).join(", "))}`:""}</p>`:`<p class="bwant-p">Tap <b>♡ Bucket list</b> on venues you want to hit. They show up here.</p>`}
+    <div class="bpass-acts">${beenV.length?`<button type="button" class="bpass-share" data-pshare="1">${ni("share")} Share my year</button><button type="button" class="bpass-share" data-ppmap="1">${ni("map")} Passport map</button>`:""}
+      <button type="button" class="bpass-share" data-pback="1">Back up</button><label class="bpass-share">Restore<input type="file" accept="application/json,.json" data-prest hidden></label></div>
   </div></div></div>`;
   const fol=infos.filter(v=>isPinned(v.k)).sort((a,b)=>newCount(b)-newCount(a)||byNext(a,b));
   const seg=`<div class="bseg bven-when">${WHEN.map(([w,l])=>`<button type="button" data-when="${w}" aria-pressed="${state.when===w}">${l}</button>`).join("")}</div>`;
@@ -493,9 +527,20 @@ $("list").addEventListener("click",ev=>{if(screen!=="venues")return;
   const pn=ev.target.closest("[data-pinv]");if(pn){const k=pn.dataset.pinv;if(!isPinned(k))markSeen(k);return;}
   const mp=ev.target.closest("[data-vmap]");if(mp){ev.stopPropagation();focusVenue(mp.dataset.vmap);return;}
   const vv=ev.target.closest("[data-venue]");if(vv){ev.stopPropagation();state.venue=vv.dataset.venue;state.view="list";state.kind="all";state.sub=null;cur="venue";show("results");return;}
-  const ps=ev.target.closest("[data-pshare]");if(ps){ev.stopPropagation();const n=[...BEEN].length;
-    const t=`My Show Shack passport: ${n} SoCal venue${n===1?"":"s"} stamped 🛖🎟️\n${APP_URL}`;
-    if(navigator.share)navigator.share({text:t}).catch(()=>{});else if(navigator.clipboard)navigator.clipboard.writeText(t).then(()=>{ps.textContent="Copied ✓";});}},true);
+  const ps=ev.target.closest("[data-pshare]");if(ps){ev.stopPropagation();const n=[...BEEN].length,P=PASS||{};
+    const top=(P.regs||[]).filter(x=>x[1]).sort((a,b)=>b[1]-a[1])[0],earned=(P.bdg||[]).filter(b=>b.on).map(b=>b.n);
+    const fav=Object.entries(PLOG).filter(([,o])=>o.r>=5).map(([k])=>k.split(" · ")[0]).slice(0,3);
+    const t=`My ${new Date().getFullYear()} in shows 🛖🎟️\n${n} SoCal venue${n===1?"":"s"} stamped${top?` · most in ${top[0]} (${top[1]})`:""}${earned.length?`\nBadges: ${earned.join(", ")}`:""}${fav.length?`\n5 stars: ${fav.join(", ")}`:""}\n${APP_URL}`;
+    if(navigator.share)navigator.share({text:t}).catch(()=>{});else if(navigator.clipboard)navigator.clipboard.writeText(t).then(()=>{ps.textContent="Copied ✓";});return;}
+  // show log: star rating per stamped venue
+  const rt=ev.target.closest("[data-rate]");if(rt){ev.stopPropagation();const k=rt.dataset.rk,x=+rt.dataset.rate,o=PLOG[k]||{};o.r=o.r===x?0:x;PLOG[k]=o;savePlog();
+    rt.parentNode.querySelectorAll("[data-rate]").forEach(b=>b.setAttribute("aria-pressed",String(o.r>=+b.dataset.rate)));return;}
+  const wn=ev.target.closest("[data-want]");if(wn){ev.stopPropagation();const k=wn.dataset.want;WANT.has(k)?WANT.delete(k):WANT.add(k);saveWant();render();return;}
+  if(ev.target.closest("[data-ppmap]")){ev.stopPropagation();MAPV.pass=true;show("map");return;}
+  if(ev.target.closest("[data-pback]")){ev.stopPropagation();backupPassport();return;}},true);
+// note on a stamped venue: saved as you type
+$("list").addEventListener("input",ev=>{const n=ev.target.closest("[data-vnote]");if(!n)return;const k=n.dataset.vnote,o=PLOG[k]||{};o.n=n.value.slice(0,140);PLOG[k]=o;savePlog();});
+$("list").addEventListener("change",ev=>{const f=ev.target.closest("[data-prest]");if(f&&f.files&&f.files[0])restorePassport(f.files[0]);});
 let focusK=null;
 /* ---- Easter egg: tap the Fiscar to wake it (silent, it's electric), tap again and it peels out ---- */
 let carOn=false,carGo=false,AC=null;

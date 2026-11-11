@@ -245,6 +245,25 @@
 .bpin.fair{box-shadow:0 0 0 3px #7ee0b8,0 0 18px 4px #7ee0b8;animation:bfair 1.8s ease-in-out infinite}
 @keyframes bfair{50%{box-shadow:0 0 0 3px #7ee0b8,0 0 26px 8px #7ee0b8}}
 .bpin-w.dim,.naf-w.dim{opacity:.22;filter:grayscale(.6)}
+.bpin.stamp{box-shadow:0 0 0 3px #FFD27A,0 0 24px 6px rgba(255,210,122,.75),inset 0 0 8px -3px var(--pc)}
+.ui-b .bmt-pass[aria-pressed="true"]{background:#FFD27A!important;color:#1a0f02!important}
+/* passport extras: badges, bucket list, log, backup */
+.bbadges{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;margin:10px 0 4px}
+.bbadge{display:flex;flex-direction:column;align-items:center;gap:2px;padding:8px 4px;border-radius:12px;text-align:center;background:rgba(255,255,255,.04);border:1px dashed rgba(255,255,255,.14);opacity:.55}
+.bbadge i{font-style:normal;color:var(--muted)}.bbadge .ni{width:22px;height:22px}
+.bbadge b{font:700 11px/1.15 var(--body)}.bbadge small{font-size:10px;color:var(--muted);line-height:1.2}
+.bbadge.on{opacity:1;border:1px solid #FFD27A;background:rgba(255,210,122,.1);box-shadow:0 0 12px -5px #FFD27A}
+.bbadge.on i{color:#FFD27A;filter:drop-shadow(0 0 4px #FFD27A)}
+.bwant-p{margin:6px 0 0;font-size:13px;color:var(--muted)}
+.bpass-acts{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px;align-items:center}
+.bpass-acts .bpass-share{margin:0;cursor:pointer}
+.bpass-msg{font:600 12px var(--body);color:#7ee0b8}
+.bpass-regs span{background:linear-gradient(90deg,rgba(255,210,122,.22) var(--pp,0%),transparent var(--pp,0%))}
+.vrate{display:flex;gap:4px;margin:4px 0 6px}
+.vrate button{width:34px;height:34px;border-radius:10px;border:1px solid var(--line);background:var(--chip);color:var(--muted);font-size:17px;cursor:pointer}
+.vrate button[aria-pressed="true"]{color:#FFD27A;border-color:#FFD27A;text-shadow:0 0 8px #FFD27A}
+.vnote{width:100%;height:40px;padding:0 12px;border-radius:10px;border:1px solid var(--line);background:var(--chip);color:var(--ink);font:500 15px var(--body)}
+.vwant.on,.tag.bwant{color:#FF8AD8;border-color:#FF8AD8}
 /* clusters: a ring in the main vibe's color with the total shows and how many venues */
 .bclu{display:grid;place-content:center;justify-items:center;width:var(--ps);height:var(--ps);border-radius:50%;cursor:pointer;
   background:radial-gradient(circle,rgba(14,8,30,.92) 58%,color-mix(in srgb,var(--pc) 35%,rgba(14,8,30,.9)));border:2px solid var(--pc);
