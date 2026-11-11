@@ -7,7 +7,7 @@ const $=id=>document.getElementById(id), N=window.NIGHT;
 const KINDS={
   food:{name:"Food & late eats",c:"#FF8A5C",title:"Food",blurb:"Eat before the show: seafood boils, hot pot, Korean BBQ, ramen, tacos, pho, 24-hour diners and tasting menus.",
     icon:'<path d="M4 11h16a8 8 0 0 1-16 0Z"/><path d="M8 7c0-1.5 1-1.5 1-3M12 7c0-1.5 1-1.5 1-3M16 7c0-1.5 1-1.5 1-3"/>'},
-  after:{name:"Afters & late night",c:"#B48CFF",title:"Afters",blurb:"Where the night goes after the show.",
+  after:{name:"Afters & late night",c:"#B48CFF",title:"Afters",blurb:"Where the night goes after the show, including hotel bars and rooftops anyone can walk into.",
     icon:'<path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5Z"/><path d="M17 3v4M15 5h4"/>'}};
 const CHILL={c:"#8FB4FF",title:"Chill spots",blurb:"Beaches, coves and stargazing. Most close by 10 PM, a few run till midnight."};
 const SCR=k=>KINDS[k]||CHILL, TAGF=["Fire rings","Tide pools","Sunset"];
@@ -43,7 +43,7 @@ function card({p,i,d},vc){const [em,cat]=label(p),q=encodeURIComponent([p.n,p.a,
     <div class="spc-facts"><span class="spc-f">${CLOCK}${hrs}</span>${late24(p)?`<span class="spc-late">Open past midnight</span>`:""}</div>
     ${price(p)}
     ${tags.length?`<div class="spc-tags">${tags.map(t=>`<i>${esc(t)}</i>`).join("")}</div>`:""}
-    <div class="spc-act"><a href="https://www.google.com/maps/dir/?api=1&destination=${q}" target="_blank" rel="noopener">Directions</a><a href="https://www.google.com/maps/search/?api=1&query=${q}" target="_blank" rel="noopener">Hours ↗</a><button type="button" class="nadd" data-naft="${i}">＋ Add to my night</button></div>
+    <div class="spc-act"><a href="https://www.google.com/maps/dir/?api=1&destination=${q}" target="_blank" rel="noopener">Directions</a>${p.u&&safeUrl(p.u)?`<a href="${esc(safeUrl(p.u))}" target="_blank" rel="noopener">Schedule ↗</a>`:`<a href="https://www.google.com/maps/search/?api=1&query=${q}" target="_blank" rel="noopener">Hours ↗</a>`}<button type="button" class="nadd" data-naft="${i}">＋ Add to my night</button></div>
   </article>`;}
 const XLBL={fun:"✦ Fun experience",splurge:"✦ Splurge"};
 const XROW={fun:["Fun experiences","Crack crab with your hands, watch noodles fly, grill it yourself. A show of its own without the big bill."],
@@ -76,7 +76,8 @@ function draw(){mount();const K=SCR(cur),all=list(cur);
   $("bSpTitle").textContent=K.title;$("bSpBlurb").textContent=K.blurb;
   $("bSpots").dataset.k=cur;
   // Pool goes right after "All" so it isn't lost off the end of the scrolling chip row
-  const cats=[...new Set(all.map(x=>x.p.c))].sort((a,b)=>(b==="pool")-(a==="pool"));
+  const FRONT=["pool","hotel"],fr=c=>{const i=FRONT.indexOf(c);return i<0?99:i;};   // Pool and Hotel first so they aren't lost off the end of the row
+  const cats=[...new Set(all.map(x=>x.p.c))].sort((a,b)=>fr(a)-fr(b));
   // Food: two "experience" chips up front, then the categories
   const xch=cur==="food"?[["x:fun",ic("boil"),"Fun experiences"],["x:splurge",ic("fine"),"Splurge"]]:[];
   $("bSpSubs").innerHTML=(cats.length>1?[["","","All"],...xch,...cats.map(c=>[c,...label({c})])]:[]).map(([v,i,l])=>`<button type="button" class="chip spchip" data-ssub="${v}" aria-pressed="${v===sub}">${i}${esc(l)}</button>`).join("")
