@@ -1,6 +1,6 @@
 <!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>The Show Shack</title>
-<link rel="stylesheet" href="app.css?v=24">
-<link rel="stylesheet" href="b.css?v=30">
+<link rel="stylesheet" href="app.css?v=25">
+<link rel="stylesheet" href="b.css?v=31">
 <link rel="stylesheet" href="night.css?v=10">
 <link rel="stylesheet" href="spots.css?v=10">
 <script>window.NIGHT_BETA=true;window.NIGHT_HASH=location.hash;window.UI_B=true;document.documentElement.classList.add("ui-b");</script>
@@ -31,6 +31,7 @@
     <h1 class="shack-title">The Show Shack</h1>
     <button type="button" class="shack-share" id="shareApp">🌴 Share the Shack</button>
     <button type="button" class="binfo-btn" id="bInfoBtn" aria-label="Where the Shack gets its info" aria-haspopup="dialog">?</button>
+    <button type="button" class="binfo-btn bset-btn" id="bSetBtn" aria-label="Settings and your data" aria-haspopup="dialog"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1Z"/></svg></button>
   </header>
   <p class="songcredit" id="songCredit" hidden>♪ “Brain Dance” Kevin MacLeod (incompetech.com) · <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a></p>
   <div class="getapp" id="getApp" hidden>
@@ -194,6 +195,33 @@
     <button type="button" class="binfo-ok" data-close>Got it</button>
   </div>
 </dialog>
+<dialog class="binfo bnew" id="bNew" aria-labelledby="bNewH">
+  <div class="binfo-in">
+    <button type="button" class="binfo-x" data-close aria-label="Close">✕</button>
+    <p class="binfo-kick"><img class="bshack-ic" src="hut.webp?v=2" alt="">new in the shack</p>
+    <h2 id="bNewH">What's new</h2>
+    <ul class="bnew-list" id="bNewList"></ul>
+    <button type="button" class="binfo-ok" data-close>Got it</button>
+  </div>
+</dialog>
+<dialog class="binfo bset" id="bSet" aria-labelledby="bSetH">
+  <div class="binfo-in">
+    <button type="button" class="binfo-x" data-close aria-label="Close">✕</button>
+    <p class="binfo-kick"><img class="bshack-ic" src="hut.webp?v=2" alt="">settings</p>
+    <h2 id="bSetH">Your data</h2>
+    <p class="bset-p">Everything below lives on this phone only. Nothing is uploaded and there's no account.</p>
+    <div class="binfo-stats bset-stats" id="bSetStats"></div>
+    <div class="bset-acts">
+      <button type="button" data-sback>Back up passport + nights</button>
+      <label>Restore a backup<input type="file" accept="application/json,.json" data-srest hidden></label>
+      <button type="button" data-snew>What's new</button>
+      <button type="button" data-stour>Replay the disco ball tour</button>
+      <button type="button" class="bset-clear" data-sclear>Clear everything on this phone</button>
+    </div>
+    <p class="bset-msg" id="bSetMsg" role="status"></p>
+    <button type="button" class="binfo-ok" data-close>Done</button>
+  </div>
+</dialog>
 <nav class="btabs" id="bTabs" aria-label="Sections">
   <button type="button" data-tab="shows" aria-current="page"><svg class="ni" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-list"/></svg>Shows</button>
   <button type="button" data-tab="map"><svg class="ni" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-map"/></svg>Map</button>
@@ -202,17 +230,17 @@
   <button type="button" data-tab="budget"><svg class="ni" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-cal"/></svg>Plan</button>
 </nav>
 <script src="app.js?v=26"></script>
-<script src="b.js?v=30"></script>
+<script src="b.js?v=31"></script>
 <script src="night.js?v=19"></script>
 <script src="spots.js?v=11"></script>
 
 <div id="bgfx" aria-hidden="true"><canvas></canvas><div class="ovl"></div></div>
 <canvas id="nebfx" aria-hidden="true"></canvas>
-<script src="bg.js?v=2"></script>
+<script src="bg.js?v=3"></script>
 
-<script src="water.js?v=10"></script>
+<script src="water.js?v=11"></script>
 
 <script src="disco.js?v=7"></script>
-<script src="nebula.js?v=12"></script>
+<script src="nebula.js?v=13"></script>
 <script src="google.js?v=2"></script>
 </body></html>

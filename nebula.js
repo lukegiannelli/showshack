@@ -3,6 +3,7 @@
    One fixed WebGL canvas; each frame it is masked to the on-screen card rectangles. */
 (function(){
   const cv=document.getElementById("nebfx"); if(!cv)return;
+  if(window.UI_B)return;   // B layout: tiles are see-through glass and #nebfx is hidden for good, so skip the GL loop entirely (battery)
   const gl=cv.getContext("webgl",{alpha:true,premultipliedAlpha:true,antialias:false,powerPreference:"low-power"});
   if(!gl)return;
   const still=matchMedia("(prefers-reduced-motion: reduce)").matches;

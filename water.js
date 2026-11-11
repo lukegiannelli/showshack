@@ -75,6 +75,7 @@ void main(){
     cv.addEventListener("webglcontextlost",e=>{e.preventDefault();stop();cv.style.display="none";});
     ready=true;size();run();
   };
-  img.src="water.jpg?v=1";
+  if("IntersectionObserver" in window){const io=new IntersectionObserver(es=>{if(es.some(x=>x.isIntersecting)){io.disconnect();img.src="water.jpg?v=1";}},{rootMargin:"200px"});io.observe(box);}
+  else img.src="water.jpg?v=1";
 }
 })();

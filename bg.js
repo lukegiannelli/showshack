@@ -39,27 +39,30 @@ void main(){
     gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.LINEAR_MIPMAP_LINEAR);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MAG_FILTER,gl.LINEAR);
     gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_S,gl.CLAMP_TO_EDGE);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_T,gl.CLAMP_TO_EDGE);
     gl.uniform1f(uA,img.height/img.width);
-    const scale=Math.min(0.75,(devicePixelRatio||1)*0.4); // soft art, so render small and save battery
+    const scale=Math.min(0.5,(devicePixelRatio||1)*0.3); // soft art, so render small and save battery
     let drawNow=()=>{};function size(){const w=Math.round(innerWidth*scale),h=Math.round(Math.max(innerHeight,box.clientHeight,screen.height||0)*scale);if(cv.width!==w||cv.height!==h){cv.width=w;cv.height=h;gl.viewport(0,0,w,h);gl.uniform2f(uRes,w,h);drawNow();}}
     let rw=innerWidth;addEventListener("resize",()=>{if(innerWidth!==rw){rw=innerWidth;size();}});size();
     document.body.classList.add("fx");
     // Smooth scrolling first: the art holds still while you scroll and drifts again when you stop
     // (redrawing a full-screen layer mid-scroll is what made it choppy). Time only advances while drawing, so no jump.
     let last=0,raf=0,tt=0,scrolling=0;
-    addEventListener("scroll",()=>{scrolling=performance.now();},{passive:true});
-    addEventListener("touchmove",()=>{scrolling=performance.now();},{passive:true});
+    // battery: the sky rests after 25 s with no touch, scroll or key, and wakes on the next one
+    let poke=performance.now();const wake=()=>{poke=performance.now();if(!raf&&!document.hidden){last=0;raf=requestAnimationFrame(frame);}};
+    addEventListener("scroll",()=>{scrolling=performance.now();wake();},{passive:true});
+    addEventListener("touchmove",()=>{scrolling=performance.now();wake();},{passive:true});
+    ["pointerdown","keydown"].forEach(t=>addEventListener(t,wake,{passive:true}));
     gl.uniform1f(uS,0);
     let speed=1;
     drawNow=()=>{gl.uniform1f(uT,tt);gl.drawArrays(gl.TRIANGLES,0,3);};
-    function frame(now){raf=requestAnimationFrame(frame);
+    function frame(now){if(now-poke>25000){raf=0;return;}raf=requestAnimationFrame(frame);
       if(now-scrolling<220){last=now;speed=0;return;}
-      const dt=now-last; if(dt<33)return; last=now;
+      const dt=now-last; if(dt<66)return; last=now;
       speed=Math.min(1,speed+dt/900);                      // ease back in after a scroll, no snap
       tt+=Math.min(dt,100)/1000*0.35*speed*speed*(3-2*speed);
       drawNow();}
     gl.uniform1f(uT,0);gl.drawArrays(gl.TRIANGLES,0,3);
     raf=requestAnimationFrame(frame);
-    document.addEventListener("visibilitychange",()=>{if(document.hidden){cancelAnimationFrame(raf);}else{last=0;raf=requestAnimationFrame(frame);}});
+    document.addEventListener("visibilitychange",()=>{if(document.hidden){cancelAnimationFrame(raf);raf=0;}else wake();});
     cv.addEventListener("webglcontextlost",e=>{e.preventDefault();cancelAnimationFrame(raf);document.body.classList.remove("fx");});
   };
   img.src=m[1];

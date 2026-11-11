@@ -276,6 +276,30 @@ function trust(){const m=window.SHACK_META||{},el=$("bInfo");if(!el||!state.even
   set("n",state.events.length.toLocaleString());set("upd",m.lastRun?ago(m.lastRun):"daily");
   set("tmn",tm?tm[1]:"daily");set("tm",tm?`Ticketmaster prices got re-checked ${ago(m.tmRun)}.`:"Ticketmaster prices get re-checked daily.");
   set("rec",state.events.filter(isRec).length+" weekly and monthly series");}
+/* ---- What's new: a one-time sheet (again from Settings) with a "Show me" for each thing ---- */
+const WN_VER="2026-11";
+const WHATSNEW=[["🍜","Space ramen","Pull the disco ball down. Four swipes serve a random food spot and afters.",()=>{goHome();setTimeout(()=>$("disco").scrollIntoView({behavior:"smooth",block:"center"}),250);}],
+  ["🆕","New rows on Home","Recently added, Price dropped, Because you starred, and your going-out streak.",()=>{goHome();setTimeout(()=>{const t=[$("bBecBox"),$("bDropBox"),$("bFreshBox")].find(x=>x&&!x.hidden);if(t)t.scrollIntoView({behavior:"smooth",block:"start"});},250);}],
+  ["🌙","Your nights, saved","Every plan you build is kept in Saved. Do a past night again with one tap.",()=>{const t=document.querySelector('#bTabs [data-tab="saved"]');if(t)t.click();}],
+  ["⏱","Smarter planning","Drag stops to reorder, Tighten the night, the forecast, and drive vs rideshare home.",()=>{const t=document.querySelector('#bTabs [data-tab="budget"]');if(t)t.click();setTimeout(()=>{const n=$("bNight");if(n)n.scrollIntoView({behavior:"smooth",block:"start"});},200);}],
+  ["🎟️","Show passport","Tap a stamp to log past shows, earn hidden badges, and compare with a friend.",()=>{const t=document.querySelector('#bTabs [data-tab="venues"]');if(t)t.click();}],
+  ["🔥","Map extras","Tonight heatmap, Now button, route costs and Build a night here.",()=>{MAPV.heat=true;state.when="tonight";const t=document.querySelector('#bTabs [data-tab="map"]');if(t)t.click();}]];
+const dlgOpen=d=>{if(d.showModal)d.showModal();else d.setAttribute("open","");},dlgClose=d=>{d.close?d.close():d.removeAttribute("open");};
+function whatsNew(){$("bNewList").innerHTML=WHATSNEW.map(([ic,t,p],i)=>`<li><i aria-hidden="true">${ic}</i><div><b>${esc(t)}</b><p>${esc(p)}</p></div><button type="button" data-wn="${i}">Show me</button></li>`).join("");dlgOpen($("bNew"));
+  try{localStorage.setItem("shack-new",WN_VER);}catch(e){}}
+$("bNew").addEventListener("click",ev=>{const d=$("bNew");if(ev.target===d||ev.target.closest("[data-close]")){dlgClose(d);return;}
+  const b=ev.target.closest("[data-wn]");if(b){dlgClose(d);WHATSNEW[+b.dataset.wn][3]();}});
+/* ---- Settings → Your data ---- */
+function setStats(){const nn=window.NIGHT&&NIGHT.allNights?NIGHT.allNights().length:0;
+  $("bSetStats").innerHTML=[[state.stars.size,"starred"],[nn,"nights"],[BEEN.size,"stamps"],[showCount(),"shows logged"],[WANT.size,"bucket list"],[(state.pinV||[]).length,"following"]].map(([n,l])=>`<span><b>${n}</b>${l}</span>`).join("");}
+$("bSetBtn").onclick=()=>{setStats();$("bSetMsg").textContent="";const c=$("bSet").querySelector("[data-sclear]");c.classList.remove("sure");c.textContent="Clear everything on this phone";dlgOpen($("bSet"));};
+$("bSet").addEventListener("click",ev=>{const d=$("bSet");if(ev.target===d||ev.target.closest("[data-close]")){dlgClose(d);return;}
+  if(ev.target.closest("[data-sback]")){backupPassport();$("bSetMsg").textContent="Backup file saved. Keep it somewhere safe (Files, iCloud, email to yourself).";return;}
+  if(ev.target.closest("[data-snew]")){dlgClose(d);whatsNew();return;}
+  if(ev.target.closest("[data-stour]")){try{localStorage.removeItem("shack-ballhint");}catch(e){}$("bSetMsg").textContent="The ghost finger is back. Reloading…";setTimeout(()=>location.reload(),600);return;}
+  const c=ev.target.closest("[data-sclear]");if(c){if(!c.classList.contains("sure")){c.classList.add("sure");c.textContent="Tap again: wipes stars, nights, passport and settings";$("bSetMsg").textContent="Back up first if you might want any of it.";return;}
+    try{Object.keys(localStorage).filter(k=>/^(radar-|shack-)/.test(k)).forEach(k=>localStorage.removeItem(k));}catch(e){}$("bSetMsg").textContent="Cleared. Reloading…";setTimeout(()=>location.reload(),600);}});
+$("bSet").addEventListener("change",async ev=>{const f=ev.target.closest("[data-srest]");if(!f||!f.files||!f.files[0])return;const m=await restorePassport(f.files[0]);$("bSetMsg").textContent=m||"Restored ✓";setStats();f.value="";});
 $("bInfoBtn").onclick=()=>{trust();const d=$("bInfo");if(d.showModal)d.showModal();else d.setAttribute("open","");};
 $("bInfo").addEventListener("click",ev=>{const d=$("bInfo");if(ev.target===d||ev.target.closest("[data-close]")){d.close?d.close():d.removeAttribute("open");}});
 
@@ -534,7 +558,7 @@ async function restorePassport(f){let msg="Restored ✓";
       a.filter(x=>x&&typeof x.t==="string"&&/^\d{4}-\d\d-\d\d$/.test(x.d||"")).slice(0,200).forEach(x=>{if(!have.some(h=>h.t===x.t&&h.d===x.d))have.push({t:x.t.slice(0,100),d:x.d,id:String(x.id||Math.random().toString(36).slice(2,9)).slice(0,20)});});}
     if(Array.isArray(d.nights)&&window.NIGHT&&NIGHT.mergeNights){const n=NIGHT.mergeNights(d.nights);if(n)msg=`Restored ✓ (+${n} night${n>1?"s":""})`;}
     saveBeen();saveWant();savePlog();savePshows();}catch(e){msg="That file isn't a Show passport backup";}
-  render();const box=$("list").querySelector(".bpass-acts");if(box)box.insertAdjacentHTML("beforeend",`<span class="bpass-msg">${esc(msg)}</span>`);}
+  render();const box=$("list").querySelector(".bpass-acts");if(box)box.insertAdjacentHTML("beforeend",`<span class="bpass-msg">${esc(msg)}</span>`);return msg;}
 const FSEEN=(()=>{try{return JSON.parse(localStorage.getItem("shack-fseen")||"{}")||{};}catch(e){return {};}})();
 const saveSeen=()=>{try{localStorage.setItem("shack-fseen",JSON.stringify(FSEEN));}catch(e){}};
 const KIND_WORD={concert:"music room",club:"dance club",festival:"festival grounds",comedy:"comedy club",theater:"theater",openmic:"open-mic spot",social:"dance-social spot",dance:"ecstatic-dance space",contact:"movement studio",sound:"sound-bath space",drum:"drum-circle spot"};
@@ -818,4 +842,5 @@ const target=(location.hash||"").slice(1);
 if(/^pp=[01][A-Za-z0-9_-]+$/.test(target)){try{history.replaceState(null,"",location.pathname);}catch(e){}setTimeout(()=>compareFrom(target.slice(3)),300);}
 if(target&&/^[ep]-/.test(target)){cur="all";state.when="any";show("results",true);openCard(target);}
 else show("home",true);
+setTimeout(()=>{let seen="";try{seen=localStorage.getItem("shack-new")||"";}catch(e){}if(seen!==WN_VER&&screen==="home"&&!document.querySelector("dialog[open],#nightView,#bCmp:not([hidden])"))whatsNew();},1600);
 })();
