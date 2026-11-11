@@ -57,6 +57,14 @@ function bWeekendPicks(up){const r=dayRange("weekend");if(!r)return null;
   for(const e of ranked){if(picks.length>=5)break;if(!used.has(skey(e))){used.add(skey(e));picks.push({e});}}
   return {picks};}
 
+/* ---- undo: one toast with an Undo button (the toast lives in night.js) ---- */
+function undoToast(msg,fn){setTimeout(()=>{if(window.NIGHT&&NIGHT.toast)NIGHT.toast(esc(msg),"Undo",fn);},0);}
+/* ---- offline banner: what still works without a connection, and a quick "back online" ---- */
+(()=>{const off=document.createElement("div");off.className="boff";off.setAttribute("role","status");document.body.appendChild(off);let t=0;
+  function net(){clearTimeout(t);if(navigator.onLine===false){const m=window.SHACK_META&&SHACK_META.lastRun?new Date(SHACK_META.lastRun).toLocaleDateString("en-US",{month:"short",day:"numeric"}):"";
+      off.className="boff on";off.textContent=`📴 You're offline. Showing the shows saved on this phone${m?` (list from ${m})`:""}. Maps, prices and previews need a connection.`;}
+    else if(off.classList.contains("on")){off.className="boff on back";off.textContent="✓ Back online";t=setTimeout(()=>{off.className="boff";},2200);}}
+  addEventListener("online",net);addEventListener("offline",net);net();})();
 /* ---- recently added: shows venues just put on sale, newest first (fresh.json dates each show the day it first showed up) ---- */
 let FRESH=null;
 fetch("fresh.json?v="+Math.floor(Date.now()/36e5)).then(r=>r.ok?r.json():null).then(j=>{if(j&&j.seen){FRESH=j;if(screen==="home")render();}}).catch(()=>{});
@@ -105,10 +113,10 @@ function backSide(e){const pi=priceInfo(e),d=parseDay(e.start);
       ${window.SHACK_PV(e)}${lq?`<button type="button" class="bfb-listen" aria-expanded="false"><span class="lt">Listen on…</span></button>`:""}<button type="button" data-share="${esc(skey(e))}">Share</button></div>
     <p class="bpv-note" hidden></p>
     ${lq?`<div class="bfb-lm" hidden>${LISTEN(lq)}</div>`:""}
-    <div class="bfb-foot"><button type="button" class="bfb-full" data-full="${esc(hid(e))}">Full card</button><span class="bfb-hint">Tap to flip back ↻</span></div>`;}
+    <div class="bfb-foot"><button type="button" class="bfb-full" data-full="${esc(hid(e))}">Full card</button><button type="button" class="bfb-hint">Flip back ↻</button></div>`;}
 function flipCardHtml(e,tag){const front=cardHtml(e).replace(/^\s*<article id="[^"]*"/,'<article').replace(/class="card( flipped)?"/,'class="card"');
   const free=priceInfo(e).free;
-  return `<div class="bfc" data-k="${esc(skey(e))}"><div class="bfc-in"><div class="bfc-f">${tag?`<span class="bfc-tag">${tag}</span>`:""}${free?`<span class="bfc-free">FREE</span>`:""}${front}</div><div class="bfc-b" aria-hidden="true">${backSide(e)}</div></div></div>`;}
+  return `<div class="bfc" data-k="${esc(skey(e))}"><div class="bfc-in"><div class="bfc-f"><button type="button" class="bfc-sr sr-only">Flip ${esc(e.title)} for details</button>${tag?`<span class="bfc-tag">${tag}</span>`:""}${free?`<span class="bfc-free">FREE</span>`:""}${front}</div><div class="bfc-b" aria-hidden="true">${backSide(e)}</div></div></div>`;}
 function flipRowClick(ev){const fc=ev.target.closest(".bfc");if(!fc)return;
   const st=ev.target.closest("button[data-star]");if(st){starBtn(st);return;}
   const sh=ev.target.closest("button[data-share]");if(sh){shareBtn(sh);return;}
@@ -243,7 +251,8 @@ function after(){
   if(pendingOpen)setTimeout(tryOpen,30);
   document.querySelectorAll("[data-when]").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.when===state.when)));
   const up=state._up||[];
-  if(screen==="home"){
+  if(screen==="home"&&state.loadErr&&$("bPicks").dataset.sig!=="err"){$("bPicks").dataset.sig="err";$("bPicks").innerHTML=loadErrHtml();}
+  if(screen==="home"&&state.loaded&&!state.loadErr){
     for(const v of VIBES){const n=up.filter(e=>GROUPS[v.k].has(e.kind)&&inWhen(e)).length;
       const el=document.querySelector(`[data-count="${v.k}"]`);if(el)el.textContent=n+" "+WHEN_WORD[state.when];}
     const wp=bWeekendPicks(up);
@@ -513,7 +522,8 @@ function openSheet(g){const e0=g.evs[0],name=g.k.split(" · ")[0],city=g.k.split
     <div class="bms-night">${near("restaurants","Eat before","🍜")}${near("bars","Drinks after","🍸")}${near("parking","Parking","🅿️")}<a href="${dir}" target="_blank" rel="noopener">🧭 Directions</a></div>
     ${(()=>{const ns=nearSta(g.lat,g.lon),pk=((VOPEN[name]||{}).w||[])[0];return ns||pk?`<div class="bms-go">${ns?`<p><b style="color:${SYS[ns.s.s]||"#cfc6e8"}">🚆 ${esc(ns.s.n)}</b> · ${esc(ns.s.s)} · ${ns.mi<.3?"steps away":ns.mi.toFixed(1)+" mi"}</p>`:""}${pk?`<p>🅿️ ${esc(pk)}</p>`:""}</div>`:"";})()}
     ${pools.length?`<div class="bms-pool">${pools.map(({p,mi})=>`<a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(p.n+", "+p.a+", "+p.city+", CA")}" target="_blank" rel="noopener">${NEON8}<span><b>${esc(p.n)}</b><small>${mi<1?"under a mile":mi.toFixed(1)+" mi"} away · ${p.c==="hall"?"pool hall":"bar with pool"}</small></span></a>`).join("")}</div>`:""}`);
-  const fb=$("bMapSheet").querySelector("[data-mfol]");if(fb)fb.onclick=()=>{const k=fb.dataset.mfol,on=!isPinned(k);if(on)markSeen(k);togglePin(k);fb.classList.toggle("on",on);fb.setAttribute("aria-pressed",String(on));fb.innerHTML=ni("bell")+(on?" Following":" Follow");syncFollowDot();};
+  const fb=$("bMapSheet").querySelector("[data-mfol]");if(fb)fb.onclick=()=>{const k=fb.dataset.mfol,on=!isPinned(k);if(on)markSeen(k);togglePin(k);fb.classList.toggle("on",on);fb.setAttribute("aria-pressed",String(on));fb.innerHTML=ni("bell")+(on?" Following":" Follow");syncFollowDot();
+    if(!on)undoToast(`Unfollowed ${k.split(" · ")[0]}`,()=>{togglePin(k);markSeen(k);fb.classList.add("on");fb.setAttribute("aria-pressed","true");fb.innerHTML=ni("bell")+" Following";syncFollowDot();});};
   $("bMapSheet").querySelectorAll("[data-card]").forEach(b=>b.onclick=()=>{state.when="any";state.view="list";openResults("all");openCard(b.dataset.card);});
   const bb=$("bMapSheet").querySelector("[data-mbuild]");if(bb)bb.onclick=()=>NIGHT.nightAt(g.evs.find(inWhen)||g.evs[0]);
   if(window.NIGHT)NIGHT.sheet(g);}
@@ -732,7 +742,8 @@ $("list").addEventListener("click",ev=>{if(screen!=="venues")return;
   const vr=ev.target.closest("[data-vfr]");if(vr){ev.stopPropagation();VF.rg=VF.rg===vr.dataset.vfr?"":vr.dataset.vfr;render();return;}
   if(ev.target.closest("[data-vfx]")){ev.stopPropagation();VF.t="";VF.f.clear();VF.rg="";render();return;}
   const vm=ev.target.closest("[data-vmore]");if(vm){const k=vm.closest(".vf").querySelector("[data-pinv]")?.dataset.pinv;if(k&&isPinned(k)&&newCount(venueInfo(k))){markSeen(k);setTimeout(()=>{const c=vm.closest(".vcard");c.classList.remove("hasnew");const t=c.querySelector(".bnew");if(t)t.remove();syncFollowDot();},0);}return;}
-  const pn=ev.target.closest("[data-pinv]");if(pn){const k=pn.dataset.pinv;if(!isPinned(k))markSeen(k);return;}
+  const pn=ev.target.closest("[data-pinv]");if(pn){const k=pn.dataset.pinv;if(!isPinned(k))markSeen(k);else undoToast(`Unfollowed ${k.split(" · ")[0]}`,()=>{togglePin(k);markSeen(k);render();syncFollowDot();});return;}
+  const bnn=ev.target.closest("[data-been]");if(bnn&&BEEN.has(bnn.dataset.been)){const k=bnn.dataset.been;undoToast(`Took ${k.split(" · ")[0]} out of your passport`,()=>{BEEN.add(k);saveBeen();render();});}
   const mp=ev.target.closest("[data-vmap]");if(mp){ev.stopPropagation();focusVenue(mp.dataset.vmap);return;}
   const vv=ev.target.closest("[data-venue]");if(vv){ev.stopPropagation();state.venue=vv.dataset.venue;state.view="list";state.kind="all";state.sub=null;cur="venue";show("results");return;}
   const pc=ev.target.closest("[data-pcmp]");if(pc){ev.stopPropagation();comparLink(pc);return;}
@@ -755,7 +766,8 @@ $("list").addEventListener("click",ev=>{if(screen!=="venues")return;
     if(PSEL)setTimeout(()=>{const f=$("list").querySelector(".bplog");if(f){f.scrollIntoView({behavior:"smooth",block:"nearest"});}},40);return;}
   if(ev.target.closest("[data-pall]")){ev.stopPropagation();PALL=!PALL;render();return;}
   if(ev.target.closest("[data-pclose]")){ev.stopPropagation();PSEL="";render();return;}
-  const pd=ev.target.closest("[data-pdel]");if(pd){ev.stopPropagation();const k=pd.dataset.pk;PSHOWS[k]=(PSHOWS[k]||[]).filter(x=>x.id!==pd.dataset.pdel);if(!PSHOWS[k].length)delete PSHOWS[k];savePshows();render();return;}
+  const pd=ev.target.closest("[data-pdel]");if(pd){ev.stopPropagation();const k=pd.dataset.pk,gone=(PSHOWS[k]||[]).find(x=>x.id===pd.dataset.pdel);PSHOWS[k]=(PSHOWS[k]||[]).filter(x=>x.id!==pd.dataset.pdel);if(!PSHOWS[k].length)delete PSHOWS[k];savePshows();render();
+    if(gone)undoToast(`Removed ${gone.t}`,()=>{(PSHOWS[k]=PSHOWS[k]||[]).push(gone);savePshows();render();});return;}
   if(ev.target.closest("[data-ppmap]")){ev.stopPropagation();MAPV.pass=true;show("map");return;}
   if(ev.target.closest("[data-pback]")){ev.stopPropagation();backupPassport();return;}},true);
 // note on a stamped venue: saved as you type
@@ -796,8 +808,9 @@ async function compareFrom(code){let d;try{d=await NIGHT.unpack(code);}catch(e){
   const theirs=new Map((Array.isArray(d.b)?d.b:[]).slice(0,300).filter(x=>Array.isArray(x)&&ok(x[0])).map(x=>[x[0],Math.max(0,Math.min(999,+x[1]||0))]));
   const who=String(d.h||"").replace(/[<>]/g,"").slice(0,30)||"Your friend",both=[...theirs.keys()].filter(k=>BEEN.has(k)),onlyT=[...theirs.keys()].filter(k=>!BEEN.has(k)),onlyY=[...BEEN].filter(k=>!theirs.has(k));
   const nm=k=>esc(k.split(" · ")[0]),row=(k,btn)=>`<li><span><b>${nm(k)}</b><small>${esc(k.split(" · ")[1]||"")}${theirs.get(k)?` · ${theirs.get(k)} show${theirs.get(k)>1?"s":""} for them`:""}</small></span></li>`;
-  let el=$("bCmp");if(!el){el=document.createElement("div");el.id="bCmp";el.className="rpop bcmp";el.setAttribute("role","dialog");el.setAttribute("aria-modal","true");document.body.appendChild(el);
-    el.addEventListener("click",ev=>{if(ev.target===el||ev.target.closest("[data-cx]")){el.hidden=true;document.documentElement.classList.remove("rpop-on");return;}});}
+  const opener=document.activeElement;let el=$("bCmp");if(!el){el=document.createElement("div");el.id="bCmp";el.className="rpop bcmp";el.setAttribute("role","dialog");el.setAttribute("aria-modal","true");document.body.appendChild(el);
+    el.addEventListener("click",ev=>{if(ev.target===el||ev.target.closest("[data-cx]"))cmpClose();});document.addEventListener("keydown",ev=>{if(ev.key==="Escape"&&!el.hidden)cmpClose();});}
+  const cmpClose=()=>{el.hidden=true;document.documentElement.classList.remove("rpop-on");if(el._opener&&el._opener.focus)el._opener.focus({preventScroll:true});};el._opener=opener;
   el.setAttribute("aria-label","Compare passports");
   el.innerHTML=`<div class="rpop-in"><div class="rpop-top"><span class="rpop-k">↔ ${esc(who)} vs you</span><button type="button" class="rpop-x" data-cx aria-label="Close">✕</button></div>
     <div class="bcmp-stats"><span><b>${theirs.size}</b>theirs</span><span><b>${both.length}</b>both</span><span><b>${BEEN.size}</b>yours</span></div>
@@ -805,7 +818,7 @@ async function compareFrom(code){let d;try{d=await NIGHT.unpack(code);}catch(e){
     ${onlyT.length?`<h3>Only ${esc(who)} has been to · ideas for your next night</h3><ul>${onlyT.map(k=>row(k,1)).join("")}</ul>`:""}
     ${onlyY.length?`<h3>Only you</h3><ul>${onlyY.slice(0,40).map(k=>row(k)).join("")}</ul>`:""}
     <p class="rpop-fine">The link carried their stamps. Nothing was uploaded and nothing about you was sent back.</p></div>`;
-  el.hidden=false;document.documentElement.classList.add("rpop-on");}
+  el.hidden=false;document.documentElement.classList.add("rpop-on");const x=el.querySelector("[data-cx]");if(x)x.focus({preventScroll:true});}
 let focusK=null;
 /* ---- Easter egg: tap the Fiscar to wake it (silent, it's electric), tap again and it peels out ---- */
 let carOn=false,carGo=false,AC=null;

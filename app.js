@@ -348,6 +348,7 @@ function render(){
   if(state.view==="ins"){renderInsights();return;}
   if(state.view==="venues"){renderVenues();return;}
   const vHead=state.venue!=="all"?venueHeader(state.venue):"";
+  if(!state.events.length&&state.loadErr){list.innerHTML=loadErrHtml();return;}
   if(!state.events.length){list.innerHTML='<div class="empty"><strong>No shows yet</strong>The daily refresh adds concerts and festivals here with dates, prices and drive times. Check back after the next run.</div>';return;}
   if(!evs.length&&!state.surprise){list.innerHTML = vHead + (state.venue!=="all"&&(state._up||[]).some(e=>venueKey(e)===state.venue)?'<div class="empty"><strong>Filters are hiding this venue\'s shows</strong>Set Show and Genre to All, and When to Any day.</div>':""); if(state.venue!=="all")return; list.innerHTML = state.kind==="starred" ? '<div class="empty"><strong>Nothing starred yet</strong>Tap ☆ on any show to keep an eye on it. Your stars are private to you.</div>' : state.kind==="picks" ? '<div class="empty"><strong>No added shows yet</strong>Tap ＋ Add a show to pin a gig you heard about. It shows up here and at the top of the full list.</div>' : (state.q ? `<div class="empty"><strong>No shows match “${esc(sq.value.trim())}”</strong>Check the spelling, try part of the name, or set the filters above to All.</div>` : '<div class="empty"><strong>Nothing matches these filters</strong>Try a longer max drive or set Genre to All.</div>');return;}
   let surpriseHtml="";
@@ -476,6 +477,8 @@ function fillWx(){
 // "Bring a first-timer": community formats that welcome newcomers, plus any listing that says beginners / all levels / intro
 const FIRST_KINDS=new Set(["dance","contact","sound","drum","social","openmic","volunteer"]),FIRST_RE=/\b(beginners?|all levels|all-levels|newcomers?|first[- ]timers?|intro(?:duction)? to|no experience|lesson included|free lesson|open to all|welcoming)\b/i;
 function firstTimer(e){if(FIRST_KINDS.has(e.kind))return true;return FIRST_RE.test([e.title,e.artists,e.note,e.priceNote].join(" "));}
+function loadErrHtml(){const off=state.loadErr==="offline";return `<div class="bload-err" role="alert"><b>${off?"You're offline":"Couldn't load the show list"}</b><p>${off?"The show list hasn't been saved on this phone yet. Connect to Wi-Fi or data, then try again.":"The list didn't arrive. It's usually a weak signal or a moment while the daily refresh publishes. Your stars, nights and passport are safe on this phone."}</p><button type="button" data-retry="1">Try again</button></div>`;}
+document.addEventListener("click",ev=>{if(ev.target.closest("[data-retry]"))location.reload();});
 function cardHtml(e){
     const isPin=!!e.added;
     const d=parseDay(e.start), end=parseDay(e.end);
@@ -1058,7 +1061,8 @@ let fileLoaded=false;
     if(d.lastRun){const t=new Date(d.lastRun);el.innerHTML="Updated <b>"+esc(t.toLocaleDateString("en-US",{month:"short",day:"numeric"}))+"</b>";}
     render();
   }catch(err){
-    setTimeout(()=>{if(!fileLoaded&&!dbRef&&!state.loaded){state.loaded=true;document.getElementById("refreshed").textContent="Couldn't load shows";render();}},12000);
+    const fail=()=>{if(!fileLoaded&&!dbRef&&!state.loaded){state.loaded=true;state.loadErr=navigator.onLine===false?"offline":"failed";document.getElementById("refreshed").textContent="Couldn't load shows";render();}};
+    if(window.claude)setTimeout(fail,12000);else fail();   // inside a Claude artifact a second source may still answer; on the live site, say so now
   }
 })();
 
@@ -1085,7 +1089,7 @@ let fileLoaded=false;
       }catch(e){starRef=null;}
     }
   }
-  if(!db){if(!fileLoaded){state.loaded=true;render();}return;}
+  if(!db)return;   // no second source (the live site): the events.json fetch above decides loaded / failed on its own
   dbRef=db;
   if(!fileLoaded){
     db.collection("events").onSnapshot(snap=>{

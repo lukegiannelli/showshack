@@ -170,7 +170,8 @@ function ramenPick(){const rnd=a=>a[Math.floor(Math.random()*a.length)];
   const a=rnd(close.length>=2?close:near(aft.length?aft:list("after")));
   RLAST=[f.i,a&&a.i].filter(x=>x!=null);
   return {f,a};}
-function ramenPop(){if(!N.ready())return;const pk=ramenPick();if(!pk)return;let el=$("rPop");
+let POPENER=null;
+function ramenPop(){if(!N.ready())return;const pk=ramenPick();if(!pk)return;let el=$("rPop");if(!el||el.hidden)POPENER=document.activeElement;
   const keepCur=cur;cur="pop";   // pop-up cards skip the Food-screen extras (save heart, group bill)
   const one=(x,vc,lbl)=>x?`<div class="rpop-slot"><span class="rpop-l" style="--vc:${vc}">${lbl}</span>${card({...x,d:driveEstimate(x.p.lat,x.p.lon)},vc)}</div>`:"";
   const html=one(pk.f,KINDS.food.c,"🍜 Eat")+one(pk.a,KINDS.after.c,"🌙 Afters")+(pk.a&&pk.f?`<p class="rpop-gap">${(()=>{const m=mi2(pk.f.p.lat,pk.f.p.lon,pk.a.p.lat,pk.a.p.lon);return m<=1.2?`🚶 ~${Math.max(2,Math.round(m*20))} min walk between them`:`🚗 ~${fmtMins(Math.max(5,Math.round((6+m*1.2/55*60)/5)*5))} between them`;})()}</p>`:"");
@@ -190,7 +191,7 @@ function ramenPop(){if(!N.ready())return;const pk=ramenPick();if(!pk)return;let 
   el.hidden=false;document.documentElement.classList.add("rpop-on");
   const box=el.querySelector(".rpop-in");if(box.animate&&!matchMedia("(prefers-reduced-motion: reduce)").matches)box.animate([{transform:"translateY(40px) scale(.94)",opacity:0},{transform:"none",opacity:1}],{duration:320,easing:"cubic-bezier(.2,1.3,.4,1)"});
   el.querySelector(".rpop-x").focus({preventScroll:true});}
-function closePop(){const el=$("rPop");if(el){el.hidden=true;document.documentElement.classList.remove("rpop-on");}}
+function closePop(){const el=$("rPop");if(el){el.hidden=true;document.documentElement.classList.remove("rpop-on");if(POPENER&&POPENER.focus)POPENER.focus({preventScroll:true});}}
 
 window.SPOTS={home,ramenPop,after(screen,c){if(screen==="spots")draw();chillRow(screen==="results"&&c==="chill");
   backRow(screen==="results"&&c==="music"&&state.sub==="festival");}};

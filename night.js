@@ -489,7 +489,8 @@ function ics(p){const pad=n=>String(n).padStart(2,"0"),stamp=new Date().toISOStr
   const escI=s=>String(s).replace(/\\/g,"\\\\").replace(/[,;]/g,c=>"\\"+c).replace(/\n/g,"\\n");
   const desc=sumText(p)+"\n\n"+location.href;
   return ["BEGIN:VCALENDAR","VERSION:2.0","PRODID:-//The Show Shack//Night Card//EN","BEGIN:VEVENT","UID:night-"+Date.now()+"@showshack",`DTSTAMP:${stamp}`,`DTSTART:${f(startD)}`,`DTEND:${f(endD)}`,`SUMMARY:${escI("🌙 "+(p.t||"Our night"))}`,`DESCRIPTION:${escI(desc)}`,"END:VEVENT","END:VCALENDAR"].join("\r\n");}
-function view(p,preview){close();const auto=preview==="auto";const D=p.s.length?dmg(p):{tot:0,approx:false},tot=D.tot,ios=/iPhone|iPad|iPod/.test(navigator.userAgent);
+let VOPENER=null;
+function view(p,preview){if(!$("nightView"))VOPENER=document.activeElement;close();const auto=preview==="auto";const D=p.s.length?dmg(p):{tot:0,approx:false},tot=D.tot,ios=/iPhone|iPad|iPod/.test(navigator.userAgent);
   const body=encodeURIComponent(`I'm in for ${p.t||"the night"}${p.d?" ("+fmtD(p.d)+")":""}! 🙌`);
   const sms=`sms:${p.ph||""}${ios?"&":"?"}body=${body}`;
   const rows=p.s.map(s=>{const T=TYPES[s.k],u=s.u?safeUrl(s.u):"";
@@ -528,7 +529,7 @@ function flipCard(el,p){const card=el.querySelector(".nv-card");if(!card||card._
   if(!card.animate||matchMedia("(prefers-reduced-motion: reduce)").matches){swap();return;}card._busy=true;
   card.animate([{transform:"scaleX(1)"},{transform:"scaleX(0.02)"}],{duration:150,easing:"cubic-bezier(.5,0,.75,.4)",fill:"forwards"}).onfinish=()=>{swap();
     const a=card.animate([{transform:"scaleX(0.02)"},{transform:"scaleX(1)"}],{duration:170,easing:"cubic-bezier(.25,.6,.4,1)",fill:"forwards"});a.onfinish=()=>{a.cancel();card.getAnimations().forEach(x=>x.cancel());card._busy=false;};};}
-function close(){const v=$("nightView");if(v){v.remove();document.documentElement.classList.remove("nview-on");}}
+function close(){const v=$("nightView");if(v){v.remove();document.documentElement.classList.remove("nview-on");if(VOPENER&&VOPENER.isConnected&&VOPENER.focus)VOPENER.focus({preventScroll:true});VOPENER=null;}}
 document.addEventListener("keydown",ev=>{if(ev.key==="Escape")close();});
 async function fromHash(h){const m=/^#n=([01][A-Za-z0-9_-]+)$/.exec(h||"");if(!m)return;
   try{const p=await decode(m[1]);try{history.replaceState(null,"",location.pathname);}catch(e){}view(p,false);}
