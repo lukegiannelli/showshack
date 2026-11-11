@@ -1822,6 +1822,377 @@
 ],
 "geo": "amenity",
 "src": "osm"
+},
+{
+"n": "The Boiling Crab",
+"c": "boil",
+"city": "Los Angeles",
+"zip": "90010",
+"a": "3377 Wilshire Blvd",
+"t": [
+"Koreatown",
+"Eat with your hands",
+"Expect a wait"
+],
+"lat": 34.06233,
+"lon": -118.29776,
+"h": "3 to 10 PM weekdays, noon to 10 PM weekends",
+"til": 22,
+"hq": "~",
+"geo": "amenity",
+"src": "osm"
+},
+{
+"n": "The Boiling Crab",
+"c": "boil",
+"city": "Garden Grove",
+"zip": "92843",
+"a": "13892 Brookhurst St",
+"t": [
+"Little Saigon",
+"Eat with your hands",
+"Expect a wait"
+],
+"lat": 33.76115,
+"lon": -117.95323,
+"h": "3 to 10 PM weekdays, noon to 10 PM weekends",
+"til": 22,
+"hq": "~",
+"geo": "amenity",
+"src": "osm"
+},
+{
+"n": "The Boiling Crab",
+"c": "boil",
+"city": "Los Angeles",
+"zip": "90024",
+"a": "10875 Kinross Ave",
+"t": [
+"Westwood",
+"Eat with your hands"
+],
+"lat": 34.061,
+"lon": -118.44479,
+"geo": "amenity",
+"src": "osm"
+},
+{
+"n": "The Boiling Crab",
+"c": "boil",
+"city": "San Diego",
+"zip": "92126",
+"a": "9015 Mira Mesa Blvd",
+"t": [
+"Mira Mesa",
+"Eat with your hands"
+],
+"lat": 32.91455,
+"lon": -117.13134,
+"h": "3 to 9 PM Mon to Thu (10 PM Fri), noon to 10 PM weekends",
+"til": 22,
+"hq": "~",
+"geo": "amenity",
+"src": "osm"
+},
+{
+"n": "Haidilao Hot Pot",
+"c": "hotpot",
+"city": "Arcadia",
+"zip": "91007",
+"a": "400 S Baldwin Ave",
+"t": [
+"Westfield Santa Anita",
+"Hand-pulled noodle dance"
+],
+"lat": 34.13345,
+"lon": -118.05304,
+"h": "11 AM to 10 PM (11 PM Fri and Sat)",
+"til": 23,
+"hq": "~",
+"geo": "amenity",
+"src": "osm"
+},
+{
+"n": "Haidilao Hot Pot",
+"c": "hotpot",
+"city": "Irvine",
+"zip": "92606",
+"a": "2710 Alton Pkwy",
+"t": [
+"Hand-pulled noodle dance"
+],
+"lat": 33.68775,
+"lon": -117.8342,
+"geo": "amenity",
+"src": "osm"
+},
+{
+"n": "Haidilao Hot Pot",
+"c": "hotpot",
+"city": "Los Angeles",
+"zip": "90067",
+"a": "10250 Santa Monica Blvd",
+"t": [
+"Century City",
+"Hand-pulled noodle dance"
+],
+"lat": 34.05961,
+"lon": -118.41883,
+"geo": "amenity",
+"src": "osm"
+},
+{
+"n": "Haidilao Hot Pot",
+"c": "hotpot",
+"city": "San Diego",
+"zip": "92161",
+"a": "4485 Villa La Jolla Dr",
+"t": [
+"La Jolla",
+"Hand-pulled noodle dance"
+],
+"lat": 32.87029,
+"lon": -117.21149,
+"geo": "amenity",
+"src": "osm"
+},
+{
+"n": "Shabu-Shabu House",
+"c": "hotpot",
+"city": "Los Angeles",
+"zip": "90012",
+"a": "127 Japanese Village Plaza Mall",
+"t": [
+"Little Tokyo",
+"Counter seats, cook it yourself"
+],
+"lat": 34.049,
+"lon": -118.24034,
+"h": "11 AM to 10 PM (10:30 PM Fri and Sat)",
+"til": 22.5,
+"hq": "~",
+"pp": [
+20,
+35
+],
+"geo": "amenity",
+"src": "osm"
+},
+{
+"n": "Boiling Point",
+"c": "hotpot",
+"city": "Garden Grove",
+"zip": "92843",
+"a": "13876 Brookhurst St",
+"t": [
+"Your own bubbling pot"
+],
+"lat": 33.76138,
+"lon": -117.95323,
+"h": "11 AM to 11 PM",
+"til": 23,
+"hq": "~",
+"pp": [
+18,
+26
+],
+"geo": "amenity",
+"src": "osm"
+},
+{
+"n": "Boiling Point",
+"c": "hotpot",
+"city": "Irvine",
+"zip": "92612",
+"a": "14140 Culver Dr",
+"t": [
+"Your own bubbling pot"
+],
+"lat": 33.70738,
+"lon": -117.7826,
+"pp": [
+18,
+26
+],
+"geo": "amenity",
+"src": "osm"
+},
+{
+"n": "Benihana",
+"c": "hibachi",
+"city": "Anaheim",
+"zip": "92807",
+"a": "2100 E Ball Rd",
+"t": [
+"Chef cooks at your table"
+],
+"lat": 33.81773,
+"lon": -117.88735,
+"h": "11 AM to 10 PM (11 PM Fri and Sat)",
+"til": 23,
+"hq": "~",
+"geo": "amenity",
+"src": "osm"
+},
+{
+"n": "Benihana",
+"c": "hibachi",
+"city": "Carlsbad",
+"zip": "92011",
+"a": "755 Raintree Dr",
+"t": [
+"Chef cooks at your table"
+],
+"lat": 33.10423,
+"lon": -117.31262,
+"geo": "amenity",
+"src": "osm"
+},
+{
+"n": "Ten-Raku",
+"c": "kbbq",
+"city": "Los Angeles",
+"zip": "90020",
+"a": "4177 W 3rd St",
+"t": [
+"Koreatown",
+"All-you-can-eat",
+"Open late"
+],
+"lat": 34.06922,
+"lon": -118.30524,
+"h": "11 AM to midnight (11 PM Sun)",
+"til": 24,
+"hq": "~",
+"geo": "amenity",
+"src": "osm"
+},
+{
+"n": "Providence",
+"c": "fine",
+"city": "Los Angeles",
+"zip": "90038",
+"a": "5955 Melrose Ave",
+"t": [
+"Seafood tasting menu",
+"Book ahead"
+],
+"lat": 34.08363,
+"lon": -118.33019,
+"geo": "amenity",
+"src": "osm"
+},
+{
+"n": "n/naka",
+"c": "fine",
+"city": "Los Angeles",
+"zip": "90034",
+"a": "3455 Overland Ave",
+"t": [
+"Kaiseki tasting menu",
+"Book weeks ahead"
+],
+"lat": 34.02513,
+"lon": -118.41221,
+"geo": "amenity",
+"src": "osm"
+},
+{
+"n": "Kato",
+"c": "fine",
+"city": "Los Angeles",
+"zip": "90021",
+"a": "777 S Alameda St",
+"t": [
+"ROW DTLA",
+"Taiwanese tasting menu"
+],
+"lat": 34.03407,
+"lon": -118.24111,
+"geo": "amenity",
+"src": "osm"
+},
+{
+"n": "Hayato",
+"c": "fine",
+"city": "Los Angeles",
+"zip": "90021",
+"a": "1320 E 7th St",
+"t": [
+"ROW DTLA",
+"Kaiseki, tiny counter",
+"Book weeks ahead"
+],
+"lat": 34.03377,
+"lon": -118.24192,
+"geo": "amenity",
+"src": "osm"
+},
+{
+"n": "Orsa & Winston",
+"c": "fine",
+"city": "Los Angeles",
+"zip": "90013",
+"a": "122 W 4th St",
+"t": [
+"Downtown",
+"Tasting menu"
+],
+"lat": 34.04843,
+"lon": -118.24792,
+"geo": "amenity",
+"src": "osm"
+},
+{
+"n": "Bestia",
+"c": "fine",
+"city": "Los Angeles",
+"zip": "90021",
+"a": "2121 E 7th Pl",
+"t": [
+"Arts District",
+"Buzzy Italian, book ahead"
+],
+"lat": 34.03371,
+"lon": -118.22921,
+"h": "5 to 11 PM",
+"til": 23,
+"hq": "~",
+"pp": [
+60,
+100
+],
+"geo": "amenity",
+"src": "osm"
+},
+{
+"n": "Addison",
+"c": "fine",
+"city": "San Diego",
+"zip": "92130",
+"a": "Fairmont Grand Del Mar",
+"t": [
+"Tasting menu",
+"Dress up"
+],
+"lat": 32.93862,
+"lon": -117.19741,
+"geo": "amenity",
+"src": "osm"
+},
+{
+"n": "Mélisse",
+"c": "fine",
+"city": "Santa Monica",
+"a": "Wilshire Blvd",
+"t": [
+"Tasting menu",
+"Book ahead"
+],
+"lat": 34.02452,
+"lon": -118.49137,
+"geo": "amenity",
+"src": "osm"
 }
 ]
 }
