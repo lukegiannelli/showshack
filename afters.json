@@ -1,5 +1,5 @@
 {
-"note": "Afters spots for the Night Card. h = hours text; til = usual latest close on the 24h clock, past midnight keeps counting (26 = 2 AM); hq '~' = sources disagree or only third-party listings. No h = hours unknown. Food spots marked src 'osm' were matched on OpenStreetMap (name, address, hours). pp = per-person food price range before tax and tip; svc 'sit' or 'counter' overrides the category default. Checked Nov 2026; always check before you go.",
+"note": "Afters spots for the Night Card. h = hours text; til = usual latest close on the 24h clock, past midnight keeps counting (26 = 2 AM); hq '~' = sources disagree or only third-party listings. No h = hours unknown. Food spots marked src 'osm' were matched on OpenStreetMap (name, address, hours). pp = estimated per-person food price before tax and tip (not quoted by the place); svc 'sit' or 'counter' overrides the category default. Checked Nov 2026; always check before you go.",
 "places": [
 {
 "n": "Baekjeong Irvine",
@@ -1502,6 +1502,324 @@
 "h": "Open 24 hours",
 "til": 30,
 "hq": "~",
+"geo": "amenity",
+"src": "osm"
+},
+{
+"n": "Original Tommy's",
+"c": "diner",
+"city": "Los Angeles",
+"zip": "91343",
+"a": "15745 Roscoe Blvd",
+"t": [
+"North Hills",
+"Chili burgers",
+"Counter service"
+],
+"lat": 34.22165,
+"lon": -118.47578,
+"h": "Open 24 hours",
+"til": 30,
+"hq": "~",
+"svc": "counter",
+"pp": [
+10,
+16
+],
+"geo": "amenity",
+"src": "osm"
+},
+{
+"n": "Original Tommy's",
+"c": "diner",
+"city": "Burbank",
+"zip": "91504",
+"a": "1310 N San Fernando Blvd",
+"t": [
+"Chili burgers",
+"Counter service"
+],
+"lat": 34.18973,
+"lon": -118.32044,
+"h": "8 AM to midnight",
+"til": 24,
+"hq": "~",
+"svc": "counter",
+"pp": [
+10,
+16
+],
+"geo": "amenity",
+"src": "osm"
+},
+{
+"n": "Du-par's",
+"c": "diner",
+"city": "Los Angeles",
+"zip": "90036",
+"a": "6333 W 3rd St",
+"t": [
+"Farmers Market",
+"Pancakes"
+],
+"lat": 34.07194,
+"lon": -118.361,
+"geo": "amenity",
+"src": "osm"
+},
+{
+"n": "House of Pies",
+"c": "diner",
+"city": "Los Angeles",
+"zip": "90027",
+"a": "1869 N Vermont Ave",
+"t": [
+"Los Feliz",
+"Pie"
+],
+"lat": 34.10508,
+"lon": -118.29203,
+"h": "6:30 AM to 2 AM (3 AM Fri and Sat)",
+"til": 27,
+"hq": "~",
+"geo": "amenity",
+"src": "osm"
+},
+{
+"n": "Mel's Drive-In",
+"c": "diner",
+"city": "West Hollywood",
+"zip": "90069",
+"a": "8585 W Sunset Blvd",
+"t": [
+"Sunset Strip"
+],
+"lat": 34.09297,
+"lon": -118.37897,
+"h": "Open 24 hours",
+"til": 30,
+"hq": "~",
+"geo": "amenity",
+"src": "osm"
+},
+{
+"n": "Mel's Drive-In",
+"c": "diner",
+"city": "Los Angeles",
+"zip": "91403",
+"a": "14846 Ventura Blvd",
+"t": [
+"Sherman Oaks"
+],
+"lat": 34.15205,
+"lon": -118.4568,
+"h": "6 AM to 1 AM (3 AM Thu to Sat)",
+"til": 27,
+"hq": "~",
+"geo": "amenity",
+"src": "osm"
+},
+{
+"n": "Shin Sen Gumi Hakata Ramen",
+"c": "ramen",
+"city": "Fountain Valley",
+"zip": "92708",
+"a": "18315 Brookhurst St",
+"t": [
+"Hakata tonkotsu"
+],
+"lat": 33.69606,
+"lon": -117.95466,
+"h": "11 AM to 11 PM (closed 3 to 6 PM weekdays)",
+"til": 23,
+"hq": "~",
+"geo": "amenity",
+"src": "osm"
+},
+{
+"n": "Silverlake Ramen",
+"c": "ramen",
+"city": "Los Angeles",
+"zip": "90026",
+"a": "2927 W Sunset Blvd",
+"t": [
+"Silver Lake"
+],
+"lat": 34.08357,
+"lon": -118.27368,
+"h": "11:30 AM to 11 PM (1:45 AM Fri and Sat)",
+"til": 25.75,
+"hq": "~",
+"geo": "amenity",
+"src": "osm"
+},
+{
+"n": "Silverlake Ramen",
+"c": "ramen",
+"city": "Long Beach",
+"a": "4101 McGowen St",
+"t": [
+"Douglas Park"
+],
+"lat": 33.83066,
+"lon": -118.14485,
+"h": "11 AM to 9:30 PM (10 PM Fri and Sat)",
+"til": 22,
+"hq": "~",
+"geo": "amenity",
+"src": "osm"
+},
+{
+"n": "Ramen Yamadaya",
+"c": "ramen",
+"city": "Torrance",
+"zip": "90504",
+"a": "3118 W 182nd St",
+"t": [
+"Tonkotsu"
+],
+"lat": 33.86533,
+"lon": -118.32717,
+"geo": "amenity",
+"src": "osm"
+},
+{
+"n": "Lucha Libre Taco Shop",
+"c": "tacos",
+"city": "San Diego",
+"zip": "92104",
+"a": "3016 University Ave",
+"t": [
+"North Park",
+"Counter service"
+],
+"lat": 32.74861,
+"lon": -117.12968,
+"geo": "amenity",
+"src": "osm"
+},
+{
+"n": "Lucha Libre Gourmet Taco Shop",
+"c": "tacos",
+"city": "San Diego",
+"zip": "92103",
+"a": "1810 W Washington St",
+"t": [
+"Mission Hills",
+"Counter service"
+],
+"lat": 32.74325,
+"lon": -117.18161,
+"geo": "amenity",
+"src": "osm"
+},
+{
+"n": "Tacos El Gordo",
+"c": "tacos",
+"city": "Chula Vista",
+"zip": "91910",
+"a": "556 Broadway",
+"t": [
+"Adobada",
+"Counter service"
+],
+"lat": 32.62902,
+"lon": -117.08908,
+"h": "10 AM to 2 AM (4 AM Fri and Sat)",
+"til": 28,
+"hq": "~",
+"geo": "amenity",
+"src": "osm"
+},
+{
+"n": "Phở Hòa",
+"c": "pho",
+"city": "San Diego",
+"zip": "92115",
+"a": "4717 El Cajon Blvd",
+"t": [
+"City Heights"
+],
+"lat": 32.75567,
+"lon": -117.09288,
+"h": "7 AM to 8 PM",
+"til": 20,
+"hq": "~",
+"geo": "amenity",
+"src": "osm"
+},
+{
+"n": "Bánh Mì & Chè Cali",
+"c": "pho",
+"city": "Garden Grove",
+"zip": "92843",
+"a": "13838 Brookhurst St",
+"t": [
+"Bánh mì",
+"Counter service"
+],
+"lat": 33.76183,
+"lon": -117.95361,
+"svc": "counter",
+"pp": [
+8,
+14
+],
+"geo": "amenity",
+"src": "osm"
+},
+{
+"n": "Hangari Kalguksu",
+"c": "korean",
+"city": "Los Angeles",
+"zip": "90020",
+"a": "3470 W 6th St",
+"t": [
+"Koreatown",
+"Knife-cut noodles"
+],
+"lat": 34.06287,
+"lon": -118.2976,
+"h": "10 AM to 9 PM (10:30 PM Fri and Sat), closed Tue",
+"til": 22.5,
+"hq": "~",
+"geo": "amenity",
+"src": "osm"
+},
+{
+"n": "Kobawoo House",
+"c": "korean",
+"city": "Los Angeles",
+"zip": "90005",
+"a": "698 S Vermont Ave",
+"t": [
+"Koreatown",
+"Bossam"
+],
+"lat": 34.06003,
+"lon": -118.29093,
+"geo": "amenity",
+"src": "osm"
+},
+{
+"n": "Genwa Korean BBQ",
+"c": "kbbq",
+"city": "Los Angeles",
+"zip": "90036",
+"a": "5115 Wilshire Blvd",
+"t": [
+"Mid-Wilshire",
+"À la carte"
+],
+"lat": 34.06239,
+"lon": -118.3413,
+"h": "11 AM to 10 PM (noon on weekends)",
+"til": 22,
+"hq": "~",
+"pp": [
+35,
+55
+],
 "geo": "amenity",
 "src": "osm"
 }
