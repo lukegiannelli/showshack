@@ -240,8 +240,10 @@ function mapGroups(){const g={};(state._up||[]).forEach(e=>{if(typeof e.lat!=="n
   const k=venueKey(e);(g[k]=g[k]||{k,lat:e.lat,lon:e.lon,evs:[]}).evs.push(e);});
   return Object.values(g).map(x=>{x.evs.sort((a,b)=>a.start.localeCompare(b.start));const cnt={};x.evs.forEach(e=>{const v=vibeOf(e);if(v)cnt[v.k]=(cnt[v.k]||0)+1;});
     const top=Object.entries(cnt).sort((a,b)=>b[1]-a[1])[0];x.v=VIBES.find(v=>top&&v.k===top[0])||VIBES[0];x.d=driveEstimate(x.lat,x.lon);return x;});}
+// the same neon line icons as the home tiles, for map chips, pins and the venue sheet
+const vIcon=(v,cls="bmc-ic")=>`<svg class="${cls}" viewBox="0 0 24 24" aria-hidden="true" style="--ic:${v.c}">${v.icon}</svg>`;
 function drawMapUI(){
-  $("bMapChips").innerHTML=`<button type="button" class="chip" data-mv="all" aria-pressed="${MAPV.vibe==="all"}">All</button>`+VIBES.map(v=>`<button type="button" class="chip bmc" data-mv="${v.k}" style="--vc:${v.c}" aria-pressed="${MAPV.vibe===v.k}"><i></i>${v.name.split(" & ")[0]}</button>`).join("")
+  $("bMapChips").innerHTML=`<button type="button" class="chip" data-mv="all" aria-pressed="${MAPV.vibe==="all"}">All</button>`+VIBES.map(v=>`<button type="button" class="chip bmc" data-mv="${v.k}" style="--vc:${v.c}" aria-pressed="${MAPV.vibe===v.k}">${vIcon(v)}${v.name.split(" & ")[0]}</button>`).join("")
     +(window.NIGHT?NIGHT.chip():"");   // pool lives inside 🌙 Afters now
   $("bMapStart").hidden=!!origin;
   loadLeaflet().then(drawMap).catch(()=>{$("bMapCanvas").innerHTML='<p class="bmap-err">The map couldn\'t load. Check your connection and tap Map again.</p>';});}
@@ -260,9 +262,9 @@ function drawMap(){const L=window.L;
       L.circle([origin.lat,origin.lon],{radius:r,color:c,weight:1.5,dashArray:"5 7",fillColor:c,fillOpacity:.035,interactive:false,className:"bring"}).addTo(LMG.rings);
       L.marker([origin.lat+r/111320,origin.lon],{interactive:false,keyboard:false,icon:L.divIcon({className:"bring-l",html:`<span style="--rc:${c}">${m} min</span>`,iconSize:[60,18],iconAnchor:[30,9]})}).addTo(LMG.rings);});
     L.marker([origin.lat,origin.lon],{interactive:false,keyboard:false,zIndexOffset:900,icon:L.divIcon({className:"bmaphome",html:'<span></span>',iconSize:[16,16],iconAnchor:[8,8]})}).addTo(LMG.rings);}
-  groups.sort((a,b)=>a.evs.length-b.evs.length).forEach(g=>{const n=g.evs.length,sz=Math.round(16+Math.min(14,Math.sqrt(n)*4));
+  groups.sort((a,b)=>a.evs.length-b.evs.length).forEach(g=>{const n=g.evs.length,sz=Math.round(26+Math.min(10,Math.sqrt(n)*3));
     const far=hasO&&g.d&&g.d.mins>60;
-    const mk=L.marker([g.lat,g.lon],{title:`${g.k.split(" · ")[0]}: ${n} show${n>1?"s":""}`,riseOnHover:true,icon:L.divIcon({className:"bpin-w"+(far?" far":""),html:`<span class="bpin" style="--pc:${g.v.c};--ps:${sz}px">${n>1?n:""}</span>`,iconSize:[sz,sz],iconAnchor:[sz/2,sz/2]})});
+    const mk=L.marker([g.lat,g.lon],{title:`${g.k.split(" · ")[0]}: ${n} show${n>1?"s":""}`,riseOnHover:true,icon:L.divIcon({className:"bpin-w"+(far?" far":""),html:`<span class="bpin" style="--pc:${g.v.c};--ps:${sz}px">${vIcon(g.v,"bpin-ic")}${n>1?`<b>${n}</b>`:""}</span>`,iconSize:[sz,sz],iconAnchor:[sz/2,sz/2]})});
     mk.on("click",ev=>{L.DomEvent.stopPropagation(ev);openSheet(g);});mk.addTo(LMG.pins);});
   if(state.poolOn&&POOL.length)POOL.forEach(p=>{const mk=L.marker([p.lat,p.lon],{title:p.n,icon:L.divIcon({className:"bpool-w",html:NEON8,iconSize:[22,22],iconAnchor:[11,11]})});
     mk.on("click",ev=>{L.DomEvent.stopPropagation(ev);openPool(p);});mk.addTo(LMG.pool);});
@@ -291,7 +293,7 @@ function openSheet(g){const e0=g.evs[0],name=g.k.split(" · ")[0],city=g.k.split
   const pools=POOL.map(p=>({p,mi:miles(g.lat,g.lon,p.lat,p.lon)})).filter(x=>x.mi<=8).sort((a,b)=>a.mi-b.mi).slice(0,2);
   const near=(q,label,ic)=>`<a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(q+" near "+name+", "+city)}" target="_blank" rel="noopener">${ic} ${label}</a>`;
   const fol=isPinned(g.k);
-  sheetOpen(`<div class="bms-h" style="--pc:${g.v.c}"><i></i><div><b>${esc(name)}</b><span>${esc(city)}${g.d?` · ${g.d.real?"":"~"}${fmtMins(g.d.mins)} · ${g.d.miles} mi${g.d.real?" by road":""}`:""}</span></div><button type="button" class="bms-fol${fol?" on":""}" data-mfol="${esc(g.k)}" aria-pressed="${fol}">${ni("bell")} ${fol?"Following":"Follow"}</button></div>
+  sheetOpen(`<div class="bms-h bms-hic" style="--pc:${g.v.c}">${vIcon(g.v,"bms-ic")}<div><b>${esc(name)}</b><span>${esc(city)}${g.d?` · ${g.d.real?"":"~"}${fmtMins(g.d.mins)} · ${g.d.miles} mi${g.d.real?" by road":""}`:""}</span></div><button type="button" class="bms-fol${fol?" on":""}" data-mfol="${esc(g.k)}" aria-pressed="${fol}">${ni("bell")} ${fol?"Following":"Follow"}</button></div>
     <div class="gplace" data-gq="${esc(name+", "+city)}"></div>
     <div class="bms-list">${rows}${more}</div>
     <h3 class="bms-sub">Build your night here</h3>

@@ -215,6 +215,13 @@
 .ui-b .bmap-chips::-webkit-scrollbar{display:none}
 .ui-b .bmap-chips .chip{flex:none;display:inline-flex;align-items:center;gap:6px}
 .ui-b .bmc i{width:9px;height:9px;border-radius:50%;background:var(--vc);box-shadow:0 0 8px var(--vc)}
+/* neon vibe icons (same drawings as the home tiles) on the map chips, pins and venue sheet */
+.bmc-ic,.bpin-ic,.bms-ic{fill:none;stroke:var(--ic);stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round;flex:none;
+  filter:drop-shadow(0 0 2px var(--ic)) drop-shadow(0 0 5px color-mix(in srgb,var(--ic) 55%,transparent))}
+.bmc-ic{width:17px;height:17px}
+.ui-b .bmc[aria-pressed="true"] .bmc-ic{stroke:currentColor;filter:none}
+.bms-ic{width:28px;height:28px;--ic:var(--pc)}
+.bms-hic>i{display:none}
 .ui-b .bmap-stage{position:relative;height:calc(100dvh - 300px);min-height:360px;max-height:680px;border-radius:18px;overflow:hidden;border:1px solid rgba(255,255,255,.12);
   box-shadow:0 0 0 1px rgba(111,240,255,.08),0 0 26px -6px rgba(255,111,224,.45);background:#0b0a1c}
 .ui-b .bmap-canvas{position:absolute;inset:0;background:#0b0a1c}
@@ -224,8 +231,12 @@
 .ui-b .bmap-canvas .leaflet-bar a{background:rgba(20,14,40,.9);color:#efe9ff;border-color:rgba(255,255,255,.12)}
 .ui-b .bmap-err{position:absolute;inset:0;display:grid;place-items:center;padding:24px;text-align:center;color:#cfc6e8}
 .bpin-w,.bpool-w,.bring-l{background:none;border:0}
-.bpin{width:var(--ps);height:var(--ps);border-radius:50%;display:grid;place-items:center;background:var(--pc);color:#140b26;font:700 11px var(--mono);
-  box-shadow:0 0 0 2px #0d0820,0 0 14px 3px color-mix(in srgb,var(--pc) 70%,transparent);cursor:pointer;transition:transform .15s}
+/* venue pins: dark badge ringed in the vibe color, its neon icon inside, show count in a corner bubble */
+.bpin{position:relative;width:var(--ps);height:var(--ps);border-radius:50%;display:grid;place-items:center;background:rgba(14,8,30,.9);
+  border:1.6px solid var(--pc);box-shadow:0 0 12px 1px color-mix(in srgb,var(--pc) 65%,transparent),inset 0 0 8px -3px var(--pc);cursor:pointer;transition:transform .15s}
+.bpin-ic{width:62%;height:62%;--ic:var(--pc)}
+.bpin b{position:absolute;top:-6px;right:-7px;min-width:17px;height:17px;padding:0 4px;border-radius:9px;display:grid;place-items:center;
+  background:var(--pc);color:#140b26;font:700 10px/1 var(--mono);box-shadow:0 0 0 1.5px #0d0820}
 .bpin-w:hover .bpin,.bpin-w:focus .bpin{transform:scale(1.15)}
 .bpin-w.far{opacity:.42}
 .bpool-w svg.neon8{width:22px;height:22px;filter:drop-shadow(0 0 5px #ff6fe0)}
