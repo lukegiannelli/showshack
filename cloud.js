@@ -5,6 +5,7 @@
 (()=>{
 const {url:SB_URL,key:SB_KEY}=SH.sb;
 const LIB="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js";
+const K_EMAIL="shack-signin-email",K_SENT="shack-signin-sent";
 const K_AT="shack-sync-at",K_SESS="sb-tdahsfxcfsgalfqhsnal-auth-token",K_MSG="shack-sync-msg";
 // what syncs. Arrays and objects are combined on a device's first sign-in; after that the newest copy of each key wins.
 const KEYS=["radar-stars","radar-been","radar-starven","radar-prefs","radar-origin","shack-plog","shack-pshows","shack-nimp","shack-nights","shack-favfood","shack-fppl","shack-fseen","shack-live","shack-photos","shack-bseen"];
@@ -65,8 +66,9 @@ const esc2=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;
 window.shackCloudHTML=()=>{let body;
   if(user)body=`<span class="bcloud-t">Synced to <b>${esc2(user.email||"your account")}</b>: passport, saved nights and settings.</span><span class="bcloud-s" aria-live="polite">${esc2(status)}</span><button type="button" class="bpass-share" data-cl="out">Sign out</button>`;
   // plain text boxes (not type=email / pattern) so a stray space can't block the button; spaces are stripped as you type
-  else if(ui==="email")body=`<form class="bcloud-f" data-cl-form="email" novalidate><input type="text" inputmode="email" name="e" autocomplete="email" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="you@email.com" value="${esc2(email)}" aria-label="Your email" data-cl-strip="email"><button class="bpass-share">Email me a code</button><button type="button" class="bpass-share" data-cl="x">Cancel</button></form><span class="bcloud-s" aria-live="polite">${esc2(status)}</span>`;
-  else if(ui==="code")body=`<span class="bcloud-t">We emailed a code to <b>${esc2(email)}</b>. Type it here (check spam if it's not there in a minute):</span><form class="bcloud-f" data-cl-form="code" novalidate><input name="c" type="text" inputmode="numeric" autocomplete="one-time-code" placeholder="Code" aria-label="Code from the email" maxlength="12" data-cl-strip="code"><button class="bpass-share">Sign in</button><button type="button" class="bpass-share" data-cl="resend">Send a new code</button><button type="button" class="bpass-share" data-cl="x">Cancel</button></form><span class="bcloud-s" aria-live="polite">${esc2(status)}</span>`;
+  else if(ui==="email")body=`<span class="bcloud-t">We'll email you a 6-digit code to type in here.</span><form class="bcloud-f" data-cl-form="email" novalidate><input type="text" inputmode="email" name="e" autocomplete="email" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="you@email.com" value="${esc2(email||get(K_EMAIL)||"")}" aria-label="Your email" data-cl-strip="email"><button class="bpass-share">Email me a code</button><button type="button" class="bpass-share" data-cl="have">I already have a code</button><button type="button" class="bpass-share" data-cl="x">Cancel</button></form><span class="bcloud-s" aria-live="polite">${esc2(status)}</span>`;
+  else if(ui==="code"){const wait=resendWait();
+    body=`<span class="bcloud-t">Type the code from the email we sent to <b>${esc2(email)}</b>. <b>Don't tap the link in the email</b>: it opens your browser, not this app. Check spam if it's not there in a minute.</span><form class="bcloud-f" data-cl-form="code" novalidate><input name="c" type="text" inputmode="numeric" autocomplete="one-time-code" placeholder="6-digit code" aria-label="Code from the email" maxlength="12" data-cl-strip="code"><button class="bpass-share">Sign in</button><button type="button" class="bpass-share" data-cl="resend"${wait?" disabled":""}>${wait?`New code in ${wait}`:"Send a new code"}</button><button type="button" class="bpass-share" data-cl="x">Cancel</button></form><span class="bcloud-s" aria-live="polite">${esc2(status)}</span>`;}
   else body=`<span class="bcloud-t">Sign in with your email to keep your passport, nights and settings on all your devices, share live night links, and see friends. Free.</span><button type="button" class="bpass-share" data-cl="in">Sign in with email</button><span class="bcloud-s" aria-live="polite">${esc2(status)}</span>`;
   return `<div class="bcloud" id="bCloud">${body}</div>`;};
 function redraw(){const el=document.getElementById("bCloud");if(!el)return;el.outerHTML=window.shackCloudHTML();
@@ -79,23 +81,36 @@ document.addEventListener("click",async ev=>{const b=ev.target.closest("[data-cl
   if(a==="in"){ui="email";status="";redraw();return;}
   if(a==="x"){ui="idle";status="";redraw();return;}
   if(a==="resend"){ui="email";status="";redraw();return;}
+  if(a==="have"){const i=document.querySelector('#bCloud [name="e"]'),v=(i?i.value:"").replace(/\s+/g,"").toLowerCase();
+    if(!/^[^@]+@[^@]+\.[a-z]{2,}$/i.test(v)){status="Type your email first, then tap I already have a code.";redraw();return;}
+    email=v;put(K_EMAIL,v);ui="code";status="";redraw();return;}
   if(a==="out"){try{await sb.auth.signOut();}catch(e){}user=null;put(K_AT,null);ui="idle";status="Signed out. Everything stays on this device.";redraw();subs.forEach(f=>{try{f(null);}catch(e){}});}},true);
 document.addEventListener("submit",async ev=>{const f=ev.target.closest("[data-cl-form]");if(!f)return;ev.preventDefault();ev.stopPropagation();
   const btn=f.querySelector("button:not([type=button])");btn.disabled=true;
   try{await client();
     if(f.dataset.clForm==="email"){email=f.e.value.replace(/\s+/g,"").toLowerCase();
       if(!/^[^@]+@[^@]+\.[a-z]{2,}$/i.test(email)){status="That email doesn't look right. Check it and try again.";redraw();return;}
+      put(K_EMAIL,email);
+      // a code went out less than a minute ago: use that one instead of burning another email (the free plan allows 2 an hour)
+      const last=JSON.parse(get(K_SENT)||"null");
+      if(last&&last.e===email&&Date.now()-last.t<60e3){ui="code";status="We just sent you a code. Use the newest email.";redraw();return;}
       status="Sending…";redraw();
       const {error}=await sb.auth.signInWithOtp({email,options:{emailRedirectTo:location.origin+location.pathname}});
-      if(error)throw error;ui="code";status="";redraw();}
+      if(error){if(/rate|too many|seconds/i.test(String(error.message))){ui="code";status="The free plan sends 2 sign-in emails an hour, and that's used up. Type the code from your newest email, or wait an hour for a new one.";redraw();return;}throw error;}
+      put(K_SENT,JSON.stringify({e:email,t:Date.now()}));ui="code";status="";redraw();tick();}
     else{const token=f.c.value.replace(/\D+/g,"");
       if(token.length<6){status="Type the whole code from the email (6 or more numbers).";redraw();return;}
       status="Checking…";redraw();
       const {error}=await sb.auth.verifyOtp({email,token,type:"email"});
       if(error)throw error;}
   }catch(e){const m=String(e&&e.message||"");
-    status=/rate|too many|seconds/i.test(m)?"Too many emails for now. Try again in an hour.":/expired|invalid/i.test(m)?"That code didn't work. Check it or send a new email.":/lib/.test(m)?"Can't reach the sync service. Check your connection.":"Something went wrong. Try again.";
+    status=/rate|too many|seconds/i.test(m)?"Too many tries for now. Wait a few minutes and type the code again.":/expired|invalid/i.test(m)?"That code didn't work. Use the code from your newest email (older ones stop working when a new one is sent).":/lib/.test(m)?"Can't reach the sync service. Check your connection.":"Something went wrong. Try again.";
     redraw();}},true);
+
+// "Send a new code" waits a minute after each email, with a countdown
+function resendWait(){const last=JSON.parse(get(K_SENT)||"null");if(!last||last.e!==email)return "";const s=Math.ceil((60e3-(Date.now()-last.t))/1000);return s>0?s+"s":"";}
+let tickT=0;function tick(){clearTimeout(tickT);if(ui!=="code"||user)return;const b=document.querySelector('#bCloud [data-cl="resend"]');
+  if(b){const w=resendWait();b.disabled=!!w;b.textContent=w?`New code in ${w}`:"Send a new code";if(!w)return;}tickT=setTimeout(tick,1000);}
 
 // strip spaces as you type (email) / keep only numbers (code), so a stray space bar tap can't get in the way
 document.addEventListener("input",ev=>{const i=ev.target.closest("[data-cl-strip]");if(!i)return;
@@ -113,7 +128,10 @@ const q=new URLSearchParams(location.search),fromLink=q.has("code")||q.has("erro
 if(get(K_SESS)||fromLink)client().then(async c=>{
   if(fromLink){if(q.get("error_description")){status="That sign-in link didn't work: "+q.get("error_description");ui="email";}
     try{await c.auth.getSession();}catch(e){}
-    try{history.replaceState(null,"",location.pathname+location.hash);}catch(e){}}
+    try{history.replaceState(null,"",location.pathname+location.hash);}catch(e){}
+    // email links open the browser, which is separate from the Home Screen app on iPhone
+    if(/iPhone|iPad|iPod/.test(navigator.userAgent)&&!(matchMedia("(display-mode: standalone)").matches||navigator.standalone))
+      try{sessionStorage.setItem(K_MSG,"");status="Signed in here in Safari. Your Home Screen app is separate: open it, tap You, and sign in with the code instead.";}catch(e){}}
   const {data}=await c.auth.getSession();if(data&&data.session&&!user){user=data.session.user;subs.forEach(f=>{try{f(user);}catch(e){}});pull();}else redraw();
 }).catch(()=>{});
 })();
