@@ -525,7 +525,7 @@ function view(p,preview){if(!$("nightView"))VOPENER=document.activeElement;close
     if(b.dataset.ics){const blob=new Blob([ics(p)],{type:"text/calendar"}),a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=(p.t||"night").replace(/[^\w-]+/g,"-").slice(0,40)+".ics";document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove();},1500);return;}
     if(b.dataset.vcopy){useNight(newId(),{...p,up:Date.now()});close();openPlan();toast("Copied into your Plan tab. Your other nights are in Saved");}});
   el.querySelector(".nv-x").focus({preventScroll:true});}
-// Night Card ↔ The damage: same quarter-turn flip as the plan card
+// Night Card ↔︎ The damage: same quarter-turn flip as the plan card
 function flipCard(el,p){const card=el.querySelector(".nv-card");if(!card||card._busy)return;
   const swap=()=>{if(card.classList.contains("dmg")){card.classList.remove("dmg");card.innerHTML=card._front;}
     else{card._front=card.innerHTML;card.classList.add("dmg");card.innerHTML=`<div class="bnight nv-dmg flipped">${backHtml(p,"view")}</div>`;}el.scrollTop=0;};

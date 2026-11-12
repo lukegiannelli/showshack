@@ -333,7 +333,7 @@
       setTimeout(()=>{ball.classList.remove("dropin");busy=false;},560);},320);}
   // first visit: a ghost finger acts out the gestures until you touch the ball once (most people never find hidden swipes)
   let ghost=null;try{if(!SH.store.raw("shack-ballhint")){ghost=document.createElement("div");ghost.className="dghost";ghost.setAttribute("aria-hidden","true");
-    ghost.innerHTML='<i>👆</i><span>swipe ↔ · pull ↓ · flick ↑</span>';box.querySelector(".dstage").appendChild(ghost);}}catch(e){}
+    ghost.innerHTML='<i>👆</i><span>swipe ↔︎ · pull ↓ · flick ↑</span>';box.querySelector(".dstage").appendChild(ghost);}}catch(e){}
   const unghost=()=>{if(!ghost)return;ghost.classList.add("bye");const gh=ghost;ghost=null;setTimeout(()=>gh.remove(),300);try{SH.store.put("shack-ballhint","1");}catch(e){}};
   let ys=0,onBall=false,xt=0;
   let tx=.0,ty=.0;
