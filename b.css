@@ -308,6 +308,12 @@
 .byou-sec .bset-acts{margin-top:8px}
 .byou-sec .bset-p{margin:2px 0 6px}
 .byou-adm{border-color:rgba(255,198,107,.4)}
+.byou-badges{border-color:rgba(255,210,122,.35)}
+.byou-n{margin-left:auto;font:600 12px var(--mono);color:#FFC66B}
+.byou-bar{height:6px;border-radius:99px;background:rgba(255,255,255,.1);overflow:hidden;margin:2px 0 8px}
+.byou-bar i{display:block;height:100%;border-radius:inherit;background:linear-gradient(90deg,#FFC66B,#FF6FA5);box-shadow:0 0 8px #FFC66B}
+.byou-badges .bbadges{margin:6px 0 0}
+.byou-badges .bbadges.clip{max-height:204px;overflow:hidden;-webkit-mask-image:linear-gradient(#000 70%,transparent);mask-image:linear-gradient(#000 70%,transparent)}
 .bmiss-f{display:grid;gap:8px}
 .bmiss-f textarea,.bmiss-f input{width:100%;box-sizing:border-box;min-height:44px;padding:10px 12px;border-radius:12px;border:1px solid rgba(255,255,255,.22);background:rgba(0,0,0,.3);color:#fff;font:500 14px var(--body);resize:vertical}
 .bmiss-f .bpass-share{justify-self:start;margin:0}

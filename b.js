@@ -180,13 +180,23 @@ function show(s,noPush){
   if(s==="home"&&pushed&&!noPush){pushed=false;try{history.back();}catch(e){}}
   render(); window.scrollTo(0,0);
 }
-window.addEventListener("popstate",()=>{if(pushed){pushed=false;if(screen!=="home"){state.kind="all";state.sub=null;show("home",true);}}});
-$("bBack").onclick=()=>goHome();
+// Opening a venue's shows from the Venues tab remembers where you were, so Back (the ‹ button or a back swipe)
+// returns to that venue card on Venues instead of Home.
+let backTo=null,subPushed=false;
+function openVenueShows(k){backTo={s:"venues",y:window.scrollY,k};state.venue=k;state.view="list";state.kind="all";state.sub=null;cur="venue";show("results");
+  try{history.pushState({b:2},"");subPushed=true;}catch(e){subPushed=false;}}
+function restoreBack(){const b=backTo;backTo=null;state.venue="all";state.kind="all";state.sub=null;state.view="venues";show("venues",true);
+  setTimeout(()=>{const pin=b.k&&$("list").querySelector(`[data-pinv="${CSS.escape(b.k)}"]`),card=pin&&pin.closest(".vcard");
+    if(card){const o=card.querySelector("[data-vmore]");if(o&&o.getAttribute("aria-expanded")!=="true")o.click();card.scrollIntoView({block:"center"});}else window.scrollTo(0,b.y);},60);}
+window.addEventListener("popstate",()=>{
+  if(subPushed){subPushed=false;if(backTo&&screen==="results"){restoreBack();return;}}
+  if(pushed){pushed=false;backTo=null;if(screen!=="home"){state.kind="all";state.sub=null;show("home",true);}}});
+$("bBack").onclick=()=>{if(backTo&&screen==="results"){if(subPushed){history.back();return;}restoreBack();return;}goHome();};
 window.BUI={show,goHome,get screen(){return screen;}};
-function goHome(){state.venue="all";state.kind="all";state.sub=null;state.genre="all";state.view="list";show("home");}
+function goHome(){backTo=null;state.venue="all";state.kind="all";state.sub=null;state.genre="all";state.view="list";show("home");}
 $("bTabs").addEventListener("click",ev=>{const b=ev.target.closest("[data-tab]");if(!b)return;const t=b.dataset.tab;
   if(t==="shows"){goHome();return;}
-  state.sub=null;state.surprise=null;state.venue="all";
+  backTo=null;state.sub=null;state.surprise=null;state.venue="all";
   if(t==="map"){state.kind="all";state.view="map";}
   else if(t==="venues"){state.view="venues";}
   else if(t==="saved"){state.kind="starred";state.when="any";state.view="list";cur="saved";}
@@ -754,7 +764,7 @@ $("list").addEventListener("click",ev=>{if(screen!=="venues")return;
   const pn=ev.target.closest("[data-pinv]");if(pn){const k=pn.dataset.pinv;if(!isPinned(k))markSeen(k);else undoToast(`Unfollowed ${k.split(" · ")[0]}`,()=>{togglePin(k);markSeen(k);render();syncFollowDot();});return;}
   const bnn=ev.target.closest("[data-been]");if(bnn&&BEEN.has(bnn.dataset.been)){const k=bnn.dataset.been;undoToast(`Took ${k.split(" · ")[0]} out of your passport`,()=>{BEEN.add(k);saveBeen();render();});}
   const mp=ev.target.closest("[data-vmap]");if(mp){ev.stopPropagation();focusVenue(mp.dataset.vmap);return;}
-  const vv=ev.target.closest("[data-venue]");if(vv){ev.stopPropagation();state.venue=vv.dataset.venue;state.view="list";state.kind="all";state.sub=null;cur="venue";show("results");return;}
+  const vv=ev.target.closest("[data-venue]");if(vv){ev.stopPropagation();openVenueShows(vv.dataset.venue);return;}
   const pc=ev.target.closest("[data-pcmp]");if(pc){ev.stopPropagation();comparLink(pc);return;}
   const ps=ev.target.closest("[data-pshare]");if(ps){ev.stopPropagation();shareYear(ps);return;}
   // show log: star rating per stamped venue
@@ -771,7 +781,11 @@ function shareYear(ps){const n=[...BEEN].length,P=PASS||{};
       if(file&&navigator.canShare&&navigator.canShare({files:[file]}))return navigator.share({files:[file],text:t}).catch(()=>{});
       if(file){const a=document.createElement("a");a.href=URL.createObjectURL(file);a.download=file.name;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove();},800);ps.textContent="Image saved ✓";}
       if(navigator.clipboard)navigator.clipboard.writeText(t).catch(()=>{});else if(navigator.share)navigator.share({text:t}).catch(()=>{});});}
-window.SHACK_PASS={shareYear:btn=>shareYear(btn),compare:btn=>comparLink(btn),get stamps(){return BEEN.size;}};
+// badges right now, for the You page (same rules as the passport card)
+function badgesNow(){const ks=new Set([...(state._up||[]).filter(e=>e.kind!=="art"&&e.kind!=="volunteer").map(venueKey),...BEEN]);return badges([...ks].map(k=>venueInfo(k)));}
+window.SHACK_PASS={shareYear:btn=>shareYear(btn),compare:btn=>comparLink(btn),get stamps(){return BEEN.size;},get shows(){return showCount();},
+  badgesHtml(){const b=badgesNow(),on=b.filter(x=>x.on);return {earned:on.length,total:b.length,html:[...on,...b.filter(x=>!x.on).sort((p,q)=>q.have/q.need-p.have/p.need)].map(badgeHtml).join("")};},
+  open(){const t=document.querySelector('#bTabs [data-tab="venues"]');if(t)t.click();setTimeout(()=>{const p=document.querySelector(".bpass");if(p)p.scrollIntoView({block:"start",behavior:"smooth"});},300);}};
 // the rest of the passport clicks (stamps, log, backup)
 function passClicks2(ev){
   const stp=ev.target.closest("[data-pstamp]");if(stp){ev.stopPropagation();const fromCard=stp.classList.contains("vlogadd");

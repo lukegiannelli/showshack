@@ -27,6 +27,7 @@ function youHTML(){const u=C.user,owner=SH.store.raw("shack-owner")==="1";
     <p class="binfo-kick"><img class="bshack-ic" src="hut.webp?v=2" alt="">you</p>
     <h2 id="bYouH">${u?"Hey"+(u.email?", <span class='byou-mail'>"+E(u.email)+"</span>":""):"Make the Shack yours"}</h2>
     ${u?"":`<p class="bset-p">Everything works without an account. Sign in (just your email, free) to sync across devices, get reminders and see friends.</p>`}
+    ${badgeSec()}
     <section class="byou-sec"><h3>☁ Account &amp; sync</h3>${window.shackCloudHTML?shackCloudHTML():""}</section>
     <section class="byou-sec"><h3>🔔 Reminders</h3><div id="bRem">${remHTML()}</div></section>
     <section class="byou-sec"><h3>👥 Friends &amp; leaderboard</h3>${window.shackSocialHTML?shackSocialHTML():""}</section>
@@ -35,6 +36,17 @@ function youHTML(){const u=C.user,owner=SH.store.raw("shack-owner")==="1";
     ${u&&(admin||owner)?`<section class="byou-sec byou-adm"><h3>📊 Owner: review</h3><div id="bAdm">${admHTML(owner)}</div></section>`:""}
     <div class="bset-acts"><button type="button" data-yset>Settings &amp; your data</button></div>
     <button type="button" class="binfo-ok" data-close>Done</button>`;}
+// your badge tracker: same badges as the passport, earned ones first, locked ones filling in
+function badgeSec(){const P=window.SHACK_PASS;if(!P||!P.badgesHtml)return "";let b;try{b=P.badgesHtml();}catch(e){return "";}
+  const st=P.stamps,sh=P.shows;
+  return `<section class="byou-sec byou-badges"><h3>🏆 Your badges <span class="byou-n">${b.earned} of ${b.total}</span></h3>
+    <div class="byou-bar" role="img" aria-label="${b.earned} of ${b.total} badges earned"><i style="width:${Math.round(b.earned/b.total*100)}%"></i></div>
+    <p class="bset-p">${st} venue${st===1?"":"s"} stamped · ${sh} show${sh===1?"":"s"} logged</p>
+    <div class="bbadges${allBadges?"":" clip"}">${b.html}</div>
+    <div class="bset-acts"><button type="button" data-yball>${allBadges?"Show fewer":`Show all ${b.total} badges`}</button><button type="button" data-ypass>Open my passport</button></div></section>`;}
+let allBadges=false;
+document.addEventListener("click",ev=>{const t=ev.target.closest("[data-yball]");if(!t)return;ev.preventDefault();allBadges=!allBadges;
+  const g=t.closest(".byou-badges").querySelector(".bbadges");g.classList.toggle("clip",!allBadges);t.textContent=allBadges?"Show fewer":t.textContent.replace("Show fewer","Show all badges");if(!allBadges)t.closest(".byou-badges").scrollIntoView({block:"start",behavior:"smooth"});},true);
 function ensureDialog(id,label){let d=$(id);if(!d){d=document.createElement("dialog");d.id=id;d.className="binfo bset byou";d.setAttribute("aria-labelledby",label);d.innerHTML=`<div class="binfo-in"></div>`;document.body.appendChild(d);
   d.addEventListener("click",ev=>{if(ev.target===d||ev.target.closest("[data-close]"))dlgClose(d);});}return d;}
 function openYou(focus){const d=ensureDialog("bYou","bYouH");d.querySelector(".binfo-in").innerHTML=youHTML();dlgOpen(d);
@@ -50,6 +62,7 @@ const tabs=$("bTabs");
 if(tabs&&!$("bYouTab")){tabs.insertAdjacentHTML("beforeend",`<button type="button" id="bYouTab" aria-haspopup="dialog"><svg class="ni" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>You</button>`);}
 document.addEventListener("click",ev=>{
   if(ev.target.closest("#bYouTab,[data-yopen]")){ev.preventDefault();ev.stopPropagation();openYou();return;}
+  if(ev.target.closest("[data-ypass]")){const y=$("bYou");if(y)dlgClose(y);if(window.SHACK_PASS)SHACK_PASS.open();return;}
   if(ev.target.closest("[data-yset]")){const y=$("bYou");if(y)dlgClose(y);const g=$("bSetBtn");if(g)g.click();return;}
   const sh=ev.target.closest("[data-yshare]");if(sh){ev.preventDefault();ev.stopPropagation();openShare();return;}},true);
 
