@@ -107,7 +107,7 @@
 
 /* bottom tabs */
 .btabs{display:none}
-.ui-b .btabs{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));position:fixed;left:0;right:0;bottom:0;z-index:40;
+.ui-b .btabs{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));position:fixed;left:0;right:0;bottom:0;z-index:40;
   padding:6px 6px calc(6px + env(safe-area-inset-bottom,0px));background:rgba(20,16,30,.94);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);border-top:1px solid rgba(255,255,255,.08)}
 .btabs button{min-height:52px;border:0;background:none;color:#A39DB3;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font:600 11px var(--body);cursor:pointer;-webkit-tap-highlight-color:transparent}
 .btabs button .ni{width:23px;height:23px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
@@ -298,6 +298,51 @@
 .nic.nemo{width:1.2em;height:1.2em;vertical-align:-.25em;margin:0 .06em;stroke-width:1.9}
 .bbadge .nic.nemo{width:22px;height:22px;margin:0}
 .bbadge:not(.on) .nic{--ic:#cfc6e8}
+/* You sheet (you.js) */
+.byou .binfo-in{padding-bottom:14px}
+.byou h2{margin:6px 0 4px}
+.byou-mail{font-size:.7em;color:#cfc6e8;word-break:break-all}
+.byou-sec{margin-top:14px;padding:12px;border-radius:16px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1)}
+.byou-sec h3{margin:0 0 6px;font:700 14px var(--body);color:#fff;display:flex;align-items:center;gap:6px}
+.byou-sec .bcloud{margin-top:0;padding-top:0;border-top:0}
+.byou-sec .bset-acts{margin-top:8px}
+.byou-sec .bset-p{margin:2px 0 6px}
+.byou-adm{border-color:rgba(255,198,107,.4)}
+.bmiss-f{display:grid;gap:8px}
+.bmiss-f textarea,.bmiss-f input{width:100%;box-sizing:border-box;min-height:44px;padding:10px 12px;border-radius:12px;border:1px solid rgba(255,255,255,.22);background:rgba(0,0,0,.3);color:#fff;font:500 14px var(--body);resize:vertical}
+.bmiss-f .bpass-share{justify-self:start;margin:0}
+.badm-h{margin:12px 0 6px;font:700 12.5px var(--body);color:#FFC66B}
+.badm-list{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+.badm-list li{display:flex;align-items:center;gap:6px;padding:8px;border-radius:12px;background:rgba(0,0,0,.2)}
+.badm-list li.off{opacity:.55}
+.badm-list li>div{flex:1;min-width:0;display:grid;gap:2px}
+.badm-list li span{font-size:12px;color:var(--muted)}
+.badm-list li a{color:#7FD4FF}
+.badm-list .bpass-share{margin:0;flex:none;min-height:36px;padding:0 10px}
+/* Share sheet */
+.bshr-list{display:grid;gap:6px;margin-top:10px}
+.bshr-h{margin:8px 0 0;font:600 12px var(--mono);letter-spacing:.4px;text-transform:uppercase;color:#bfeaff}
+.bshr{display:flex;align-items:center;gap:12px;width:100%;min-height:56px;padding:8px 12px;border-radius:14px;border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.06);color:#fff;text-align:left;cursor:pointer;font:inherit}
+.bshr:active{transform:scale(.99)}
+.bshr i{font-style:normal;flex:none;width:28px;display:flex;justify-content:center}
+.bshr i .nic{width:24px;height:24px}
+.bshr span{display:grid;gap:2px;min-width:0}
+.bshr b{font:700 14px var(--body)}
+.bshr small{font-size:12px;color:var(--muted)}
+/* Saved: one-time explainer */
+.bexpl{display:grid;gap:6px;margin:0 0 12px;padding:12px 14px;border-radius:16px;background:linear-gradient(135deg,rgba(255,111,165,.14),rgba(127,212,255,.1));border:1px solid rgba(255,255,255,.16);font-size:13px;color:#e8e2f8}
+.bexpl>b{font:700 14px var(--body);color:#fff}
+.bexpl span{display:flex;gap:6px;align-items:baseline}
+.bexpl span i{font-style:normal;color:#FFC66B;min-width:1.2em;display:inline-flex;justify-content:center}
+.bexpl span i .nic{width:1em;height:1em;margin:0}
+.bexpl span b{color:#fff}
+.bexpl .bpass-share{justify-self:start;margin:4px 0 0}
+/* price age + empty search */
+.pstale{font-style:normal;color:#FFC66B}
+.bnomatch{display:grid;gap:6px}
+.bnm-v{display:block;margin-top:6px;font:600 12px var(--body);color:#cfc6e8}
+.bnm-row{display:flex;flex-wrap:wrap;gap:6px}
+.bnm-row .chip{margin:0}
 /* flyers: Home row + the add-a-flyer sheet */
 .bfly-sub{margin:-4px 0 8px;font-size:13px;color:var(--muted)}
 .fly-open{overflow:hidden}

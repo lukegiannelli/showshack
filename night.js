@@ -478,7 +478,7 @@ function focusFirst(){setTimeout(()=>{const i=document.querySelector("#bNight .b
 const sumText=p=>[`🌙 ${p.t||"Our night"}${p.d?" · "+fmtD(p.d):""}`,...p.s.map(s=>`${s.tm?fmtT(s.tm)+" ":""}${TYPES[s.k][0]} ${s.n||TYPES[s.k][1]}${s.p?" @ "+s.p:""}`)].join("\n");
 // signed in (social.js): a live link that keeps showing your latest changes; otherwise a snapshot link with the plan inside it
 async function shareNight(p,btn,id){let url=null;if(id&&window.SHACK_LIVE)try{url=await SHACK_LIVE.link(id,cleanPlan(p));}catch(e){url=null;}
-  if(!url){url=await linkFor(p);if(id&&window.SHACK_LIVE&&!SHACK_LIVE.on())toast("Tip: sign in on Venues → Show passport and your links update by themselves");}
+  if(!url){url=await linkFor(p);if(id&&window.SHACK_LIVE&&!SHACK_LIVE.on())toast("Tip: sign in on the You tab and your links update by themselves","Sign in",()=>{if(window.SHACK_YOU)SHACK_YOU.open("signin");});}
   const text=sumText(cleanPlan(p));
   if(navigator.share){try{await navigator.share({title:p.t||"Our night",text:text+"\n",url});return;}catch(e){if(e&&e.name==="AbortError")return;}}
   if(typeof copyOut==="function")copyOut(text+"\n"+url,btn);else{try{await navigator.clipboard.writeText(text+"\n"+url);toast("Link copied");}catch(e){prompt("Copy this link",url);}}}
@@ -611,7 +611,7 @@ function savedRow(on){savedOn=on;if(on)drawSaved();else{const el=$("bNights");if
 const allNights=()=>NIGHTS.map(x=>({id:x.id,p:cleanPlan(x.p)}));
 function mergeNights(arr){if(!Array.isArray(arr))return 0;let n=0;arr.slice(0,MAXN).forEach(x=>{if(!x||typeof x.id!=="string"||NIGHTS.some(y=>y.id===x.id))return;NIGHTS.push({id:x.id.slice(0,20),p:cleanPlan(x.p)});n++;});
   NIGHTS.sort((a,b)=>(b.p.up||0)-(a.p.up||0));if(NIGHTS.length>MAXN)NIGHTS.length=MAXN;putNights();drawSaved();drawBuilder();return n;}
-window.NIGHT={rideFare,LASTTRAIN,spots:allAfters,savedRow,stopFor:afterStop,toast,nightAt,allNights,mergeNights,pack,unpack,AC,IC,ic,EXP,cost,hrs,grp,ready:()=>AFTERS.length>0,surpriseNight,chip,map,sheet,encode,decode,cleanPlan,addStop,view,get plan(){return plan;}};
+window.NIGHT={shareNight,rideFare,LASTTRAIN,spots:allAfters,savedRow,stopFor:afterStop,toast,nightAt,allNights,mergeNights,pack,unpack,AC,IC,ic,EXP,cost,hrs,grp,ready:()=>AFTERS.length>0,surpriseNight,chip,map,sheet,encode,decode,cleanPlan,addStop,view,get plan(){return plan;}};
 if(keep(plan)&&!NIGHTS.some(x=>x.id===planId))upsertNight();else putNights();
 const go=()=>{mount();inject(document.body);fromHash(window.NIGHT_HASH||location.hash);};
 if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",go);else go();

@@ -62,7 +62,7 @@ function drawRow(){const row=$("bFly");if(!row||!window.SHACK_FLIP)return;const 
 const rowEl=$("bFly");
 if(rowEl){rowEl.addEventListener("click",async ev=>{
   const rp=ev.target.closest("[data-frep]"),dl=ev.target.closest("[data-fdel]");
-  if(rp){ev.stopPropagation();if(!C.user){alert("Sign in on Venues → Show passport to report a listing.");return;}
+  if(rp){ev.stopPropagation();if(!C.user){if(window.SHACK_YOU)SHACK_YOU.open("signin");return;}
     if(!confirm("Report this show as wrong, fake or a repeat? After 3 reports it's hidden."))return;
     try{const sb=await C.client();const {error}=await sb.rpc("report_show",{p_id:rp.dataset.frep});if(error)throw error;rp.textContent="Reported ✓";rp.disabled=true;}catch(e){rp.textContent="Couldn't report";}return;}
   if(dl){ev.stopPropagation();if(!confirm("Remove the show you added?"))return;
@@ -142,7 +142,7 @@ function form(v,status){const vs=[...venues().keys()].sort();
     </form>`);}
 document.addEventListener("click",ev=>{const b=ev.target.closest("[data-fly]");if(!b)return;ev.preventDefault();const a=b.dataset.fly;
   if(a==="close")close();
-  if(a==="signin"){close();const t=document.querySelector('#bTabs [data-tab="venues"]');if(t)t.click();setTimeout(()=>{if(!C.signIn())setTimeout(()=>C.signIn(),600);},500);}
+  if(a==="signin"){close();if(window.SHACK_YOU)SHACK_YOU.open("signin");}
   if(a==="again")start();});
 document.addEventListener("keydown",ev=>{if(ev.key==="Escape"&&$("flySheet")&&!$("flySheet").hidden)close();});
 const add=$("bFlyAdd");if(add)add.addEventListener("click",start);

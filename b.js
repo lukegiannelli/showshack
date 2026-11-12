@@ -102,7 +102,7 @@ window.SHACK_PV=e=>MUSIC_K.has(e.kind)&&!!artistQ(e)?`<button type="button" clas
 function backSide(e){const pi=priceInfo(e),d=parseDay(e.start);
   const tix=safeUrl(e.url),dest=encodeURIComponent((e.venue||"")+", "+(e.city||""));
   const maps=`https://www.google.com/maps/dir/?api=1${origin&&origin.address?"&origin="+encodeURIComponent(origin.address):""}&destination=${dest}&travelmode=driving`;
-  const pr=pi.sold?"Sold out":pi.free?"Free":pi.none?"Price not listed yet":pi.est?`≈$${Math.round(pi.lo)}–${Math.round(pi.hi)} typical`:`From $${Math.round(pi.lo)}${!pi.est&&e.priceAsOf?" · checked "+fmtShort(e.priceAsOf):""}`;
+  const pr=pi.sold?"Sold out":pi.free?"Free":pi.none?"Price not listed yet":pi.est?`≈$${Math.round(pi.lo)}–${Math.round(pi.hi)} typical`:`From $${Math.round(pi.lo)}${!pi.est&&e.priceAsOf?" · checked "+fmtShort(e.priceAsOf)+(priceStale(e)?" · may have changed":""):""}`;
   const lq=(e.kind!=="openmic"&&e.kind!=="contact")?String(e.title||"").replace(/\s*\(.*?\)\s*/g," ").split(/:| & Friends/)[0].trim():"";
   const when=(isRec(e)&&e.recurrence?e.recurrence.text+" · next ":"")+d.toLocaleDateString("en-US",{weekday:"short",month:"short",day:"numeric"})+(e.time?" · "+e.time:"");
   const note=e.note||e.priceNote||"";
@@ -263,7 +263,7 @@ function after(){
     const st=streak(),sk=$("bStreak");sk.hidden=!st.n&&!st.best;
     if(!sk.hidden)sk.innerHTML=st.n?`🔥 <b>${st.n} week${st.n>1?"s":""} in a row</b> out${st.thisWeek?"":" · nothing logged this week yet, keep it going"}${st.best>st.n?` · best ${st.best}`:""}`:`💤 Streak ended · your best was ${st.best} week${st.best>1?"s":""} in a row`;
     const bc=bBecause(up),bsig=bc?skey(bc.s)+bc.xs.map(skey).join("|"):"";$("bBecBox").hidden=!bc;
-    if(bsig!==$("bBec").dataset.sig){$("bBec").dataset.sig=bsig;if(bc){const tt=String(bc.s.title).split(/[:(]/)[0].trim();$("bBecH").textContent="Because you starred "+(tt.length>30?tt.slice(0,30).replace(/\s+\S*$/,"")+"…":tt);
+    if(bsig!==$("bBec").dataset.sig){$("bBec").dataset.sig=bsig;if(bc){const tt=String(bc.s.title).split(/[:(]/)[0].trim();$("bBecH").textContent="Because you're into "+(tt.length>30?tt.slice(0,30).replace(/\s+\S*$/,"")+"…":tt);
       $("bBec").innerHTML=bc.xs.map(e=>flipCardHtml(e,`<i style="--vc:#FFC66B"></i>${esc((e.genres||[]).find(x=>(bc.s.genres||[]).includes(x))||(venueKey(e)===venueKey(bc.s)?"Same venue":"Same vibe"))}`)).join("");}}
     const dr=bDrops(up),dsig=dr.map(e=>skey(e)+e.priceFrom).join("|");$("bDropBox").hidden=!dr.length;
     if(dsig!==$("bDrop").dataset.sig){$("bDrop").dataset.sig=dsig;$("bDropN").textContent=dr.length?"cheaper than last check":"";
@@ -310,7 +310,7 @@ function trust(){const m=window.SHACK_META||{},el=$("bInfo");if(!el||!state.even
 /* ---- What's new: a one-time sheet (again from Settings) with a "Show me" for each thing ---- */
 const WN_VER="2026-11";
 const WHATSNEW=[["🍜","Space ramen","Pull the disco ball down. Four swipes serve a random food spot and afters.",()=>{goHome();setTimeout(()=>$("disco").scrollIntoView({behavior:"smooth",block:"center"}),250);}],
-  ["🆕","New rows on Home","Recently added, Price dropped, Because you starred, and your going-out streak.",()=>{goHome();setTimeout(()=>{const t=[$("bBecBox"),$("bDropBox"),$("bFreshBox")].find(x=>x&&!x.hidden);if(t)t.scrollIntoView({behavior:"smooth",block:"start"});},250);}],
+  ["🆕","New rows on Home","Recently added, Price dropped, Because you're into, and your going-out streak.",()=>{goHome();setTimeout(()=>{const t=[$("bBecBox"),$("bDropBox"),$("bFreshBox")].find(x=>x&&!x.hidden);if(t)t.scrollIntoView({behavior:"smooth",block:"start"});},250);}],
   ["🌙","Your nights, saved","Every plan you build is kept in Saved. Do a past night again with one tap.",()=>{const t=document.querySelector('#bTabs [data-tab="saved"]');if(t)t.click();}],
   ["⏱","Smarter planning","Drag stops to reorder, Tighten the night, the forecast, and drive vs rideshare home.",()=>{const t=document.querySelector('#bTabs [data-tab="budget"]');if(t)t.click();setTimeout(()=>{const n=$("bNight");if(n)n.scrollIntoView({behavior:"smooth",block:"start"});},200);}],
   ["🎟️","Show passport","Tap a stamp to log past shows, earn hidden badges, and compare with a friend.",()=>{const t=document.querySelector('#bTabs [data-tab="venues"]');if(t)t.click();}],
@@ -322,7 +322,7 @@ $("bNew").addEventListener("click",ev=>{const d=$("bNew");if(ev.target===d||ev.t
   const b=ev.target.closest("[data-wn]");if(b){dlgClose(d);WHATSNEW[+b.dataset.wn][3]();}});
 /* ---- Settings → Your data ---- */
 function setStats(){const nn=window.NIGHT&&NIGHT.allNights?NIGHT.allNights().length:0;
-  $("bSetStats").innerHTML=[[state.stars.size,"starred"],[nn,"nights"],[BEEN.size,"stamps"],[showCount(),"shows logged"],[(state.pinV||[]).length,"following"]].map(([n,l])=>`<span><b>${n}</b>${l}</span>`).join("");}
+  $("bSetStats").innerHTML=[[state.stars.size,"interested"],[nn,"nights"],[BEEN.size,"stamps"],[showCount(),"shows logged"],[(state.pinV||[]).length,"following"]].map(([n,l])=>`<span><b>${n}</b>${l}</span>`).join("");}
 $("bSetBtn").onclick=()=>{setStats();$("bSetOwner").hidden=SH.store.raw("shack-owner")!=="1";$("bSetMsg").textContent="";const c=$("bSet").querySelector("[data-sclear]");c.classList.remove("sure");c.textContent="Clear everything on this phone";dlgOpen($("bSet"));};
 $("bSet").addEventListener("click",ev=>{const d=$("bSet");if(ev.target===d||ev.target.closest("[data-close]")){dlgClose(d);return;}
   if(ev.target.closest("[data-sback]")){backupPassport();$("bSetMsg").textContent="Backup file saved. Keep it somewhere safe (Files, iCloud, email to yourself).";return;}
@@ -705,9 +705,8 @@ renderVenues=function(){const list=$("list");loadStations();
       :`<p>Tap <b>I've been here</b> on any venue you've been to. Shows you star stamp themselves the day after.</p>`}
     ${(()=>{const on=bdg.filter(b=>b.on),lk=bdg.length-on.length;return `<p class="bbadge-n">${on.length?`${on.length} of ${bdg.length} badges earned`:`0 of ${bdg.length} badges yet`}${lk?` · <span>the rest fill in as you go</span>`:""}</p>`;})()}
     <div class="bbadges">${[...bdg.filter(b=>b.on),...bdg.filter(b=>!b.on).sort((a,b)=>b.have/b.need-a.have/a.need)].map(badgeHtml).join("")}</div>
-    <div class="bpass-acts">${beenV.length?`<button type="button" class="bpass-share" data-pshare="1">${ni("share")} Share my year</button><button type="button" class="bpass-share" data-ppmap="1">${ni("map")} Passport map</button><button type="button" class="bpass-share" data-pcmp="1">↔ Compare with a friend</button>`:""}
-      <button type="button" class="bpass-share" data-pback="1">Back up passport + nights</button><label class="bpass-share">Restore<input type="file" accept="application/json,.json" data-prest hidden></label></div>
-    ${window.shackCloudHTML?shackCloudHTML():""}${window.shackSocialHTML?shackSocialHTML():""}
+    <div class="bpass-acts">${beenV.length?`<button type="button" class="bpass-share" data-yshare="passport">${ni("share")} Share</button><button type="button" class="bpass-share" data-ppmap="1">${ni("map")} Passport map</button>`:""}
+      <button type="button" class="bpass-share" data-yopen="1">☁ Sync, friends &amp; leaderboard</button></div>
   </div></div></div>`;
   crawlCalc(infos);
   const chips=vChips(infos),shown=vfOn()?infos.filter(v=>vMatch(v)):infos;
@@ -757,7 +756,13 @@ $("list").addEventListener("click",ev=>{if(screen!=="venues")return;
   const mp=ev.target.closest("[data-vmap]");if(mp){ev.stopPropagation();focusVenue(mp.dataset.vmap);return;}
   const vv=ev.target.closest("[data-venue]");if(vv){ev.stopPropagation();state.venue=vv.dataset.venue;state.view="list";state.kind="all";state.sub=null;cur="venue";show("results");return;}
   const pc=ev.target.closest("[data-pcmp]");if(pc){ev.stopPropagation();comparLink(pc);return;}
-  const ps=ev.target.closest("[data-pshare]");if(ps){ev.stopPropagation();const n=[...BEEN].length,P=PASS||{};
+  const ps=ev.target.closest("[data-pshare]");if(ps){ev.stopPropagation();shareYear(ps);return;}
+  // show log: star rating per stamped venue
+  const rt=ev.target.closest("[data-rate]");if(rt){ev.stopPropagation();const k=rt.dataset.rk,x=+rt.dataset.rate,o=PLOG[k]||{};o.r=o.r===x?0:x;PLOG[k]=o;savePlog();
+    rt.parentNode.querySelectorAll("[data-rate]").forEach(b=>b.setAttribute("aria-pressed",String(o.r>=+b.dataset.rate)));return;}
+  passClicks2(ev);},true);
+// "Share my year": a picture + a line of text (also used by the Share sheet in you.js)
+function shareYear(ps){const n=[...BEEN].length,P=PASS||{};
     const top=(P.regs||[]).filter(x=>x[1]).sort((a,b)=>b[1]-a[1])[0],earned=(P.bdg||[]).filter(b=>b.on).map(b=>b.n);
     const fav=Object.entries(PLOG).filter(([,o])=>o.r>=5).map(([k])=>k.split(" · ")[0]).slice(0,3);
     const yr=String(new Date().getFullYear()),ns=[...BEEN].reduce((c,k)=>c+pastShows(k).filter(x=>x.d.startsWith(yr)).length,0);
@@ -765,10 +770,10 @@ $("list").addEventListener("click",ev=>{if(screen!=="venues")return;
     yearImage(ns,top).then(file=>{
       if(file&&navigator.canShare&&navigator.canShare({files:[file]}))return navigator.share({files:[file],text:t}).catch(()=>{});
       if(file){const a=document.createElement("a");a.href=URL.createObjectURL(file);a.download=file.name;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove();},800);ps.textContent="Image saved ✓";}
-      if(navigator.clipboard)navigator.clipboard.writeText(t).catch(()=>{});else if(navigator.share)navigator.share({text:t}).catch(()=>{});});return;}
-  // show log: star rating per stamped venue
-  const rt=ev.target.closest("[data-rate]");if(rt){ev.stopPropagation();const k=rt.dataset.rk,x=+rt.dataset.rate,o=PLOG[k]||{};o.r=o.r===x?0:x;PLOG[k]=o;savePlog();
-    rt.parentNode.querySelectorAll("[data-rate]").forEach(b=>b.setAttribute("aria-pressed",String(o.r>=+b.dataset.rate)));return;}
+      if(navigator.clipboard)navigator.clipboard.writeText(t).catch(()=>{});else if(navigator.share)navigator.share({text:t}).catch(()=>{});});}
+window.SHACK_PASS={shareYear:btn=>shareYear(btn),compare:btn=>comparLink(btn),get stamps(){return BEEN.size;}};
+// the rest of the passport clicks (stamps, log, backup)
+function passClicks2(ev){
   const stp=ev.target.closest("[data-pstamp]");if(stp){ev.stopPropagation();const fromCard=stp.classList.contains("vlogadd");
     PSEL=fromCard?stp.dataset.pstamp:PSEL===stp.dataset.pstamp?"":stp.dataset.pstamp;
     if(fromCard){VF.t="";VF.f.clear();VF.rg="";VQ="";}   // the passport hides while filtering or searching
@@ -779,7 +784,7 @@ $("list").addEventListener("click",ev=>{if(screen!=="venues")return;
   const pd=ev.target.closest("[data-pdel]");if(pd){ev.stopPropagation();const k=pd.dataset.pk,gone=(PSHOWS[k]||[]).find(x=>x.id===pd.dataset.pdel);PSHOWS[k]=(PSHOWS[k]||[]).filter(x=>x.id!==pd.dataset.pdel);if(!PSHOWS[k].length)delete PSHOWS[k];savePshows();render();
     if(gone)undoToast(`Removed ${gone.t}`,()=>{(PSHOWS[k]=PSHOWS[k]||[]).push(gone);savePshows();render();});return;}
   if(ev.target.closest("[data-ppmap]")){ev.stopPropagation();MAPV.pass=true;show("map");return;}
-  if(ev.target.closest("[data-pback]")){ev.stopPropagation();backupPassport();return;}},true);
+  if(ev.target.closest("[data-pback]")){ev.stopPropagation();backupPassport();return;}}
 // note on a stamped venue: saved as you type
 $("list").addEventListener("input",ev=>{const n=ev.target.closest("[data-vnote]");if(!n)return;const k=n.dataset.vnote,o=PLOG[k]||{};o.n=n.value.slice(0,140);PLOG[k]=o;savePlog();});
 $("list").addEventListener("change",ev=>{const f=ev.target.closest("[data-prest]");if(f&&f.files&&f.files[0])restorePassport(f.files[0]);});

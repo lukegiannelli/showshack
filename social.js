@@ -60,7 +60,7 @@ function takePending(){let c=null;try{c=localStorage.getItem(PK);}catch(e){}if(!
   addFriend(c).catch(e=>{msg=errMsg(e);redraw();});}
 (()=>{const m=/^#F=([A-Z0-9]{6,12})$/i.exec(window.NIGHT_HASH||location.hash||"");if(!m)return;
   try{localStorage.setItem(PK,m[1].toUpperCase());history.replaceState(null,"",location.pathname);}catch(e){}
-  setTimeout(()=>{if(C.user)takePending();else say("A friend invited you! Sign in on Venues → Show passport to connect.");},2500);})();
+  setTimeout(()=>{if(C.user)takePending();else if(window.NIGHT&&NIGHT.toast)NIGHT.toast("A friend invited you! Sign in to connect.","Sign in",()=>{if(window.SHACK_YOU)SHACK_YOU.open("signin");});},2500);})();
 const errMsg=e=>{const m=String(e&&e.message||"");return /no one has/.test(m)?"No one has that code. Check it and try again.":/own code/.test(m)?"That's your own code 🙂":/cap:/.test(m)?"You've hit the limit for that.":/name/.test(m)?"Names need 1 to 30 characters.":"Something went wrong. Try again.";};
 
 document.addEventListener("click",async ev=>{const b=ev.target.closest("[data-so]");if(!b)return;ev.stopPropagation();ev.preventDefault();const a=b.dataset.so;
@@ -133,7 +133,7 @@ async function doDecorate(){const list=document.body;
     if(!box||box.dataset.k!==k||box.dataset.done!==sig){if(box)box.remove();
       panel.querySelector(".bplog-h").insertAdjacentHTML("afterend",C.user?`<div class="bphoto" data-k="${E(k)}" data-done="${E(sig)}">${path?`<img alt="Your photo from here" loading="lazy">`:""}
         <label class="bpass-share">📷 ${path?"Change photo":"Add a photo"}<input type="file" accept="image/*" data-so-photo="${E(k)}" hidden></label>${path?`<button type="button" class="bpass-share" data-so-unphoto="${E(k)}">Remove</button>`:""}<span class="bphoto-s bcloud-s" aria-live="polite"></span></div>`
-        :`<div class="bphoto" data-k="${E(k)}" data-done=""><span class="bcloud-t">📷 Sign in below to add a photo to this stamp.</span></div>`);
+        :`<div class="bphoto" data-k="${E(k)}" data-done=""><button type="button" class="bpass-share" data-yopen="1">📷 Sign in on You to add a photo to this stamp</button></div>`);
       box=panel.querySelector(".bphoto");
       if(path){const img=box.querySelector("img");urlFor(path).then(u=>{if(u&&img)img.src=u;else if(img)img.remove();}).catch(()=>{});}}}
   // Shack ratings on venue cards

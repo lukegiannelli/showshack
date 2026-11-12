@@ -1,0 +1,9 @@
+-- You tab: what's set up in the Supabase project "The Show Shack" (free plan). Applied 2026-11-11; kept as a record.
+-- app_admins          the owner. claim_admin() works once (only while there's no admin yet); is_admin() checks.
+-- missing_reports     "Tell us it's missing" from signed-in people, max 10 a day each. Admin sees them in You -> Owner: review.
+-- admin_review(), admin_set_show(id, live|hidden), admin_set_missing(id, added|skipped)   admins only.
+-- push_subscriptions  one row per phone/browser that turned on reminders (max 6 per person); own rows only.
+-- push_log            which reminders were already sent (server only).
+-- app_secrets         push signing key + cron token (server only; no one can read it through the API). Not in this repo.
+-- Edge Function "reminders" (supabase/functions/reminders) runs daily at 17:00 UTC (~9 AM Pacific) via pg_cron + pg_net:
+--   the day before a show you marked Interested, and when one drops in price. Free plan: well under the monthly limits.
