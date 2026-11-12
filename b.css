@@ -716,3 +716,18 @@ body.neb .vcard .vf .bvibe{color:#EDE6FF;opacity:1;text-shadow:0 1px 3px rgba(0,
 .bwalk b small{font:600 11.5px var(--mono);color:var(--muted,#cfc6ea);margin-left:4px}
 .bset-acts>a{display:flex;align-items:center;justify-content:center;min-height:44px;padding:0 14px;border-radius:999px;border:1px solid rgba(255,198,107,.5);color:#FFC66B;font:600 14px var(--body);text-decoration:none}
 .bset-owner{padding-top:12px;border-top:1px solid rgba(255,255,255,.12)}
+/* map: flip through your nights */
+.ui-b .bmr-nav{display:flex;align-items:center;gap:8px;margin:-2px -4px 4px}
+.ui-b .bmr-nav span{flex:1;display:flex;flex-direction:column;min-width:0;text-align:center}
+.ui-b .bmr-nav span b{font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ui-b .bmr-nav span small{color:var(--muted);font:600 11.5px var(--mono)}
+.ui-b .bmr-nav button{flex:none;width:44px;height:44px;border-radius:12px;border:1px solid color-mix(in srgb,#FFC66B 55%,transparent);background:color-mix(in srgb,#FFC66B 14%,transparent);color:var(--ink);font:800 24px/1 var(--body);cursor:pointer}
+.ui-b .bmr-only{align-self:flex-start;margin:0 0 6px}
+.ui-b .bmap-nv{position:absolute;z-index:500;left:10px;right:10px;bottom:26px;display:flex;align-items:center;gap:6px;padding:5px;border-radius:16px;background:rgba(14,10,30,.88);border:1px solid rgba(255,198,107,.55);box-shadow:0 6px 20px rgba(0,0,0,.45);color:#fff;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
+.ui-b .bmap-nv[hidden]{display:none}
+.ui-b .bmap-nv span{flex:1;min-width:0;display:flex;flex-direction:column;text-align:center;line-height:1.2}
+.ui-b .bmap-nv span b{font:800 14px var(--body);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ui-b .bmap-nv span small{font:600 11px var(--mono);color:#cfc6e8}
+.ui-b .bmap-nv button{flex:none;min-width:44px;height:44px;border-radius:12px;border:0;background:rgba(255,198,107,.16);color:#FFC66B;font:800 24px/1 var(--body);cursor:pointer}
+.ui-b .bmap-nv .bmap-nv-only{font:700 11.5px var(--body);padding:0 10px;color:#efe9ff;background:rgba(255,255,255,.08)}
+.ui-b .bmap-nv .bmap-nv-only[aria-pressed="true"]{background:#FFC66B;color:#2a1700}

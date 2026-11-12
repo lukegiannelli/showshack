@@ -36,12 +36,15 @@ SH.store={
   keys(){try{return Object.keys(ls()||{});}catch(e){return [];}},
   changed(k){return loadMeta()[k]||0;}};                                                        // when this phone last changed a key (ms)
 
-/* ---- sound: one shared engine. Effects MIX with whatever's playing (YouTube, Spotify keep going, silent switch is respected);
+/* ---- sound: one shared engine. Effects MIX with whatever's playing (YouTube, Spotify keep going, silent switch is respected); the disco games use game() so they're heard on silent too;
    music you start on purpose (the shack song, a 30-second preview) takes over playback. ---- */
 let ctx=null;
 const session=type=>{try{if(navigator.audioSession)navigator.audioSession.type=type;}catch(e){}};
 SH.audio={
   mix(){session("ambient");},
+  // the disco ball games: short sounds that play even with the silent switch on and only dip (not stop) your music.
+  // "ambient" (mix) goes quiet on silent, which is why the games sounded broken. Leaves the session alone while the shack song plays.
+  game(){if(window.shackBeat&&window.shackBeat(1)!=null)return;session("transient");},
   solo(){session("playback");},
   ctx(){const AC=window.AudioContext||window.webkitAudioContext;if(!AC)return null;
     if(!ctx){try{ctx=new AC({latencyHint:"interactive"});}catch(e){ctx=new AC();}}

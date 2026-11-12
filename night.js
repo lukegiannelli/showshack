@@ -611,7 +611,7 @@ function savedRow(on){savedOn=on;if(on)drawSaved();else{const el=$("bNights");if
 const allNights=()=>NIGHTS.map(x=>({id:x.id,p:cleanPlan(x.p)}));
 function mergeNights(arr){if(!Array.isArray(arr))return 0;let n=0;arr.slice(0,MAXN).forEach(x=>{if(!x||typeof x.id!=="string"||NIGHTS.some(y=>y.id===x.id))return;NIGHTS.push({id:x.id.slice(0,20),p:cleanPlan(x.p)});n++;});
   NIGHTS.sort((a,b)=>(b.p.up||0)-(a.p.up||0));if(NIGHTS.length>MAXN)NIGHTS.length=MAXN;putNights();drawSaved();drawBuilder();return n;}
-window.NIGHT={shareNight,rideFare,LASTTRAIN,spots:allAfters,savedRow,stopFor:afterStop,toast,nightAt,allNights,mergeNights,pack,unpack,AC,IC,ic,EXP,cost,hrs,grp,ready:()=>AFTERS.length>0,surpriseNight,chip,map,sheet,encode,decode,cleanPlan,addStop,view,get plan(){return plan;}};
+window.NIGHT={shareNight,rideFare,LASTTRAIN,spots:allAfters,savedRow,stopFor:afterStop,toast,nightAt,allNights,mergeNights,pack,unpack,AC,IC,ic,EXP,cost,hrs,grp,ready:()=>AFTERS.length>0,surpriseNight,chip,map,sheet,encode,decode,cleanPlan,addStop,view,get plan(){return plan;},get id(){return planId;}};
 if(keep(plan)&&!NIGHTS.some(x=>x.id===planId))upsertNight();else putNights();
 const go=()=>{mount();inject(document.body);fromHash(window.NIGHT_HASH||location.hash);};
 if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",go);else go();

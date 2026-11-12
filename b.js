@@ -349,7 +349,12 @@ $("bInfo").addEventListener("click",ev=>{const d=$("bInfo");if(ev.target===d||ev
 /* ---- map: dark street map + drive rings from your start point + "build your night" per venue ---- */
 // price: ""|"free"|"u30"; age: ""|"all"|"21"; t: time slider step (0 = any time); route: draw My night; half: friend's spot for Meet halfway (never saved)
 // pass: Passport map (stamped venues glow)
-const MAPV={heat:false,vibe:"all",price:"",age:"",t:0,route:true,transit:false,half:null,pass:false};let LM=null,LMG=null,lfLoad=null,fitSig="",CUR=[];
+const MAPV={heat:false,vibe:"all",price:"",age:"",t:0,route:true,transit:false,half:null,pass:false,nv:null,only:false};
+// nights you can show on the map: the one you're working on first, then your other saved nights (any with a mapped stop)
+function mapNights(){if(!window.NIGHT)return [];const id=NIGHT.id,has=p=>p&&(p.s||[]).some(x=>typeof x.la==="number");
+  const xs=[{id,p:NIGHT.plan},...(NIGHT.allNights?NIGHT.allNights():[]).filter(x=>x.id!==id)];return xs.filter(x=>has(x.p));}
+function routeNight(){const xs=mapNights();return xs.find(x=>x.id===MAPV.nv)||xs[0]||null;}
+const routeStops=()=>{const n=routeNight();return n?(n.p.s||[]).filter(x=>typeof x.la==="number"):[];};let LM=null,LMG=null,lfLoad=null,fitSig="",CUR=[];
 function loadLeaflet(){if(window.L)return Promise.resolve();if(lfLoad)return lfLoad;
   const l=document.createElement("link");l.rel="stylesheet";l.href="vendor/leaflet.css?v=1";document.head.appendChild(l);
   return lfLoad=new Promise((res,rej)=>{const sc=document.createElement("script");sc.src="vendor/leaflet.js?v=1";sc.onload=res;sc.onerror=()=>{lfLoad=null;rej();};document.head.appendChild(sc);});}
@@ -376,7 +381,7 @@ const vIcon=(v,cls="bmc-ic")=>`<svg class="${cls}" viewBox="0 0 24 24" aria-hidd
 function drawMapUI(){
   $("bMapChips").innerHTML=`<button type="button" class="chip" data-mv="all" aria-pressed="${MAPV.vibe==="all"}">All</button>`+VIBES.map(v=>`<button type="button" class="chip bmc" data-mv="${v.k}" style="--vc:${v.c}" aria-pressed="${MAPV.vibe===v.k}">${vIcon(v)}${v.name.split(" & ")[0]}</button>`).join("")
     +(window.NIGHT?NIGHT.chip():"");   // pool lives inside 🌙 Afters now
-  const stops=window.NIGHT?(NIGHT.plan.s||[]).filter(s=>typeof s.la==="number"):[];
+  const stops=routeStops();
   // My night leads the row (before Free) so your route is one tap away
   $("bMapTools").innerHTML=(stops.length?`<button type="button" class="chip bmt bmt-route" data-mroute aria-pressed="${MAPV.route}">${ni("pin")} My night</button>`:"")
     +[["price","free","Free"],["price","u30","Under $30"],["age","all","All ages"],["age","21","21+"]].map(([k,v,l])=>`<button type="button" class="chip bmt" data-mf="${k}:${v}" aria-pressed="${MAPV[k]===v}">${l}</button>`).join("")
@@ -394,7 +399,7 @@ function drawMap(){const L=window.L;
       attribution:'© <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors'}).addTo(LM);
     LM.attributionControl.setPrefix(false);
     LMG={rings:L.layerGroup().addTo(LM),transit:L.layerGroup().addTo(LM),pool:L.layerGroup().addTo(LM),heat:L.layerGroup().addTo(LM),pins:L.layerGroup().addTo(LM),half:L.layerGroup().addTo(LM),route:L.layerGroup().addTo(LM)};
-    LM.on("click",closeSheet);LM.on("zoomend",()=>{drawPins();drawTransit();});LM.on("moveend",()=>{if(MAPV.transit)drawTransit();});}
+    LM.on("click",closeSheet);LM.on("zoomend",()=>{drawPins();drawTransit();drawRoute();});LM.on("moveend",()=>{if(MAPV.transit)drawTransit();});}
   setTimeout(()=>LM.invalidateSize(),0);
   const groups=mapGroups(),hasO=origin&&typeof origin.lat==="number";
   LMG.rings.clearLayers();LMG.pins.clearLayers();LMG.pool.clearLayers();
@@ -421,7 +426,7 @@ function sheetOpen(html){const sh=$("bMapSheet");sh.innerHTML=`<button type="but
 function closeSheet(){$("bMapSheet").hidden=true;}
 // pins: starred shows glow brighter (★), followed venues get an outer ring, the time slider dims venues with nothing on,
 // and below street zoom, venues closer than ~38px share one numbered bubble (tap it to zoom in)
-function drawPins(){const L=window.L;if(!LM||!L||!LMG)return;LMG.pins.clearLayers();
+function drawPins(){const L=window.L;if(!LM||!L||!LMG)return;LMG.pins.clearLayers();if(MAPV.route&&MAPV.only&&routeStops().length)return;
   const hasO=origin&&typeof origin.lat==="number",T=tMin(),z=LM.getZoom();
   CUR.forEach(g=>{g.star=g.evs.some(e=>state.stars.has(skey(e)));g.fol=isPinned(g.k);g.on=T==null||g.evs.some(e=>evOn(e,T));g.fair=false;
     g.stamp=MAPV.pass&&BEEN.has(g.k);if(MAPV.pass&&!g.stamp)g.on=false;});
@@ -445,27 +450,35 @@ function pin(g,hasO){const L=window.L,n=g.evs.length,sz=Math.round(26+Math.min(1
   mk.on("click",ev=>{L.DomEvent.stopPropagation(ev);openSheet(g);});mk.addTo(LMG.pins);}
 // My night: the Night Card's stops in order, joined by a dashed neon line with a rough drive time on each leg
 // tonight heatmap: every show on tonight (ignores the other filters) as soft stacked glows, so busy pockets light up
-function drawHeat(){const L=window.L;if(!LMG||!LMG.heat)return;LMG.heat.clearLayers();if(!MAPV.heat)return;const r=dayRange("tonight");if(!r)return;
+function drawHeat(){const L=window.L;if(!LMG||!LMG.heat)return;LMG.heat.clearLayers();if(!MAPV.heat||MAPV.route&&MAPV.only&&routeStops().length)return;const r=dayRange("tonight");if(!r)return;
   const g={};(state._up||[]).forEach(e=>{if(typeof e.lat!=="number"||!(e.start<=r[1]&&(e.end||e.start)>=r[0]))return;const k=e.lat.toFixed(3)+","+e.lon.toFixed(3);(g[k]=g[k]||{la:e.lat,lo:e.lon,n:0}).n++;});
   Object.values(g).forEach(p=>[[2600,.07],[1500,.1],[700,.16]].forEach(([rad,op],j)=>L.circle([p.la,p.lo],{radius:rad*(1+Math.min(1.5,Math.sqrt(p.n)*.35)),stroke:false,fillColor:j===2?"#FFE08A":j?"#FF8A5C":"#FF6FA5",fillOpacity:op,interactive:false,className:"bheat"}).addTo(LMG.heat)));}
 function drawRoute(fit){const L=window.L;if(!LMG)return;LMG.route.clearLayers();if(!MAPV.route||!window.NIGHT)return;
-  const s=(NIGHT.plan.s||[]).filter(x=>typeof x.la==="number");if(!s.length)return;
+  const s=routeStops();if(!s.length)return;
   const hasO=origin&&typeof origin.lat==="number",pts=[...(hasO?[[origin.lat,origin.lon]]:[]),...s.map(x=>[x.la,x.lo])];
   if(pts.length>1)L.polyline(pts,{color:"#FFC66B",weight:3,opacity:.9,dashArray:"1 9",lineCap:"round",className:"broute",interactive:false}).addTo(LMG.route);
   for(let i=1;i<pts.length;i++){const a=pts[i-1],b=pts[i],m=estMin(a[0],a[1],b[0],b[1]);
+    // legs too short to fit a label at this zoom skip it (zoom in and it comes back), so stops never hide under labels
+    if(!fit&&LM.latLngToLayerPoint(a).distanceTo(LM.latLngToLayerPoint(b))<150)continue;
     const rf=NIGHT.rideFare?NIGHT.rideFare(miles(a[0],a[1],b[0],b[1])*1.2):null;
     L.marker([(a[0]+b[0])/2,(a[1]+b[1])/2],{interactive:false,keyboard:false,icon:L.divIcon({className:"brt-w",html:`<span class="brt-leg">~${fmtMins(m)}${rf?` · 🚕 $${rf[0]}–${rf[1]}`:""}</span>`,iconSize:[130,18],iconAnchor:[65,9]})}).addTo(LMG.route);}
   s.forEach((x,i)=>L.marker([x.la,x.lo],{title:`${i+1}. ${x.n}`,zIndexOffset:1000,icon:L.divIcon({className:"brt-w",html:`<span class="brt">${i+1}</span>`,iconSize:[24,24],iconAnchor:[12,12]})}).addTo(LMG.route));
-  if(fit)LM.flyToBounds(L.latLngBounds(pts).pad(.25),{maxZoom:14,duration:.5});}
+  if(fit)LM.flyToBounds(L.latLngBounds(pts),{maxZoom:15,duration:.5,paddingTopLeft:[40,90],paddingBottomRight:[40,110]});}
 // cost of getting around My night: rideshare for every leg (incl. home) vs driving (gas) + typical parking at the show
-function routeCost(){const el=$("bMapRoute");if(!el)return;const s=window.NIGHT?(NIGHT.plan.s||[]).filter(x=>typeof x.la==="number"):[];
-  if(!MAPV.route||!s.length||!NIGHT.rideFare){el.hidden=true;return;}
+function routeCost(){const el=$("bMapRoute");if(!el)return;const s=routeStops();
+  if(!MAPV.route||!s.length||!NIGHT.rideFare){el.hidden=true;const f=$("bMapNv");if(f)f.hidden=true;return;}
   const hasO=origin&&typeof origin.lat==="number",pts=[...(hasO?[[origin.lat,origin.lon]]:[]),...s.map(x=>[x.la,x.lo]),...(hasO?[[origin.lat,origin.lon]]:[])];
   let mi=0,lo=0,hi=0;for(let i=1;i<pts.length;i++){const m=miles(pts[i-1][0],pts[i-1][1],pts[i][0],pts[i][1])*1.2;mi+=m;if(m>=.5){const f=NIGHT.rideFare(m);lo+=f[0];hi+=f[1];}}
   const ppl=Math.max(1,+(state.carLink||state.car||1)),gas=mi/(state.mpg||25)*(state.gas||5.85);
   const sh=s.find(x=>x.k==="show"),e=sh&&(state._up||[]).find(x=>x.title===sh.n),pk=e?(PARK[tier(e)]??15):0;
   const late=s.some(x=>x.tm&&+x.tm.slice(0,2)>=22||x.tm&&+x.tm.slice(0,2)<4);
-  el.hidden=false;el.innerHTML=`<b>${ni("pin")} My night · ${Math.round(mi)} mi${hasO?" round trip":" between stops"}</b>
+  const xs=mapNights(),cur=routeNight(),ix=Math.max(0,xs.findIndex(x=>x.id===cur.id)),nd=cur.p.d?parseDay(cur.p.d).toLocaleDateString("en-US",{weekday:"short",month:"short",day:"numeric"}):"No date";
+  const nav=`<div class="bmr-nav">${xs.length>1?`<button type="button" data-mnv="-1" aria-label="Previous night">‹</button>`:""}<span><b>${esc(cur.p.t||(cur.id===NIGHT.id?"The night you're planning":"A saved night"))}</b><small>${esc(nd)} · ${s.length} stop${s.length===1?"":"s"}${xs.length>1?` · ${ix+1} of ${xs.length}`:""}${cur.id===NIGHT.id?" · planning now":""}</small></span>${xs.length>1?`<button type="button" data-mnv="1" aria-label="Next night">›</button>`:""}</div>
+    <button type="button" class="chip bmr-only" data-monly aria-pressed="${MAPV.only}">${MAPV.only?"Showing only this night · show everything":"Show only this night"}</button>`;
+  // the same switcher floats on the map itself, so you can flip nights and watch the route change
+  let fl=$("bMapNv");if(!fl){fl=document.createElement("div");fl.id="bMapNv";fl.className="bmap-nv";$("bMapCanvas").after(fl);fl.addEventListener("click",ev=>{ev.stopPropagation();mapNvClick(ev);});}
+  fl.hidden=false;fl.innerHTML=(xs.length>1?`<button type="button" data-mnv="-1" aria-label="Previous night">‹</button>`:"")+`<span><b>${esc(cur.p.t||(cur.id===NIGHT.id?"The night you're planning":"A saved night"))}</b><small>${esc(nd)}${xs.length>1?` · ${ix+1}/${xs.length}`:""}</small></span>`+(xs.length>1?`<button type="button" data-mnv="1" aria-label="Next night">›</button>`:"")+`<button type="button" data-monly aria-pressed="${MAPV.only}" class="bmap-nv-only">${MAPV.only?"Only this night":"All shows"}</button>`;
+  el.hidden=false;el.innerHTML=nav+`<b>${ni("pin")} My night · ${Math.round(mi)} mi${hasO?" round trip":" between stops"}</b>
     <span>🚗 Drive: gas ~$${gas.toFixed(0)}${pk?` + parking ~$${pk}${e?` at ${esc(e.venue)}`:""}`:""} = <b>$${Math.round(gas+pk)}</b>${ppl>1?` ($${Math.round((gas+pk)/ppl)} each for ${ppl})`:""}</span>
     <span>🚕 Rideshare every leg: <b>$${lo}–${hi}</b>${ppl>1?` ($${Math.round(lo/ppl)}–${Math.round(hi/ppl)} each if you share)`:""}</span>
     ${late&&MAPV.transit?`<span class="bmr-warn">🌙 Taking the train home? ${esc(NIGHT.LASTTRAIN.Metro)}. Metrolink and Coaster are usually done by evening.</span>`:""}
@@ -549,11 +562,17 @@ $("bMapChips").insertAdjacentHTML("afterend",`<div class="bmap-chips bmap-tools"
   <div class="bmap-timew"><label class="bmap-time" id="bMapTime"><span>${ni("moon")} What's on at</span><input type="range" min="0" max="17" step="1" value="0" aria-label="Time of night"><b>Any time</b></label><button type="button" class="chip bmap-now" id="bMapNow">Now</button></div>`);
 $("bMapTools").addEventListener("click",ev=>{const f=ev.target.closest("[data-mf]");
   if(f){const [k,v]=f.dataset.mf.split(":");MAPV[k]=MAPV[k]===v?"":v;closeSheet();drawMapUI();return;}
-  if(ev.target.closest("[data-mroute]")){MAPV.route=!MAPV.route;routeCost();drawMapUI();setTimeout(()=>drawRoute(MAPV.route),120);return;}
+  if(ev.target.closest("[data-mroute]")){MAPV.route=!MAPV.route;MAPV.only=MAPV.route;closeSheet();routeCost();drawMapUI();setTimeout(()=>drawRoute(MAPV.route),120);return;}
   if(ev.target.closest("[data-mhalf]")){if(MAPV.half){MAPV.half=null;closeSheet();drawMapUI();}else halfForm();return;}
   if(ev.target.closest("[data-mtransit]")){MAPV.transit=!MAPV.transit;loadStations();drawMapUI();return;}
   if(ev.target.closest("[data-mpass]")){MAPV.pass=!MAPV.pass;closeSheet();drawMapUI();return;}
   if(ev.target.closest("[data-mheat]")){MAPV.heat=!MAPV.heat;if(MAPV.heat&&state.when!=="tonight"){state.when="tonight";savePrefs();render();}else drawMapUI();}});
+// My night panel under the map: flip through your nights (‹ ›) and show only the one you're looking at
+const mapNvClick=ev=>{const nb=ev.target.closest("[data-mnv]"),ob=ev.target.closest("[data-monly]");if(!nb&&!ob)return;
+  if(nb){const xs=mapNights();if(xs.length<2)return;const i=Math.max(0,xs.findIndex(x=>x.id===(routeNight()||{}).id));MAPV.nv=xs[(i+ +nb.dataset.mnv+xs.length)%xs.length].id;MAPV.only=true;}
+  else MAPV.only=!MAPV.only;
+  closeSheet();drawPins();drawHeat();routeCost();drawRoute(true);};
+$("bMapRoute").addEventListener("click",mapNvClick);
 // past ~10:30 PM with Transit on: a heads-up that most trains are about done
 function lateNote(){let el=$("bMapLate");if(!el){el=document.createElement("p");el.id="bMapLate";el.className="bmap-late";$("bMapTime").closest(".bmap-timew").after(el);}
   const T=tMin();el.hidden=!(MAPV.transit&&T!=null&&T>=22*60+30);if(!el.hidden&&window.NIGHT&&NIGHT.LASTTRAIN)el.textContent=`🌙 Late for trains: ${NIGHT.LASTTRAIN.Metro}; ${NIGHT.LASTTRAIN.Trolley.toLowerCase()}. Metrolink and Coaster are usually done by evening. Line up a ride home.`;}
@@ -917,3 +936,4 @@ if(target&&/^[ep]-/.test(target)){cur="all";state.when="any";show("results",true
 else show("home",true);
 setTimeout(()=>{let seen="";try{seen=SH.store.raw("shack-new")||"";}catch(e){}if(seen!==WN_VER&&screen==="home"&&!document.querySelector("dialog[open],#nightView,#bCmp:not([hidden])"))whatsNew();},1600);
 })();
+
