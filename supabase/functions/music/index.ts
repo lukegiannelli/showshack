@@ -44,14 +44,30 @@ async function youtube(list: string) {
     // "Artist - Topic" / "ArtistVEVO" channels are the artist for sure; otherwise use the title's "Artist - " part
     // unless the channel name is in the title (then the channel is the artist)
     const n = /-\s*Topic$|VEVO$/i.test(author) || !fromTitle || (ch && title.toLowerCase().includes(ch.toLowerCase())) ? ch : fromTitle[1];
-    for (const part of n.split(/\s*(?:,|&| x | feat\.? | ft\.? )\s*/i)) if (!/\(|video|oficial|official|lyrics/i.test(part)) names.push(part);
+    for (const part of split(n)) if (!/\(|video|oficial|official|lyrics/i.test(part)) names.push(part);
   }
   if (!names.length) return { error: "That playlist looks empty." };
   return { artists: rank(names), note: "YouTube shares the newest 15 songs of a playlist." };
 }
 
-// split "Drake & Don Toliver", "KAROL G, Judeline" into single artists
-const split = (s: string) => s.split(/\s*(?:,|&| x | feat\.? | ft\.? | with )\s*/i).map((x) => x.trim()).filter(Boolean);
+// split "Drake & Don Toliver", "KAROL G, Judeline" into single artists, but keep acts whose name has a comma or "&" in it
+// ("Tyler, The Creator", "Earth, Wind & Fire", "Mumford & Sons", "Kool & the Gang") in one piece
+const KEEP = ["Tyler, The Creator", "Earth, Wind & Fire", "Crosby, Stills, Nash & Young", "Crosby, Stills & Nash", "Emerson, Lake & Palmer",
+  "Peter, Bjorn and John", "Black Country, New Road", "Blood, Sweat & Tears", "Now, Now", "Ruby, My Dear", "Hello, Dolly",
+  "Mumford & Sons", "Simon & Garfunkel", "Hall & Oates", "Daryl Hall & John Oates", "Iron & Wine", "Chase & Status", "Above & Beyond",
+  "Brooks & Dunn", "Big & Rich", "Angus & Julia Stone", "Matt & Kim", "Sylvan Esso", "Kool & the Gang", "Sly & the Family Stone",
+  "Florence + The Machine", "Marina & the Diamonds", "Edward Sharpe & the Magnetic Zeros", "Hootie & the Blowfish",
+  "Tom Petty & the Heartbreakers", "Bob Marley & The Wailers", "Huey Lewis & the News", "Prince & The Revolution",
+  "Nathaniel Rateliff & The Night Sweats", "Jason Isbell & the 400 Unit", "Smokey Robinson & The Miracles", "Lewis & Clarke",
+  "Dan + Shay", "Maddie & Tae", "Thompson Square", "Jack & Jack", "Bob Seger & The Silver Bullet Band", "Echo & the Bunnymen",
+  "Siouxsie & the Banshees", "Belle & Sebastian", "Sam & Dave", "Ike & Tina Turner", "Peaches & Herb"].filter((n) => /[,&+]/.test(n));
+const KEEP_RE = new RegExp(KEEP.map((n) => n.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")).join("|"), "gi");
+function split(s: string) {
+  const held: string[] = [];
+  // hold known names, and "X & the Y" bands, aside while splitting
+  const t = s.replace(KEEP_RE, (m) => `\u0001${held.push(m) - 1}\u0001`).replace(/\b([^,&]+?)\s+&\s+(the\s[^,&]+)/gi, (m) => `\u0001${held.push(m) - 1}\u0001`);
+  return t.split(/\s*(?:,|&| x | feat\.? | ft\.? | with )\s*/i).map((x) => x.replace(/\u0001(\d+)\u0001/g, (_, i) => held[+i]).trim()).filter(Boolean);
+}
 
 // Spotify: the public embed player page lists the playlist's tracks with their artists (no key, no login)
 async function spotify(id: string) {
