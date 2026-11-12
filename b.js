@@ -453,22 +453,30 @@ function pin(g,hasO){const L=window.L,n=g.evs.length,sz=Math.round(26+Math.min(1
 function drawHeat(){const L=window.L;if(!LMG||!LMG.heat)return;LMG.heat.clearLayers();if(!MAPV.heat||MAPV.route&&MAPV.only&&routeStops().length)return;const r=dayRange("tonight");if(!r)return;
   const g={};(state._up||[]).forEach(e=>{if(typeof e.lat!=="number"||!(e.start<=r[1]&&(e.end||e.start)>=r[0]))return;const k=e.lat.toFixed(3)+","+e.lon.toFixed(3);(g[k]=g[k]||{la:e.lat,lo:e.lon,n:0}).n++;});
   Object.values(g).forEach(p=>[[2600,.07],[1500,.1],[700,.16]].forEach(([rad,op],j)=>L.circle([p.la,p.lo],{radius:rad*(1+Math.min(1.5,Math.sqrt(p.n)*.35)),stroke:false,fillColor:j===2?"#FFE08A":j?"#FF8A5C":"#FF6FA5",fillOpacity:op,interactive:false,className:"bheat"}).addTo(LMG.heat)));}
+// real roads: google.js (SHACK_ROUTE) finds the driving path + time per leg; until it answers (or if it can't) the legs are straight dashed lines
+function routePts(){const s=routeStops(),hasO=origin&&typeof origin.lat==="number";return [...(hasO?[[origin.lat,origin.lon]]:[]),...s.map(x=>[x.la,x.lo])];}
+function routeWhen(){const n=routeNight();if(!n||!n.p.d)return 0;const t=(n.p.s||[]).map(x=>x.tm).find(Boolean)||"19:00",[h,m]=t.split(":").map(Number);
+  const d=parseDay(n.p.d);d.setHours(h<5?h+24:h,m||0,0,0);return d.getTime();}
 function drawRoute(fit){const L=window.L;if(!LMG)return;LMG.route.clearLayers();if(!MAPV.route||!window.NIGHT)return;
   const s=routeStops();if(!s.length)return;
-  const hasO=origin&&typeof origin.lat==="number",pts=[...(hasO?[[origin.lat,origin.lon]]:[]),...s.map(x=>[x.la,x.lo])];
-  if(pts.length>1)L.polyline(pts,{color:"#FFC66B",weight:3,opacity:.9,dashArray:"1 9",lineCap:"round",className:"broute",interactive:false}).addTo(LMG.route);
-  for(let i=1;i<pts.length;i++){const a=pts[i-1],b=pts[i],m=estMin(a[0],a[1],b[0],b[1]);
+  const pts=routePts(),R=window.SHACK_ROUTE,road=pts.length>1&&R?R.cached(pts):null;
+  if(pts.length>1&&!road&&R){const key=JSON.stringify(pts);R.get(pts,routeWhen()).then(v=>{if(v&&JSON.stringify(routePts())===key){drawRoute(false);routeCost();}});}
+  if(road)road.legs.forEach(l=>{if(l.line.length>1){L.polyline(l.line,{color:"#FFC66B",weight:9,opacity:.18,interactive:false}).addTo(LMG.route);L.polyline(l.line,{color:"#FFC66B",weight:3.5,opacity:.95,lineCap:"round",lineJoin:"round",className:"broute broad",interactive:false}).addTo(LMG.route);}});
+  else if(pts.length>1)L.polyline(pts,{color:"#FFC66B",weight:3,opacity:.9,dashArray:"1 9",lineCap:"round",className:"broute",interactive:false}).addTo(LMG.route);
+  for(let i=1;i<pts.length;i++){const a=pts[i-1],b=pts[i],lg=road&&road.legs[i-1],m=lg?lg.min:estMin(a[0],a[1],b[0],b[1]);
     // legs too short to fit a label at this zoom skip it (zoom in and it comes back), so stops never hide under labels
     if(!fit&&LM.latLngToLayerPoint(a).distanceTo(LM.latLngToLayerPoint(b))<150)continue;
-    const rf=NIGHT.rideFare?NIGHT.rideFare(miles(a[0],a[1],b[0],b[1])*1.2):null;
-    L.marker([(a[0]+b[0])/2,(a[1]+b[1])/2],{interactive:false,keyboard:false,icon:L.divIcon({className:"brt-w",html:`<span class="brt-leg">~${fmtMins(m)}${rf?` · 🚕 $${rf[0]}–${rf[1]}`:""}</span>`,iconSize:[130,18],iconAnchor:[65,9]})}).addTo(LMG.route);}
+    const rf=NIGHT.rideFare?NIGHT.rideFare(lg?lg.mi:miles(a[0],a[1],b[0],b[1])*1.2):null;
+    const at=lg&&lg.line.length>1?lg.line[Math.floor(lg.line.length/2)]:[(a[0]+b[0])/2,(a[1]+b[1])/2];
+    L.marker(at,{interactive:false,keyboard:false,icon:L.divIcon({className:"brt-w",html:`<span class="brt-leg">${lg?"":"~"}${fmtMins(m)}${rf?` · 🚕 $${rf[0]}–${rf[1]}`:""}</span>`,iconSize:[130,18],iconAnchor:[65,9]})}).addTo(LMG.route);}
   s.forEach((x,i)=>L.marker([x.la,x.lo],{title:`${i+1}. ${x.n}`,zIndexOffset:1000,icon:L.divIcon({className:"brt-w",html:`<span class="brt">${i+1}</span>`,iconSize:[24,24],iconAnchor:[12,12]})}).addTo(LMG.route));
-  if(fit)LM.flyToBounds(L.latLngBounds(pts),{maxZoom:15,duration:.5,paddingTopLeft:[40,90],paddingBottomRight:[40,110]});}
+  if(fit){const all=road?[].concat(pts,...road.legs.map(l=>l.line)):pts;LM.flyToBounds(L.latLngBounds(all),{maxZoom:15,duration:.5,paddingTopLeft:[40,90],paddingBottomRight:[40,110]});}}
 // cost of getting around My night: rideshare for every leg (incl. home) vs driving (gas) + typical parking at the show
 function routeCost(){const el=$("bMapRoute");if(!el)return;const s=routeStops();
   if(!MAPV.route||!s.length||!NIGHT.rideFare){el.hidden=true;const f=$("bMapNv");if(f)f.hidden=true;return;}
   const hasO=origin&&typeof origin.lat==="number",pts=[...(hasO?[[origin.lat,origin.lon]]:[]),...s.map(x=>[x.la,x.lo]),...(hasO?[[origin.lat,origin.lon]]:[])];
-  let mi=0,lo=0,hi=0;for(let i=1;i<pts.length;i++){const m=miles(pts[i-1][0],pts[i-1][1],pts[i][0],pts[i][1])*1.2;mi+=m;if(m>=.5){const f=NIGHT.rideFare(m);lo+=f[0];hi+=f[1];}}
+  const road=window.SHACK_ROUTE?SHACK_ROUTE.cached(routePts()):null;   // real road miles for the legs we have (the ride home stays an estimate)
+  let mi=0,lo=0,hi=0;for(let i=1;i<pts.length;i++){const lg=road&&road.legs[i-1],m=lg?lg.mi:miles(pts[i-1][0],pts[i-1][1],pts[i][0],pts[i][1])*1.2;mi+=m;if(m>=.5){const f=NIGHT.rideFare(m);lo+=f[0];hi+=f[1];}}
   const ppl=Math.max(1,+(state.carLink||state.car||1)),gas=mi/(state.mpg||25)*(state.gas||5.85);
   const sh=s.find(x=>x.k==="show"),e=sh&&(state._up||[]).find(x=>x.title===sh.n),pk=e?(PARK[tier(e)]??15):0;
   const late=s.some(x=>x.tm&&+x.tm.slice(0,2)>=22||x.tm&&+x.tm.slice(0,2)<4);
@@ -482,7 +490,7 @@ function routeCost(){const el=$("bMapRoute");if(!el)return;const s=routeStops();
     <span>🚗 Drive: gas ~$${gas.toFixed(0)}${pk?` + parking ~$${pk}${e?` at ${esc(e.venue)}`:""}`:""} = <b>$${Math.round(gas+pk)}</b>${ppl>1?` ($${Math.round((gas+pk)/ppl)} each for ${ppl})`:""}</span>
     <span>🚕 Rideshare every leg: <b>$${lo}–${hi}</b>${ppl>1?` ($${Math.round(lo/ppl)}–${Math.round(hi/ppl)} each if you share)`:""}</span>
     ${late&&MAPV.transit?`<span class="bmr-warn">🌙 Taking the train home? ${esc(NIGHT.LASTTRAIN.Metro)}. Metrolink and Coaster are usually done by evening.</span>`:""}
-    <small>Rough estimates: straight-line miles, typical parking for the venue's size, rideshare before surge.</small>`;}
+    <small>${road?`Drive times follow real roads (${road.src==="google"?"Google, with typical traffic for that night":"OpenStreetMap routing, no live traffic"})`:"Rough estimates: straight-line miles"}, typical parking for the venue's size, rideshare before surge.</small>`;}
 // Meet halfway: your start point + a friend's spot (kept only while the page is open) → the 8 venues that are fairest for both
 function drawHalf(){const L=window.L;if(!LMG)return;LMG.half.clearLayers();if(!MAPV.half)return;
   L.marker([MAPV.half.lat,MAPV.half.lon],{interactive:false,keyboard:false,zIndexOffset:900,icon:L.divIcon({className:"bmaphome bfriend",html:'<span></span>',iconSize:[16,16],iconAnchor:[8,8]})}).addTo(LMG.half);}

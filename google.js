@@ -132,4 +132,48 @@ let q2 = 0;
 new MutationObserver(()=>{ if (q2) return; q2 = 1; queueMicrotask(()=>{ q2 = 0; scan(document.body); }); })
   .observe(document.body, {childList:true, subtree:true});
 scan(document.body);
+
+/* ---- Road routes for My night on the map: the real driving path and drive time for each leg.
+   Google Routes (traffic-aware for the night's date and time) first, the free OSRM router if Google can't answer,
+   and null when both fail (the map keeps its straight dashed line). Answers are kept on this phone, so flipping
+   between nights doesn't ask again. At most ROUTE_MAX Google requests per visit. ---- */
+const ROUTE_MAX = 20, RKEY = "routecache", RMAX = 40;
+let routeCalls = 0;
+const rmem = (()=>{ try { return JSON.parse(localStorage.getItem(RKEY) || "{}") || {}; } catch(e) { return {}; } })();
+const rkey = pts => pts.map(p => p[0].toFixed(4) + "," + p[1].toFixed(4)).join(";");
+function rput(k, v){ rmem[k] = v; const ks = Object.keys(rmem); if (ks.length > RMAX) ks.sort((a,b)=>rmem[a].at-rmem[b].at).slice(0, ks.length-RMAX).forEach(x=>delete rmem[x]);
+  try { localStorage.setItem(RKEY, JSON.stringify(rmem)); } catch(e) {} }
+const legMin = sec => Math.max(2, Math.round(sec/60));
+async function viaGoogle(pts, when){
+  if (!ok || routeCalls >= ROUTE_MAX) return null; routeCalls++;
+  const ll = p => ({ location: { latLng: { latitude: p[0], longitude: p[1] } } });
+  const body = { origin: ll(pts[0]), destination: ll(pts[pts.length-1]), intermediates: pts.slice(1, -1).map(ll),
+    travelMode: "DRIVE", routingPreference: "TRAFFIC_AWARE", polylineEncoding: "GEO_JSON_LINESTRING" };
+  if (when && when > Date.now() + 60000) body.departureTime = new Date(when).toISOString();
+  const r = await fetch("https://routes.googleapis.com/directions/v2:computeRoutes", { method: "POST",
+    headers: { "Content-Type": "application/json", "X-Goog-Api-Key": GKEY, "X-Goog-FieldMask": "routes.legs.duration,routes.legs.distanceMeters,routes.legs.polyline" },
+    body: JSON.stringify(body) });
+  if (!r.ok) return null; const j = await r.json(); const legs = j.routes && j.routes[0] && j.routes[0].legs; if (!legs || legs.length !== pts.length-1) return null;
+  return { src: "google", legs: legs.map(l => ({ mi: (l.distanceMeters||0)/1609.34, min: legMin(parseFloat(l.duration)||0),
+    line: ((l.polyline && l.polyline.geoJsonLinestring && l.polyline.geoJsonLinestring.coordinates) || []).map(c => [c[1], c[0]]) })) };
+}
+async function viaOsrm(pts){
+  const r = await fetch("https://router.project-osrm.org/route/v1/driving/" + pts.map(p => p[1].toFixed(5) + "," + p[0].toFixed(5)).join(";") + "?overview=false&steps=true&geometries=geojson");
+  if (!r.ok) return null; const j = await r.json(); const legs = j.routes && j.routes[0] && j.routes[0].legs; if (!legs || legs.length !== pts.length-1) return null;
+  // OSRM has no traffic: add a little for lights and parking so it lines up with the app's other estimates
+  return { src: "osrm", legs: legs.map(l => ({ mi: l.distance/1609.34, min: legMin(l.duration*1.15 + 180),
+    line: [].concat(...(l.steps||[]).map(s => ((s.geometry && s.geometry.coordinates) || []).map(c => [c[1], c[0]]))) })) };
+}
+const timeout = (p, ms) => Promise.race([p, new Promise(res => setTimeout(() => res(null), ms))]);
+const pending = {};
+window.SHACK_ROUTE = {
+  cached(pts){ const v = rmem[rkey(pts)]; return v && v.legs ? v : null; },
+  get(pts, when){ const k = rkey(pts); if (rmem[k]) return Promise.resolve(rmem[k]); if (pending[k]) return pending[k];
+    return pending[k] = (async () => {
+      let v = null;
+      try { v = await timeout(viaGoogle(pts, when), 8000); } catch(e) {}
+      if (!v) try { v = await timeout(viaOsrm(pts), 8000); } catch(e) {}
+      delete pending[k]; if (v) { v.at = Date.now(); rput(k, v); } return v;
+    })(); }
+};
 })();
