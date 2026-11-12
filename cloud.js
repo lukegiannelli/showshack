@@ -7,7 +7,7 @@ const {url:SB_URL,key:SB_KEY}=SH.sb;
 const LIB="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js";
 const K_AT="shack-sync-at",K_SESS="sb-tdahsfxcfsgalfqhsnal-auth-token",K_MSG="shack-sync-msg";
 // what syncs. Arrays and objects are combined on a device's first sign-in; after that the newest copy of each key wins.
-const KEYS=["radar-stars","radar-been","radar-starven","radar-prefs","radar-origin","shack-plog","shack-pshows","shack-nimp","shack-nights","shack-favfood","shack-fppl","shack-fseen","shack-live"];
+const KEYS=["radar-stars","radar-been","radar-starven","radar-prefs","radar-origin","shack-plog","shack-pshows","shack-nimp","shack-nights","shack-favfood","shack-fppl","shack-fseen","shack-live","shack-photos"];
 const get=k=>{try{return localStorage.getItem(k);}catch(e){return null;}};
 const put=(k,v)=>{try{v==null?localStorage.removeItem(k):localStorage.setItem(k,v);}catch(e){}};
 let sb=null,user=null,ui="idle",email="",status="",busy=false,again=false,pushT=null,applying=false,pulling=false;

@@ -699,7 +699,7 @@ renderVenues=function(){const list=$("list");loadStations();
     <div class="bbadges">${bdg.filter(b=>b.on).map(b=>`<span class="bbadge${b.on?" on":""}" title="${esc(b.how)}"><i>${b.ic}</i><b>${esc(b.n)}</b><small>${esc(b.on?"Earned":b.how)}</small></span>`).join("")}</div>
     <div class="bpass-acts">${beenV.length?`<button type="button" class="bpass-share" data-pshare="1">${ni("share")} Share my year</button><button type="button" class="bpass-share" data-ppmap="1">${ni("map")} Passport map</button><button type="button" class="bpass-share" data-pcmp="1">↔ Compare with a friend</button>`:""}
       <button type="button" class="bpass-share" data-pback="1">Back up passport + nights</button><label class="bpass-share">Restore<input type="file" accept="application/json,.json" data-prest hidden></label></div>
-    ${window.shackCloudHTML?shackCloudHTML():""}
+    ${window.shackCloudHTML?shackCloudHTML():""}${window.shackSocialHTML?shackSocialHTML():""}
   </div></div></div>`;
   crawlCalc(infos);
   const chips=vChips(infos),shown=vfOn()?infos.filter(v=>vMatch(v)):infos;

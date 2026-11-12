@@ -473,10 +473,13 @@ async function onClick(ev){const b=ev.target.closest("button");if(!b)return;cons
   if(d.nuse){const x=NIGHTS.find(n=>n.id===d.nuse);if(x&&x.id!==planId)useNight(x.id,x.p);return;}
   if(d.gosaved){goSaved();return;}
   if(d.prev){view(cleanPlan({...plan,up:plan.up||Date.now()}),true);return;}
-  if(d.send){if(!plan.up)plan.up=Date.now();save();shareNight(plan,b);return;}}
+  if(d.send){if(!plan.up)plan.up=Date.now();save();shareNight(plan,b,planId);return;}}
 function focusFirst(){setTimeout(()=>{const i=document.querySelector("#bNight .bn-stop.open input");if(i)i.focus({preventScroll:false});},30);}
 const sumText=p=>[`🌙 ${p.t||"Our night"}${p.d?" · "+fmtD(p.d):""}`,...p.s.map(s=>`${s.tm?fmtT(s.tm)+" ":""}${TYPES[s.k][0]} ${s.n||TYPES[s.k][1]}${s.p?" @ "+s.p:""}`)].join("\n");
-async function shareNight(p,btn){const url=await linkFor(p),text=sumText(cleanPlan(p));
+// signed in (social.js): a live link that keeps showing your latest changes; otherwise a snapshot link with the plan inside it
+async function shareNight(p,btn,id){let url=null;if(id&&window.SHACK_LIVE)try{url=await SHACK_LIVE.link(id,cleanPlan(p));}catch(e){url=null;}
+  if(!url){url=await linkFor(p);if(id&&window.SHACK_LIVE&&!SHACK_LIVE.on())toast("Tip: sign in on Venues → Show passport and your links update by themselves");}
+  const text=sumText(cleanPlan(p));
   if(navigator.share){try{await navigator.share({title:p.t||"Our night",text:text+"\n",url});return;}catch(e){if(e&&e.name==="AbortError")return;}}
   if(typeof copyOut==="function")copyOut(text+"\n"+url,btn);else{try{await navigator.clipboard.writeText(text+"\n"+url);toast("Link copied");}catch(e){prompt("Copy this link",url);}}}
 
@@ -531,7 +534,17 @@ function flipCard(el,p){const card=el.querySelector(".nv-card");if(!card||card._
     const a=card.animate([{transform:"scaleX(0.02)"},{transform:"scaleX(1)"}],{duration:170,easing:"cubic-bezier(.25,.6,.4,1)",fill:"forwards"});a.onfinish=()=>{a.cancel();card.getAnimations().forEach(x=>x.cancel());card._busy=false;};};}
 function close(){const v=$("nightView");if(v){v.remove();document.documentElement.classList.remove("nview-on");if(VOPENER&&VOPENER.isConnected&&VOPENER.focus)VOPENER.focus({preventScroll:true});VOPENER=null;}}
 document.addEventListener("keydown",ev=>{if(ev.key==="Escape")close();});
-async function fromHash(h){const m=/^#n=([01][A-Za-z0-9_-]+)$/.exec(h||"");if(!m)return;
+// live link (#L=…): fetch the latest plan, and check again every 45 s while it's open so changes show up on their own
+let liveT=0;
+async function fromLive(id){let seen="";clearInterval(liveT);
+  const get=async quiet=>{const r=await SH.rpc("get_live_night",{p_id:id});const row=r&&r[0];
+    if(!row){if(!quiet)toast("That night link was turned off by its owner.");return false;}
+    if(row.updated_at===seen)return true;const again=!!seen;seen=row.updated_at;view(cleanPlan(row.plan),false);if(again)toast("Plan updated ✓");return true;};
+  try{try{history.replaceState(null,"",location.pathname);}catch(e){}if(!await get(false))return;
+    liveT=setInterval(()=>{if(!$("nightView")){clearInterval(liveT);return;}if(document.visibilityState==="visible")get(true).catch(()=>{});},45000);}
+  catch(e){toast("Couldn't load that night. Check your connection and open the link again.");}}
+async function fromHash(h){const L=/^#L=([A-Za-z0-9]{10,16})$/.exec(h||"");if(L){fromLive(L[1]);return;}
+  const m=/^#n=([01][A-Za-z0-9_-]+)$/.exec(h||"");if(!m)return;
   try{const p=await decode(m[1]);try{history.replaceState(null,"",location.pathname);}catch(e){}view(p,false);}
   catch(e){toast("That Night Card link looks broken. Ask for it again.");}}
 addEventListener("hashchange",ev=>fromHash(new URL(ev.newURL).hash));
@@ -581,7 +594,7 @@ function drawSaved(){if(!savedOn)return;let el=$("bNights");const list=$("list")
         const s2=x.p.s.map(s=>s.k==="show"?{k:"show",tm:s.tm,no:"Last time: "+(s.n||"a show")+(s.p?" @ "+s.p:"")+". Pick this week's show."}:{...s});
         useNight(newId(),{...x.p,t:(x.p.t||"Our night").replace(/ \(again\)$/,"")+" (again)",d:t.getFullYear()+"-"+String(t.getMonth()+1).padStart(2,"0")+"-"+String(t.getDate()).padStart(2,"0"),up:Date.now(),s:s2});
         openPlan();toast("Copied for next "+t.toLocaleDateString("en-US",{weekday:"long"})+". Pick the show");return;}
-      if(d.nshare){shareNight(x.p,b);return;}
+      if(d.nshare){shareNight(x.p,b,x.id);return;}
       if(d.ndel){if(!b.classList.contains("sure")){b.classList.add("sure");b.setAttribute("aria-label","Tap again to delete");const c=b.closest(".bnc");c.classList.add("sure");setTimeout(()=>{b.classList.remove("sure");c.classList.remove("sure");},2500);return;}
         NIGHTS=NIGHTS.filter(n=>n.id!==x.id);if(x.id===planId){plan=cleanPlan({});planId=newId();try{SH.store.put(KEY,JSON.stringify(plan));}catch(e){}drawBuilder();}
         putNights();drawSaved();toast(`Deleted ${esc(nName(x.p))}`,"Undo",()=>{NIGHTS.push(x);NIGHTS.sort((a,b)=>(b.p.up||0)-(a.p.up||0));putNights();drawSaved();drawBuilder();});}});}
