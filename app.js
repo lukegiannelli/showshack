@@ -1038,10 +1038,18 @@ async function copyOut(text,btn){
   }
   document.getElementById("getBtn").onclick=open;
   window.shackGetApp=open;
+  // a friend's link (?get=1&by=Name): the sheet says who sent it and what the Shack does before the install steps
+  const by=(/[?&]by=([^&#]+)/.exec(location.search)||[])[1];let byName="";try{byName=decodeURIComponent(by||"").replace(/[^\p{L}\p{N} .'-]/gu,"").trim().slice(0,20);}catch(e){}
+  if(byName){const t=document.getElementById("sheetTitle");if(t)t.textContent=byName+" sent you The Show Shack";
+    const o=open;open=function(){o();if(!sh.hidden&&!body.querySelector(".welcome"))body.insertAdjacentHTML("afterbegin",`<div class="welcome"><p><b>What it is:</b> every show, rave, comedy night and open mic around SoCal, with real prices and drive times.</p><p><b>Plan a night</b> (dinner, show, afters) and send it to the group as one link.</p>${/#F=/i.test(window.NIGHT_HASH||location.hash)?`<p><b>Be friends on it</b> to see who's going to what. ${esc(byName)}'s invite connects you once you pick a name on the You tab.</p>`:""}</div><p class="note"><b>To keep it on your phone:</b></p>`);};window.shackGetApp=open;document.getElementById("getBtn").onclick=open;}
   if(/[?&]get=1/.test(location.search)){showBar();setTimeout(open,700);}   // links from "Share the Shack" / the QR code
 })();
 document.getElementById("shareApp").addEventListener("click",ev=>{
-  const url=APP_URL+"?get=1", text="🛖 The Show Shack: SoCal shows, raves, comedy, open mics & more, with prices, drive times and what your night will cost. Free, no login. Tap to get it:";
+  // signed in: the link carries your first name (their welcome says who sent it) and your friend code (you're friends once they sign in)
+  const me=window.SHACK_ME&&SHACK_ME();
+  const url=APP_URL+"?get=1"+(me&&me.name?"&by="+encodeURIComponent(me.name):"")+(me&&me.code?"#F="+me.code:"");
+  const text=me?"🛖 Come find shows with me on The Show Shack: SoCal shows, raves, comedy, open mics & more, with prices, drive times and what the night will cost. Free, no login. Tap to get it:"
+    :"🛖 The Show Shack: SoCal shows, raves, comedy, open mics & more, with prices, drive times and what your night will cost. Free, no login. Tap to get it:";
   if(navigator.share){navigator.share({title:"The Show Shack",text,url}).catch(()=>{});return;}
   copyOut(text+"\n"+url,ev.currentTarget);
 });

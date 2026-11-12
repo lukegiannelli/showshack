@@ -22,6 +22,8 @@ async function pushLive(){const map=LIVE();if(!C.user||!window.NIGHT||!NIGHT.all
     const {error}=await sb.from("live_nights").update({plan:x.p}).eq("id",slug);if(!error)sent[slug]=j;}}
 addEventListener("shack:store",ev=>{if(!ev.detail||ev.detail.key!=="shack-nights"||!C.user)return;clearTimeout(liveT);liveT=setTimeout(()=>pushLive().catch(()=>{}),2000);});
 window.SHACK_LIVE={link:liveLink,on:()=>!!C.user};
+// who you are on the Shack (for invite links): first name + friend code, or null when signed out
+window.SHACK_ME=()=>prof?{name:String(prof.name||"").split(/\s+/)[0].slice(0,20),code:prof.friend_code}:null;
 
 /* ===== profile, friends, leaderboard ===== */
 let prof=null,friends=null,board=null,msg="",busy=false;
@@ -61,13 +63,17 @@ function takePending(){let c=null;try{c=localStorage.getItem(PK);}catch(e){}if(!
   if(!prof){setTimeout(()=>{if(prof)addFriend(c).catch(e=>{msg=errMsg(e);redraw();});else{msg="Pick your name first, then add code "+c;redraw();}},1500);return;}
   addFriend(c).catch(e=>{msg=errMsg(e);redraw();});}
 (()=>{const m=/^#F=([A-Z0-9]{6,12})$/i.exec(window.NIGHT_HASH||location.hash||"");if(!m)return;
+  let by="";try{by=decodeURIComponent((/[?&]by=([^&#]+)/.exec(window.SHACK_SEARCH||location.search)||[])[1]||"").replace(/[^\p{L}\p{N} .'-]/gu,"").trim().slice(0,20);}catch(e){}
   try{localStorage.setItem(PK,m[1].toUpperCase());history.replaceState(null,"",location.pathname);}catch(e){}
-  setTimeout(()=>{if(C.user)takePending();else if(window.NIGHT&&NIGHT.toast)NIGHT.toast("A friend invited you! Sign in to connect.","Sign in",()=>{if(window.SHACK_YOU)SHACK_YOU.open("signin");});},2500);})();
+  // wait until the "get the app" sheet is closed so the two don't stack
+  const nudge=()=>{const sh=document.getElementById("sheet");if(sh&&!sh.hidden){setTimeout(nudge,1500);return;}
+    if(C.user)takePending();else if(window.NIGHT&&NIGHT.toast)NIGHT.toast((by||"A friend")+" invited you! Sign in to connect.","Sign in",()=>{if(window.SHACK_YOU)SHACK_YOU.open("signin");});};
+  setTimeout(nudge,2500);})();
 const errMsg=e=>{const m=String(e&&e.message||"");return /no one has/.test(m)?"No one has that code. Check it and try again.":/own code/.test(m)?"That's your own code 🙂":/cap:/.test(m)?"You've hit the limit for that.":/name/.test(m)?"Names need 1 to 30 characters.":"Something went wrong. Try again.";};
 
 document.addEventListener("click",async ev=>{const b=ev.target.closest("[data-so]");if(!b)return;ev.stopPropagation();ev.preventDefault();const a=b.dataset.so;
   try{if(a==="board"){if(board){board=null;redraw();return;}board=await SH.rpc("leaderboard",{});redraw();return;}
-    if(a==="invite"&&prof){const url=base()+"#F="+prof.friend_code,text=`Add me on The Show Shack so we can see who's going to what 🛖 My code: ${prof.friend_code}`;
+    if(a==="invite"&&prof){const url=base()+"?get=1&by="+encodeURIComponent(String(prof.name||"").split(/\s+/)[0].slice(0,20))+"#F="+prof.friend_code,text=`Add me on The Show Shack so we can see who's going to what 🛖 My code: ${prof.friend_code}`;
       if(navigator.share){try{await navigator.share({text,url});}catch(e){}return;}
       try{await navigator.clipboard.writeText(text+"\n"+url);b.textContent="Invite copied ✓";}catch(e){prompt("Copy your invite link",url);}return;}
     if(a==="rm"){const f=(friends||[]).find(x=>x.friend_id===b.dataset.id);if(!confirm(`Remove ${f?f.name:"this friend"}? You'll both stop seeing each other.`))return;

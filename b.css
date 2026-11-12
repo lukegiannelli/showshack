@@ -731,3 +731,7 @@ body.neb .vcard .vf .bvibe{color:#EDE6FF;opacity:1;text-shadow:0 1px 3px rgba(0,
 .ui-b .bmap-nv button{flex:none;min-width:44px;height:44px;border-radius:12px;border:0;background:rgba(255,198,107,.16);color:#FFC66B;font:800 24px/1 var(--body);cursor:pointer}
 .ui-b .bmap-nv .bmap-nv-only{font:700 11.5px var(--body);padding:0 10px;color:#efe9ff;background:rgba(255,255,255,.08)}
 .ui-b .bmap-nv .bmap-nv-only[aria-pressed="true"]{background:#FFC66B;color:#2a1700}
+/* install sheet: welcome from the friend who sent the link */
+.welcome{margin:0 0 12px;padding:12px 14px;border-radius:14px;background:rgba(126,224,184,.1);border:1px solid rgba(126,224,184,.4)}
+.welcome p{margin:0 0 6px;font-size:14px;line-height:1.4}
+.welcome p:last-child{margin:0}
