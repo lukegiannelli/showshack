@@ -18,7 +18,7 @@ const label=p=>p.c==="pool"?[ic("pool"),"Pool"]:[ic(p.c),(N.AC[p.c]||["","Spot"]
 const SVC={sit:"Sit-down, 20% tip",bar:"20% tip on drinks",counter:"Counter service, tip optional",none:"No tip needed"};
 const $r=(a,b)=>a===b?"$"+a:`$${a}–${b}`;
 /* ---- Food extras: plan around a show (near it / still open after), $–$$$, saved, dietary, group bill, booking, Feed me ---- */
-const F={show:"",open:false,price:"",diet:"",fav:false,spun:""};let LASTX=[];
+const F={show:"",open:false,price:"",diet:"",fav:false,spun:"",deal:false};let LASTX=[];
 let PPL=1;try{PPL=Math.min(12,Math.max(1,+SH.store.raw("shack-fppl")||1));}catch(e){}
 const FAV=new Set((()=>{try{return JSON.parse(SH.store.raw("shack-favfood")||"[]");}catch(e){return [];}})());
 const saveFav=()=>{try{SH.store.put("shack-favfood",JSON.stringify([...FAV]));}catch(e){}};
@@ -40,6 +40,7 @@ function foodTools(all){const up=(state._up||[]).filter(e=>typeof e.lat==="numbe
       ${starred.length?`<optgroup label="Your starred shows">${starred.map(opt).join("")}</optgroup>`:""}${tn.length?`<optgroup label="Tonight">${tn.map(opt).join("")}</optgroup>`:""}</select></label>
     ${e?`<div class="bft-row"><button type="button" class="chip" data-fopen aria-pressed="${F.open}">🌙 Still open after it ends</button><span class="bft-note">Ends around ${clockS(se.end)}${se.guess?" (guess, no start time listed)":""}. Closest to ${esc(e.venue)} first.</span></div>`:""}
     <div class="bft-row bft-chips">${["1","2","3"].map(v=>`<button type="button" class="chip" data-fprice="${v}" aria-pressed="${F.price===v}">${"$".repeat(+v)}</button>`).join("")}
+      ${(()=>{const n=all.filter(x=>dealOf(x.p)).length;return n||F.deal?`<button type="button" class="chip bdeal-chip" data-fdeal aria-pressed="${F.deal}">🏷 Deals · ${n}</button>`:"";})()}
       <button type="button" class="chip" data-ffav aria-pressed="${F.fav}">♥ Saved${FAV.size?" · "+FAV.size:""}</button>
       ${diets.map(d=>`<button type="button" class="chip" data-fdiet="${esc(d)}" aria-pressed="${F.diet===d}">🌱 ${esc(d)}</button>`).join("")}
       <span class="bft-ppl" role="group" aria-label="Group size for the bill"><button type="button" data-fppl="-1" aria-label="Fewer people">−</button><b>${PPL} ${PPL===1?"person":"people"}</b><button type="button" data-fppl="1" aria-label="More people">＋</button></span>
@@ -52,6 +53,18 @@ function price(p){const c=N.cost?N.cost(p):null;if(!c)return "";
   return `<div class="spc-price"><b>≈ ${$r(c.all[0],c.all[1])}</b><span>per person, ${c.tip[1]?"with tax and tip":"with tax"}</span>
     <small>${parts.join(" · ")}</small>${grp}<small class="spc-svc">${SVC[c.svc]||""} · typical price, not from the place</small></div>`;}
 const late24=p=>p.til>=24;
+/* ---- deals: ones the daily refresh found on the place's own site (afters.json "deal"), plus ones the owner adds on the
+   You page (Supabase food_deals). A deal shows until its end date; ones without an end date need a check in the last 120 days. ---- */
+let DBD=null;
+const dk=(n,c)=>String(n||"").toLowerCase().trim()+"|"+String(c||"").toLowerCase().trim();
+function loadDeals(){SH.rpc("list_food_deals").then(r=>{DBD=Array.isArray(r)?r:[];home();if($("bSpots")&&BUI.screen==="spots")draw();}).catch(()=>{DBD=DBD||[];});}
+loadDeals();
+function dealOf(p){const t=todayStr(),old=new Date(Date.now()-120*864e5).toISOString().slice(0,10);
+  const own=(DBD||[]).find(x=>dk(x.spot,x.city)===dk(p.n,p.city)||(!x.city&&dk(x.spot,"")===dk(p.n,"")));if(own)return own;
+  const d=p.deal;return d&&d.t&&(d.until?d.until>=t:(d.chk||"")>=old)?d:null;}
+function dealHtml(dl){if(!dl)return "";const u=dl.u&&safeUrl(dl.u),till=dl.until?parseDay(dl.until).toLocaleDateString("en-US",{month:"short",day:"numeric"}):"";
+  return `<p class="spc-deal"><span aria-hidden="true">🏷</span><span><b>${esc(dl.t)}</b>${dl.d?` · ${esc(dl.d)}`:""}${till?` · until ${esc(till)}`:""}${u?` · <a href="${esc(u)}" target="_blank" rel="noopener">Details ↗</a>`:""}</span></p>`;}
+window.SHACK_DEALS={reload:loadDeals,spots:()=>N.ready()?N.spots().filter(p=>N.grp(p)!=="chill").map(p=>({n:p.n,city:p.city||""})):[]};
 function list(g){return N.spots().map((p,i)=>({p,i})).filter(x=>N.grp(x.p)===g);}
 function sorted(xs){return xs.map(x=>({...x,d:driveEstimate(x.p.lat,x.p.lon)}))
   // closest first when we know where you start; otherwise known hours first, latest-open first
@@ -71,6 +84,7 @@ function card({p,i,d,fs},vc){const [em,cat]=label(p),q=encodeURIComponent([p.n,p
     <p class="spc-where">${esc([p.a,p.city].filter(Boolean).join(", "))}</p>
     ${fs?`<p class="spc-from">${esc(fs.txt)}</p>`:""}
     <div class="spc-facts"><span class="spc-f">${CLOCK}${hrs}</span>${late24(p)?`<span class="spc-late">Open past midnight</span>`:""}</div>
+    ${dealHtml(dealOf(p))}
     ${price(p)}
     ${tags.length?`<div class="spc-tags">${tags.map(t=>`<i>${esc(t)}</i>`).join("")}</div>`:""}
     ${book}
@@ -87,7 +101,7 @@ function tiles(){const t=$("bTiles");if(!t||t.querySelector("[data-spots]"))retu
   const all=t.querySelectorAll(".btile");all.forEach(b=>b.classList.add("bt-sync"));void t.offsetWidth;all.forEach(b=>b.classList.remove("bt-sync"));}
 function home(){tiles();if(!N.ready())return;
   for(const k in KINDS){const xs=list(k),el=document.querySelector(`[data-scount="${k}"]`);if(!el)continue;
-    const l=xs.filter(x=>late24(x.p)).length;el.textContent=xs.length+" spots"+(k==="after"&&l?` · ${l} past midnight`:"");}}
+    const l=xs.filter(x=>late24(x.p)).length,dn=xs.filter(x=>dealOf(x.p)).length;el.textContent=xs.length+" spots"+(k==="after"&&l?` · ${l} past midnight`:"")+(dn?` · ${dn} deal${dn===1?"":"s"}`:"");}}
 
 /* ---- the spots screen ---- */
 function mount(){if($("bSpots"))return;const sec=document.createElement("section");sec.id="bSpots";sec.className="bspots";sec.setAttribute("aria-label","Spots");
@@ -106,25 +120,27 @@ function mount(){if($("bSpots"))return;const sec=document.createElement("section
     if(ev.target.closest("[data-fopen]")){F.open=!F.open;draw();return;}
     const fp=ev.target.closest("[data-fprice]");if(fp){F.price=F.price===fp.dataset.fprice?"":fp.dataset.fprice;draw();return;}
     if(ev.target.closest("[data-ffav]")){F.fav=!F.fav;draw();return;}
+    if(ev.target.closest("[data-fdeal]")){F.deal=!F.deal;draw();return;}
     const fd=ev.target.closest("[data-fdiet]");if(fd){F.diet=F.diet===fd.dataset.fdiet?"":fd.dataset.fdiet;draw();return;}
     const pp=ev.target.closest("[data-fppl]");if(pp){PPL=Math.min(12,Math.max(1,PPL+ +pp.dataset.fppl));try{SH.store.put("shack-fppl",PPL);}catch(e){}draw();return;}
     if(ev.target.closest("[data-fspin]")){const pool=LASTX.slice(0,12).filter(x=>fkey(x.p)!==F.spun);if(!pool.length)return;
       F.spun=fkey(pool[Math.floor(Math.random()*pool.length)].p);draw();const c=$("bSpList").querySelector(".spc.spun");if(c)c.scrollIntoView({behavior:"smooth",block:"center"});return;}});
   sec.addEventListener("change",ev=>{const s=ev.target.closest("[data-fshow]");if(s){F.show=s.value;F.open=false;F.spun="";draw();}});}
-function open(k){cur=k;sub="";late=false;tag="";F.spun="";mount();BUI.show("spots");}
+function open(k){cur=k;sub="";late=false;tag="";F.spun="";F.deal=false;mount();BUI.show("spots");}
 function draw(){mount();const K=SCR(cur),all=list(cur);
   $("bSpTitle").textContent=K.title;$("bSpBlurb").textContent=K.blurb;
   $("bSpots").dataset.k=cur;
   // Pool goes right after "All" so it isn't lost off the end of the scrolling chip row
   const FRONT=["pool","hotel"],fr=c=>{const i=FRONT.indexOf(c);return i<0?99:i;};   // Pool and Hotel first so they aren't lost off the end of the row
-  const cats=[...new Set(all.map(x=>x.p.c))].sort((a,b)=>fr(a)-fr(b));
+  const cats=[...new Set(all.map(x=>x.p.c))].sort((a,b)=>fr(a)-fr(b)),nDeals=all.filter(x=>dealOf(x.p)).length;
   // Food: "Fun experiences" and "Splurge" chips first (just filters), then the categories
   const xch=cur==="food"?[["x:fun",ic("boil"),"Fun experiences"],["x:splurge",ic("fine"),"Splurge"]]:[];
   $("bSpSubs").innerHTML=(cats.length>1?[["","","All"],...xch,...cats.map(c=>[c,...label({c})])]:[]).map(([v,i,l])=>`<button type="button" class="chip spchip" data-ssub="${v}" aria-pressed="${v===sub}">${i}${esc(l)}</button>`).join("")
     +(cur!=="food"?`<button type="button" class="chip" data-slate="1" aria-pressed="${late}">🌙 ${cur==="chill"?"Open till midnight":"Past midnight"}</button>`:"")
+    +(cur==="after"&&(nDeals||F.deal)?`<button type="button" class="chip bdeal-chip" data-fdeal aria-pressed="${F.deal}">🏷 Deals · ${nDeals}</button>`:"")
     +(cur==="chill"?TAGF.map(t=>`<button type="button" class="chip" data-stag="${t}" aria-pressed="${tag===t}">${t==="Fire rings"?"🔥":t==="Tide pools"?"🦀":"🌅"} ${t}</button>`).join(""):"");
   const E=N.EXP||{},subOk=p=>!sub||(sub.startsWith("x:")?E[p.c]===sub.slice(2):p.c===sub);
-  let xs=sorted(all.filter(x=>subOk(x.p)&&(!late||late24(x.p))&&(!tag||hasTag(x.p,tag))));
+  let xs=sorted(all.filter(x=>subOk(x.p)&&(!late||late24(x.p))&&(!tag||hasTag(x.p,tag))&&(!F.deal||dealOf(x.p))));
   const e=cur==="food"?pickedShow():null;
   if(cur==="food"){xs=xs.filter(x=>(!F.price||String(tierOf(x.p))===F.price)&&(!F.fav||FAV.has(fkey(x.p)))&&(!F.diet||(x.p.diet||[]).includes(F.diet)));
     if(e){xs.forEach(x=>x.fs=fromShow(x.p,e));if(F.open){const end=showEnd(e).end;xs=xs.filter(x=>x.p.til&&x.p.til*60>=end);}xs.sort((a,b)=>a.fs.mi-b.fs.mi);}

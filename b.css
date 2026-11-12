@@ -765,3 +765,7 @@ body.neb .vcard .vf .bvibe{color:#EDE6FF;opacity:1;text-shadow:0 1px 3px rgba(0,
 .welcome{margin:0 0 12px;padding:12px 14px;border-radius:14px;background:rgba(126,224,184,.1);border:1px solid rgba(126,224,184,.4)}
 .welcome p{margin:0 0 6px;font-size:14px;line-height:1.4}
 .welcome p:last-child{margin:0}
+
+/* owner: add a food deal */
+.bdeal-f input{min-width:0;height:42px;box-sizing:border-box;padding:0 11px;border-radius:11px;border:1px solid rgba(255,255,255,.18);background:rgba(10,6,28,.7);color:#fff;font:500 16px var(--body);color-scheme:dark}
+.bdeal-l{display:grid;gap:4px;font:500 12px var(--body);color:#cfc6e8}

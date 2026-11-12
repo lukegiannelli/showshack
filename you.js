@@ -131,7 +131,7 @@ async function refreshAdmin(){if(!C.user)return;try{const sb=await C.client();co
   const s=$("bYou");if(s&&s.open&&(admin||SH.store.raw("shack-owner")==="1")){if(!$("bAdm"))redrawYou();else $("bAdm").innerHTML=admHTML(SH.store.raw("shack-owner")==="1");}}catch(e){}}
 let COV=null;fetch("coverage.json",{cache:"no-cache"}).then(r=>r.ok?r.json():null).then(j=>{COV=j;}).catch(()=>{});
 function admHTML(owner){if(!admin)return owner?`<p class="bset-p">You opened owner mode on this phone. Make this account the Shack's admin to review flyer shows and reports. (Only works once, for the first person.)</p><div class="bset-acts"><button type="button" data-adm="claim">Make me the admin</button></div>`:"";
-  if(!review)return `<p class="bset-p">Loading…</p>`;
+  if(!review)return `<p class="bset-p">Loading…</p>`+dealsHTML();
   const fl=review.flyers||[],ms=review.missing||[],d=s=>new Date(s+"T12:00").toLocaleDateString("en-US",{month:"short",day:"numeric"});
   const listed=new Set((state.events||[]).filter(e=>!e.community).map(e=>e.start+"|"+String(e.venue).toLowerCase()));
   return `<p class="bset-p"><b>${fl.length}</b> flyer show${fl.length===1?"":"s"} · <b>${ms.length}</b> missing-show report${ms.length===1?"":"s"}</p>
@@ -139,7 +139,36 @@ function admHTML(owner){if(!admin)return owner?`<p class="bset-p">You opened own
       ${x.flyer_path?`<a class="bpass-share" href="${E(SH.sb.url+"/storage/v1/object/public/flyers/"+x.flyer_path)}" target="_blank" rel="noopener">Flyer</a>`:""}<button type="button" class="bpass-share" data-adm="${x.status==="hidden"?"show":"hide"}" data-id="${E(x.id)}">${x.status==="hidden"?"Restore":"Hide"}</button></li>`).join("")}</ul>`:""}
     ${ms.length?`<h4 class="badm-h">Missing shows people asked for</h4><ul class="badm-list">${ms.map(x=>`<li><div><b>${E(x.what)}</b><span>${E(new Date(x.created_at).toLocaleDateString("en-US",{month:"short",day:"numeric"}))}${x.link?` · <a href="${E(x.link)}" target="_blank" rel="noopener">link ↗</a>`:""}</span></div><button type="button" class="bpass-share" data-adm="added" data-id="${E(x.id)}">Added</button><button type="button" class="bpass-share" data-adm="skip" data-id="${E(x.id)}">Skip</button></li>`).join("")}</ul>`:""}
     ${counts.length?`<h4 class="badm-h">What people use (devices per feature · last 7 days / 30 days)</h4><ul class="badm-list bcnt">${counts.map(c=>`<li><div><b>${E(FEAT[c.feature]||c.feature)}</b></div><span class="bcnt-n">${c.week||0} / ${c.total}</span></li>`).join("")}</ul>`:`<p class="bset-p">Usage counts show up here once people start using the app (private: counts only, no names).</p>`}
-    ${COV&&COV.gaps&&COV.gaps.length?`<h4 class="badm-h">Venues that may be missing shows (weekly check, ${E(COV.checked||"")})</h4><ul class="badm-list">${COV.gaps.slice(0,12).map(g=>`<li><div><b>${E(g.venue)}</b><span>We list ${g.ours} · Ticketmaster has ${g.tm} in the next 60 days</span></div></li>`).join("")}</ul>`:""}`;}
+    ${COV&&COV.gaps&&COV.gaps.length?`<h4 class="badm-h">Venues that may be missing shows (weekly check, ${E(COV.checked||"")})</h4><ul class="badm-list">${COV.gaps.slice(0,12).map(g=>`<li><div><b>${E(g.venue)}</b><span>We list ${g.ours} · Ticketmaster has ${g.tm} in the next 60 days</span></div></li>`).join("")}</ul>`:""}
+    ${dealsHTML()}`;}
+/* ===== owner: food & afters deals (a code a restaurant gave you, a happy hour you saw). Shows on that spot's card for everyone. ===== */
+let DEALS=null,dealMsg="";
+async function loadOwnDeals(){try{DEALS=await SH.rpc("list_food_deals")||[];}catch(e){DEALS=DEALS||[];}const el=$("bDeals");if(el)el.outerHTML=dealsHTML();}
+function dealsHTML(){if(!admin)return "";if(DEALS===null){loadOwnDeals();}
+  const spots=window.SHACK_DEALS?SHACK_DEALS.spots():[];
+  return `<div id="bDeals"><h4 class="badm-h">🏷 Food &amp; afters deals</h4>
+    <p class="bset-p">Add a deal to a food or afters spot: it shows on that spot's card with a 🏷 tag. Only add deals you've seen posted or that the place gave you.</p>
+    <form class="bmiss-f bdeal-f" data-deal-form>
+      <input name="s" list="bDealSpots" required maxlength="80" placeholder="Spot (start typing a name)" autocomplete="off">
+      <datalist id="bDealSpots">${spots.map(p=>`<option value="${E(p.n)}${p.city?" · "+E(p.city):""}"></option>`).join("")}</datalist>
+      <input name="t" required maxlength="90" placeholder="The deal, e.g. Show your ticket: 15% off">
+      <input name="d" maxlength="60" placeholder="When (optional), e.g. Mon–Fri 3–6 PM">
+      <label class="bdeal-l">Ends (optional)<input name="until" type="date"></label>
+      <input name="u" type="url" maxlength="300" placeholder="Link where it's posted (optional)">
+      <button class="bpass-share">Add deal</button></form>
+    ${dealMsg?`<p class="bset-msg">${E(dealMsg)}</p>`:""}
+    ${DEALS&&DEALS.length?`<ul class="badm-list">${DEALS.map(x=>`<li><div><b>${E(x.t)}</b><span>${E(x.spot)}${x.city?" · "+E(x.city):""}${x.d?" · "+E(x.d):""}${x.until?" · until "+E(x.until):""}</span></div><button type="button" class="bpass-share" data-deal-del="${E(x.id)}">Remove</button></li>`).join("")}</ul>`:""}</div>`;}
+document.addEventListener("submit",async ev=>{const f=ev.target.closest("[data-deal-form]");if(!f)return;ev.preventDefault();ev.stopPropagation();
+  const [spot,city]=f.s.value.split(" · ").map(s=>s.trim()),u=f.u.value.trim();
+  if(u&&!/^https:\/\//.test(u)){dealMsg="Links need to start with https://";$("bDeals").outerHTML=dealsHTML();return;}
+  f.querySelector("button").disabled=true;
+  try{const sb=await C.client();const {error}=await sb.rpc("admin_add_deal",{p_spot:spot,p_city:city||"",p_t:f.t.value.trim(),p_d:f.d.value.trim(),p_until:f.until.value||null,p_u:u||null});if(error)throw error;
+    dealMsg=`Added ✓ It shows on ${spot}'s card now.`;if(window.SHACK_DEALS)SHACK_DEALS.reload();}
+  catch(e){dealMsg=/cap/.test(String(e&&e.message))?"That's 300 deals, remove some old ones first.":"Couldn't add that. Check the details and try again.";}
+  await loadOwnDeals();},true);
+document.addEventListener("click",async ev=>{const b=ev.target.closest("[data-deal-del]");if(!b)return;ev.preventDefault();ev.stopPropagation();b.disabled=true;
+  try{const sb=await C.client();await sb.rpc("admin_del_deal",{p_id:b.dataset.dealDel});dealMsg="Removed.";if(window.SHACK_DEALS)SHACK_DEALS.reload();}catch(e){dealMsg="Couldn't remove that. Try again.";}
+  await loadOwnDeals();},true);
 document.addEventListener("click",async ev=>{const b=ev.target.closest("[data-adm]");if(!b)return;ev.preventDefault();ev.stopPropagation();const a=b.dataset.adm,id=b.dataset.id;b.disabled=true;
   try{const sb=await C.client();
     if(a==="claim"){const {data,error}=await sb.rpc("claim_admin");if(error)throw error;say(data?"You're the admin ✓":"Someone already claimed admin.");}

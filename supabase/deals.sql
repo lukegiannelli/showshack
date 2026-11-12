@@ -1,0 +1,5 @@
+-- The Show Shack · food & afters deals the owner adds (already applied to the live project as migration "food_deals").
+-- food_deals(id, spot, city, t ≤90, d ≤60, until date, u https link, created_at): no policies, max 300 rows.
+-- list_food_deals(): live deals for everyone (until is empty or today or later).
+-- admin_add_deal(spot, city, t, d, until, u) / admin_del_deal(id): admin only (You page → Owner).
+-- Deals the daily refresh finds live in afters.json ("deal" on a spot) instead; see scripts/refresh-extra.md.

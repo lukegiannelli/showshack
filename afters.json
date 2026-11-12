@@ -1,5 +1,5 @@
 {
-"note": "Afters spots for the Night Card. h = hours text; til = usual latest close on the 24h clock, past midnight keeps counting (26 = 2 AM); hq '~' = sources disagree or only third-party listings. No h = hours unknown. Food spots marked src 'osm' were matched on OpenStreetMap (name, address, hours). pp = estimated per-person food price before tax and tip (not quoted by the place); svc 'sit' or 'counter' overrides the category default. c 'hotel' = hotel bars and rooftops with music nights open to non-guests; h is the music schedule, u is where it came from. diet = dietary options tagged on OpenStreetMap. Checked Nov 2026; always check before you go.",
+"note": "Afters spots for the Night Card. h = hours text; til = usual latest close on the 24h clock, past midnight keeps counting (26 = 2 AM); hq '~' = sources disagree or only third-party listings. No h = hours unknown. Food spots marked src 'osm' were matched on OpenStreetMap (name, address, hours). pp = estimated per-person food price before tax and tip (not quoted by the place); svc 'sit' or 'counter' overrides the category default. c 'hotel' = hotel bars and rooftops with music nights open to non-guests; h is the music schedule, u is where it came from. diet = dietary options tagged on OpenStreetMap. deal = a deal posted by the place itself {t what, d when, until end date, u where it's posted, chk last checked}; deals without an end date hide 120 days after chk. Checked Nov 2026; always check before you go.",
 "places": [
 {
 "n": "Baekjeong Irvine",
@@ -337,7 +337,13 @@
 "lat": 34.0447,
 "lon": -118.26461,
 "geo": "tourism",
-"til": 26
+"til": 26,
+"deal": {
+"t": "Night Strike: unlimited bowling + shoes $28.99",
+"d": "Sun from 6 PM, Mon–Thu from 7 PM",
+"u": "https://www.luckystrikeent.com/locations/los-angeles/",
+"chk": "2026-11-12"
+}
 },
 {
 "n": "Lucky Strike Hollywood",
@@ -656,7 +662,13 @@
 "geo": "tourism",
 "h": "From 5 PM, till ~midnight–1 AM",
 "til": 25,
-"hq": "~"
+"hq": "~",
+"deal": {
+"t": "Happy hour on the 22nd-floor rooftop",
+"d": "Mon–Fri 5–7 PM",
+"u": "https://www.sandiego.org/members/altitude-sky-lounge-san-diego-marriott-gaslamp-quarter/493",
+"chk": "2026-11-12"
+}
 },
 {
 "n": "Fairweather",
@@ -2039,7 +2051,13 @@
 "til": 23,
 "hq": "~",
 "geo": "amenity",
-"src": "osm"
+"src": "osm",
+"deal": {
+"t": "Happy hour: $3, $6 and $9 sushi, bites and cocktails",
+"d": "Mon–Fri 3–6 PM, sushi bar & lounge",
+"u": "https://www.benihana.com/locations/anaheim",
+"chk": "2026-11-12"
+}
 },
 {
 "n": "Benihana",
@@ -2632,7 +2650,13 @@
 25
 ],
 "geo": "amenity",
-"src": "osm"
+"src": "osm",
+"deal": {
+"t": "Happy hour at the bar",
+"d": "3–6 PM, bar counter & bar tables",
+"u": "https://www.bottegalouie.com/pages/information",
+"chk": "2026-11-12"
+}
 },
 {
 "n": "7 Leaves Cafe",

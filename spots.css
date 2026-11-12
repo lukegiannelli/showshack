@@ -156,3 +156,9 @@ html.rpop-on,html.rpop-on body{overflow:hidden}
 .dghost span{font:600 11px var(--mono);color:#fff;white-space:nowrap;padding:3px 8px;border-radius:999px;background:rgba(20,10,40,.7);border:1px solid rgba(255,255,255,.2);order:-1;transform:translateY(-118px)}
 @keyframes dghost{0%{transform:translate(-50px,0);opacity:0}8%{opacity:.95}28%{transform:translate(50px,0)}46%{transform:translate(-50px,0)}58%{transform:translate(0,-10px)}74%{transform:translate(0,40px);opacity:.95}88%,100%{transform:translate(0,40px);opacity:0}}
 @media (prefers-reduced-motion:reduce){.dghost i{animation:none}}
+
+/* deals on food & afters cards */
+.spc-deal{display:flex;gap:8px;align-items:flex-start;margin:8px 0 2px;padding:8px 10px;border-radius:12px;background:rgba(126,224,184,.1);border:1px dashed rgba(126,224,184,.55);font:500 13px/1.35 var(--body);color:#e4f9ef}
+.spc-deal b{color:#7ee0b8}
+.spc-deal a{color:#bfeaff}
+.bdeal-chip[aria-pressed="true"]{border-color:#7ee0b8;box-shadow:0 0 10px -3px #7ee0b8}
