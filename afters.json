@@ -2705,6 +2705,822 @@
 "hq": "~",
 "geo": "amenity",
 "src": "osm"
+},
+{
+"n": "Rolberto's Taco Shop",
+"c": "tacos",
+"city": "San Diego",
+"zip": "92116",
+"a": "3462 Adams Avenue",
+"t": [
+"Tacos & Mexican",
+"Near North Park / Observatory"
+],
+"lat": 32.76355,
+"lon": -117.11865,
+"h": "6 AM to 3 AM",
+"til": 27,
+"hq": "~",
+"geo": "amenity",
+"src": "osm"
+},
+{
+"n": "Mr. Moto Pizza",
+"c": "pizza",
+"city": "San Diego",
+"zip": "92104",
+"a": "3773 30th Street",
+"t": [
+"Pizza",
+"Near North Park / Observatory"
+],
+"lat": 32.74663,
+"lon": -117.12989,
+"h": "Sun–Thu 11 AM to 11 PM; Fri–Sat 11 AM to 2 AM",
+"til": 26,
+"hq": "~",
+"geo": "amenity",
+"src": "osm"
+},
+{
+"n": "Gelati & Peccati",
+"c": "dessert",
+"city": "San Diego",
+"zip": "92104",
+"a": "3066 University Avenue",
+"t": [
+"Dessert & gelato",
+"Near North Park / Observatory"
+],
+"lat": 32.74862,
+"lon": -117.12843,
+"h": "Mon–Fri 4 PM to 10 PM; Sat–Sun 11 AM to 1 AM",
+"til": 25,
+"hq": "~",
+"geo": "amenity",
+"src": "osm"
+},
+{
+"n": "So Saap",
+"c": "thai",
+"city": "San Diego",
+"zip": "92105",
+"a": "4134 University Avenue",
+"t": [
+"Thai",
+"Near North Park / Observatory"
+],
+"lat": 32.75047,
+"lon": -117.10611,
+"h": "Sun–Thu 10:30 AM to 11 PM; Fri–Sat 10:30 AM to 12 AM",
+"til": 24,
+"hq": "~",
+"geo": "amenity",
+"src": "osm"
+},
+{
+"n": "Shank and Bone",
+"c": "pho",
+"city": "San Diego",
+"zip": "92104",
+"a": "2930 University Avenue",
+"t": [
+"Pho & Vietnamese",
+"Near North Park / Observatory"
+],
+"lat": 32.7486,
+"lon": -117.13068,
+"h": "Sun–Tue 12 PM to 9 PM; Wed–Sat 12 PM to 10 PM",
+"til": 22,
+"hq": "~",
+"geo": "amenity",
+"src": "osm"
+},
+{
+"n": "La Fachada",
+"c": "tacos",
+"city": "San Diego",
+"zip": "",
+"a": "20 25th Street",
+"t": [
+"Tacos & Mexican",
+"Near Downtown / Gaslamp"
+],
+"lat": 32.70562,
+"lon": -117.1406,
+"h": "Mon–Thu, Sun 7 AM to 2 AM; Fri–Sat 7 AM to 3 AM",
+"til": 27,
+"hq": "~",
+"geo": "amenity",
+"src": "osm"
+},
+{
+"n": "Serrano's Street Tacos & Bar",
+"c": "tacos",
+"city": "San Diego",
+"zip": "",
+"a": "624 E Street",
+"t": [
+"Tacos & Mexican",
+"Near Downtown / Gaslamp"
+],
+"lat": 32.71485,
+"lon": -117.15898,
+"h": "Tue–Thu 12 PM to 11 PM; Fri–Sat 12 PM to 2 AM; Sun 12 PM to 9 PM",
+"til": 26,
+"hq": "~",
+"geo": "amenity",
+"src": "osm"
+},
+{
+"n": "Far Corner",
+"c": "pizza",
+"city": "San Diego",
+"zip": "",
+"a": "410 10th Avenue",
+"t": [
+"Pizza",
+"Near Downtown / Gaslamp"
+],
+"lat": 32.70958,
+"lon": -117.15583,
+"h": "11 AM to 11 PM",
+"til": 23,
+"hq": "~",
+"geo": "amenity",
+"src": "osm"
+},
+{
+"n": "Crab City Cajun Seafood & Bar",
+"c": "boil",
+"city": "San Diego",
+"zip": "92113",
+"a": "1985 National Avenue",
+"t": [
+"Seafood boil",
+"Near Downtown / Gaslamp"
+],
+"lat": 32.69991,
+"lon": -117.14555,
+"h": "Mon–Thu 11 AM to 9 PM; Fri–Sun 11 AM to 10 PM",
+"til": 22,
+"hq": "~",
+"geo": "amenity",
+"src": "osm"
+},
+{
+"n": "Puesto",
+"c": "tacos",
+"city": "San Diego",
+"zip": "92101",
+"a": "789 West Harbor Drive",
+"t": [
+"Tacos & Mexican",
+"Near Little Italy / Casbah"
+],
+"lat": 32.71067,
+"lon": -117.17028,
+"h": "11 AM to 10 PM",
+"til": 22,
+"hq": "~",
+"geo": "amenity",
+"src": "osm"
+},
+{
+"n": "Sisters Pizza",
+"c": "pizza",
+"city": "San Diego",
+"zip": "92193",
+"a": "3603 4th Avenue",
+"t": [
+"Pizza",
+"Near Little Italy / Casbah"
+],
+"lat": 32.74346,
+"lon": -117.16137,
+"h": "Sun–Thu 11 AM to 9 PM; Fri–Sat 11 AM to 10 PM",
+"til": 22,
+"hq": "~",
+"geo": "amenity",
+"src": "osm"
+},
+{
+"n": "Lola 55",
+"c": "tacos",
+"city": "San Diego",
+"zip": "92101",
+"a": "1290 F Street",
+"t": [
+"Tacos & Mexican",
+"Near Little Italy / Casbah"
+],
+"lat": 32.71382,
+"lon": -117.15311,
+"h": "Mon–Thu 11 AM to 9 PM; Fri–Sat 11 AM to 10 PM",
+"til": 22,
+"hq": "~",
+"geo": "amenity",
+"src": "osm"
+},
+{
+"n": "Filippi's Pizza Grotto Little Italy",
+"c": "pizza",
+"city": "San Diego",
+"zip": "92101",
+"a": "1747 India Street",
+"t": [
+"Pizza",
+"Near Little Italy / Casbah"
+],
+"lat": 32.72381,
+"lon": -117.16817,
+"h": "11 AM to 9:30 PM",
+"til": 21.5,
+"hq": "~",
+"geo": "amenity",
+"src": "osm"
+},
+{
+"n": "Flamin' Pho & Sushi Bar",
+"c": "pho",
+"city": "San Diego",
+"zip": "92101",
+"a": "550 Cedar Street",
+"t": [
+"Pho & Vietnamese",
+"Near Little Italy / Casbah"
+],
+"lat": 32.72214,
+"lon": -117.15948,
+"h": "11 AM to 8:30 PM",
+"til": 20.5,
+"hq": "~",
+"geo": "amenity",
+"src": "osm"
+},
+{
+"n": "Min Sok Chon",
+"c": "korean",
+"city": "San Diego",
+"zip": "92111",
+"a": "4620 Convoy Street",
+"t": [
+"Korean",
+"Near Convoy (Kearny Mesa)"
+],
+"lat": 32.82436,
+"lon": -117.15586,
+"h": "Mon–Thu, Sun 5 PM to 2 AM; Fri–Sat 5 PM to 3 AM",
+"til": 27,
+"hq": "~",
+"geo": "amenity",
+"src": "osm"
+},
+{
+"n": "Bei Yuan Tea & Boba",
+"c": "dessert",
+"city": "San Diego",
+"zip": "92111",
+"a": "7305 Clairemont Mesa Boulevard",
+"t": [
+"Dessert & boba",
+"Near Convoy (Kearny Mesa)"
+],
+"lat": 32.832,
+"lon": -117.16059,
+"h": "11:30 AM to midnight",
+"til": 24,
+"hq": "~",
+"geo": "amenity",
+"src": "osm"
+},
+{
+"n": "The Taco Stand",
+"c": "tacos",
+"city": "San Diego",
+"zip": "92111",
+"a": "4646 Convoy Street",
+"t": [
+"Tacos & Mexican",
+"Near Convoy (Kearny Mesa)"
+],
+"lat": 32.82495,
+"lon": -117.15588,
+"h": "Mon–Thu, Sun 10 AM to 10 PM; Fri–Sat 10 AM to midnight",
+"til": 24,
+"hq": "~",
+"geo": "amenity",
+"src": "osm"
+},
+{
+"n": "MYM Tea & Coffee",
+"c": "dessert",
+"city": "San Diego",
+"zip": "92111",
+"a": "4688 Convoy Street",
+"t": [
+"Dessert & boba",
+"Near Convoy (Kearny Mesa)"
+],
+"lat": 32.82637,
+"lon": -117.15517,
+"h": "Sun–Thu 11 AM to 10:30 PM; Fri–Sat 11 AM to 11 PM",
+"til": 23,
+"hq": "~",
+"geo": "amenity",
+"src": "osm"
+},
+{
+"n": "Pizza Port",
+"c": "pizza",
+"city": "Solana Beach",
+"zip": "92075",
+"a": "135 Highway 101",
+"t": [
+"Pizza",
+"Near Belly Up"
+],
+"lat": 32.99293,
+"lon": -117.27222,
+"h": "11 AM to 10 PM; Fri, Sat 11 AM to midnight",
+"til": 24,
+"hq": "~",
+"geo": "amenity",
+"src": "osm"
+},
+{
+"n": "Rudy's Taco Shop",
+"c": "tacos",
+"city": "Solana Beach",
+"zip": "92075",
+"a": "524 Stevens Avenue",
+"t": [
+"Tacos & Mexican",
+"Near Belly Up"
+],
+"lat": 32.99036,
+"lon": -117.26073,
+"h": "Mon–Sat 8 AM to 9 PM; Sun 8 AM to 8 PM",
+"til": 21,
+"hq": "~",
+"geo": "amenity",
+"src": "osm"
+},
+{
+"n": "The Burrito City",
+"c": "tacos",
+"city": "El Cajon",
+"zip": "92020",
+"a": "1255 Avocado Avenue",
+"t": [
+"Tacos & Mexican",
+"Near Sycuan"
+],
+"lat": 32.77834,
+"lon": -116.95656,
+"h": "Sun–Thu 8 AM to 9 PM; Fri–Sat 8 AM to 10 PM",
+"til": 22,
+"hq": "~",
+"geo": "amenity",
+"src": "osm"
+},
+{
+"n": "Fuego Hibachi",
+"c": "hibachi",
+"city": "Riverside",
+"zip": "92501",
+"a": "3750 #101 Main Street",
+"t": [
+"Hibachi",
+"Near Fox / downtown"
+],
+"lat": 33.98198,
+"lon": -117.37416,
+"h": "Mon–Wed 11 AM to 10 PM; Thu 11 AM to 11 PM; Fri–Sat 11 AM to 2 AM; Sun 11 AM to 9 PM",
+"til": 26,
+"hq": "~",
+"geo": "amenity",
+"src": "osm"
+},
+{
+"n": "Palenque Kitchen by Mezcal",
+"c": "tacos",
+"city": "Riverside",
+"zip": "92501",
+"a": "3737 STE 101 Main Street",
+"t": [
+"Tacos & Mexican",
+"Near Fox / downtown"
+],
+"lat": 33.98226,
+"lon": -117.37452,
+"h": "Sun–Mon 11 AM to 9 PM; Tue 11 AM to 10 PM; Wed–Thu 5 PM to 10 PM; Fri–Sat 11 AM to 1 AM",
+"til": 25,
+"hq": "~",
+"geo": "amenity",
+"src": "osm"
+},
+{
+"n": "Bricks and Birch Pizza",
+"c": "pizza",
+"city": "Riverside",
+"zip": "92501",
+"a": "3605 Market Street",
+"t": [
+"Pizza",
+"Near Fox / downtown"
+],
+"lat": 33.98434,
+"lon": -117.37489,
+"h": "Mon–Thu 11 AM to 10 PM; Fri–Sat 11 AM to 11 PM; Sun 11 AM to 10 PM",
+"til": 23,
+"hq": "~",
+"geo": "amenity",
+"src": "osm"
+},
+{
+"n": "Soho Ramen",
+"c": "ramen",
+"city": "Riverside",
+"zip": "92501",
+"a": "3605 Market Street",
+"t": [
+"Ramen",
+"Near Fox / downtown"
+],
+"lat": 33.98449,
+"lon": -117.37479,
+"h": "Mon–Thu 11 AM to 9:30 PM; Fri–Sat 11 AM to 10:30 PM; Sun 11 AM to 9:30 PM",
+"til": 22.5,
+"hq": "~",
+"geo": "amenity",
+"src": "osm"
+},
+{
+"n": "Bone & Broth",
+"c": "pho",
+"city": "Ontario",
+"zip": "91764",
+"a": "4320 Suite A Mills Circle",
+"t": [
+"Pho & Vietnamese",
+"Near Toyota Arena / Improv"
+],
+"lat": 34.07371,
+"lon": -117.55675,
+"h": "10 AM to 9 PM",
+"til": 21,
+"hq": "~",
+"geo": "amenity",
+"src": "osm"
+},
+{
+"n": "El Taco Bar",
+"c": "tacos",
+"city": "Temecula",
+"zip": "92592",
+"a": "30010 Temecula Parkway",
+"t": [
+"Tacos & Mexican",
+"Near Old Town / Pechanga"
+],
+"lat": 33.47912,
+"lon": -117.13651,
+"h": "8 AM to 10 PM",
+"til": 22,
+"hq": "~",
+"geo": "amenity",
+"src": "osm"
+},
+{
+"n": "Algoberto's Taco Shop",
+"c": "tacos",
+"city": "Yucca Valley",
+"zip": "92284",
+"a": "56143 29 Palms Highway",
+"t": [
+"Tacos & Mexican",
+"Near Yucca Valley / Pioneertown"
+],
+"lat": 34.12033,
+"lon": -116.44004,
+"h": "9 AM to 9 PM",
+"til": 21,
+"hq": "~",
+"geo": "amenity",
+"src": "osm"
+},
+{
+"n": "Kasa Market",
+"c": "tacos",
+"city": "Yucca Valley",
+"zip": "92284",
+"a": "56089 29 Palms Highway",
+"t": [
+"Tacos & Mexican",
+"Near Yucca Valley / Pioneertown"
+],
+"lat": 34.12031,
+"lon": -116.44084,
+"h": "Mon–Sat 8 AM to 8 PM; Sun 8 AM to 7 PM",
+"til": 20,
+"hq": "~",
+"geo": "amenity",
+"src": "osm"
+},
+{
+"n": "Sunright Tea Studio - Rancho Cucamonga",
+"c": "dessert",
+"city": "Ontario",
+"zip": "91730",
+"a": "10582 B-110 Foothill Boulevard",
+"t": [
+"Dessert & boba",
+"Near Toyota Arena / Improv"
+],
+"lat": 34.10835,
+"lon": -117.57358,
+"h": "11 AM to 9 PM",
+"til": 21,
+"hq": "~",
+"geo": "amenity",
+"src": "osm"
+},
+{
+"n": "Taco Joe's",
+"c": "tacos",
+"city": "Highland",
+"zip": "92346",
+"a": "26659 Highland Avenue",
+"t": [
+"Tacos & Mexican",
+"Near Yaamava"
+],
+"lat": 34.13541,
+"lon": -117.22284,
+"geo": "amenity",
+"src": "osm"
+},
+{
+"n": "Orchid Thai",
+"c": "thai",
+"city": "Highland",
+"zip": "92346",
+"a": "27266 Base Line Street",
+"t": [
+"Thai",
+"Near Yaamava"
+],
+"lat": 34.12161,
+"lon": -117.20959,
+"geo": "amenity",
+"src": "osm"
+},
+{
+"n": "Ramenkoko",
+"c": "ramen",
+"city": "Highland",
+"zip": "",
+"a": "7750 Palm Avenue",
+"t": [
+"Ramen",
+"Near Yaamava"
+],
+"lat": 34.11197,
+"lon": -117.2096,
+"geo": "amenity",
+"src": "osm"
+},
+{
+"n": "Baqba Mexican Grill",
+"c": "tacos",
+"city": "Pomona",
+"zip": "91766",
+"a": "2051 Rancho Valley Drive",
+"t": [
+"Tacos & Mexican",
+"Near Fox / Glass House"
+],
+"lat": 34.03433,
+"lon": -117.75852,
+"h": "10 AM to 10 PM",
+"til": 22,
+"hq": "~",
+"geo": "amenity",
+"src": "osm"
+},
+{
+"n": "Mi Pueblo Santa Rita 2",
+"c": "tacos",
+"city": "Chino",
+"zip": "91710",
+"a": "4122 Philadelphia Street",
+"t": [
+"Tacos & Mexican",
+"Near Fox / Glass House"
+],
+"lat": 34.0339,
+"lon": -117.71521,
+"geo": "amenity",
+"src": "osm"
+},
+{
+"n": "Hanoi Kitchen",
+"c": "pho",
+"city": "Claremont",
+"zip": "91711",
+"a": "400 Auto Center Drive",
+"t": [
+"Pho & Vietnamese",
+"Near Fox / Glass House"
+],
+"lat": 34.07982,
+"lon": -117.71962,
+"geo": "amenity",
+"src": "osm"
+},
+{
+"n": "Sanamluang Thai Cuisine",
+"c": "thai",
+"city": "Pomona",
+"zip": "",
+"a": "710 South Indian Hill Boulevard",
+"t": [
+"Thai",
+"Near Fox / Glass House"
+],
+"lat": 34.08294,
+"lon": -117.71896,
+"geo": "amenity",
+"src": "osm"
+},
+{
+"n": "The Original Las Casuelas",
+"c": "tacos",
+"city": "Palm Springs",
+"zip": "92262",
+"a": "368 North Palm Canyon Drive",
+"t": [
+"Tacos & Mexican",
+"Near Palm Springs downtown"
+],
+"lat": 33.82793,
+"lon": -116.54647,
+"geo": "amenity",
+"src": "osm"
+},
+{
+"n": "Alebrije",
+"c": "tacos",
+"city": "Palm Springs",
+"zip": "92262",
+"a": "1107 North Palm Canyon Drive",
+"t": [
+"Tacos & Mexican",
+"Near Palm Springs downtown"
+],
+"lat": 33.83766,
+"lon": -116.547,
+"h": "Mon–Wed 3 PM to 10 PM; Thu 11:30 AM to 11 PM; Fri 11:30 AM to 11 PM; Sat 11 AM to 11 PM; Sun 11 AM to 10 PM",
+"til": 23,
+"hq": "~",
+"geo": "amenity",
+"src": "osm"
+},
+{
+"n": "The Tropicale",
+"c": "pizza",
+"city": "Palm Springs",
+"zip": "92262",
+"a": "330 East Amado Road",
+"t": [
+"Pizza",
+"Near Palm Springs downtown"
+],
+"lat": 33.82698,
+"lon": -116.54408,
+"h": "Mon–Tue 4 PM to 10 PM; Wed–Thu 11 AM to 10 PM; Fri–Sat 11 AM to 11 PM; Sun 11 AM to 10 PM",
+"til": 23,
+"hq": "~",
+"geo": "amenity",
+"src": "osm"
+},
+{
+"n": "Lulu California Bistro",
+"c": "pizza",
+"city": "Palm Springs",
+"zip": "92262",
+"a": "200 South Palm Canyon Drive",
+"t": [
+"Pizza",
+"Near Palm Springs downtown"
+],
+"lat": 33.82104,
+"lon": -116.5465,
+"h": "Mon–Thu 11 AM to 9 PM; Fri 11 AM to 10 PM; Sat 9 AM to 10 PM; Sun 9 AM to 9 PM",
+"til": 22,
+"hq": "~",
+"geo": "amenity",
+"src": "osm"
+},
+{
+"n": "Thai Smile",
+"c": "thai",
+"city": "Palm Springs",
+"zip": "92262",
+"a": "100 South Indian Canyon Drive",
+"t": [
+"Thai",
+"Near Palm Springs downtown"
+],
+"lat": 33.82291,
+"lon": -116.54537,
+"h": "11:30 AM to 9:30 PM",
+"til": 21.5,
+"hq": "~",
+"geo": "amenity",
+"src": "osm"
+},
+{
+"n": "El Ranchito Taco Shop",
+"c": "tacos",
+"city": "Palm Desert",
+"zip": "92211",
+"a": "34580, Ste 103 Monterey Avenue",
+"t": [
+"Tacos & Mexican",
+"Near Palm Desert / Acrisure"
+],
+"lat": 33.79718,
+"lon": -116.38742,
+"h": "9 AM to 8 PM",
+"til": 20,
+"hq": "~",
+"geo": "amenity",
+"src": "osm"
+},
+{
+"n": "Birrierias Sinaloa",
+"c": "tacos",
+"city": "Palm Desert",
+"zip": "92211",
+"a": "73120 Dinah Shore Drive",
+"t": [
+"Tacos & Mexican",
+"Near Palm Desert / Acrisure"
+],
+"lat": 33.80234,
+"lon": -116.3876,
+"geo": "amenity",
+"src": "osm"
+},
+{
+"n": "Taqueria Monte Alban",
+"c": "tacos",
+"city": "Coachella",
+"zip": "92236",
+"a": "49305 Grapefruit Boulevard",
+"t": [
+"Tacos & Mexican",
+"Near Fantasy Springs / polo grounds"
+],
+"lat": 33.69011,
+"lon": -116.18348,
+"h": "Sun–Sat 9 AM to 8 PM",
+"til": 20,
+"hq": "~",
+"geo": "amenity",
+"src": "osm"
+},
+{
+"n": "Pho of the Desert",
+"c": "pho",
+"city": "Indio",
+"zip": "",
+"a": "82128 Highway 111",
+"t": [
+"Pho & Vietnamese",
+"Near Fantasy Springs / polo grounds"
+],
+"lat": 33.71641,
+"lon": -116.23203,
+"geo": "amenity",
+"src": "osm"
+},
+{
+"n": "Coachella Pizza Co.",
+"c": "pizza",
+"city": "Coachella",
+"zip": "92236",
+"a": "49255 Grapefruit Boulevard",
+"t": [
+"Pizza",
+"Near Fantasy Springs / polo grounds"
+],
+"lat": 33.69068,
+"lon": -116.18375,
+"geo": "amenity",
+"src": "osm"
 }
 ]
 }
