@@ -38,7 +38,7 @@ function youHTML(){const u=C.user,owner=SH.store.raw("shack-owner")==="1";
     <section class="byou-sec"><h3>👥 Friends &amp; leaderboard</h3>${window.shackSocialHTML?shackSocialHTML():""}</section>
     <section class="byou-sec"><h3>↗ Share</h3><p class="bset-p">Your year, your passport, a night plan, or the Shack itself.</p><div class="bset-acts"><button type="button" data-yshare="all">Open the Share sheet</button></div></section>
     <section class="byou-sec"><h3>🏷 Missing a show?</h3><div id="bMiss">${missHTML()}</div></section>
-    ${u&&(admin||owner)?`<section class="byou-sec byou-adm"><h3>📊 Owner: review</h3><div id="bAdm">${admHTML(owner)}</div></section>`:""}
+    ${u&&(admin||owner)?`<section class="byou-sec byou-adm"><h3>📊 Owner: Hivemind808 &amp; review</h3>${insHTML()}<div id="bAdm">${admHTML(owner)}</div></section>`:""}
     <div class="bset-acts"><button type="button" data-yset>Settings &amp; your data</button></div>
     <button type="button" class="binfo-ok" data-close>Done</button>`;}
 // Show passport + badges in one card (built by b.js: stamps, show log, regions, badges)
@@ -110,6 +110,20 @@ document.addEventListener("submit",async ev=>{const f=ev.target.closest("[data-m
   try{const sb=await C.client();const {error}=await sb.from("missing_reports").insert({user_id:C.user.id,what,link:/^https?:\/\//.test(link)?link:null});if(error)throw error;missMsg="Thanks! We'll look for it and add it.";missDraft="";}
   catch(e){missMsg=/cap/.test(String(e&&e.message))?"That's 10 for today, thanks! Try again tomorrow.":"Couldn't send that. Try again.";}
   const el=$("bMiss");if(el)el.innerHTML=missHTML();if(admin)refreshAdmin();},true);
+
+/* ===== owner: Hivemind808 at a glance (same data as the full insights screen), with a button to open it ===== */
+function insHTML(){if(typeof state==="undefined"||!(state.events||[]).length)return "";
+  const today=new Date(Date.now()-new Date().getTimezoneOffset()*6e4).toISOString().slice(0,10);
+  const all=state.events.filter(e=>e.kind!=="openmic"&&e.start&&(e.end||e.start)>=today),real=all.filter(e=>e.priceFrom>0&&!e.priceEst).map(e=>e.priceFrom).sort((a,b)=>a-b);
+  const med=real.length?real[Math.floor(real.length/2)]:0,wd={};all.forEach(e=>{const d=new Date(e.start+"T12:00").toLocaleDateString("en-US",{weekday:"long"});wd[d]=(wd[d]||0)+1;});
+  const busy=Object.entries(wd).sort((a,b)=>b[1]-a[1])[0],sold=all.filter(e=>e.status==="sold out").length,wk=new Date(Date.now()+7*864e5).toISOString().slice(0,10);
+  const thisWk=all.filter(e=>e.start<=wk).length,venues=new Set(all.map(e=>e.venue)).size;
+  const st=(n,l)=>`<span><b>${E(n)}</b>${E(l)}</span>`;
+  return `<div class="bins-mini">${st(all.length.toLocaleString(),"upcoming shows")}${st(med?"$"+Math.round(med):"–","typical ticket")}${st(thisWk,"next 7 days")}${st(venues,"venues with shows")}${st(busy?busy[0].slice(0,3):"–","busiest night")}${st(sold,"sold out")}</div>
+    <div class="bset-acts"><button type="button" data-yins>📊 Open Hivemind808 insights</button></div>
+    <p class="bset-p">Prices by kind, venue size and night, the date clash checker and venue scouting for a Hivemind808 night.</p>`;}
+document.addEventListener("click",ev=>{if(!ev.target.closest("[data-yins]"))return;ev.preventDefault();ev.stopPropagation();const y=$("bYou");if(y)dlgClose(y);
+  const b=document.querySelector("#bSet [data-sins]");if(b)b.click();},true);
 
 /* ===== owner review: flyer shows, missing-show reports, coverage gaps ===== */
 async function refreshAdmin(){if(!C.user)return;try{const sb=await C.client();const {data}=await sb.rpc("is_admin");admin=!!data;

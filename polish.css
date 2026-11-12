@@ -101,3 +101,8 @@ html.ui-b .starbtn[aria-pressed="true"]:active,html.ui-b .starbtn:active{transfo
 @media (prefers-reduced-motion:reduce){html.ui-b .starbtn[aria-pressed="true"]{animation:none}}
 /* small rows (lists) get a slightly smaller star so it sits in proportion with the text */
 html.ui-b .tr .starbtn::before{width:22px;height:22px}
+
+/* You page, Owner: Hivemind808 at a glance */
+.bins-mini{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;margin:4px 0 8px}
+.bins-mini span{display:flex;flex-direction:column;gap:2px;padding:8px 10px;border-radius:12px;background:rgba(255,198,107,.08);border:1px solid rgba(255,198,107,.28);font:500 11.5px var(--body);color:#cfc6e8}
+.bins-mini b{font:800 20px var(--display);color:#FFC66B;line-height:1.05;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
