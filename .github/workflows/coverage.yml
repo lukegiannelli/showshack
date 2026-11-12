@@ -1,0 +1,26 @@
+name: Coverage check
+# Once a week: compares how many shows we list at the top 50 venues with Ticketmaster's count, and writes coverage.json
+# (shown to the owner under You -> Owner: review). Needs the repo secret TM_API_KEY. Touches only coverage.json.
+on:
+  schedule:
+    - cron: "23 16 * * 1"   # Mondays ~8-9 AM Pacific
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  coverage:
+    runs-on: ubuntu-latest
+    env:
+      TM_API_KEY: ${{ secrets.TM_API_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+      - run: |
+          git config user.name "show-shack-bot"
+          git config user.email "show-shack-bot@users.noreply.github.com"
+          python3 scripts/coverage.py events.json coverage.json
+          [ -f coverage.json ] || exit 0
+          git add coverage.json
+          git diff --cached --quiet && { echo "No change."; exit 0; }
+          git commit -q -m "Coverage check: $(python3 -c "import json;d=json.load(open('coverage.json'));print(len(d['gaps']),'venues look short')")"
+          for i in 1 2 3; do git pull -q --rebase origin main && git push origin HEAD:main && exit 0; sleep 5; done
+          exit 1
