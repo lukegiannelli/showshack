@@ -22,7 +22,13 @@ function weights(){const w={};for(const a of (M&&M.artists)||[])for(const g of a
 function matches(){if(!M||!M.artists||!M.artists.length)return {mine:[],vibe:[]};
   const today=todayStr(),up=(state._up||state.events||[]).filter(e=>e.start&&e.start>=today&&["concert","club","festival"].includes(e.kind));
   const names=M.artists.map(a=>N(a.n)).filter(n=>n.length>=3);const mine=[],ids=new Set();
-  for(const e of up){const hay=" "+N(e.title+" "+(e.artists||""))+" ";const hit=names.find(n=>hay.includes(" "+n+" "));if(hit){mine.push({e,why:M.artists.find(a=>N(a.n)===hit).n});ids.add(e.id);}}
+  // whole-name match; also without spaces for names squashed by YouTube channels ("BeckyG" = "Becky G"), 5+ letters only
+  // an act counts only as a whole: the title starts with it and then ends or breaks (":", "-", "&", "w/", "with"…),
+  // or it's one of the listed artists. So "Drake" doesn't match "Drake Milligan".
+  const acts=e=>{const t=String(e.title||"").toLowerCase(),parts=t.split(/\s*(?::|\s[-–—]\s|,|&|\+|\/|\(|\bw\/|\bwith\b|\bfeat\.?|\bft\.?|\band\b|\bx\b|\bpresents\b)\s*/);
+    return [...parts,...String(e.artists||"").toLowerCase().split(/\s*(?:,|;|\/|&|\band\b|·)\s*/)].map(N).filter(Boolean);};
+  for(const e of up){const a=acts(e),flat=new Set(a.map(x=>x.replace(/ /g,"")));
+    const hit=names.find(n=>a.includes(n)||(n.replace(/ /g,"").length>=5&&flat.has(n.replace(/ /g,""))));if(hit){mine.push({e,why:M.artists.find(a=>N(a.n)===hit).n});ids.add(e.id);}}
   const w=weights(),top=Object.entries(w).sort((a,b)=>b[1]-a[1]).slice(0,3).map(x=>x[0]);
   const vibe=top.length?up.filter(e=>!ids.has(e.id)&&(e.genres||[]).some(g=>top.includes(g))).sort((a,b)=>(b.genres||[]).reduce((s,g)=>s+(w[g]||0),0)-(a.genres||[]).reduce((s,g)=>s+(w[g]||0),0)||a.start.localeCompare(b.start)).slice(0,10):[];
   return {mine:mine.sort((a,b)=>a.e.start.localeCompare(b.e.start)),vibe,top};}
@@ -42,7 +48,8 @@ function sectionHTML(){const r=matches(),has=M&&M.artists&&M.artists.length,lf=S
   return `<section class="byou-sec" id="bMusic"><h3>🎧 Match my music</h3>
     <p class="bset-p">${has?`Using <b>${M.artists.length}</b> artist${M.artists.length===1?"":"s"} from ${E(M.src==="spotify"?"your Spotify playlist":M.src==="lastfm"?"Last.fm":"your list")}. <b>${r.mine.length}</b> show${r.mine.length===1?"":"s"} by artists you play${r.top&&r.top.length?`, plus picks in ${E(r.top.join(", "))}`:""}. They're in <b>For your ears</b> on Home.`:"Get show picks from the music you actually listen to. Your artists stay on this phone only: nothing goes to an account or server."}</p>
     <form class="bmiss-f" data-mus="typed"><textarea name="a" rows="2" maxlength="600" placeholder="Artists you love, separated by commas">${E(has&&M.src==="typed"?M.artists.map(a=>a.n).join(", "):"")}</textarea><button class="bpass-share">Use these artists</button></form>
-    <form class="bmiss-f" data-mus="spotify"><input name="p" type="url" placeholder="Or paste a public Spotify playlist link (e.g. your Top Songs)"><button class="bpass-share">Read the playlist</button></form>
+    <form class="bmiss-f" data-mus="link"><input name="p" type="url" inputmode="url" autocapitalize="off" placeholder="Paste your SoundCloud profile or a YouTube Music playlist link"><button class="bpass-share">Add from this link</button></form>
+    <p class="bset-p bmus-how">SoundCloud: your profile → Share → Copy link (we read who you follow and your public likes). YouTube Music: open a playlist you like → Share → Copy link (playlist must be Public or Unlisted). Add both, they stack.</p>
     ${lf?`<form class="bmiss-f" data-mus="lastfm"><input name="u" maxlength="40" autocapitalize="off" placeholder="Or your Last.fm username"><button class="bpass-share">Use Last.fm</button></form>`:""}
     ${has?`<div class="bset-acts"><button type="button" data-mus-forget>Forget my music</button></div>`:""}
     ${msg?`<p class="bset-msg">${E(msg)}</p>`:""}</section>`;}
@@ -54,9 +61,12 @@ function setArtists(src,artists){M={src,artists:artists.slice(0,60),at:Date.now(
 document.addEventListener("submit",async ev=>{const f=ev.target.closest("[data-mus]");if(!f)return;ev.preventDefault();ev.stopPropagation();if(busy)return;busy=true;const k=f.dataset.mus;
   try{
     if(k==="typed"){const a=f.a.value.split(/[,\n]+/).map(s=>s.trim()).filter(s=>s.length>=2).slice(0,60);if(!a.length){msg="Type at least one artist.";redraw();}else setArtists("typed",a.map(n=>({n,g:[]})));}
-    if(k==="spotify"){msg="Reading the playlist…";redraw();
-      const r=await fetch(SH.sb.url+"/functions/v1/music",{method:"POST",headers:{"Content-Type":"application/json",apikey:SH.sb.key},body:JSON.stringify({playlist:f.p.value.trim()})});
-      const j=await r.json();if(j.error)msg=j.error==="not set up"?"Spotify playlists aren't switched on yet. Type your artists above for now.":j.error;else if(!(j.artists||[]).length)msg="That playlist has no artists we could read.";else{setArtists("spotify",j.artists);busy=false;return;}redraw();}
+    if(k==="link"){const link=f.p.value.trim(),src=/soundcloud/i.test(link)?"soundcloud":/youtu/i.test(link)?"youtube":"spotify";msg="Reading that link…";redraw();
+      const r=await fetch(SH.sb.url+"/functions/v1/music",{method:"POST",headers:{"Content-Type":"application/json",apikey:SH.sb.key},body:JSON.stringify({link})});
+      const j=await r.json();if(j.error)msg=j.error;else if(!(j.artists||[]).length)msg="We couldn't find any artists in that link.";
+      else{// links stack: SoundCloud + YouTube Music together (typed artists are kept too)
+        const keep=(M&&M.artists)||[],seen=new Set(keep.map(a=>N(a.n))),add=j.artists.filter(a=>!seen.has(N(a.n)));
+        setArtists(src,[...keep,...add]);if(j.note)msg+=" "+j.note;redraw();busy=false;return;}redraw();}
     if(k==="lastfm"){const u=f.u.value.trim();msg="Asking Last.fm…";redraw();
       const api=(m,x)=>fetch(`https://ws.audioscrobbler.com/2.0/?method=${m}&api_key=${encodeURIComponent(SH.music.lastfm)}&format=json&${x}`).then(r=>r.json());
       const j=await api("user.gettopartists",`user=${encodeURIComponent(u)}&period=6month&limit=40`);
