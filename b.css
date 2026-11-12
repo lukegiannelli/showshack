@@ -253,6 +253,17 @@
 .bbadge i{font-style:normal;color:var(--muted)}.bbadge .ni{width:22px;height:22px}
 .bbadge b{font:700 11px/1.15 var(--body)}.bbadge small{font-size:10px;color:var(--muted);line-height:1.2}
 .bbadge.on{opacity:1;border:1px solid #FFD27A;background:rgba(255,210,122,.1);box-shadow:0 0 12px -5px #FFD27A}
+/* locked badges: faded, with a gold fill rising from the bottom as you get closer (--bp = 0…1) */
+.bbadge:not(.on){position:relative;overflow:hidden;opacity:.62;filter:grayscale(.7);isolation:isolate}
+.bbadge:not(.on)::before{content:"";position:absolute;inset:auto 0 0 0;height:calc(var(--bp,0)*100%);background:linear-gradient(to top,rgba(255,210,122,.32),rgba(255,210,122,.08));z-index:-1;transition:height .6s ease}
+/* just earned: fills from empty to gold, once */
+.bbadge.fresh{position:relative;overflow:hidden;isolation:isolate;animation:bglow 1.6s ease-out both}
+.bbadge.fresh::after{content:"";position:absolute;inset:0;z-index:-1;background:rgba(255,210,122,.35);transform-origin:bottom;animation:bfillup 1.6s ease-out both}
+.bbadge.fresh i{animation:bpop .6s 1s cubic-bezier(.3,1.6,.5,1) both}
+@keyframes bglow{0%{opacity:.62;filter:grayscale(.7)}70%{opacity:1;filter:none}}
+@keyframes bfillup{0%{transform:scaleY(0)}65%{transform:scaleY(1);opacity:1}100%{transform:scaleY(1);opacity:0}}
+@keyframes bpop{0%{transform:scale(.6)}100%{transform:scale(1)}}
+@media (prefers-reduced-motion:reduce){.bbadge.fresh,.bbadge.fresh i,.bbadge.fresh::after{animation:none}}
 .bbadge.on i{color:#FFD27A;filter:drop-shadow(0 0 4px #FFD27A)}
 .bwant-p{margin:6px 0 0;font-size:13px;color:var(--muted)}
 .bpass-acts{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px;align-items:center}
@@ -283,6 +294,27 @@
 .bphoto .bpass-share{margin:0}
 .tag.vscore{color:#ffd36b;border-color:rgba(255,211,107,.45)}
 .fgo{margin:6px 0 0;font:600 12px var(--body);color:#7ee0b8}
+/* flyers: Home row + the add-a-flyer sheet */
+.bfly-sub{margin:-4px 0 8px;font-size:13px;color:var(--muted)}
+.fly-open{overflow:hidden}
+.fly-sheet{position:fixed;inset:0;z-index:4000;display:flex;align-items:flex-end;justify-content:center;background:rgba(6,4,18,.72);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
+.fly-sheet[hidden]{display:none}
+.fly-card{width:min(560px,100%);max-height:92vh;overflow:auto;padding:16px 16px calc(20px + env(safe-area-inset-bottom,0px));border-radius:22px 22px 0 0;background:#1a1530;border:1px solid rgba(255,255,255,.14);color:#fff;font:15px var(--body)}
+@media (min-width:700px){.fly-sheet{align-items:center}.fly-card{border-radius:22px}}
+.fly-h{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px}
+.fly-h b{font-size:17px}
+.fly-x{min-width:44px;min-height:44px;border:0;border-radius:12px;background:rgba(255,255,255,.08);color:#fff;font-size:16px;cursor:pointer}
+.fly-p{margin:6px 0 12px;line-height:1.45}
+.fly-small{margin:8px 0 0;font-size:12.5px;color:var(--muted)}
+.fly-status{margin:8px 0;font:600 13px var(--body);color:#7ee0b8}
+.fly-main{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;min-height:48px;margin-top:10px;border:0;border-radius:14px;background:linear-gradient(90deg,#ff5fb8,#ffb35f);color:#1a1022;font:700 15px var(--body);cursor:pointer}
+.fly-main:disabled{opacity:.6}
+.fly-img{display:block;width:100%;max-height:220px;object-fit:contain;border-radius:14px;background:rgba(0,0,0,.3);margin-bottom:6px}
+.fly-f{display:grid;gap:10px}
+.fly-f label{display:grid;gap:4px;font:600 12.5px var(--body);color:#cfc6e8}
+.fly-f input,.fly-f select{min-height:44px;padding:0 12px;border-radius:12px;border:1px solid rgba(255,255,255,.22);background:rgba(0,0,0,.3);color:#fff;font:500 15px var(--body);min-width:0;width:100%;box-sizing:border-box}
+.fly-2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.fly-warn{margin:4px 0 0;padding:10px 12px;border-radius:12px;background:rgba(255,198,107,.12);border:1px solid rgba(255,198,107,.45);font-size:13.5px;line-height:1.45}
 .bpass-regs span{background:linear-gradient(90deg,rgba(255,210,122,.22) var(--pp,0%),transparent var(--pp,0%))}
 .vrate{display:flex;gap:4px;margin:4px 0 6px}
 .vrate button{width:34px;height:34px;border-radius:10px;border:1px solid var(--line);background:var(--chip);color:var(--muted);font-size:17px;cursor:pointer}

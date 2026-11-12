@@ -1,0 +1,10 @@
+-- Flyer shows: what's set up in the Supabase project "The Show Shack" (free plan). Applied 2026-11-11; kept as a record.
+-- community_shows  shows people add from a flyer. Live right away, labeled "not verified yet".
+--   * the same show (same date + venue + title, ignoring case/spaces/punctuation) can only exist once: unique index community_shows_no_dupes
+--   * caps (trigger community_caps): 5 a day per person, 40 upcoming per person, date from yesterday to ~13 months out
+--   * people can only add as themselves and delete their own; nobody can edit or read others' rows directly
+-- show_reports     one report per person per show; 3 reports hide the show (report_show(id))
+-- list_community_shows()  public list of upcoming live ones, without who added them
+-- storage "flyers" public picture bucket: your own folder, 400 KB, JPEG/WebP, max 40 each (my_flyer_count())
+--   needs an "own read" rule too, or people can't delete their own pictures.
+-- The app also checks for close matches (same day + similar title or same venue) before it lets anyone add, see flyer.js.

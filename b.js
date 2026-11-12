@@ -19,7 +19,7 @@ let screen="home", cur=null, pushed=false;
 
 /* ---- move existing controls into the new layout (their handlers come along) ---- */
 const bar=$("bBar"), tools=$("bTools"), controls=document.querySelector(".controls");
-bar.insertBefore(controls.querySelector(".search"),$("bWhenRes"));
+bar.insertBefore(controls.querySelector(".search"),$("bWhenRes").nextSibling);   // search sits under Tonight / This weekend / Anytime
 tools.insertBefore($("maxDrive").closest("label"),$("bFilt"));
 tools.insertBefore($("sortBy").closest("label"),$("bFilt"));
 const flags=$("flagRow"); flags.hidden=true; bar.appendChild(flags);
@@ -134,6 +134,7 @@ function setFlip(fc,on){const inn=fc.querySelector(".bfc-in");
 function swapFlip(fc,on){fc.classList.toggle("on",on);fc.querySelector(".bfc-b").setAttribute("aria-hidden",String(!on));fc.querySelector(".bfc-f").setAttribute("aria-hidden",String(on));}
 $("bPicks").addEventListener("click",flipRowClick,true);
 $("bFresh").addEventListener("click",flipRowClick,true);
+window.SHACK_FLIP={html:flipCardHtml,click:flipRowClick};   // flyer.js builds its "From flyers" row with these
 $("bDrop").addEventListener("click",flipRowClick,true);
 $("bBec").addEventListener("click",flipRowClick,true);
 /* ---- because you starred X: one of your starred shows (a new one each day), and upcoming shows that share its genre, venue or kind ---- */
@@ -575,17 +576,24 @@ function importNights(){if(!window.NIGHT||!NIGHT.allNights)return;const today=to
 const showCount=()=>[...BEEN].reduce((n,k)=>n+pastShows(k).length,0);
 const savePlog=()=>{try{SH.store.put("shack-plog",JSON.stringify(PLOG));}catch(e){}};
 function badges(infos){const bv=infos.filter(v=>BEEN.has(v.k)),n=BEEN.size,rg=new Set([...BEEN].map(regionOfK).filter(r=>r!=="Other")),cnt=f=>bv.filter(f).length;
-  return [[ni("ticket"),"First stamp","Stamp 1 venue",n>=1],[ni("chart"),"Regular","Stamp 10 venues",n>=10],[ni("map"),"Region hopper","Stamps in 3 regions",rg.size>=3],
-    [ni("palm"),"All of SoCal","Stamps in all 6 regions",rg.size>=6],[ni("sun"),"Desert trip","Stamp a desert venue",rg.has("Desert")],
-    [ni("home"),"Small & local","Stamp 5 small venues",cnt(v=>v.evs.some(isSmall))>=5],[ni("venue"),"Big room","Stamp an arena or stadium",cnt(v=>(+v.cap||0)>6000||/arena|stadium|forum|bowl|dome/i.test(v.name))>=1],
-    [ni("mic"),"Comedy regular","Stamp 3 comedy clubs",cnt(v=>v.evs.some(e=>e.kind==="comedy"))>=3],[ni("list"),"Stub collector","Log 10 past shows",showCount()>=10],
-    ["🔥","On a roll","3 weeks in a row out",streak().best>=3],["🌋","Hot streak","8 weeks in a row out",streak().best>=8],
-    ["⛺","First festival","Stamp a festival venue",cnt(v=>v.evs.some(e=>e.kind==="festival"))>=1],["🔔","Sound bath","Stamp a sound-bath space",cnt(v=>v.evs.some(e=>e.kind==="sound"))>=1],
-    ["💃","Free mover","Stamp an ecstatic dance or contact improv space",cnt(v=>v.evs.some(e=>e.kind==="dance"||e.kind==="contact"))>=1],
-    ["🥁","Drum circle","Stamp a drum circle",cnt(v=>v.evs.some(e=>e.kind==="drum"))>=1],["🤝","Community helper","Stamp a volunteer spot",cnt(v=>v.evs.some(e=>e.kind==="volunteer"))>=1],
-    ["🎤","Open mic brave","Stamp 3 open-mic spots",cnt(v=>v.evs.some(e=>e.kind==="openmic"))>=3],["🔁","Repeat customer","Log 3 shows at one venue",[...BEEN].some(k=>pastShows(k).length>=3)],
-    ["🌙","Night architect","Plan 3 nights that happened",window.NIGHT&&NIGHT.allNights?NIGHT.allNights().filter(x=>x.p.d&&x.p.d<todayStr()).length>=3:false]]
-    .map(([ic,n2,how,on])=>({ic,n:n2,how,on}));}
+  // each badge: [icon, name, how to earn, how far you are, how far you need]. Locked ones show faded and fill up as you go.
+  const st=streak().best,rep=Math.max(0,...[...BEEN].map(k=>pastShows(k).length)),nights=window.NIGHT&&NIGHT.allNights?NIGHT.allNights().filter(x=>x.p.d&&x.p.d<todayStr()).length:0;
+  return [[ni("ticket"),"First stamp","Stamp 1 venue",n,1],[ni("chart"),"Regular","Stamp 10 venues",n,10],[ni("map"),"Region hopper","Stamps in 3 regions",rg.size,3],
+    [ni("palm"),"All of SoCal","Stamps in all 6 regions",rg.size,6],[ni("sun"),"Desert trip","Stamp a desert venue",+rg.has("Desert"),1],
+    [ni("home"),"Small & local","Stamp 5 small venues",cnt(v=>v.evs.some(isSmall)),5],[ni("venue"),"Big room","Stamp an arena or stadium",cnt(v=>(+v.cap||0)>6000||/arena|stadium|forum|bowl|dome/i.test(v.name)),1],
+    [ni("mic"),"Comedy regular","Stamp 3 comedy clubs",cnt(v=>v.evs.some(e=>e.kind==="comedy")),3],[ni("list"),"Stub collector","Log 10 past shows",showCount(),10],
+    ["🔥","On a roll","3 weeks in a row out",st,3],["🌋","Hot streak","8 weeks in a row out",st,8],
+    ["⛺","First festival","Stamp a festival venue",cnt(v=>v.evs.some(e=>e.kind==="festival")),1],["🔔","Sound bath","Stamp a sound-bath space",cnt(v=>v.evs.some(e=>e.kind==="sound")),1],
+    ["💃","Free mover","Stamp an ecstatic dance or contact improv space",cnt(v=>v.evs.some(e=>e.kind==="dance"||e.kind==="contact")),1],
+    ["🥁","Drum circle","Stamp a drum circle",cnt(v=>v.evs.some(e=>e.kind==="drum")),1],["🤝","Community helper","Stamp a volunteer spot",cnt(v=>v.evs.some(e=>e.kind==="volunteer")),1],
+    ["🎤","Open mic brave","Stamp 3 open-mic spots",cnt(v=>v.evs.some(e=>e.kind==="openmic")),3],["🔁","Repeat customer","Log 3 shows at one venue",rep,3],
+    ["🌙","Night architect","Plan 3 nights that happened",nights,3]]
+    .map(([ic,n2,how,have,need])=>({ic,n:n2,how,have:Math.min(have,need),need,on:have>=need}));}
+// badges you earned since you last looked fill in with a little animation, once
+const BSEEN=new Set(ld("shack-bseen",[]));
+function badgeHtml(b){const fresh=b.on&&!BSEEN.has(b.n),p=b.on?1:b.have/b.need;
+  return `<span class="bbadge${b.on?" on":""}${fresh?" fresh":""}" style="--bp:${p.toFixed(3)}" title="${esc(b.how)}"><i>${b.ic}</i><b>${esc(b.n)}</b><small>${esc(b.on?"Earned":b.need>1?`${b.have} of ${b.need} · ${b.how}`:b.how)}</small></span>`;}
+function markBadgesSeen(bdg){let ch=false;bdg.forEach(b=>{if(b.on&&!BSEEN.has(b.n)){BSEEN.add(b.n);ch=true;}});if(ch)try{SH.store.put("shack-bseen",JSON.stringify([...BSEEN]));}catch(e){}}
 // backup = a small JSON file you keep; restore merges it back in (nothing is uploaded anywhere)
 function backupPassport(){const data={app:"show-shack-passport",v:3,saved:new Date().toISOString(),been:[...BEEN],starven:starVen,log:PLOG,shows:PSHOWS,nights:window.NIGHT&&NIGHT.allNights?NIGHT.allNights():[]};
   const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([JSON.stringify(data,null,1)],{type:"application/json"}));a.download=`show-passport-${todayStr()}.json`;
@@ -695,8 +703,8 @@ renderVenues=function(){const list=$("list");loadStations();
     <div class="bpass-h"><span class="bpass-k"><img class="bshack-ic" src="hut.webp?v=2" alt="">Show passport</span><b>${beenV.length} <small>of ${tot} venues${(()=>{const n=showCount();return n?` · ${n} show${n===1?"":"s"}`:"";})()}</small></b></div>
     ${beenV.length?`<p class="bpass-tip">Tap a stamp to log shows you've seen there.</p><div class="bstamps">${stamps}</div>${plogPanel}<div class="bpass-regs">${regs.filter(x=>x[1]).map(([rg,a,b])=>`<span style="--pp:${Math.round(a/b*100)}%">${esc(rg)} <b>${a}</b>/${b}</span>`).join("")}</div>`
       :`<p>Tap <b>I've been here</b> on any venue you've been to. Shows you star stamp themselves the day after.</p>`}
-    ${(()=>{const on=bdg.filter(b=>b.on),lk=bdg.length-on.length;return `<p class="bbadge-n">${on.length?`${on.length} badge${on.length>1?"s":""} earned`:"No badges yet"}${lk?` · <span>🔒 ${lk} more hidden until you unlock them</span>`:""}</p>`;})()}
-    <div class="bbadges">${bdg.filter(b=>b.on).map(b=>`<span class="bbadge${b.on?" on":""}" title="${esc(b.how)}"><i>${b.ic}</i><b>${esc(b.n)}</b><small>${esc(b.on?"Earned":b.how)}</small></span>`).join("")}</div>
+    ${(()=>{const on=bdg.filter(b=>b.on),lk=bdg.length-on.length;return `<p class="bbadge-n">${on.length?`${on.length} of ${bdg.length} badges earned`:`0 of ${bdg.length} badges yet`}${lk?` · <span>the rest fill in as you go</span>`:""}</p>`;})()}
+    <div class="bbadges">${[...bdg.filter(b=>b.on),...bdg.filter(b=>!b.on).sort((a,b)=>b.have/b.need-a.have/a.need)].map(badgeHtml).join("")}</div>
     <div class="bpass-acts">${beenV.length?`<button type="button" class="bpass-share" data-pshare="1">${ni("share")} Share my year</button><button type="button" class="bpass-share" data-ppmap="1">${ni("map")} Passport map</button><button type="button" class="bpass-share" data-pcmp="1">↔ Compare with a friend</button>`:""}
       <button type="button" class="bpass-share" data-pback="1">Back up passport + nights</button><label class="bpass-share">Restore<input type="file" accept="application/json,.json" data-prest hidden></label></div>
     ${window.shackCloudHTML?shackCloudHTML():""}${window.shackSocialHTML?shackSocialHTML():""}
@@ -706,7 +714,8 @@ renderVenues=function(){const list=$("list");loadStations();
   const fol=shown.filter(v=>isPinned(v.k)).sort((a,b)=>newCount(b)-newCount(a)||byNext(a,b));
   const seg=`<div class="bseg bven-when">${WHEN.map(([w,l])=>`<button type="button" data-when="${w}" aria-pressed="${state.when===w}">${l}</button>`).join("")}</div>`;
   const search=`<label class="bvsearch">${ni("search")}<input type="search" id="bVq" placeholder="Search ${tot} venues by name or city" value="${esc(VQ)}" autocomplete="off" enterkeyhint="search" aria-label="Search venues"><span id="bVqN" class="bvq-n" aria-live="polite"></span></label>`;
-  let html=`<div class="venues bven${vfOn()?" vfiltering":""}">${search}${chips}${seg}${vfOn()?`<p class="bvf-n">${shown.length} venue${shown.length===1?"":"s"} match</p>`:pass}`;
+  setTimeout(()=>markBadgesSeen(bdg),2500);   // after the fill-in animation has played
+  let html=`<div class="venues bven${vfOn()?" vfiltering":""}">${seg}${search}${chips}${vfOn()?`<p class="bvf-n">${shown.length} venue${shown.length===1?"":"s"} match</p>`:pass}`;
   if(vfOn()&&!shown.length)html+=`<div class="empty"><strong>No venues match all of those</strong>Turn a chip off, or tap ✕ Clear.</div>`;
   if(fol.length||!vfOn())html+=`<h2 class="month pickh">${ni("bell")} Following</h2>`+(fol.length?fol.map(card).join(""):`<div class="empty"><strong>Follow your spots</strong>Tap Follow on a venue. When it adds a show, you'll see a dot on the Venues tab.</div>`);
   const rest=shown.filter(v=>!isPinned(v.k));
