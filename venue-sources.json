@@ -370,11 +370,11 @@
    "kinds": [
     "social"
    ],
-   "calendar": null,
-   "how": "so far found via whiskeyrivernorco.com",
+   "calendar": "https://whiskeyrivernorco.com",
+   "how": "official site blocks fetch; only schedule found is Apr 2025 countrydancingtonight.com (lessons Tue-Fri/Sun 6-7pm) — try FB/IG next",
    "listed": 0,
    "recurring": 1,
-   "lastChecked": null
+   "lastChecked": "2026-11-12"
   },
   {
    "name": "Wilson Creek Winery",
@@ -412,11 +412,11 @@
    "kinds": [
     "club"
    ],
-   "calendar": null,
-   "how": "so far found via academy.la",
-   "listed": 7,
+   "calendar": "https://academy.la",
+   "how": "academy.la homepage lists events with per-event URLs (no times/prices); TM for prices",
+   "listed": 20,
    "recurring": 0,
-   "lastChecked": null
+   "lastChecked": "2026-11-12"
   },
   {
    "name": "Ace Mission Studios",
@@ -425,11 +425,11 @@
    "kinds": [
     "festival"
    ],
-   "calendar": null,
-   "how": "so far found via google.com",
-   "listed": 2,
+   "calendar": "https://americanarenas.com/venue/ace-mission-studios/",
+   "how": "no official calendar; americanarenas.com venue page + DICE/news searches",
+   "listed": 4,
    "recurring": 0,
-   "lastChecked": null
+   "lastChecked": "2026-11-12"
   },
   {
    "name": "Ahmanson Theatre",
@@ -438,11 +438,11 @@
    "kinds": [
     "theater"
    ],
-   "calendar": null,
-   "how": "so far found via gametime.co",
-   "listed": 2,
+   "calendar": "https://www.centertheatregroup.org/shows-tickets/subscriptions/ahmanson-theatre/",
+   "how": "CTG Ahmanson subscription page lists full 2026/27 season with run dates (admin.centertheatregroup.org mirror fetches)",
+   "listed": 5,
    "recurring": 0,
-   "lastChecked": null
+   "lastChecked": "2026-11-12"
   },
   {
    "name": "Amoeba Music Hollywood",
@@ -451,11 +451,11 @@
    "kinds": [
     "art"
    ],
-   "calendar": "https://www.amoeba.com/live-shows/",
-   "how": "free in-store events; blocks plain downloads",
+   "calendar": "https://www.amoeba.com/live-shows/upcoming/",
+   "how": "amoeba.com upcoming page stale; hollywoodpartnership.com/do/ pages carry Amoeba events with dates",
    "listed": 2,
    "recurring": 0,
-   "lastChecked": "2026-11-11"
+   "lastChecked": "2026-11-12"
   },
   {
    "name": "Avalon Hollywood",
@@ -465,11 +465,11 @@
     "club",
     "concert"
    ],
-   "calendar": null,
-   "how": "so far found via avalonhollywood.com",
-   "listed": 14,
+   "calendar": "https://avalonhollywood.com",
+   "how": "avalonhollywood.com homepage lists ~11 events with URLs; ?p=IDs from search show later ones; TM for prices",
+   "listed": 18,
    "recurring": 0,
-   "lastChecked": null
+   "lastChecked": "2026-11-12"
   },
   {
    "name": "Blue Note Los Angeles",
@@ -478,11 +478,11 @@
    "kinds": [
     "concert"
    ],
-   "calendar": null,
-   "how": "so far found via ticketweb.com",
-   "listed": 1,
+   "calendar": "https://www.bluenotejazz.com/la/",
+   "how": "bluenotejazz.com/la lists shows with tm-event URLs; gametime venue page (gametime.co/blue-note-la-tickets/venues/blue_note_la) gives sets, times & prices. More not yet added: Chrisette Michele 12/20, David Murray 12/21, Cory Henry 12/27, Seth MacFarlane 12/30-31, Fearless Flyers 1/19-20, Ladysmith 2/8-9, Joan Osborne 3/2-3",
+   "listed": 21,
    "recurring": 0,
-   "lastChecked": null
+   "lastChecked": "2026-11-12"
   },
   {
    "name": "BMO Stadium",
@@ -491,11 +491,11 @@
    "kinds": [
     "concert"
    ],
-   "calendar": null,
-   "how": "so far found via rateyourseats.com",
+   "calendar": "https://www.songkick.com/venues/3859524-bmo-stadium",
+   "how": "Songkick shows only Mau P 1/30/27; try expositionpark.ca.gov/calendar (bmo-concert) next",
    "listed": 1,
    "recurring": 0,
-   "lastChecked": null
+   "lastChecked": "2026-11-12"
   },
   {
    "name": "Catalina Jazz Club",
@@ -518,11 +518,11 @@
    "kinds": [
     "art"
    ],
-   "calendar": null,
-   "how": "so far found via google.com",
+   "calendar": "https://www.pvaa.net/new-art-walk-page",
+   "how": "PVAA art walk page: 1st Saturday monthly 5-8 PM, free",
    "listed": 0,
    "recurring": 1,
-   "lastChecked": null
+   "lastChecked": "2026-11-12"
   },
   {
    "name": "Contact Improv LA jam (Santa Monica)",
@@ -531,11 +531,11 @@
    "kinds": [
     "contact"
    ],
-   "calendar": null,
-   "how": "so far found via contactimprovla.com",
+   "calendar": "https://contactimprovla.com/",
+   "how": "contactimprovla.com fetches: Sunday jam at Dance Home, 522 Santa Monica Blvd, 6:30-9:30, $10-20 donation",
    "listed": 0,
    "recurring": 1,
-   "lastChecked": null
+   "lastChecked": "2026-11-12"
   },
   {
    "name": "Cowboy Palace Saloon",
@@ -544,11 +544,11 @@
    "kinds": [
     "social"
    ],
-   "calendar": null,
-   "how": "so far found via google.com",
+   "calendar": "https://www.countrydancingtonight.com/best-country-bars-dancing-in-los-angeles",
+   "how": "no official calendar; countrydancingtonight.com guide (Oct 2026): Sun lessons 4:30, $5 cover/$10 w/ lessons, open Wed-Sun",
    "listed": 0,
    "recurring": 1,
-   "lastChecked": null
+   "lastChecked": "2026-11-12"
   },
   {
    "name": "Crypto.com Arena",
@@ -558,11 +558,11 @@
     "concert",
     "theater"
    ],
-   "calendar": null,
-   "how": "so far found via gametime.co",
+   "calendar": "https://gametime.co/crypto-com-arena-tickets/venues/staples_center",
+   "how": "cryptoarena.com/events is sports-heavy with Load More; gametime venue page lists every non-sports date with prices",
    "listed": 11,
    "recurring": 0,
-   "lastChecked": null
+   "lastChecked": "2026-11-12"
   },
   {
    "name": "Dolby Theatre",
@@ -573,11 +573,11 @@
     "concert",
     "theater"
    ],
-   "calendar": null,
-   "how": "so far found via dolbytheatre.com",
-   "listed": 10,
+   "calendar": "https://www.dolbytheatre.com/events",
+   "how": "dolbytheatre.com/events fetches cleanly with detail URLs; gametime venue page (dolby_theatre) adds times & prices",
+   "listed": 25,
    "recurring": 0,
-   "lastChecked": null
+   "lastChecked": "2026-11-12"
   },
   {
    "name": "Downtown & Midtown galleries",
@@ -586,11 +586,11 @@
    "kinds": [
     "art"
    ],
-   "calendar": null,
-   "how": "so far found via firstfridaysventura.com",
+   "calendar": "https://visitventuraca.com/event/first-fridays/",
+   "how": "firstfridaysventura.com blocks fetch (robots); visitventuraca shows no current schedule — unconfirmed",
    "listed": 0,
    "recurring": 1,
-   "lastChecked": null
+   "lastChecked": "2026-11-12"
   },
   {
    "name": "Echoplex",
@@ -600,11 +600,11 @@
     "club",
     "concert"
    ],
-   "calendar": null,
-   "how": "so far found via gametime.co",
-   "listed": 14,
+   "calendar": "https://www.theecho.com/",
+   "how": "theecho.com homepage has TM event URLs ~2 weeks out; gametime venue page for later dates & prices",
+   "listed": 18,
    "recurring": 0,
-   "lastChecked": null
+   "lastChecked": "2026-11-12"
   },
   {
    "name": "El Rey Theatre",
@@ -613,11 +613,11 @@
    "kinds": [
     "concert"
    ],
-   "calendar": null,
-   "how": "so far found via gametime.co",
-   "listed": 33,
+   "calendar": "https://gametime.co/el-rey-theatre-tickets/venues/el_rey_theatre",
+   "how": "theelrey.com is JS-only; gametime venue page is the best full list with prices; Songkick partial",
+   "listed": 34,
    "recurring": 0,
-   "lastChecked": null
+   "lastChecked": "2026-11-12"
   },
   {
    "name": "Exchange LA",
@@ -626,11 +626,11 @@
    "kinds": [
     "club"
    ],
-   "calendar": null,
-   "how": "so far found via exchangela.com",
-   "listed": 6,
+   "calendar": "https://www.exchangela.com/",
+   "how": "exchangela.com homepage lists ~23 events with official URLs; gametime venue page has prices for a few (10 PM starts)",
+   "listed": 23,
    "recurring": 0,
-   "lastChecked": null
+   "lastChecked": "2026-11-12"
   },
   {
    "name": "Fairfax High School",
@@ -639,11 +639,11 @@
    "kinds": [
     "art"
    ],
-   "calendar": null,
-   "how": "so far found via melrosetradingpost.org",
+   "calendar": "https://melrosetradingpost.org/",
+   "how": "melrosetradingpost.org fetches: open every Sunday 10-5; Holiday Kick-Off Nov 29",
    "listed": 0,
    "recurring": 1,
-   "lastChecked": null
+   "lastChecked": "2026-11-12"
   },
   {
    "name": "Fox Theater Pomona",
@@ -653,11 +653,11 @@
     "club",
     "concert"
    ],
-   "calendar": null,
-   "how": "so far found via axs.com",
-   "listed": 4,
+   "calendar": "https://www.foxpomona.com/",
+   "how": "foxpomona.com homepage fetches with AXS event URLs; gametime/AXS venue pages unusable",
+   "listed": 8,
    "recurring": 0,
-   "lastChecked": null
+   "lastChecked": "2026-11-12"
   },
   {
    "name": "Gallery Row",
@@ -666,11 +666,11 @@
    "kinds": [
     "art"
    ],
-   "calendar": null,
-   "how": "so far found via google.com",
+   "calendar": "https://www.timeout.com/los-angeles/things-to-do/downtown-los-angeles-art-walk",
+   "how": "no official DTLA Art Walk site found; 2026 schedule unconfirmed",
    "listed": 0,
    "recurring": 1,
-   "lastChecked": null
+   "lastChecked": "2026-11-12"
   },
   {
    "name": "Geffen Playhouse",
@@ -679,11 +679,11 @@
    "kinds": [
     "theater"
    ],
-   "calendar": null,
-   "how": "so far found via geffenplayhouse.org",
+   "calendar": "https://www.geffenplayhouse.org/",
+   "how": "geffenplayhouse.org homepage fetches with run dates for every production",
    "listed": 5,
    "recurring": 0,
-   "lastChecked": null
+   "lastChecked": "2026-11-12"
   },
   {
    "name": "Gloria Molina Grand Park",
@@ -692,11 +692,11 @@
    "kinds": [
     "concert"
    ],
-   "calendar": null,
-   "how": "so far found via tickpick.com",
-   "listed": 1,
+   "calendar": "https://grandparkla.org/nyela",
+   "how": "grandparkla.org lists its free events (NYELA); ticketed concerts via tickpick search results",
+   "listed": 2,
    "recurring": 0,
-   "lastChecked": null
+   "lastChecked": "2026-11-12"
   },
   {
    "name": "Gold-Diggers",
@@ -719,11 +719,11 @@
    "kinds": [
     "concert"
    ],
-   "calendar": null,
-   "how": "so far found via gametime.co",
-   "listed": 4,
+   "calendar": "https://www.songkick.com/venues/523-greek-theatre",
+   "how": "Songkick venue page fetches with full list; gametime event pages give times (prices don't load)",
+   "listed": 5,
    "recurring": 0,
-   "lastChecked": null
+   "lastChecked": "2026-11-12"
   },
   {
    "name": "Heritage Square",
@@ -732,11 +732,11 @@
    "kinds": [
     "social"
    ],
-   "calendar": null,
-   "how": "so far found via google.com",
+   "calendar": "https://heritagesquareoxnard.com/event/havana-nights-at-the-square-live-salsa-music-live-band-and-dj-2/",
+   "how": "Havana Nights = summer Thursday series (6-9 PM); no dates after Nov 2026 — recheck in spring",
    "listed": 0,
    "recurring": 1,
-   "lastChecked": null
+   "lastChecked": "2026-11-12"
   },
   {
    "name": "Hollywood Blvd (see tickets)",
@@ -745,11 +745,11 @@
    "kinds": [
     "club"
    ],
-   "calendar": null,
-   "how": "so far found via tickpick.com",
-   "listed": 1,
+   "calendar": "https://thehollywoodchristmasparade.org",
+   "how": "public-street events: official parade site; ticketed shows via tickpick/vividseats search results",
+   "listed": 2,
    "recurring": 0,
-   "lastChecked": null
+   "lastChecked": "2026-11-12"
   },
   {
    "name": "Hollywood Bowl",
@@ -758,11 +758,11 @@
    "kinds": [
     "concert"
    ],
-   "calendar": null,
-   "how": "so far found via gametime.co",
-   "listed": 5,
+   "calendar": "https://www.hollywoodbowl.com/events/seasons/27",
+   "how": "Songkick for list, hollywoodbowl.com performance pages for times; gametime prices don't load",
+   "listed": 6,
    "recurring": 0,
-   "lastChecked": null
+   "lastChecked": "2026-11-12"
   },
   {
    "name": "Hollywood Improv",
@@ -1116,11 +1116,11 @@
    "kinds": [
     "theater"
    ],
-   "calendar": "https://cap.ucla.edu/",
-   "how": "CAP UCLA calendar",
-   "listed": 1,
+   "calendar": "https://cap.ucla.edu/calendar",
+   "how": "cap.ucla.edu/calendar fetches cleanly; most CAP shows are at The Nimoy/Freud, few at Royce",
+   "listed": 2,
    "recurring": 0,
-   "lastChecked": "2026-11-11"
+   "lastChecked": "2026-11-12"
   },
   {
    "name": "Sepulveda Basin Wildlife Reserve",
@@ -1274,10 +1274,10 @@
     "concert"
    ],
    "calendar": "https://www.theford.com/",
-   "how": "summer season; add when announced in spring",
+   "how": "2027 summer season not announced as of Nov 2026; recheck in spring",
    "listed": 0,
    "recurring": 0,
-   "lastChecked": "2026-11-11"
+   "lastChecked": "2026-11-12"
   },
   {
    "name": "The Glass House",
@@ -1786,11 +1786,11 @@
    "kinds": [
     "art"
    ],
-   "calendar": "https://fingerprintsmusic.com/events",
-   "how": "free in-store events, Long Beach",
+   "calendar": "https://fingerprintsmusic.com/in-store-events",
+   "how": "fingerprintsmusic.com/in-store-events fetches; sorted by post date, read page 1",
    "listed": 2,
    "recurring": 0,
-   "lastChecked": "2026-11-11"
+   "lastChecked": "2026-11-12"
   },
   {
    "name": "Garden Amphitheatre",
@@ -2181,11 +2181,11 @@
    "kinds": [
     "concert"
    ],
-   "calendar": "https://www.pacificsymphony.org/calendar-with-series",
-   "how": "Pacific Symphony 'Sundays at Soka'",
-   "listed": 1,
+   "calendar": "https://www.pacificsymphony.org/shows",
+   "how": "pacificsymphony.org/shows lists Sundays at Soka; Soka's own series page is stale",
+   "listed": 2,
    "recurring": 0,
-   "lastChecked": "2026-11-11"
+   "lastChecked": "2026-11-12"
   },
   {
    "name": "South Coast Repertory",
@@ -3123,6 +3123,20 @@
    ],
    "calendar": null,
    "how": "named in the refresh instructions; nothing listed yet",
+   "listed": 0,
+   "recurring": 0,
+   "lastChecked": null
+  },
+  {
+   "name": "The Nimoy (CAP UCLA)",
+   "city": "Los Angeles",
+   "region": "LA",
+   "kinds": [
+    "theater",
+    "concert"
+   ],
+   "calendar": "https://cap.ucla.edu/calendar",
+   "how": null,
    "listed": 0,
    "recurring": 0,
    "lastChecked": null
