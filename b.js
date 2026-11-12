@@ -323,7 +323,7 @@ const WHATSNEW=[["🍜","Space ramen","Pull the disco ball down. Four swipes ser
   ["🆕","New rows on Home","Recently added, Price dropped, Because you're into, and your going-out streak.",()=>{goHome();setTimeout(()=>{const t=[$("bBecBox"),$("bDropBox"),$("bFreshBox")].find(x=>x&&!x.hidden);if(t)t.scrollIntoView({behavior:"smooth",block:"start"});},250);}],
   ["🌙","Your nights, saved","Every plan you build is kept in Saved. Do a past night again with one tap.",()=>{const t=document.querySelector('#bTabs [data-tab="saved"]');if(t)t.click();}],
   ["⏱","Smarter planning","Drag stops to reorder, Tighten the night, the forecast, and drive vs rideshare home.",()=>{const t=document.querySelector('#bTabs [data-tab="budget"]');if(t)t.click();setTimeout(()=>{const n=$("bNight");if(n)n.scrollIntoView({behavior:"smooth",block:"start"});},200);}],
-  ["🎟️","Show passport","Tap a stamp to log past shows, and compare with a friend. Your badges live on the You page.",()=>{const t=document.querySelector('#bTabs [data-tab="venues"]');if(t)t.click();}],
+  ["🎟️","Show passport","Your stamps and badges live together on the You tab. Tap a stamp to log past shows, and compare with a friend.",()=>{if(window.SHACK_YOU)SHACK_YOU.open("pass");}],
   ["🔥","Map extras","Tonight heatmap, Now button, route costs and Build a night here.",()=>{MAPV.heat=true;state.when="tonight";const t=document.querySelector('#bTabs [data-tab="map"]');if(t)t.click();}]];
 const dlgOpen=d=>{if(d.showModal)d.showModal();else d.setAttribute("open","");},dlgClose=d=>{d.close?d.close():d.removeAttribute("open");};
 function whatsNew(){$("bNewList").innerHTML=WHATSNEW.map(([ic,t,p],i)=>`<li><i aria-hidden="true">${ic}</i><div><b>${esc(t)}</b><p>${esc(p)}</p></div><button type="button" data-wn="${i}">Show me</button></li>`).join("");dlgOpen($("bNew"));
@@ -648,7 +648,7 @@ async function restorePassport(f){let msg="Restored ✓";
       a.filter(x=>x&&typeof x.t==="string"&&/^\d{4}-\d\d-\d\d$/.test(x.d||"")).slice(0,200).forEach(x=>{if(!have.some(h=>h.t===x.t&&h.d===x.d))have.push({t:x.t.slice(0,100),d:x.d,id:String(x.id||Math.random().toString(36).slice(2,9)).slice(0,20)});});}
     if(Array.isArray(d.nights)&&window.NIGHT&&NIGHT.mergeNights){const n=NIGHT.mergeNights(d.nights);if(n)msg=`Restored ✓ (+${n} night${n>1?"s":""})`;}
     saveBeen();saveWant();savePlog();savePshows();}catch(e){msg="That file isn't a Show passport backup";}
-  render();const box=$("list").querySelector(".bpass-acts");if(box)box.insertAdjacentHTML("beforeend",`<span class="bpass-msg">${esc(msg)}</span>`);return msg;}
+  prender();const box=document.querySelector("#bYouPass .bpass-acts");if(box)box.insertAdjacentHTML("beforeend",`<span class="bpass-msg">${esc(msg)}</span>`);return msg;}
 const FSEEN=(()=>{try{return JSON.parse(SH.store.raw("shack-fseen")||"{}")||{};}catch(e){return {};}})();
 const saveSeen=()=>{try{SH.store.put("shack-fseen",JSON.stringify(FSEEN));}catch(e){}};
 const KIND_WORD={concert:"music room",club:"dance club",festival:"festival grounds",comedy:"comedy club",theater:"theater",openmic:"open-mic spot",social:"dance-social spot",dance:"ecstatic-dance space",contact:"movement studio",sound:"sound-bath space",drum:"drum-circle spot"};
@@ -687,12 +687,15 @@ function vChips(infos){const n=f=>infos.filter(f).length;
   return typ+`<div class="bsubs bvf bvf2" role="group" aria-label="Venue filters">${vfOn()?`<button type="button" class="chip bvf-x" data-vfx="1">✕ Clear</button>`:""}${quick}<i class="bvf-sep" aria-hidden="true"></i>${regs}</div>`;}
 // quiet-venue nudge: remember (on this device) the last day each venue had shows listed
 const VLAST=ld("shack-vlast",{});
-renderVenues=function(){const list=$("list");loadStations();
-  const keys=[...new Set((state._up||[]).filter(e=>e.kind!=="art"&&e.kind!=="volunteer").map(venueKey))];
-  // venues.json places with a city + coordinates but nothing listed right now still get a card
+// every venue the Shack knows: ones with shows listed, plus venues.json places that are quiet right now
+// (withBeen: also stamped venues that are in neither, so the passport never loses a stamp)
+function allInfos(withBeen){const keys=[...new Set((state._up||[]).filter(e=>e.kind!=="art"&&e.kind!=="volunteer").map(venueKey))];
   const named=new Set(keys.map(k=>k.split(" · ")[0]));
   const quietK=Object.entries(VOPEN).filter(([n,o])=>o&&o.c&&typeof o.la==="number"&&!named.has(n)).map(([n,o])=>{const k=n+" · "+o.c;QUIET[k]=o;return k;});
-  const infos=[...keys,...quietK].map(k=>{const v=venueInfo(k),o=QUIET[k];if(o&&!v.evs.length){v.lat=o.la;v.lon=o.lo;v.drive=driveEstimate(o.la,o.lo);v.addr=o.ad;}return v;}),r=dayRange(state.when);
+  const all=[...keys,...quietK];if(withBeen){const have=new Set(all);BEEN.forEach(k=>{if(!have.has(k))all.push(k);});}
+  return all.map(k=>{const v=venueInfo(k),o=QUIET[k];if(o&&!v.evs.length){v.lat=o.la;v.lon=o.lo;v.drive=driveEstimate(o.la,o.lo);v.addr=o.ad;}return v;});}
+renderVenues=function(){const list=$("list");loadStations();
+  const infos=allInfos(),r=dayRange(state.when);
   infos.forEach(v=>{v.inR=r?v.evs.filter(e=>e.start<=r[1]&&(e.end||e.start)>=r[0]):v.evs;});
   {const t=todayStr();let ch=false;infos.forEach(v=>{if(v.evs.length&&VLAST[v.k]!==t){VLAST[v.k]=t;ch=true;}});if(ch)try{SH.store.put("shack-vlast",JSON.stringify(VLAST));}catch(e){}}
   const quietTag=v=>{if(v.evs.length){const nx=v.evs[0].start,dd=Math.round((parseDay(nx)-parseDay(todayStr()))/864e5);return dd>=42?`💤 Next show is ${Math.round(dd/7)} weeks out`:"";}
@@ -725,8 +728,28 @@ renderVenues=function(){const list=$("list");loadStations();
       <small>${n?`${v.inR.length&&r?"":"Next "}${esc(when)}: ${esc(n.title)}${v.inR.length>1?` +${v.inR.length-1} more`:""}`:"No shows listed"}</small>
       ${tags?`<span class="vtags">${tags}</span>`:""}</button>
       <button type="button" class="vpin bfollow${fol?" on":""}" data-pinv="${esc(v.k)}" aria-pressed="${fol}" aria-label="${fol?"Unfollow":"Follow"} ${esc(v.name)}">${ni("bell")}<span>${fol?"Following":"Follow"}</span></button></div>${more}</div>`;};
-  // passport
-  const tot=infos.length,beenV=infos.filter(v=>BEEN.has(v.k));
+  // the passport itself lives on the You page now (passSection); Venues keeps a one-line way in
+  const tot=infos.length;
+  const pass=`<div class="vcard bpass bpass-mini"><button type="button" class="bpass-go" data-ypass><img class="bshack-ic" src="hut.webp?v=2" alt=""><span><b>Show passport &amp; badges</b><small>${BEEN.size} stamped · on the You page</small></span><i aria-hidden="true">→</i></button></div>`;
+  crawlCalc(infos);
+  const chips=vChips(infos),shown=vfOn()?infos.filter(v=>vMatch(v)):infos;
+  const fol=shown.filter(v=>isPinned(v.k)).sort((a,b)=>newCount(b)-newCount(a)||byNext(a,b));
+  const seg=`<div class="bseg bven-when">${WHEN.map(([w,l])=>`<button type="button" data-when="${w}" aria-pressed="${state.when===w}">${l}</button>`).join("")}</div>`;
+  const search=`<label class="bvsearch">${ni("search")}<input type="search" id="bVq" placeholder="Search ${tot} venues by name or city" value="${esc(VQ)}" autocomplete="off" enterkeyhint="search" aria-label="Search venues"><span id="bVqN" class="bvq-n" aria-live="polite"></span></label>`;
+  let html=`<div class="venues bven${vfOn()?" vfiltering":""}">${seg}${search}${chips}${vfOn()?`<p class="bvf-n">${shown.length} venue${shown.length===1?"":"s"} match</p>`:pass}`;
+  if(vfOn()&&!shown.length)html+=`<div class="empty"><strong>No venues match all of those</strong>Turn a chip off, or tap ✕ Clear.</div>`;
+  if(fol.length||!vfOn())html+=`<h2 class="month pickh">${ni("bell")} Following</h2>`+(fol.length?fol.map(card).join(""):`<div class="empty"><strong>Follow your spots</strong>Tap Follow on a venue. When it adds a show, you'll see a dot on the Venues tab.</div>`);
+  const rest=shown.filter(v=>!isPinned(v.k));
+  if(r){const on=rest.filter(v=>v.inR.length).sort(byDrive);
+    if(on.length||!vfOn())html+=`<h2 class="month">Playing ${WHEN_WORD[state.when]} · ${on.length}</h2>`+(on.length?on.map(card).join(""):`<div class="empty"><strong>Nothing listed ${WHEN_WORD[state.when]}</strong>Try This weekend or Anytime.</div>`);
+    if(rest.some(v=>!v.inR.length))html+=`<h2 class="month bquiet">Quiet ${WHEN_WORD[state.when]}</h2>`;
+    for(const rg of REGIONS){const vs=rest.filter(v=>!v.inR.length&&regionOfK(v.k)===rg).sort((a,b)=>(a.evs[0]?.start||"9").localeCompare(b.evs[0]?.start||"9"));if(vs.length)html+=`<h3 class="bvreg">${esc(rg)}</h3>`+vs.map(card).join("");}}
+  else for(const rg of REGIONS){const vs=rest.filter(v=>regionOfK(v.k)===rg).sort(byNext);if(vs.length)html+=`<h2 class="month">${esc(rg)}</h2>`+vs.map(card).join("");}
+  list.innerHTML=html+`</div>`;syncFollowDot();vFilter();
+  list.querySelectorAll(".bvf").forEach(r=>{const on=r.querySelector('[aria-pressed="true"]:not([data-vft=""])');if(on)r.scrollLeft=Math.max(0,on.offsetLeft-r.clientWidth/2+on.offsetWidth/2);});};
+/* ---- Show passport + badges, one card on the You page: stamps, the show log, regions, then your badges ---- */
+let PBALL=false;
+function passSection(){const infos=allInfos(true),tot=infos.length,beenV=infos.filter(v=>BEEN.has(v.k));
   const regs=REGIONS.map(rg=>{const all=infos.filter(v=>regionOfK(v.k)===rg);return [rg,all.filter(v=>BEEN.has(v.k)).length,all.length];}).filter(x=>x[2]);
   const cap=PALL?beenV.length:10;
   const stamps=beenV.slice(0,cap).map((v,i)=>{const n=pastShows(v.k).length;return `<button type="button" class="bstamp${PSEL===v.k?" sel":""}" data-pstamp="${esc(v.k)}" aria-pressed="${PSEL===v.k}" style="--sr:${(i*37%30)-15}deg;--sc:${VIBES[i%4].c}" title="${esc(v.name)}" aria-label="${esc(v.name)}: ${n} show${n===1?"":"s"} logged. Tap to add past shows"><b>${esc(initials(v))}</b><small>${RABBR[regionOfK(v.k)]||""}</small>${n?`<i class="bstamp-n">${n}</i>`:""}</button>`;}).join("")
@@ -740,30 +763,24 @@ renderVenues=function(){const list=$("list");loadStations();
       <form class="bplog-f" data-pform="${esc(selV.k)}"><input name="t" maxlength="100" required placeholder="Artist or show, e.g. Khruangbin" aria-label="Show you saw" autocomplete="off"><input name="d" type="date" required max="${todayStr()}" aria-label="Date you went"><button type="submit">＋ Add to passport</button></form>
     </div>`;})():"";
   const bdg=badges(infos);PASS={bdg,regs,n:BEEN.size};
-  const pass=`<div class="vcard bpass"><div class="vf"><div class="bpass-in">
-    <div class="bpass-h"><span class="bpass-k"><img class="bshack-ic" src="hut.webp?v=2" alt="">Show passport</span><b>${beenV.length} <small>of ${tot} venues${(()=>{const n=showCount();return n?` · ${n} show${n===1?"":"s"}`:"";})()}</small></b></div>
-    ${beenV.length?`<p class="bpass-tip">Tap a stamp to log shows you've seen there.</p><div class="bstamps">${stamps}</div>${plogPanel}<div class="bpass-regs">${regs.filter(x=>x[1]).map(([rg,a,b])=>`<span style="--pp:${Math.round(a/b*100)}%">${esc(rg)} <b>${a}</b>/${b}</span>`).join("")}</div>`
-      :`<p>Tap <b>I've been here</b> on any venue you've been to. Shows you star stamp themselves the day after.</p>`}
-    <div class="bpass-acts">${beenV.length?`<button type="button" class="bpass-share" data-yshare="passport">${ni("share")} Share</button><button type="button" class="bpass-share" data-ppmap="1">${ni("map")} Passport map</button>`:""}
-      <button type="button" class="bpass-share" data-yopen="1">☁ Sync, friends &amp; leaderboard</button></div>
-  </div></div></div>`;
-  crawlCalc(infos);
-  const chips=vChips(infos),shown=vfOn()?infos.filter(v=>vMatch(v)):infos;
-  const fol=shown.filter(v=>isPinned(v.k)).sort((a,b)=>newCount(b)-newCount(a)||byNext(a,b));
-  const seg=`<div class="bseg bven-when">${WHEN.map(([w,l])=>`<button type="button" data-when="${w}" aria-pressed="${state.when===w}">${l}</button>`).join("")}</div>`;
-  const search=`<label class="bvsearch">${ni("search")}<input type="search" id="bVq" placeholder="Search ${tot} venues by name or city" value="${esc(VQ)}" autocomplete="off" enterkeyhint="search" aria-label="Search venues"><span id="bVqN" class="bvq-n" aria-live="polite"></span></label>`;
   setTimeout(()=>markBadgesSeen(bdg),2500);   // after the fill-in animation has played
-  let html=`<div class="venues bven${vfOn()?" vfiltering":""}">${seg}${search}${chips}${vfOn()?`<p class="bvf-n">${shown.length} venue${shown.length===1?"":"s"} match</p>`:pass}`;
-  if(vfOn()&&!shown.length)html+=`<div class="empty"><strong>No venues match all of those</strong>Turn a chip off, or tap ✕ Clear.</div>`;
-  if(fol.length||!vfOn())html+=`<h2 class="month pickh">${ni("bell")} Following</h2>`+(fol.length?fol.map(card).join(""):`<div class="empty"><strong>Follow your spots</strong>Tap Follow on a venue. When it adds a show, you'll see a dot on the Venues tab.</div>`);
-  const rest=shown.filter(v=>!isPinned(v.k));
-  if(r){const on=rest.filter(v=>v.inR.length).sort(byDrive);
-    if(on.length||!vfOn())html+=`<h2 class="month">Playing ${WHEN_WORD[state.when]} · ${on.length}</h2>`+(on.length?on.map(card).join(""):`<div class="empty"><strong>Nothing listed ${WHEN_WORD[state.when]}</strong>Try This weekend or Anytime.</div>`);
-    if(rest.some(v=>!v.inR.length))html+=`<h2 class="month bquiet">Quiet ${WHEN_WORD[state.when]}</h2>`;
-    for(const rg of REGIONS){const vs=rest.filter(v=>!v.inR.length&&regionOfK(v.k)===rg).sort((a,b)=>(a.evs[0]?.start||"9").localeCompare(b.evs[0]?.start||"9"));if(vs.length)html+=`<h3 class="bvreg">${esc(rg)}</h3>`+vs.map(card).join("");}}
-  else for(const rg of REGIONS){const vs=rest.filter(v=>regionOfK(v.k)===rg).sort(byNext);if(vs.length)html+=`<h2 class="month">${esc(rg)}</h2>`+vs.map(card).join("");}
-  list.innerHTML=html+`</div>`;syncFollowDot();vFilter();
-  list.querySelectorAll(".bvf").forEach(r=>{const on=r.querySelector('[aria-pressed="true"]:not([data-vft=""])');if(on)r.scrollLeft=Math.max(0,on.offsetLeft-r.clientWidth/2+on.offsetWidth/2);});};
+  const on=bdg.filter(b=>b.on),order=[...on,...bdg.filter(b=>!b.on).sort((p,q)=>q.have/q.need-p.have/p.need)],sc=showCount();
+  return `<section class="byou-sec byou-pass" id="bYouPass" aria-label="Show passport and badges"><div class="bpass-in">
+    <div class="bpass-h"><span class="bpass-k"><img class="bshack-ic" src="hut.webp?v=2" alt="">Show passport</span><b>${beenV.length} <small>of ${tot} venues${sc?` · ${sc} show${sc===1?"":"s"}`:""}</small></b></div>
+    ${beenV.length?`<p class="bpass-tip">Tap a stamp to log shows you've seen there.</p><div class="bstamps">${stamps}</div>${plogPanel}<div class="bpass-regs">${regs.filter(x=>x[1]).map(([rg,a,b])=>`<span style="--pp:${Math.round(a/b*100)}%">${esc(rg)} <b>${a}</b>/${b}</span>`).join("")}</div>`
+      :`<p>Tap <b>I've been here</b> on any venue you've been to (Venues tab). Shows you star stamp themselves the day after.</p>`}
+    <div class="bpass-bdg">
+      <div class="bpass-bh"><span class="bpass-k">🏆 Badges</span><span class="byou-n">${on.length} of ${bdg.length}</span></div>
+      <div class="byou-bar" role="img" aria-label="${on.length} of ${bdg.length} badges earned"><i style="width:${Math.round(on.length/bdg.length*100)}%"></i></div>
+      <div class="bbadges${PBALL?"":" clip"}">${order.map(badgeHtml).join("")}</div>
+    </div>
+    <div class="bpass-acts">${beenV.length?`<button type="button" class="bpass-share" data-yshare="passport">${ni("share")} Share</button><button type="button" class="bpass-share" data-ppmap="1">${ni("map")} Passport map</button>`:""}
+      <button type="button" class="bpass-share" data-pball aria-expanded="${PBALL}">${PBALL?"Fewer badges":`All ${bdg.length} badges`}</button></div>
+  </div></section>`;}
+// redraw the passport where it's showing (You page), keeping the scroll spot; the Venues list re-renders too
+function prender(){const el=document.getElementById("bYouPass");
+  if(el){const box=el.closest(".binfo-in"),top=box?box.scrollTop:0;el.outerHTML=passSection();if(box)box.scrollTop=top;}
+  if(!el||screen==="venues")render();}
 /* venue search: filters the cards already on the page (no re-render, so the keyboard stays up) */
 const vnorm=s=>String(s||"").toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,"").replace(/[^a-z0-9]+/g," ").trim();
 function vFilter(){const box=$("list").querySelector(".bven");if(!box)return;const q=vnorm(VQ),words=q?q.split(" "):[];let n=0;
@@ -814,27 +831,31 @@ function shareYear(ps){const n=[...BEEN].length,P=PASS||{};
 function badgesNow(){const ks=new Set([...(state._up||[]).filter(e=>e.kind!=="art"&&e.kind!=="volunteer").map(venueKey),...BEEN]);return badges([...ks].map(k=>venueInfo(k)));}
 window.SHACK_PASS={shareYear:btn=>shareYear(btn),compare:btn=>comparLink(btn),get stamps(){return BEEN.size;},get shows(){return showCount();},
   badgesHtml(){const b=badgesNow(),on=b.filter(x=>x.on);return {earned:on.length,total:b.length,html:[...on,...b.filter(x=>!x.on).sort((p,q)=>q.have/q.need-p.have/p.need)].map(badgeHtml).join("")};},
-  open(){const t=document.querySelector('#bTabs [data-tab="venues"]');if(t)t.click();setTimeout(()=>{const p=document.querySelector(".bpass");if(p)p.scrollIntoView({block:"start",behavior:"smooth"});},300);}};
-// the rest of the passport clicks (stamps, log, backup)
+  passHtml:()=>passSection(),
+  open(){if(window.SHACK_YOU)SHACK_YOU.open("pass");}};
+// the rest of the passport clicks (stamps, log, backup): on the You page, plus "Log a past show" on venue cards
 function passClicks2(ev){
   const stp=ev.target.closest("[data-pstamp]");if(stp){ev.stopPropagation();const fromCard=stp.classList.contains("vlogadd");
     PSEL=fromCard?stp.dataset.pstamp:PSEL===stp.dataset.pstamp?"":stp.dataset.pstamp;
-    if(fromCard){VF.t="";VF.f.clear();VF.rg="";VQ="";}   // the passport hides while filtering or searching
-    render();
-    if(PSEL)setTimeout(()=>{const f=$("list").querySelector(".bplog");if(f){f.scrollIntoView({behavior:"smooth",block:"nearest"});}},40);return;}
-  if(ev.target.closest("[data-pall]")){ev.stopPropagation();PALL=!PALL;render();return;}
-  if(ev.target.closest("[data-pclose]")){ev.stopPropagation();PSEL="";render();return;}
-  const pd=ev.target.closest("[data-pdel]");if(pd){ev.stopPropagation();const k=pd.dataset.pk,gone=(PSHOWS[k]||[]).find(x=>x.id===pd.dataset.pdel);PSHOWS[k]=(PSHOWS[k]||[]).filter(x=>x.id!==pd.dataset.pdel);if(!PSHOWS[k].length)delete PSHOWS[k];savePshows();render();
-    if(gone)undoToast(`Removed ${gone.t}`,()=>{(PSHOWS[k]=PSHOWS[k]||[]).push(gone);savePshows();render();});return;}
-  if(ev.target.closest("[data-ppmap]")){ev.stopPropagation();MAPV.pass=true;show("map");return;}
+    if(fromCard){if(window.SHACK_YOU)SHACK_YOU.open("pass");}else prender();
+    if(PSEL)setTimeout(()=>{const f=document.querySelector("#bYouPass .bplog");if(f)f.scrollIntoView({behavior:"smooth",block:"nearest"});},fromCard?350:40);return;}
+  if(ev.target.closest("[data-pall]")){ev.stopPropagation();PALL=!PALL;prender();return;}
+  if(ev.target.closest("[data-pclose]")){ev.stopPropagation();PSEL="";prender();return;}
+  const pb=ev.target.closest("[data-pball]");if(pb){ev.stopPropagation();PBALL=!PBALL;const g=pb.closest("#bYouPass").querySelector(".bbadges");g.classList.toggle("clip",!PBALL);
+    pb.setAttribute("aria-expanded",String(PBALL));pb.textContent=PBALL?"Fewer badges":`All ${g.children.length} badges`;if(!PBALL)g.scrollIntoView({block:"nearest",behavior:"smooth"});return;}
+  const pd=ev.target.closest("[data-pdel]");if(pd){ev.stopPropagation();const k=pd.dataset.pk,gone=(PSHOWS[k]||[]).find(x=>x.id===pd.dataset.pdel);PSHOWS[k]=(PSHOWS[k]||[]).filter(x=>x.id!==pd.dataset.pdel);if(!PSHOWS[k].length)delete PSHOWS[k];savePshows();prender();
+    if(gone)undoToast(`Removed ${gone.t}`,()=>{(PSHOWS[k]=PSHOWS[k]||[]).push(gone);savePshows();prender();});return;}
+  if(ev.target.closest("[data-ppmap]")){ev.stopPropagation();const y=document.getElementById("bYou");if(y&&y.open)dlgClose(y);MAPV.pass=true;show("map");return;}
   if(ev.target.closest("[data-pback]")){ev.stopPropagation();backupPassport();return;}}
 // note on a stamped venue: saved as you type
 $("list").addEventListener("input",ev=>{const n=ev.target.closest("[data-vnote]");if(!n)return;const k=n.dataset.vnote,o=PLOG[k]||{};o.n=n.value.slice(0,140);PLOG[k]=o;savePlog();});
 $("list").addEventListener("change",ev=>{const f=ev.target.closest("[data-prest]");if(f&&f.files&&f.files[0])restorePassport(f.files[0]);});
-$("list").addEventListener("submit",ev=>{const f=ev.target.closest("[data-pform]");if(!f)return;ev.preventDefault();
+// the passport on the You page (a dialog, outside #list) gets the same clicks
+document.addEventListener("click",ev=>{if(ev.target.closest("#bYouPass"))passClicks2(ev);},true);
+document.addEventListener("submit",ev=>{const f=ev.target.closest("[data-pform]");if(!f)return;ev.preventDefault();
   const k=f.dataset.pform,t=f.elements.t.value.trim().slice(0,100),d=f.elements.d.value;if(!t||!/^\d{4}-\d\d-\d\d$/.test(d)||d>todayStr())return;
-  (PSHOWS[k]=PSHOWS[k]||[]).push({t,d,id:Date.now().toString(36)});BEEN.add(k);saveBeen();savePshows();render();
-  setTimeout(()=>{const i=$("list").querySelector(".bplog-f input[name=t]");if(i)i.focus({preventScroll:true});},30);});
+  (PSHOWS[k]=PSHOWS[k]||[]).push({t,d,id:Date.now().toString(36)});BEEN.add(k);saveBeen();savePshows();prender();
+  setTimeout(()=>{const i=document.querySelector("#bYouPass .bplog-f input[name=t]");if(i)i.focus({preventScroll:true});},30);});
 /* ---- "Share my year": a 1080×1350 image in the app's neon style (stats, stamps, latest shows) ---- */
 async function yearImage(ns,top){try{const W=1080,H=1350,c=document.createElement("canvas");c.width=W;c.height=H;const g=c.getContext("2d");
   try{await document.fonts.ready;}catch(e){}
