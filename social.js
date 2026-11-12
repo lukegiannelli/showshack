@@ -48,6 +48,7 @@ window.shackSocialHTML=()=>{const u=C.user;let h="";
     if(friends&&friends.length)h+=`<ul class="bso-list">${friends.map(f=>{const b=Array.isArray(f.been)?f.been:[],common=b.filter(k=>mine.has(k)).length,only=b.length-common;
       return `<li><b>${E(f.name)}</b><span>${b.length} venue${b.length===1?"":"s"} · ${common} in common${only?` · ${only} you haven't hit`:""}</span><button type="button" class="bso-x" data-so="rm" data-id="${E(f.friend_id)}" aria-label="Remove ${E(f.name)}">✕</button></li>`;}).join("")}</ul>`;
     else if(friends)h+=`<span class="bcloud-t">No friends yet. Send your invite link or trade codes.</span>`;
+    if(friends&&friends.length)h+=feedHTML();
     h+=`<label class="bso-t"><input type="checkbox" data-so-t="on_leaderboard"${prof.on_leaderboard?" checked":""}> Show me on the leaderboard (name + venue count)</label>
       <label class="bso-t"><input type="checkbox" data-so-t="share_ratings"${prof.share_ratings?" checked":""}> Share my star ratings on venue cards (never your notes)</label>`;}
   h+=`<button type="button" class="bpass-share" data-so="board" aria-expanded="${!!board}">🏆 ${board?"Hide":"SoCal"} leaderboard</button>`;
@@ -55,6 +56,21 @@ window.shackSocialHTML=()=>{const u=C.user;let h="";
     :`<span class="bcloud-t">Nobody's on it yet. Sign in and turn it on to be first.</span>`;
   if(msg)h+=`<span class="bcloud-s" aria-live="polite">${E(msg)}</span>`;
   return `<div class="bcloud bsocial" id="bSocial">${h}</div>`;};
+/* ===== what your friends are into: upcoming shows they starred, soonest first. Star one to join them. ===== */
+function feedHTML(){if(typeof state==="undefined"||typeof skey!=="function")return "";
+  const who={};friends.forEach(f=>(Array.isArray(f.stars)?f.stars:[]).forEach(k=>{(who[k]=who[k]||[]).push(String(f.name||"").split(/\s+/)[0]);}));
+  const today=new Date(Date.now()-new Date().getTimezoneOffset()*6e4).toISOString().slice(0,10);
+  const evs=(state._up||state.events||[]).filter(e=>e.start&&(e.end||e.start)>=today&&who[skey(e)]).sort((a,b)=>a.start.localeCompare(b.start)).slice(0,8);
+  const day=s=>new Date(s+"T12:00").toLocaleDateString("en-US",{weekday:"short",month:"short",day:"numeric"});
+  const row=e=>{const k=skey(e),on=state.stars.has(k),ns=who[k];
+    return `<li><button type="button" class="starbtn" data-star="${E(k)}" aria-pressed="${on}" aria-label="${on?"Starred":"Star"} ${E(e.title)}">${on?"★":"☆"}</button>
+      <div><b>${E(e.title)}</b><span>${E(day(e.start))} · ${E(e.venue||"")}</span><em>👥 ${E(ns.slice(0,3).join(", "))}${ns.length>3?` +${ns.length-3}`:""}${on?" · and you":""}</em></div>
+      ${e.url?`<a class="bfeed-go" href="${E(e.url)}" target="_blank" rel="noopener">Tickets ↗</a>`:""}</li>`;};
+  return `<div class="bfeed" id="bFeed"><p class="bfeed-h">🔥 What your friends are into</p>${evs.length?`<ul>${evs.map(row).join("")}</ul>`
+    :`<span class="bcloud-t">When your friends star shows, they show up here. Star one too and you're going together.</span>`}</div>`;}
+// the feed lives in the You sheet (outside #list), so its stars need their own click
+document.addEventListener("click",ev=>{const b=ev.target.closest("#bFeed button[data-star]");if(!b||typeof starBtn!=="function")return;ev.preventDefault();ev.stopPropagation();starBtn(b);
+  const em=b.parentNode.querySelector("em");if(em){const t=em.textContent.replace(/ · and you$/,"");em.textContent=t+(b.getAttribute("aria-pressed")==="true"?" · and you":"");}},true);
 function redraw(){const el=document.getElementById("bSocial");if(el)el.outerHTML=window.shackSocialHTML();
   // the You page says hi by your Shack name once it's loaded
   const h=document.getElementById("bYouName");if(h)h.textContent=prof&&prof.name?String(prof.name).trim():"there";}
@@ -137,7 +153,17 @@ function decorate(){clearTimeout(decoT);decoT=setTimeout(doDecorate,200);}
 // only touch the page when something changed (keeps the watcher quiet). Compares what we last wrote, not textContent,
 // because neon.js swaps the emoji for an icon after we write it.
 const setText=(el,t)=>{if(el.dataset.t!==t){el.dataset.t=t;el.textContent=t;}};
-async function doDecorate(){const list=document.body;
+/* ===== going together: who said "I'm in" on your shared nights (Saved → night cards) ===== */
+const RS={};   // link id → {at, list}, re-checked at most once a minute
+async function rsvpsFor(slug){const c=RS[slug];if(c&&Date.now()-c.at<60000)return c.list;
+  let list=[];try{list=await SH.rpc("get_live_rsvps",{p_id:slug})||[];}catch(e){list=c?c.list:[];}RS[slug]={at:Date.now(),list};return list;}
+async function decorateNights(){const map=LIVE();if(!Object.keys(map).length)return;
+  for(const b of document.querySelectorAll("[data-nshare]")){const slug=map[b.dataset.nshare],art=b.closest(".bnc");if(!slug||!art)continue;
+    const list=await rsvpsFor(slug),n=list.length,old=art.querySelector(".bnc-in");
+    const txt=n?`🙌 ${n} in: ${list.slice(0,4).map(r=>r.name).join(", ")}${n>4?` +${n-4}`:""}`:"";
+    if(!txt){if(old)old.remove();continue;}if(old){setText(old,txt);continue;}
+    const act=art.querySelector(".bnc-act");if(act)act.insertAdjacentHTML("beforebegin",`<p class="bnc-in" data-t="${E(txt)}">${E(txt)}</p>`);}}
+async function doDecorate(){const list=document.body;decorateNights().catch(()=>{});
   // sign-in box gets the friends panel right under it
   const cl=document.getElementById("bCloud");if(cl&&!document.getElementById("bSocial"))cl.insertAdjacentHTML("afterend",window.shackSocialHTML());
   // photo on the open passport stamp
@@ -162,7 +188,7 @@ async function doDecorate(){const list=document.body;
     if(!ns){if(old)old.remove();return;}const txt=`👥 ${ns.slice(0,3).join(", ")}${ns.length>3?` +${ns.length-3}`:""} starred this too`;
     if(old){setText(old,txt);return;}face.insertAdjacentHTML("beforeend",`<p class="fgo" data-t="${E(txt)}">${E(txt)}</p>`);});}
 // cards show up in several places (Shows, home picks, Saved, Venues), so watch the whole page for new ones
-new MutationObserver(ms=>{if(ms.some(m=>[...m.addedNodes].some(n=>n.nodeType===1&&!(n.matches&&n.matches(".fgo,.vscore,.vtags,.bphoto,#bSocial")))))decorate();}).observe(document.body,{childList:true,subtree:true});
+new MutationObserver(ms=>{if(ms.some(m=>[...m.addedNodes].some(n=>n.nodeType===1&&!(n.matches&&n.matches(".fgo,.vscore,.vtags,.bphoto,.bnc-in,#bSocial")))))decorate();}).observe(document.body,{childList:true,subtree:true});
 addEventListener("shack:store",ev=>{if(ev.detail&&(ev.detail.key==="shack-photos"))decorate();});
 decorate();
 })();

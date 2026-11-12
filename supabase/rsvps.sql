@@ -1,0 +1,5 @@
+﻿-- The Show Shack · "I'm in" on shared night links (already applied to the live project as migration "live_night_rsvps").
+-- live_night_rsvps(night_id → live_nights, token, name ≤30, created_at): no policies, only these functions touch it.
+-- get_live_rsvps(p_id): the names who said they're in (anyone with the link).
+-- rsvp_live_night(p_id, p_token, p_name, p_in): say you're in (or out) with a first name; max 40 per night,
+--   the random token lives on the phone so people can change their mind. Rows are deleted with the night link.

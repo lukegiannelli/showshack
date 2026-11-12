@@ -493,7 +493,22 @@ function ics(p){const pad=n=>String(n).padStart(2,"0"),stamp=new Date().toISOStr
   const desc=sumText(p)+"\n\n"+location.href;
   return ["BEGIN:VCALENDAR","VERSION:2.0","PRODID:-//The Show Shack//Night Card//EN","BEGIN:VEVENT","UID:night-"+Date.now()+"@showshack",`DTSTAMP:${stamp}`,`DTSTART:${f(startD)}`,`DTEND:${f(endD)}`,`SUMMARY:${escI("🌙 "+(p.t||"Our night"))}`,`DESCRIPTION:${escI(desc)}`,"END:VEVENT","END:VCALENDAR"].join("\r\n");}
 let VOPENER=null;
-function view(p,preview){if(!$("nightView"))VOPENER=document.activeElement;close();const auto=preview==="auto";const D=p.s.length?dmg(p):{tot:0,approx:false},tot=D.tot,ios=/iPhone|iPad|iPod/.test(navigator.userAgent);
+/* ---- going together on live links: "I'm in" with just a first name, no sign-in. A random token on this phone lets you
+   change your mind; the names show to everyone who has the link (and to the planner on their Saved card). ---- */
+const LS={get:(k,d)=>{try{return JSON.parse(localStorage.getItem(k)||"null")??d;}catch(e){return d;}},set:(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}}};
+function rTok(){let t=LS.get("shack-rsvp-tok","");if(!t){t=[...crypto.getRandomValues(new Uint8Array(20))].map(x=>"abcdefghijkmnpqrstuvwxyz23456789"[x%32]).join("");LS.set("shack-rsvp-tok",t);}return t;}
+const rMine=id=>(LS.get("shack-rsvp-in",{})||{})[id]||"";
+function rSetMine(id,n){const m=LS.get("shack-rsvp-in",{})||{};if(n)m[id]=n;else delete m[id];LS.set("shack-rsvp-in",m);if(n)LS.set("shack-rsvp-name",n);}
+function rsvpHTML(id,list){const mine=rMine(id),me=window.SHACK_ME&&SHACK_ME(),def=LS.get("shack-rsvp-name","")||(me&&me.name)||"";
+  const names=(list||[]).map(r=>r.name);
+  return `${names.length?`<p class="nv-who"><b>🙌 ${names.length} in</b> ${esc(names.join(", "))}</p>`:`<p class="nv-who">Nobody's said they're in yet. Be the first.</p>`}
+    ${mine?`<p class="nv-who-me">You're in as <b>${esc(mine)}</b> <button type="button" data-rout="1">Can't make it</button></p>`
+      :`<form class="nv-rf" data-rform="1"><input name="n" maxlength="30" required placeholder="Your first name" value="${esc(def)}" autocomplete="given-name" aria-label="Your first name"><button type="submit" class="nv-in">🙌 I'm in</button></form>`}`;}
+async function rsvpLoad(el,id){const box=el.querySelector("#nvRsvp");if(!box)return;try{const r=await SH.rpc("get_live_rsvps",{p_id:id});box.innerHTML=rsvpHTML(id,r);}catch(e){}}
+async function rsvpSet(el,id,name,on){const box=el.querySelector("#nvRsvp");
+  try{const r=await SH.rpc("rsvp_live_night",{p_id:id,p_token:rTok(),p_name:name||"",p_in:on});rSetMine(id,on?name:"");if(box)box.innerHTML=rsvpHTML(id,r);toast(on?"You're in 🙌":"Got it, you're out");}
+  catch(e){toast(navigator.onLine===false?"That needs internet. Try again once you're back.":"Couldn't save that. Try again.");}}
+function view(p,preview,liveId){if(!$("nightView"))VOPENER=document.activeElement;close();const auto=preview==="auto";const D=p.s.length?dmg(p):{tot:0,approx:false},tot=D.tot,ios=/iPhone|iPad|iPod/.test(navigator.userAgent);
   const body=encodeURIComponent(`I'm in for ${p.t||"the night"}${p.d?" ("+fmtD(p.d)+")":""}! 🙌`);
   const sms=`sms:${p.ph||""}${ios?"&":"?"}body=${body}`;
   const rows=p.s.map(s=>{const T=TYPES[s.k],u=s.u?safeUrl(s.u):"";
@@ -512,8 +527,9 @@ function view(p,preview){if(!$("nightView"))VOPENER=document.activeElement;close
     ${p.up?`<p class="nv-up">Updated ${esc(fmtUp(p.up))}</p>`:""}
     <ol class="nv-line">${rows||'<li><div class="nv-b"><b>No stops yet</b></div></li>'}</ol>
     ${tot?`<button type="button" class="nv-sum" data-vflip="1">${D.approx?"≈ ":""}$${Math.round(tot)} each for the whole night <span>See the damage ↻</span></button>`:""}
-    <div class="nv-main">${auto?'<button type="button" class="nv-in" data-vmine="1">✏️ Make it mine</button><button type="button" data-vspin="1">🌍 Spin again</button><button type="button" data-vshare="1">↗ Share</button>':`${preview?"":`<a class="nv-in" href="${esc(sms)}">🙌 I'm in${p.h?" (text "+esc(p.h)+")":""}</a>`}${p.d?'<button type="button" data-ics="1">📅 Add to calendar</button>':""}<button type="button" data-vshare="1">↗ Share</button>${preview?'<button type="button" data-vedit="1">✏️ Keep editing</button>':'<button type="button" data-vcopy="1">✏️ Make my own copy</button>'}`}</div>
-    <p class="nv-priv">${auto?"Picked at random from real listings near the show. Food and afters times are suggestions, and hours aren't always listed, so check before you go.":`This plan lives only in this link. The Shack doesn't store it and nobody signs in.${pays?" Pay buttons open Venmo or Cash App: check the name there before you send money.":""}`}</p>
+    ${liveId?`<div class="nv-rsvp" id="nvRsvp">${rsvpHTML(liveId,[])}</div>`:""}
+    <div class="nv-main">${auto?'<button type="button" class="nv-in" data-vmine="1">✏️ Make it mine</button><button type="button" data-vspin="1">🌍 Spin again</button><button type="button" data-vshare="1">↗ Share</button>':`${preview?"":liveId?(p.h||p.ph?`<a href="${esc(sms)}">💬 Text ${esc(p.h||"the planner")}</a>`:""):`<a class="nv-in" href="${esc(sms)}">🙌 I'm in${p.h?" (text "+esc(p.h)+")":""}</a>`}${p.d?'<button type="button" data-ics="1">📅 Add to calendar</button>':""}<button type="button" data-vshare="1">↗ Share</button>${preview?'<button type="button" data-vedit="1">✏️ Keep editing</button>':'<button type="button" data-vcopy="1">✏️ Make my own copy</button>'}`}</div>
+    <p class="nv-priv">${auto?"Picked at random from real listings near the show. Food and afters times are suggestions, and hours aren't always listed, so check before you go.":liveId?`This link always shows the latest plan. Saying you're in shares only the first name you type, with people who have this link.${pays?" Pay buttons open Venmo or Cash App: check the name there before you send money.":""}`:`This plan lives only in this link. The Shack doesn't store it and nobody signs in.${pays?" Pay buttons open Venmo or Cash App: check the name there before you send money.":""}`}</p>
     ${preview?"":'<button type="button" class="nv-shack" data-vclose="1">🌴 Open the Show Shack</button>'}</div>`;
   document.body.appendChild(el);document.documentElement.classList.add("nview-on");
   el.addEventListener("click",async ev=>{if(ev.target===el){close();return;}const b=ev.target.closest("button");if(!b)return;
@@ -523,7 +539,10 @@ function view(p,preview){if(!$("nightView"))VOPENER=document.activeElement;close
     if(b.dataset.vspin){surpriseNight();return;}
     if(b.dataset.vmine){useNight(newId(),{...p,up:Date.now()});close();openPlan();toast("It's in your Plan tab (and Saved). Tweak it, then send");return;}
     if(b.dataset.ics){const blob=new Blob([ics(p)],{type:"text/calendar"}),a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=(p.t||"night").replace(/[^\w-]+/g,"-").slice(0,40)+".ics";document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove();},1500);return;}
+    if(b.dataset.rout&&liveId){b.disabled=true;rsvpSet(el,liveId,"",false);return;}
     if(b.dataset.vcopy){useNight(newId(),{...p,up:Date.now()});close();openPlan();toast("Copied into your Plan tab. Your other nights are in Saved");}});
+  if(liveId){el.addEventListener("submit",ev=>{const f=ev.target.closest("[data-rform]");if(!f)return;ev.preventDefault();const n=f.n.value.trim();if(!n)return;f.querySelector("button").disabled=true;rsvpSet(el,liveId,n,true);});
+    rsvpLoad(el,liveId);}
   el.querySelector(".nv-x").focus({preventScroll:true});}
 // Night Card ↔︎ The damage: same quarter-turn flip as the plan card
 function flipCard(el,p){const card=el.querySelector(".nv-card");if(!card||card._busy)return;
@@ -539,7 +558,7 @@ let liveT=0;
 async function fromLive(id){let seen="";clearInterval(liveT);
   const get=async quiet=>{const r=await SH.rpc("get_live_night",{p_id:id});const row=r&&r[0];
     if(!row){if(!quiet)toast("That night link was turned off by its owner.");return false;}
-    if(row.updated_at===seen)return true;const again=!!seen;seen=row.updated_at;view(cleanPlan(row.plan),false);if(again)toast("Plan updated ✓");return true;};
+    if(row.updated_at===seen)return true;const again=!!seen;seen=row.updated_at;view(cleanPlan(row.plan),false,id);if(again)toast("Plan updated ✓");return true;};
   try{try{history.replaceState(null,"",location.pathname);}catch(e){}if(!await get(false))return;
     liveT=setInterval(()=>{if(!$("nightView")){clearInterval(liveT);return;}if(document.visibilityState==="visible")get(true).catch(()=>{});},45000);}
   catch(e){toast("Couldn't load that night. Check your connection and open the link again.");}}

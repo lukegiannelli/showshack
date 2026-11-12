@@ -872,7 +872,8 @@ async function yearImage(ns,top){try{const W=1080,H=1350,c=document.createElemen
   const shows=[...BEEN].flatMap(k=>pastShows(k).map(x=>({...x,v:k.split(" · ")[0]}))).filter(x=>x.d.startsWith(String(yr))).sort((a,b)=>b.d.localeCompare(a.d)).slice(0,4);
   g.textAlign="left";let y=been.length?600+Math.ceil(been.length/6)*170+20:600;
   if(shows.length){g.fillStyle="#FFC66B";g.font="800 38px 'Big Shoulders Display',Impact,sans-serif";g.fillText("LATELY",90,y);y+=56;
-    shows.forEach(x=>{g.fillStyle="#fff";g.font="600 34px 'Instrument Sans',sans-serif";g.fillText(x.t.slice(0,34),90,y);g.fillStyle="#cfc6e8";g.font="500 26px 'JetBrains Mono',monospace";g.fillText(x.v.slice(0,40),90,y+34);y+=84;});}
+    // only as many as fit above the web address at the bottom (two rows of stamps leave room for three)
+    shows.slice(0,Math.max(1,Math.floor((H-144-y)/84)+1)).forEach(x=>{g.fillStyle="#fff";g.font="600 34px 'Instrument Sans',sans-serif";g.fillText(x.t.slice(0,34),90,y);g.fillStyle="#cfc6e8";g.font="500 26px 'JetBrains Mono',monospace";g.fillText(x.v.slice(0,40),90,y+34);y+=84;});}
   else if(top){g.fillStyle="#fff";g.font="600 38px 'Instrument Sans',sans-serif";g.fillText(`Most stamps in ${top[0]} (${top[1]})`,90,y);}
   g.textAlign="center";g.fillStyle="#bfeaff";g.font="600 28px 'JetBrains Mono',monospace";g.fillText(APP_URL.replace(/^https?:\/\//,""),W/2,H-50);
   const blob=await new Promise(r=>c.toBlob(r,"image/png"));return blob?new File([blob],`my-${yr}-in-shows.png`,{type:"image/png"}):null;}catch(e){return null;}}

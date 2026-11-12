@@ -82,3 +82,22 @@ html.ui-b .bmap-stage{isolation:isolate}
   html.ui-b .bpicks-h .blink{white-space:nowrap;flex:none}
   html.ui-b .bpicks-h .bsec{min-width:0}
 }
+
+/* ---- the ☆ on event cards: a neon line-art star that glows; starred = rainbow neon ----
+   The ★/☆ text stays for screen readers but is hidden; the star is drawn with a mask so the glow follows its outline. */
+html.ui-b .starbtn{display:grid;place-items:center;font-size:0;color:transparent;--st:#bfeaff;
+  filter:drop-shadow(0 0 2px var(--st)) drop-shadow(0 0 6px color-mix(in srgb,var(--st) 70%,transparent));transition:transform .15s,filter .3s}
+html.ui-b .starbtn::before{content:"";width:26px;height:26px;background:var(--st);
+  -webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 2.6l2.8 5.7 6.3.9-4.55 4.43 1.07 6.27L12 16.93l-5.62 2.97 1.07-6.27L2.9 9.2l6.3-.9z' fill='none' stroke='black' stroke-width='1.7' stroke-linejoin='round'/%3E%3C/svg%3E") center/contain no-repeat;
+  mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 2.6l2.8 5.7 6.3.9-4.55 4.43 1.07 6.27L12 16.93l-5.62 2.97 1.07-6.27L2.9 9.2l6.3-.9z' fill='none' stroke='black' stroke-width='1.7' stroke-linejoin='round'/%3E%3C/svg%3E") center/contain no-repeat}
+html.ui-b .starbtn:hover{--st:#e6f7ff}
+/* starred: a thicker rainbow outline with a soft rainbow fill, glowing and slowly cycling colors */
+html.ui-b .starbtn[aria-pressed="true"]{--st:#ff6fe0;filter:drop-shadow(0 0 2px #fff6) drop-shadow(0 0 5px #ff6fe0) drop-shadow(0 0 10px #7fd4ff);animation:shk-rainbow 4s linear infinite}
+html.ui-b .starbtn[aria-pressed="true"]::before{background:conic-gradient(from 0deg,#ff5c8a,#ffc66b,#fff36b,#7ee0b8,#7fd4ff,#b18cff,#ff6fe0,#ff5c8a);
+  -webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 2.6l2.8 5.7 6.3.9-4.55 4.43 1.07 6.27L12 16.93l-5.62 2.97 1.07-6.27L2.9 9.2l6.3-.9z' fill='black' fill-opacity='.28' stroke='black' stroke-width='2.1' stroke-linejoin='round'/%3E%3C/svg%3E") center/contain no-repeat;
+  mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 2.6l2.8 5.7 6.3.9-4.55 4.43 1.07 6.27L12 16.93l-5.62 2.97 1.07-6.27L2.9 9.2l6.3-.9z' fill='black' fill-opacity='.28' stroke='black' stroke-width='2.1' stroke-linejoin='round'/%3E%3C/svg%3E") center/contain no-repeat}
+html.ui-b .starbtn[aria-pressed="true"]:active,html.ui-b .starbtn:active{transform:scale(1.2)}
+@keyframes shk-rainbow{to{filter:drop-shadow(0 0 2px #fff6) drop-shadow(0 0 5px #7fd4ff) drop-shadow(0 0 10px #ff6fe0) hue-rotate(360deg)}}
+@media (prefers-reduced-motion:reduce){html.ui-b .starbtn[aria-pressed="true"]{animation:none}}
+/* small rows (lists) get a slightly smaller star so it sits in proportion with the text */
+html.ui-b .tr .starbtn::before{width:22px;height:22px}

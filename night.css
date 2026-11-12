@@ -228,3 +228,25 @@ button.nv-sum{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 10px;bord
 button.nv-sum span{font:600 12px var(--body);color:#cfc6ea;text-decoration:underline;text-underline-offset:2px}
 .nv-card.dmg .nv-dmg.bnight{display:block!important;margin-top:4px}
 .bn-sumlink{all:unset;cursor:pointer;margin-left:10px;font:600 12px var(--body);color:#cfc6ea;text-decoration:underline;text-underline-offset:2px}
+
+/* ---- going together: "I'm in" on live night links ---- */
+.nv-rsvp{margin:14px 0 4px;padding:12px;border-radius:14px;background:rgba(126,224,184,.08);border:1px solid rgba(126,224,184,.35);display:flex;flex-direction:column;gap:10px}
+.nv-who{margin:0;font-size:14px;color:#e4dcf5;line-height:1.4}.nv-who b{color:#7ee0b8;margin-right:4px}
+.nv-who-me{margin:0;display:flex;flex-wrap:wrap;align-items:center;gap:8px;font-size:14px;color:#fff}
+.nv-who-me button{min-height:36px;padding:0 12px;border-radius:999px;border:1px solid rgba(255,255,255,.25);background:transparent;color:#cfc6e8;font:600 13px var(--body);cursor:pointer}
+.nv-rf{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px}
+.nv-rf input{min-width:0;height:44px;box-sizing:border-box;padding:0 12px;border-radius:12px;border:1px solid rgba(255,255,255,.2);background:rgba(10,6,28,.7);color:#fff;font:500 16px var(--body)}
+.nv-rf .nv-in{height:44px;margin:0;padding:0 16px;border:0;border-radius:999px;cursor:pointer;white-space:nowrap}
+/* the planner's Saved card: who's in */
+.bnc-in{margin:2px 0 6px;font:600 12.5px var(--body);color:#7ee0b8}
+/* You → Friends: what your friends are into */
+.bfeed{display:flex;flex-direction:column;gap:6px;margin-top:4px}
+.bfeed-h{margin:4px 0 0;font:700 13px var(--body);color:#FFC66B}
+.bfeed ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
+.bfeed li{display:flex;align-items:center;gap:8px;padding:8px 10px 8px 4px;border-radius:12px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1)}
+.bfeed li>div{flex:1;min-width:0;display:flex;flex-direction:column;gap:1px}
+.bfeed li b{font:700 14px var(--body);color:#fff;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bfeed li span{font:500 12px var(--mono);color:#cfc6e8}
+.bfeed li em{font-style:normal;font-size:12px;color:#7FD4FF}
+.bfeed .starbtn{flex:none;margin:0}
+.bfeed-go{flex:none;font:600 12px var(--body);color:#FFC66B;text-decoration:none;padding:8px 4px}
