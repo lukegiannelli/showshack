@@ -1,0 +1,3143 @@
+{
+ "about": "Every venue the Show Shack covers, in one place. The daily refresh routine sweeps the venues checked longest ago (null = never) and writes back lastChecked, calendar and how. Add a venue here and the refresh picks it up.",
+ "updated": "2026-11-11",
+ "venues": [
+  {
+   "name": "Acrisure Arena",
+   "city": "Palm Desert",
+   "region": "Desert",
+   "kinds": [
+    "concert"
+   ],
+   "calendar": null,
+   "how": "so far found via gametime.co",
+   "listed": 4,
+   "recurring": 0,
+   "lastChecked": null
+  },
+  {
+   "name": "Agua Caliente Casino",
+   "city": "Rancho Mirage",
+   "region": "Desert",
+   "kinds": [
+    "comedy",
+    "concert",
+    "theater"
+   ],
+   "calendar": null,
+   "how": "so far found via ticketmaster.com",
+   "listed": 31,
+   "recurring": 0,
+   "lastChecked": null
+  },
+  {
+   "name": "Backstreet Art District",
+   "city": "Palm Springs",
+   "region": "Desert",
+   "kinds": [
+    "art"
+   ],
+   "calendar": null,
+   "how": "so far found via google.com",
+   "listed": 0,
+   "recurring": 1,
+   "lastChecked": null
+  },
+  {
+   "name": "Dave & Buster's",
+   "city": "Rancho Mirage",
+   "region": "Desert",
+   "kinds": [
+    "social"
+   ],
+   "calendar": null,
+   "how": "so far found via google.com",
+   "listed": 0,
+   "recurring": 1,
+   "lastChecked": null
+  },
+  {
+   "name": "El Paseo",
+   "city": "Palm Desert",
+   "region": "Desert",
+   "kinds": [
+    "art"
+   ],
+   "calendar": null,
+   "how": "so far found via google.com",
+   "listed": 0,
+   "recurring": 1,
+   "lastChecked": null
+  },
+  {
+   "name": "Empire Polo Club",
+   "city": "Indio",
+   "region": "Desert",
+   "kinds": [
+    "festival"
+   ],
+   "calendar": null,
+   "how": "so far found via coachella.com",
+   "listed": 3,
+   "recurring": 0,
+   "lastChecked": null
+  },
+  {
+   "name": "Fantasy Springs Resort Casino",
+   "city": "Indio",
+   "region": "Desert",
+   "kinds": [
+    "comedy",
+    "concert"
+   ],
+   "calendar": null,
+   "how": "so far found via fantasyspringsresort.com",
+   "listed": 11,
+   "recurring": 0,
+   "lastChecked": null
+  },
+  {
+   "name": "FIND Food Bank",
+   "city": "Indio",
+   "region": "Desert",
+   "kinds": [
+    "volunteer"
+   ],
+   "calendar": null,
+   "how": "so far found via findfoodbank.org",
+   "listed": 0,
+   "recurring": 1,
+   "lastChecked": null
+  },
+  {
+   "name": "Palm Canyon Dr (Baristo–Amado)",
+   "city": "Palm Springs",
+   "region": "Desert",
+   "kinds": [
+    "art"
+   ],
+   "calendar": null,
+   "how": "so far found via google.com",
+   "listed": 0,
+   "recurring": 1,
+   "lastChecked": null
+  },
+  {
+   "name": "Pappy & Harriet's",
+   "city": "Pioneertown",
+   "region": "Desert",
+   "kinds": [
+    "concert"
+   ],
+   "calendar": null,
+   "how": "so far found via gametime.co",
+   "listed": 28,
+   "recurring": 0,
+   "lastChecked": null
+  },
+  {
+   "name": "Perez Art District",
+   "city": "Cathedral City",
+   "region": "Desert",
+   "kinds": [
+    "art"
+   ],
+   "calendar": null,
+   "how": "so far found via theperezartdistrict.com",
+   "listed": 0,
+   "recurring": 1,
+   "lastChecked": null
+  },
+  {
+   "name": "Spotlight 29 Casino",
+   "city": "Coachella",
+   "region": "Desert",
+   "kinds": [
+    "comedy",
+    "concert"
+   ],
+   "calendar": "https://spotlight29.com/entertainment/",
+   "how": "venue page → Ticketmaster (showroom) and Eventbrite (Chairman's Lounge comedy)",
+   "listed": 15,
+   "recurring": 0,
+   "lastChecked": "2026-11-11"
+  },
+  {
+   "name": "Aurea Vista",
+   "city": "Riverside",
+   "region": "Inland Empire",
+   "kinds": [
+    "social"
+   ],
+   "calendar": null,
+   "how": "so far found via aureavista.com",
+   "listed": 0,
+   "recurring": 1,
+   "lastChecked": null
+  },
+  {
+   "name": "Feeding America Riverside | San Bernardino",
+   "city": "Riverside",
+   "region": "Inland Empire",
+   "kinds": [
+    "volunteer"
+   ],
+   "calendar": null,
+   "how": "so far found via feedingamericaie.org",
+   "listed": 0,
+   "recurring": 1,
+   "lastChecked": null
+  },
+  {
+   "name": "Fox Performing Arts Center",
+   "city": "Riverside",
+   "region": "Inland Empire",
+   "kinds": [
+    "concert",
+    "theater"
+   ],
+   "calendar": null,
+   "how": "so far found via gametime.co",
+   "listed": 9,
+   "recurring": 0,
+   "lastChecked": null
+  },
+  {
+   "name": "Glen Helen Amphitheater",
+   "city": "San Bernardino",
+   "region": "Inland Empire",
+   "kinds": [
+    "concert"
+   ],
+   "calendar": null,
+   "how": "so far found via vividseats.com",
+   "listed": 1,
+   "recurring": 0,
+   "lastChecked": null
+  },
+  {
+   "name": "Miramonte Winery",
+   "city": "Temecula",
+   "region": "Inland Empire",
+   "kinds": [
+    "social"
+   ],
+   "calendar": null,
+   "how": "so far found via temeculawines.org",
+   "listed": 0,
+   "recurring": 1,
+   "lastChecked": null
+  },
+  {
+   "name": "Morongo Casino Resort",
+   "city": "Cabazon",
+   "region": "Inland Empire",
+   "kinds": [
+    "comedy",
+    "concert"
+   ],
+   "calendar": null,
+   "how": "so far found via ticketmaster.com",
+   "listed": 12,
+   "recurring": 0,
+   "lastChecked": null
+  },
+  {
+   "name": "NOS Events Center",
+   "city": "San Bernardino",
+   "region": "Inland Empire",
+   "kinds": [
+    "festival"
+   ],
+   "calendar": null,
+   "how": "so far found via insomniac.com",
+   "listed": 4,
+   "recurring": 0,
+   "lastChecked": null
+  },
+  {
+   "name": "Ontario Improv",
+   "city": "Ontario",
+   "region": "Inland Empire",
+   "kinds": [
+    "comedy"
+   ],
+   "calendar": null,
+   "how": "so far found via tickpick.com",
+   "listed": 2,
+   "recurring": 0,
+   "lastChecked": null
+  },
+  {
+   "name": "Pechanga Resort Casino",
+   "city": "Temecula",
+   "region": "Inland Empire",
+   "kinds": [
+    "comedy",
+    "concert",
+    "theater"
+   ],
+   "calendar": null,
+   "how": "so far found via ticketmaster.com",
+   "listed": 12,
+   "recurring": 0,
+   "lastChecked": null
+  },
+  {
+   "name": "Riverside Art Museum",
+   "city": "Riverside",
+   "region": "Inland Empire",
+   "kinds": [
+    "art"
+   ],
+   "calendar": null,
+   "how": "so far found via riversideartmuseum.org",
+   "listed": 0,
+   "recurring": 1,
+   "lastChecked": null
+  },
+  {
+   "name": "Soboba Casino Resort",
+   "city": "San Jacinto",
+   "region": "Inland Empire",
+   "kinds": [
+    "comedy",
+    "concert",
+    "theater"
+   ],
+   "calendar": "https://soboba.com/entertainment/calendar",
+   "how": "venue page (JS) with LOAD MORE",
+   "listed": 11,
+   "recurring": 0,
+   "lastChecked": "2026-11-11"
+  },
+  {
+   "name": "Sole Alley & the Breezeway",
+   "city": "San Bernardino",
+   "region": "Inland Empire",
+   "kinds": [
+    "art"
+   ],
+   "calendar": null,
+   "how": "so far found via artsconnectionnetwork.org",
+   "listed": 1,
+   "recurring": 0,
+   "lastChecked": null
+  },
+  {
+   "name": "Temecula Stampede",
+   "city": "Temecula",
+   "region": "Inland Empire",
+   "kinds": [
+    "social"
+   ],
+   "calendar": null,
+   "how": "so far found via google.com",
+   "listed": 0,
+   "recurring": 1,
+   "lastChecked": null
+  },
+  {
+   "name": "Town Square Park",
+   "city": "Temecula",
+   "region": "Inland Empire",
+   "kinds": [
+    "art"
+   ],
+   "calendar": null,
+   "how": "so far found via temeculasunsetmarket.com",
+   "listed": 0,
+   "recurring": 1,
+   "lastChecked": null
+  },
+  {
+   "name": "Toyota Arena",
+   "city": "Ontario",
+   "region": "Inland Empire",
+   "kinds": [
+    "concert"
+   ],
+   "calendar": null,
+   "how": "so far found via google.com",
+   "listed": 1,
+   "recurring": 0,
+   "lastChecked": null
+  },
+  {
+   "name": "Whiskey River Dancehall & Saloon",
+   "city": "Norco",
+   "region": "Inland Empire",
+   "kinds": [
+    "social"
+   ],
+   "calendar": null,
+   "how": "so far found via whiskeyrivernorco.com",
+   "listed": 0,
+   "recurring": 1,
+   "lastChecked": null
+  },
+  {
+   "name": "Wilson Creek Winery",
+   "city": "Temecula",
+   "region": "Inland Empire",
+   "kinds": [
+    "club",
+    "comedy",
+    "concert"
+   ],
+   "calendar": "https://www.wilsoncreekwinery.com/collection/events",
+   "how": "winery events (Sunday music, Jazz & Jokes)",
+   "listed": 4,
+   "recurring": 0,
+   "lastChecked": "2026-11-11"
+  },
+  {
+   "name": "Yaamava' Theater",
+   "city": "Highland",
+   "region": "Inland Empire",
+   "kinds": [
+    "comedy",
+    "concert"
+   ],
+   "calendar": "https://yaamava.com/entertainment/",
+   "how": "blocks plain downloads; AXS links",
+   "listed": 41,
+   "recurring": 0,
+   "lastChecked": "2026-11-11"
+  },
+  {
+   "name": "Academy LA",
+   "city": "Los Angeles",
+   "region": "Los Angeles",
+   "kinds": [
+    "club"
+   ],
+   "calendar": null,
+   "how": "so far found via academy.la",
+   "listed": 7,
+   "recurring": 0,
+   "lastChecked": null
+  },
+  {
+   "name": "Ace Mission Studios",
+   "city": "Los Angeles",
+   "region": "Los Angeles",
+   "kinds": [
+    "festival"
+   ],
+   "calendar": null,
+   "how": "so far found via google.com",
+   "listed": 2,
+   "recurring": 0,
+   "lastChecked": null
+  },
+  {
+   "name": "Ahmanson Theatre",
+   "city": "Los Angeles",
+   "region": "Los Angeles",
+   "kinds": [
+    "theater"
+   ],
+   "calendar": null,
+   "how": "so far found via gametime.co",
+   "listed": 2,
+   "recurring": 0,
+   "lastChecked": null
+  },
+  {
+   "name": "Amoeba Music Hollywood",
+   "city": "Los Angeles",
+   "region": "Los Angeles",
+   "kinds": [
+    "art"
+   ],
+   "calendar": "https://www.amoeba.com/live-shows/",
+   "how": "free in-store events; blocks plain downloads",
+   "listed": 2,
+   "recurring": 0,
+   "lastChecked": "2026-11-11"
+  },
+  {
+   "name": "Avalon Hollywood",
+   "city": "Los Angeles",
+   "region": "Los Angeles",
+   "kinds": [
+    "club",
+    "concert"
+   ],
+   "calendar": null,
+   "how": "so far found via avalonhollywood.com",
+   "listed": 14,
+   "recurring": 0,
+   "lastChecked": null
+  },
+  {
+   "name": "Blue Note Los Angeles",
+   "city": "Los Angeles",
+   "region": "Los Angeles",
+   "kinds": [
+    "concert"
+   ],
+   "calendar": null,
+   "how": "so far found via ticketweb.com",
+   "listed": 1,
+   "recurring": 0,
+   "lastChecked": null
+  },
+  {
+   "name": "BMO Stadium",
+   "city": "Los Angeles",
+   "region": "Los Angeles",
+   "kinds": [
+    "concert"
+   ],
+   "calendar": null,
+   "how": "so far found via rateyourseats.com",
+   "listed": 1,
+   "recurring": 0,
+   "lastChecked": null
+  },
+  {
+   "name": "Catalina Jazz Club",
+   "city": "Los Angeles",
+   "region": "Los Angeles",
+   "kinds": [
+    "concert",
+    "theater"
+   ],
+   "calendar": "https://catalinajazzclub.com/",
+   "how": "venue page → ticketweb links with prices",
+   "listed": 18,
+   "recurring": 0,
+   "lastChecked": "2026-11-11"
+  },
+  {
+   "name": "Claremont Chamber Gallery",
+   "city": "Claremont",
+   "region": "Los Angeles",
+   "kinds": [
+    "art"
+   ],
+   "calendar": null,
+   "how": "so far found via google.com",
+   "listed": 0,
+   "recurring": 1,
+   "lastChecked": null
+  },
+  {
+   "name": "Contact Improv LA jam (Santa Monica)",
+   "city": "Santa Monica",
+   "region": "Los Angeles",
+   "kinds": [
+    "contact"
+   ],
+   "calendar": null,
+   "how": "so far found via contactimprovla.com",
+   "listed": 0,
+   "recurring": 1,
+   "lastChecked": null
+  },
+  {
+   "name": "Cowboy Palace Saloon",
+   "city": "Chatsworth",
+   "region": "Los Angeles",
+   "kinds": [
+    "social"
+   ],
+   "calendar": null,
+   "how": "so far found via google.com",
+   "listed": 0,
+   "recurring": 1,
+   "lastChecked": null
+  },
+  {
+   "name": "Crypto.com Arena",
+   "city": "Los Angeles",
+   "region": "Los Angeles",
+   "kinds": [
+    "concert",
+    "theater"
+   ],
+   "calendar": null,
+   "how": "so far found via gametime.co",
+   "listed": 11,
+   "recurring": 0,
+   "lastChecked": null
+  },
+  {
+   "name": "Dolby Theatre",
+   "city": "Los Angeles",
+   "region": "Los Angeles",
+   "kinds": [
+    "comedy",
+    "concert",
+    "theater"
+   ],
+   "calendar": null,
+   "how": "so far found via dolbytheatre.com",
+   "listed": 10,
+   "recurring": 0,
+   "lastChecked": null
+  },
+  {
+   "name": "Downtown & Midtown galleries",
+   "city": "Ventura",
+   "region": "Los Angeles",
+   "kinds": [
+    "art"
+   ],
+   "calendar": null,
+   "how": "so far found via firstfridaysventura.com",
+   "listed": 0,
+   "recurring": 1,
+   "lastChecked": null
+  },
+  {
+   "name": "Echoplex",
+   "city": "Los Angeles",
+   "region": "Los Angeles",
+   "kinds": [
+    "club",
+    "concert"
+   ],
+   "calendar": null,
+   "how": "so far found via gametime.co",
+   "listed": 14,
+   "recurring": 0,
+   "lastChecked": null
+  },
+  {
+   "name": "El Rey Theatre",
+   "city": "Los Angeles",
+   "region": "Los Angeles",
+   "kinds": [
+    "concert"
+   ],
+   "calendar": null,
+   "how": "so far found via gametime.co",
+   "listed": 33,
+   "recurring": 0,
+   "lastChecked": null
+  },
+  {
+   "name": "Exchange LA",
+   "city": "Los Angeles",
+   "region": "Los Angeles",
+   "kinds": [
+    "club"
+   ],
+   "calendar": null,
+   "how": "so far found via exchangela.com",
+   "listed": 6,
+   "recurring": 0,
+   "lastChecked": null
+  },
+  {
+   "name": "Fairfax High School",
+   "city": "Los Angeles",
+   "region": "Los Angeles",
+   "kinds": [
+    "art"
+   ],
+   "calendar": null,
+   "how": "so far found via melrosetradingpost.org",
+   "listed": 0,
+   "recurring": 1,
+   "lastChecked": null
+  },
+  {
+   "name": "Fox Theater Pomona",
+   "city": "Pomona",
+   "region": "Los Angeles",
+   "kinds": [
+    "club",
+    "concert"
+   ],
+   "calendar": null,
+   "how": "so far found via axs.com",
+   "listed": 4,
+   "recurring": 0,
+   "lastChecked": null
+  },
+  {
+   "name": "Gallery Row",
+   "city": "Los Angeles",
+   "region": "Los Angeles",
+   "kinds": [
+    "art"
+   ],
+   "calendar": null,
+   "how": "so far found via google.com",
+   "listed": 0,
+   "recurring": 1,
+   "lastChecked": null
+  },
+  {
+   "name": "Geffen Playhouse",
+   "city": "Los Angeles",
+   "region": "Los Angeles",
+   "kinds": [
+    "theater"
+   ],
+   "calendar": null,
+   "how": "so far found via geffenplayhouse.org",
+   "listed": 5,
+   "recurring": 0,
+   "lastChecked": null
+  },
+  {
+   "name": "Gloria Molina Grand Park",
+   "city": "Los Angeles",
+   "region": "Los Angeles",
+   "kinds": [
+    "concert"
+   ],
+   "calendar": null,
+   "how": "so far found via tickpick.com",
+   "listed": 1,
+   "recurring": 0,
+   "lastChecked": null
+  },
+  {
+   "name": "Gold-Diggers",
+   "city": "Los Angeles",
+   "region": "Los Angeles",
+   "kinds": [
+    "club",
+    "concert"
+   ],
+   "calendar": "https://gold-diggers.com/",
+   "how": "venue page → link.dice.fm links with prices (golddiggers.la is NOT their site)",
+   "listed": 24,
+   "recurring": 0,
+   "lastChecked": "2026-11-11"
+  },
+  {
+   "name": "Greek Theatre",
+   "city": "Los Angeles",
+   "region": "Los Angeles",
+   "kinds": [
+    "concert"
+   ],
+   "calendar": null,
+   "how": "so far found via gametime.co",
+   "listed": 4,
+   "recurring": 0,
+   "lastChecked": null
+  },
+  {
+   "name": "Heritage Square",
+   "city": "Oxnard",
+   "region": "Los Angeles",
+   "kinds": [
+    "social"
+   ],
+   "calendar": null,
+   "how": "so far found via google.com",
+   "listed": 0,
+   "recurring": 1,
+   "lastChecked": null
+  },
+  {
+   "name": "Hollywood Blvd (see tickets)",
+   "city": "Los Angeles",
+   "region": "Los Angeles",
+   "kinds": [
+    "club"
+   ],
+   "calendar": null,
+   "how": "so far found via tickpick.com",
+   "listed": 1,
+   "recurring": 0,
+   "lastChecked": null
+  },
+  {
+   "name": "Hollywood Bowl",
+   "city": "Los Angeles",
+   "region": "Los Angeles",
+   "kinds": [
+    "concert"
+   ],
+   "calendar": null,
+   "how": "so far found via gametime.co",
+   "listed": 5,
+   "recurring": 0,
+   "lastChecked": null
+  },
+  {
+   "name": "Hollywood Improv",
+   "city": "Los Angeles",
+   "region": "Los Angeles",
+   "kinds": [
+    "comedy"
+   ],
+   "calendar": null,
+   "how": "so far found via livenation.com",
+   "listed": 25,
+   "recurring": 0,
+   "lastChecked": null
+  },
+  {
+   "name": "Hollywood Palladium",
+   "city": "Los Angeles",
+   "region": "Los Angeles",
+   "kinds": [
+    "club",
+    "concert"
+   ],
+   "calendar": null,
+   "how": "so far found via ticketmaster.com",
+   "listed": 16,
+   "recurring": 0,
+   "lastChecked": null
+  },
+  {
+   "name": "Hollywood Pantages Theatre",
+   "city": "Los Angeles",
+   "region": "Los Angeles",
+   "kinds": [
+    "theater"
+   ],
+   "calendar": null,
+   "how": "so far found via gametime.co",
+   "listed": 1,
+   "recurring": 0,
+   "lastChecked": null
+  },
+  {
+   "name": "Kia Forum",
+   "city": "Inglewood",
+   "region": "Los Angeles",
+   "kinds": [
+    "comedy",
+    "concert"
+   ],
+   "calendar": null,
+   "how": "so far found via thekiaforum.com",
+   "listed": 31,
+   "recurring": 0,
+   "lastChecked": null
+  },
+  {
+   "name": "LA County beaches (rotates)",
+   "city": "Santa Monica",
+   "region": "Los Angeles",
+   "kinds": [
+    "volunteer"
+   ],
+   "calendar": null,
+   "how": "so far found via healthebay.org",
+   "listed": 0,
+   "recurring": 1,
+   "lastChecked": null
+  },
+  {
+   "name": "LA venue (see tickets)",
+   "city": "Los Angeles",
+   "region": "Los Angeles",
+   "kinds": [
+    "club",
+    "concert"
+   ],
+   "calendar": null,
+   "how": "so far found via insomniac.com",
+   "listed": 11,
+   "recurring": 0,
+   "lastChecked": null
+  },
+  {
+   "name": "Largo at the Coronet",
+   "city": "Los Angeles",
+   "region": "Los Angeles",
+   "kinds": [
+    "comedy",
+    "concert"
+   ],
+   "calendar": null,
+   "how": "so far found via gametime.co",
+   "listed": 26,
+   "recurring": 0,
+   "lastChecked": null
+  },
+  {
+   "name": "Laugh Factory",
+   "city": "West Hollywood",
+   "region": "Los Angeles",
+   "kinds": [
+    "comedy"
+   ],
+   "calendar": null,
+   "how": "so far found via gametime.co",
+   "listed": 3,
+   "recurring": 0,
+   "lastChecked": null
+  },
+  {
+   "name": "Little Light Venue",
+   "city": "Studio City",
+   "region": "Los Angeles",
+   "kinds": [
+    "social"
+   ],
+   "calendar": null,
+   "how": "so far found via google.com",
+   "listed": 0,
+   "recurring": 1,
+   "lastChecked": null
+  },
+  {
+   "name": "Lodge Room",
+   "city": "Los Angeles",
+   "region": "Los Angeles",
+   "kinds": [
+    "concert"
+   ],
+   "calendar": null,
+   "how": "so far found via lodgeroomhlp.com",
+   "listed": 18,
+   "recurring": 0,
+   "lastChecked": null
+  },
+  {
+   "name": "Los Angeles Memorial Coliseum",
+   "city": "Los Angeles",
+   "region": "Los Angeles",
+   "kinds": [
+    "concert"
+   ],
+   "calendar": null,
+   "how": "so far found via livenation.com",
+   "listed": 1,
+   "recurring": 0,
+   "lastChecked": null
+  },
+  {
+   "name": "Louie's",
+   "city": "Los Angeles",
+   "region": "Los Angeles",
+   "kinds": [
+    "social"
+   ],
+   "calendar": null,
+   "how": "so far found via google.com",
+   "listed": 0,
+   "recurring": 1,
+   "lastChecked": null
+  },
+  {
+   "name": "Mark Taper Forum",
+   "city": "Los Angeles",
+   "region": "Los Angeles",
+   "kinds": [
+    "theater"
+   ],
+   "calendar": null,
+   "how": "so far found via gametime.co",
+   "listed": 1,
+   "recurring": 0,
+   "lastChecked": null
+  },
+  {
+   "name": "Moroccan Lounge",
+   "city": "Los Angeles",
+   "region": "Los Angeles",
+   "kinds": [
+    "concert"
+   ],
+   "calendar": null,
+   "how": "so far found via ticketmaster.com",
+   "listed": 5,
+   "recurring": 0,
+   "lastChecked": null
+  },
+  {
+   "name": "Ontario Museum of History & Art",
+   "city": "Ontario",
+   "region": "Los Angeles",
+   "kinds": [
+    "art"
+   ],
+   "calendar": null,
+   "how": "so far found via ontariomuseum.org",
+   "listed": 1,
+   "recurring": 0,
+   "lastChecked": null
+  },
+  {
+   "name": "Orpheum Theatre",
+   "city": "Los Angeles",
+   "region": "Los Angeles",
+   "kinds": [
+    "comedy",
+    "concert",
+    "theater"
+   ],
+   "calendar": null,
+   "how": "so far found via gametime.co",
+   "listed": 10,
+   "recurring": 0,
+   "lastChecked": null
+  },
+  {
+   "name": "Oxnard Performing Arts Center",
+   "city": "Oxnard",
+   "region": "Los Angeles",
+   "kinds": [
+    "concert"
+   ],
+   "calendar": null,
+   "how": "so far found via google.com",
+   "listed": 1,
+   "recurring": 0,
+   "lastChecked": null
+  },
+  {
+   "name": "Pasadena Ballroom Dance Association",
+   "city": "Pasadena",
+   "region": "Los Angeles",
+   "kinds": [
+    "social"
+   ],
+   "calendar": null,
+   "how": "so far found via pbda.dance",
+   "listed": 0,
+   "recurring": 1,
+   "lastChecked": null
+  },
+  {
+   "name": "Pasadena Masonic Hall",
+   "city": "Pasadena",
+   "region": "Los Angeles",
+   "kinds": [
+    "social"
+   ],
+   "calendar": null,
+   "how": "so far found via lindygroove.la",
+   "listed": 0,
+   "recurring": 1,
+   "lastChecked": null
+  },
+  {
+   "name": "Pasadena Playhouse",
+   "city": "Pasadena",
+   "region": "Los Angeles",
+   "kinds": [
+    "theater"
+   ],
+   "calendar": null,
+   "how": "so far found via pasadenaplayhouse.org",
+   "listed": 4,
+   "recurring": 0,
+   "lastChecked": null
+  },
+  {
+   "name": "Peacock Theater",
+   "city": "Los Angeles",
+   "region": "Los Angeles",
+   "kinds": [
+    "concert"
+   ],
+   "calendar": null,
+   "how": "so far found via tickpick.com",
+   "listed": 1,
+   "recurring": 0,
+   "lastChecked": null
+  },
+  {
+   "name": "Pomona Arts Colony",
+   "city": "Pomona",
+   "region": "Los Angeles",
+   "kinds": [
+    "art"
+   ],
+   "calendar": null,
+   "how": "so far found via downtownpomona.org",
+   "listed": 0,
+   "recurring": 1,
+   "lastChecked": null
+  },
+  {
+   "name": "RE:FRAME",
+   "city": "Los Angeles",
+   "region": "Los Angeles",
+   "kinds": [
+    "festival"
+   ],
+   "calendar": null,
+   "how": "so far found via technoairlines.com",
+   "listed": 1,
+   "recurring": 0,
+   "lastChecked": null
+  },
+  {
+   "name": "Regent Theater",
+   "city": "Los Angeles",
+   "region": "Los Angeles",
+   "kinds": [
+    "concert"
+   ],
+   "calendar": null,
+   "how": "so far found via tickpick.com",
+   "listed": 1,
+   "recurring": 0,
+   "lastChecked": null
+  },
+  {
+   "name": "Rose Bowl Stadium",
+   "city": "Pasadena",
+   "region": "Los Angeles",
+   "kinds": [
+    "art",
+    "concert"
+   ],
+   "calendar": null,
+   "how": "so far found via google.com",
+   "listed": 1,
+   "recurring": 1,
+   "lastChecked": null
+  },
+  {
+   "name": "ROW DTLA",
+   "city": "Los Angeles",
+   "region": "Los Angeles",
+   "kinds": [
+    "art"
+   ],
+   "calendar": null,
+   "how": "so far found via la.smorgasburg.com",
+   "listed": 0,
+   "recurring": 1,
+   "lastChecked": null
+  },
+  {
+   "name": "Royce Hall",
+   "city": "Los Angeles",
+   "region": "Los Angeles",
+   "kinds": [
+    "theater"
+   ],
+   "calendar": "https://cap.ucla.edu/",
+   "how": "CAP UCLA calendar",
+   "listed": 1,
+   "recurring": 0,
+   "lastChecked": "2026-11-11"
+  },
+  {
+   "name": "Sepulveda Basin Wildlife Reserve",
+   "city": "Van Nuys",
+   "region": "Los Angeles",
+   "kinds": [
+    "volunteer"
+   ],
+   "calendar": null,
+   "how": "so far found via folar.org",
+   "listed": 0,
+   "recurring": 1,
+   "lastChecked": null
+  },
+  {
+   "name": "Shrine Expo Hall",
+   "city": "Los Angeles",
+   "region": "Los Angeles",
+   "kinds": [
+    "concert"
+   ],
+   "calendar": null,
+   "how": "so far found via google.com",
+   "listed": 1,
+   "recurring": 0,
+   "lastChecked": null
+  },
+  {
+   "name": "SoFi Stadium",
+   "city": "Inglewood",
+   "region": "Los Angeles",
+   "kinds": [
+    "concert"
+   ],
+   "calendar": null,
+   "how": "so far found via songkick.com",
+   "listed": 3,
+   "recurring": 0,
+   "lastChecked": null
+  },
+  {
+   "name": "Soho Dance LA",
+   "city": "Glendale",
+   "region": "Los Angeles",
+   "kinds": [
+    "social"
+   ],
+   "calendar": null,
+   "how": "so far found via google.com",
+   "listed": 0,
+   "recurring": 1,
+   "lastChecked": null
+  },
+  {
+   "name": "Sound Nightclub",
+   "city": "Los Angeles",
+   "region": "Los Angeles",
+   "kinds": [
+    "club"
+   ],
+   "calendar": null,
+   "how": "so far found via tickpick.com",
+   "listed": 2,
+   "recurring": 0,
+   "lastChecked": null
+  },
+  {
+   "name": "Teragram Ballroom",
+   "city": "Los Angeles",
+   "region": "Los Angeles",
+   "kinds": [
+    "club",
+    "concert"
+   ],
+   "calendar": null,
+   "how": "so far found via gametime.co",
+   "listed": 26,
+   "recurring": 0,
+   "lastChecked": null
+  },
+  {
+   "name": "The Belasco",
+   "city": "Los Angeles",
+   "region": "Los Angeles",
+   "kinds": [
+    "concert"
+   ],
+   "calendar": null,
+   "how": "so far found via ticketmaster.com",
+   "listed": 21,
+   "recurring": 0,
+   "lastChecked": null
+  },
+  {
+   "name": "The City Market of Los Angeles",
+   "city": "Los Angeles",
+   "region": "Los Angeles",
+   "kinds": [
+    "club"
+   ],
+   "calendar": null,
+   "how": "so far found via tickpick.com",
+   "listed": 1,
+   "recurring": 0,
+   "lastChecked": null
+  },
+  {
+   "name": "The Comedy Store",
+   "city": "West Hollywood",
+   "region": "Los Angeles",
+   "kinds": [
+    "comedy"
+   ],
+   "calendar": null,
+   "how": "so far found via comedy.tickets",
+   "listed": 12,
+   "recurring": 0,
+   "lastChecked": null
+  },
+  {
+   "name": "The Continental Club",
+   "city": "Los Angeles",
+   "region": "Los Angeles",
+   "kinds": [
+    "social"
+   ],
+   "calendar": null,
+   "how": "so far found via google.com",
+   "listed": 0,
+   "recurring": 1,
+   "lastChecked": null
+  },
+  {
+   "name": "The Fonda Theatre",
+   "city": "Los Angeles",
+   "region": "Los Angeles",
+   "kinds": [
+    "concert"
+   ],
+   "calendar": null,
+   "how": "so far found via tickpick.com",
+   "listed": 7,
+   "recurring": 0,
+   "lastChecked": null
+  },
+  {
+   "name": "The Ford",
+   "city": "Los Angeles",
+   "region": "Los Angeles",
+   "kinds": [
+    "concert"
+   ],
+   "calendar": "https://www.theford.com/",
+   "how": "summer season; add when announced in spring",
+   "listed": 0,
+   "recurring": 0,
+   "lastChecked": "2026-11-11"
+  },
+  {
+   "name": "The Glass House",
+   "city": "Pomona",
+   "region": "Los Angeles",
+   "kinds": [
+    "concert"
+   ],
+   "calendar": null,
+   "how": "so far found via gametime.co",
+   "listed": 6,
+   "recurring": 0,
+   "lastChecked": null
+  },
+  {
+   "name": "The Granada LA",
+   "city": "Alhambra",
+   "region": "Los Angeles",
+   "kinds": [
+    "social"
+   ],
+   "calendar": null,
+   "how": "so far found via google.com",
+   "listed": 0,
+   "recurring": 1,
+   "lastChecked": null
+  },
+  {
+   "name": "The Groundlings Theatre",
+   "city": "Los Angeles",
+   "region": "Los Angeles",
+   "kinds": [
+    "comedy"
+   ],
+   "calendar": "https://groundlings.com/shows",
+   "how": "weekly shows; the app only repeats open mics/community, so list comedy as dated shows 3–4 weeks ahead",
+   "listed": 20,
+   "recurring": 0,
+   "lastChecked": "2026-11-11"
+  },
+  {
+   "name": "The Ice House",
+   "city": "Pasadena",
+   "region": "Los Angeles",
+   "kinds": [
+    "comedy"
+   ],
+   "calendar": null,
+   "how": "so far found via comedy.tickets",
+   "listed": 2,
+   "recurring": 0,
+   "lastChecked": null
+  },
+  {
+   "name": "The Mayan",
+   "city": "Los Angeles",
+   "region": "Los Angeles",
+   "kinds": [
+    "concert"
+   ],
+   "calendar": null,
+   "how": "so far found via songkick.com",
+   "listed": 1,
+   "recurring": 0,
+   "lastChecked": null
+  },
+  {
+   "name": "The Nimoy",
+   "city": "Los Angeles",
+   "region": "Los Angeles",
+   "kinds": [
+    "concert",
+    "theater"
+   ],
+   "calendar": "https://cap.ucla.edu/",
+   "how": "CAP UCLA calendar",
+   "listed": 3,
+   "recurring": 0,
+   "lastChecked": "2026-11-11"
+  },
+  {
+   "name": "The Novo",
+   "city": "Los Angeles",
+   "region": "Los Angeles",
+   "kinds": [
+    "club",
+    "concert",
+    "theater"
+   ],
+   "calendar": null,
+   "how": "so far found via gametime.co",
+   "listed": 19,
+   "recurring": 0,
+   "lastChecked": null
+  },
+  {
+   "name": "The Roxy Theatre",
+   "city": "West Hollywood",
+   "region": "Los Angeles",
+   "kinds": [
+    "club",
+    "concert"
+   ],
+   "calendar": null,
+   "how": "so far found via gametime.co",
+   "listed": 39,
+   "recurring": 0,
+   "lastChecked": null
+  },
+  {
+   "name": "The Torch at LA Memorial Coliseum",
+   "city": "Los Angeles",
+   "region": "Los Angeles",
+   "kinds": [
+    "concert"
+   ],
+   "calendar": null,
+   "how": "so far found via songkick.com",
+   "listed": 1,
+   "recurring": 0,
+   "lastChecked": null
+  },
+  {
+   "name": "The Victorian",
+   "city": "Santa Monica",
+   "region": "Los Angeles",
+   "kinds": [
+    "social"
+   ],
+   "calendar": null,
+   "how": "so far found via google.com",
+   "listed": 0,
+   "recurring": 1,
+   "lastChecked": null
+  },
+  {
+   "name": "The Viper Room",
+   "city": "West Hollywood",
+   "region": "Los Angeles",
+   "kinds": [
+    "concert"
+   ],
+   "calendar": null,
+   "how": "so far found via google.com",
+   "listed": 4,
+   "recurring": 0,
+   "lastChecked": null
+  },
+  {
+   "name": "The Wiltern",
+   "city": "Los Angeles",
+   "region": "Los Angeles",
+   "kinds": [
+    "concert"
+   ],
+   "calendar": null,
+   "how": "so far found via ticketmaster.com",
+   "listed": 11,
+   "recurring": 0,
+   "lastChecked": null
+  },
+  {
+   "name": "Troubadour",
+   "city": "West Hollywood",
+   "region": "Los Angeles",
+   "kinds": [
+    "concert"
+   ],
+   "calendar": null,
+   "how": "so far found via gametime.co",
+   "listed": 16,
+   "recurring": 0,
+   "lastChecked": null
+  },
+  {
+   "name": "UCB Franklin",
+   "city": "Los Angeles",
+   "region": "Los Angeles",
+   "kinds": [
+    "comedy"
+   ],
+   "calendar": "https://ucbcomedy.com/shows/los-angeles/",
+   "how": "blocks plain downloads (403); LA shows only (skip NY + livestream-only)",
+   "listed": 21,
+   "recurring": 0,
+   "lastChecked": "2026-11-11"
+  },
+  {
+   "name": "Vaquero Y Mar",
+   "city": "Ventura",
+   "region": "Los Angeles",
+   "kinds": [
+    "social"
+   ],
+   "calendar": null,
+   "how": "so far found via visitventuraca.com",
+   "listed": 0,
+   "recurring": 1,
+   "lastChecked": null
+  },
+  {
+   "name": "Ventura Promenade",
+   "city": "Ventura",
+   "region": "Los Angeles",
+   "kinds": [
+    "volunteer"
+   ],
+   "calendar": null,
+   "how": "so far found via ventura.surfrider.org",
+   "listed": 0,
+   "recurring": 1,
+   "lastChecked": null
+  },
+  {
+   "name": "Walt Disney Concert Hall",
+   "city": "Los Angeles",
+   "region": "Los Angeles",
+   "kinds": [
+    "concert"
+   ],
+   "calendar": null,
+   "how": "so far found via gametime.co",
+   "listed": 11,
+   "recurring": 0,
+   "lastChecked": null
+  },
+  {
+   "name": "Whisky a Go Go",
+   "city": "West Hollywood",
+   "region": "Los Angeles",
+   "kinds": [
+    "concert"
+   ],
+   "calendar": null,
+   "how": "so far found via ticketweb.com",
+   "listed": 1,
+   "recurring": 0,
+   "lastChecked": null
+  },
+  {
+   "name": "YouTube Theater",
+   "city": "Inglewood",
+   "region": "Los Angeles",
+   "kinds": [
+    "concert"
+   ],
+   "calendar": null,
+   "how": "so far found via gametime.co",
+   "listed": 12,
+   "recurring": 0,
+   "lastChecked": null
+  },
+  {
+   "name": "Zebulon",
+   "city": "Los Angeles",
+   "region": "Los Angeles",
+   "kinds": [
+    "concert"
+   ],
+   "calendar": null,
+   "how": "so far found via songkick.com",
+   "listed": 2,
+   "recurring": 0,
+   "lastChecked": null
+  },
+  {
+   "name": "4th Street Market",
+   "city": "Santa Ana",
+   "region": "Orange County",
+   "kinds": [
+    "openmic"
+   ],
+   "calendar": null,
+   "how": "so far found via sparkoc.com",
+   "listed": 0,
+   "recurring": 1,
+   "lastChecked": null
+  },
+  {
+   "name": "Alex's Bar",
+   "city": "Long Beach",
+   "region": "Orange County",
+   "kinds": [
+    "concert"
+   ],
+   "calendar": null,
+   "how": "so far found via google.com",
+   "listed": 1,
+   "recurring": 0,
+   "lastChecked": null
+  },
+  {
+   "name": "Aliso Beach (near Lost Pier Café)",
+   "city": "Laguna Beach",
+   "region": "Orange County",
+   "kinds": [
+    "drum"
+   ],
+   "calendar": null,
+   "how": "so far found via solaguna.com",
+   "listed": 9,
+   "recurring": 0,
+   "lastChecked": null
+  },
+  {
+   "name": "Art studio near Fairview & Baker (address on RSVP)",
+   "city": "Costa Mesa",
+   "region": "Orange County",
+   "kinds": [
+    "sound"
+   ],
+   "calendar": null,
+   "how": "so far found via soundbathsandyoga.com",
+   "listed": 1,
+   "recurring": 0,
+   "lastChecked": null
+  },
+  {
+   "name": "ATOMIC Ballroom",
+   "city": "Irvine",
+   "region": "Orange County",
+   "kinds": [
+    "social"
+   ],
+   "calendar": null,
+   "how": "so far found via atomicballroom.com",
+   "listed": 0,
+   "recurring": 2,
+   "lastChecked": null
+  },
+  {
+   "name": "Beach Hut Deli",
+   "city": "Huntington Beach",
+   "region": "Orange County",
+   "kinds": [
+    "openmic"
+   ],
+   "calendar": null,
+   "how": "so far found via openmikes.org",
+   "listed": 0,
+   "recurring": 1,
+   "lastChecked": null
+  },
+  {
+   "name": "Behind the Lids Healing Collective",
+   "city": "Costa Mesa",
+   "region": "Orange County",
+   "kinds": [
+    "dance",
+    "sound"
+   ],
+   "calendar": null,
+   "how": "so far found via eventbrite.com",
+   "listed": 2,
+   "recurring": 1,
+   "lastChecked": null
+  },
+  {
+   "name": "Brea Improv",
+   "city": "Brea",
+   "region": "Orange County",
+   "kinds": [
+    "comedy"
+   ],
+   "calendar": null,
+   "how": "so far found via tickpick.com",
+   "listed": 2,
+   "recurring": 0,
+   "lastChecked": null
+  },
+  {
+   "name": "Bridge Hall, Neighborhood Congregational Church",
+   "city": "Laguna Beach",
+   "region": "Orange County",
+   "kinds": [
+    "contact",
+    "dance"
+   ],
+   "calendar": null,
+   "how": "so far found via eventbrite.com",
+   "listed": 3,
+   "recurring": 0,
+   "lastChecked": null
+  },
+  {
+   "name": "Cal State Long Beach",
+   "city": "Long Beach",
+   "region": "Orange County",
+   "kinds": [
+    "contact"
+   ],
+   "calendar": null,
+   "how": "so far found via badgoatdance.com",
+   "listed": 1,
+   "recurring": 0,
+   "lastChecked": null
+  },
+  {
+   "name": "Callahan's Pub",
+   "city": "Fullerton",
+   "region": "Orange County",
+   "kinds": [
+    "openmic"
+   ],
+   "calendar": null,
+   "how": "so far found via openmikes.org",
+   "listed": 0,
+   "recurring": 1,
+   "lastChecked": null
+  },
+  {
+   "name": "Comedy & Magic Club",
+   "city": "Hermosa Beach",
+   "region": "Orange County",
+   "kinds": [
+    "comedy"
+   ],
+   "calendar": null,
+   "how": "so far found via vividseats.com",
+   "listed": 3,
+   "recurring": 0,
+   "lastChecked": null
+  },
+  {
+   "name": "Constellation Room, The Observatory",
+   "city": "Santa Ana",
+   "region": "Orange County",
+   "kinds": [
+    "concert"
+   ],
+   "calendar": null,
+   "how": "so far found via tickpick.com",
+   "listed": 1,
+   "recurring": 0,
+   "lastChecked": null
+  },
+  {
+   "name": "Cowboy Country Saloon",
+   "city": "Long Beach",
+   "region": "Orange County",
+   "kinds": [
+    "social"
+   ],
+   "calendar": null,
+   "how": "so far found via google.com",
+   "listed": 0,
+   "recurring": 1,
+   "lastChecked": null
+  },
+  {
+   "name": "Downtown Fullerton",
+   "city": "Fullerton",
+   "region": "Orange County",
+   "kinds": [
+    "art"
+   ],
+   "calendar": null,
+   "how": "so far found via google.com",
+   "listed": 0,
+   "recurring": 1,
+   "lastChecked": null
+  },
+  {
+   "name": "Downtown Santa Ana Artists Village",
+   "city": "Santa Ana",
+   "region": "Orange County",
+   "kinds": [
+    "art"
+   ],
+   "calendar": null,
+   "how": "so far found via octa.net",
+   "listed": 0,
+   "recurring": 1,
+   "lastChecked": null
+  },
+  {
+   "name": "Durty Nelly's",
+   "city": "Costa Mesa",
+   "region": "Orange County",
+   "kinds": [
+    "openmic"
+   ],
+   "calendar": null,
+   "how": "so far found via openmikes.org",
+   "listed": 0,
+   "recurring": 1,
+   "lastChecked": null
+  },
+  {
+   "name": "East Village Arts District",
+   "city": "Long Beach",
+   "region": "Orange County",
+   "kinds": [
+    "art"
+   ],
+   "calendar": null,
+   "how": "so far found via google.com",
+   "listed": 0,
+   "recurring": 1,
+   "lastChecked": null
+  },
+  {
+   "name": "Fingerprints",
+   "city": "Long Beach",
+   "region": "Orange County",
+   "kinds": [
+    "art"
+   ],
+   "calendar": "https://fingerprintsmusic.com/events",
+   "how": "free in-store events, Long Beach",
+   "listed": 2,
+   "recurring": 0,
+   "lastChecked": "2026-11-11"
+  },
+  {
+   "name": "Garden Amphitheatre",
+   "city": "Garden Grove",
+   "region": "Orange County",
+   "kinds": [
+    "concert"
+   ],
+   "calendar": null,
+   "how": "so far found via tickpick.com",
+   "listed": 4,
+   "recurring": 0,
+   "lastChecked": null
+  },
+  {
+   "name": "Gina Woodruff Gallery",
+   "city": "Long Beach",
+   "region": "Orange County",
+   "kinds": [
+    "openmic"
+   ],
+   "calendar": null,
+   "how": "so far found via openmikes.org",
+   "listed": 0,
+   "recurring": 1,
+   "lastChecked": null
+  },
+  {
+   "name": "HeartSpace OC",
+   "city": "Laguna Woods",
+   "region": "Orange County",
+   "kinds": [
+    "dance"
+   ],
+   "calendar": null,
+   "how": "so far found via eventbrite.com",
+   "listed": 0,
+   "recurring": 1,
+   "lastChecked": null
+  },
+  {
+   "name": "Honda Center",
+   "city": "Anaheim",
+   "region": "Orange County",
+   "kinds": [
+    "concert",
+    "festival"
+   ],
+   "calendar": null,
+   "how": "so far found via ocvibe.com",
+   "listed": 7,
+   "recurring": 0,
+   "lastChecked": null
+  },
+  {
+   "name": "House of Blues Anaheim",
+   "city": "Anaheim",
+   "region": "Orange County",
+   "kinds": [
+    "concert"
+   ],
+   "calendar": null,
+   "how": "so far found via gametime.co",
+   "listed": 36,
+   "recurring": 0,
+   "lastChecked": null
+  },
+  {
+   "name": "Huntington Beach beach (spot on RSVP)",
+   "city": "Huntington Beach",
+   "region": "Orange County",
+   "kinds": [
+    "volunteer"
+   ],
+   "calendar": null,
+   "how": "so far found via coastkeeper.org",
+   "listed": 2,
+   "recurring": 0,
+   "lastChecked": null
+  },
+  {
+   "name": "Huntington City Beach",
+   "city": "Huntington Beach",
+   "region": "Orange County",
+   "kinds": [
+    "festival"
+   ],
+   "calendar": null,
+   "how": "so far found via google.com",
+   "listed": 1,
+   "recurring": 0,
+   "lastChecked": null
+  },
+  {
+   "name": "Intuit Dome",
+   "city": "Inglewood",
+   "region": "Orange County",
+   "kinds": [
+    "comedy",
+    "concert"
+   ],
+   "calendar": null,
+   "how": "so far found via gametime.co",
+   "listed": 9,
+   "recurring": 0,
+   "lastChecked": null
+  },
+  {
+   "name": "Ipso Facto",
+   "city": "Fullerton",
+   "region": "Orange County",
+   "kinds": [
+    "sound"
+   ],
+   "calendar": null,
+   "how": "so far found via eventbrite.com",
+   "listed": 1,
+   "recurring": 0,
+   "lastChecked": null
+  },
+  {
+   "name": "Irvine Barclay Theatre",
+   "city": "Irvine",
+   "region": "Orange County",
+   "kinds": [
+    "concert",
+    "theater"
+   ],
+   "calendar": null,
+   "how": "so far found via gametime.co",
+   "listed": 10,
+   "recurring": 0,
+   "lastChecked": null
+  },
+  {
+   "name": "Irvine Improv",
+   "city": "Irvine",
+   "region": "Orange County",
+   "kinds": [
+    "comedy"
+   ],
+   "calendar": null,
+   "how": "so far found via comedy.tickets",
+   "listed": 8,
+   "recurring": 0,
+   "lastChecked": null
+  },
+  {
+   "name": "La Mirada Theatre",
+   "city": "La Mirada",
+   "region": "Orange County",
+   "kinds": [
+    "theater"
+   ],
+   "calendar": null,
+   "how": "so far found via lamiradatheatre.com",
+   "listed": 2,
+   "recurring": 0,
+   "lastChecked": null
+  },
+  {
+   "name": "Laguna Art Museum",
+   "city": "Laguna Beach",
+   "region": "Orange County",
+   "kinds": [
+    "art"
+   ],
+   "calendar": null,
+   "how": "so far found via visitlagunabeach.com",
+   "listed": 0,
+   "recurring": 1,
+   "lastChecked": null
+  },
+  {
+   "name": "Laguna Playhouse",
+   "city": "Laguna Beach",
+   "region": "Orange County",
+   "kinds": [
+    "theater"
+   ],
+   "calendar": null,
+   "how": "so far found via lagunaplayhouse.com",
+   "listed": 3,
+   "recurring": 0,
+   "lastChecked": null
+  },
+  {
+   "name": "Marina Green Park",
+   "city": "Long Beach",
+   "region": "Orange County",
+   "kinds": [
+    "concert"
+   ],
+   "calendar": null,
+   "how": "so far found via google.com",
+   "listed": 1,
+   "recurring": 0,
+   "lastChecked": null
+  },
+  {
+   "name": "Musco Center for the Arts",
+   "city": "Orange",
+   "region": "Orange County",
+   "kinds": [
+    "concert",
+    "theater"
+   ],
+   "calendar": "https://muscocenter.org/Online/default.asp",
+   "how": "Chapman box office list",
+   "listed": 9,
+   "recurring": 0,
+   "lastChecked": "2026-11-11"
+  },
+  {
+   "name": "Mystic Water Kava Bar",
+   "city": "Huntington Beach",
+   "region": "Orange County",
+   "kinds": [
+    "openmic"
+   ],
+   "calendar": null,
+   "how": "so far found via openmikes.org",
+   "listed": 0,
+   "recurring": 1,
+   "lastChecked": null
+  },
+  {
+   "name": "Newport Beach lifeguard towers",
+   "city": "Newport Beach",
+   "region": "Orange County",
+   "kinds": [
+    "volunteer"
+   ],
+   "calendar": null,
+   "how": "so far found via google.com",
+   "listed": 0,
+   "recurring": 1,
+   "lastChecked": null
+  },
+  {
+   "name": "Newport Pier",
+   "city": "Newport Beach",
+   "region": "Orange County",
+   "kinds": [
+    "volunteer"
+   ],
+   "calendar": null,
+   "how": "so far found via northoc.surfrider.org",
+   "listed": 0,
+   "recurring": 1,
+   "lastChecked": null
+  },
+  {
+   "name": "North Paseo",
+   "city": "Mission Viejo",
+   "region": "Orange County",
+   "kinds": [
+    "art"
+   ],
+   "calendar": null,
+   "how": "so far found via envisionmv.com",
+   "listed": 0,
+   "recurring": 1,
+   "lastChecked": null
+  },
+  {
+   "name": "OC Dancing Ballroom Dance Studio",
+   "city": "Irvine",
+   "region": "Orange County",
+   "kinds": [
+    "dance"
+   ],
+   "calendar": null,
+   "how": "so far found via eventbrite.com",
+   "listed": 0,
+   "recurring": 1,
+   "lastChecked": null
+  },
+  {
+   "name": "OC Salsa Dance Studio",
+   "city": "Fountain Valley",
+   "region": "Orange County",
+   "kinds": [
+    "social"
+   ],
+   "calendar": null,
+   "how": "so far found via meetup.com",
+   "listed": 0,
+   "recurring": 1,
+   "lastChecked": null
+  },
+  {
+   "name": "Queen Mary Waterfront",
+   "city": "Long Beach",
+   "region": "Orange County",
+   "kinds": [
+    "festival"
+   ],
+   "calendar": null,
+   "how": "so far found via tickpick.com",
+   "listed": 1,
+   "recurring": 0,
+   "lastChecked": null
+  },
+  {
+   "name": "Rosie's Dog Beach",
+   "city": "Long Beach",
+   "region": "Orange County",
+   "kinds": [
+    "volunteer"
+   ],
+   "calendar": null,
+   "how": "so far found via justinrudd.com",
+   "listed": 0,
+   "recurring": 1,
+   "lastChecked": null
+  },
+  {
+   "name": "Seaside Lagoon",
+   "city": "Redondo Beach",
+   "region": "Orange County",
+   "kinds": [
+    "festival"
+   ],
+   "calendar": null,
+   "how": "so far found via beachlifefestival.com",
+   "listed": 1,
+   "recurring": 0,
+   "lastChecked": null
+  },
+  {
+   "name": "Second Harvest Distribution Center",
+   "city": "Irvine",
+   "region": "Orange County",
+   "kinds": [
+    "volunteer"
+   ],
+   "calendar": null,
+   "how": "so far found via feedoc.org",
+   "listed": 0,
+   "recurring": 1,
+   "lastChecked": null
+  },
+  {
+   "name": "Segerstrom Concert Hall",
+   "city": "Costa Mesa",
+   "region": "Orange County",
+   "kinds": [
+    "concert",
+    "theater"
+   ],
+   "calendar": "https://www.pacificsymphony.org/calendar-with-series",
+   "how": "Pacific Symphony calendar (also scfta.org for other presenters)",
+   "listed": 13,
+   "recurring": 0,
+   "lastChecked": "2026-11-11"
+  },
+  {
+   "name": "Segerstrom Hall",
+   "city": "Costa Mesa",
+   "region": "Orange County",
+   "kinds": [
+    "theater"
+   ],
+   "calendar": null,
+   "how": "so far found via todaytix.com",
+   "listed": 1,
+   "recurring": 0,
+   "lastChecked": null
+  },
+  {
+   "name": "Sevilla Nightclub",
+   "city": "Costa Mesa",
+   "region": "Orange County",
+   "kinds": [
+    "social"
+   ],
+   "calendar": null,
+   "how": "so far found via eventbrite.com",
+   "listed": 0,
+   "recurring": 1,
+   "lastChecked": null
+  },
+  {
+   "name": "Soka Performing Arts Center",
+   "city": "Aliso Viejo",
+   "region": "Orange County",
+   "kinds": [
+    "concert"
+   ],
+   "calendar": "https://www.pacificsymphony.org/calendar-with-series",
+   "how": "Pacific Symphony 'Sundays at Soka'",
+   "listed": 1,
+   "recurring": 0,
+   "lastChecked": "2026-11-11"
+  },
+  {
+   "name": "South Coast Repertory",
+   "city": "Costa Mesa",
+   "region": "Orange County",
+   "kinds": [
+    "theater"
+   ],
+   "calendar": null,
+   "how": "so far found via scr.org",
+   "listed": 4,
+   "recurring": 0,
+   "lastChecked": null
+  },
+  {
+   "name": "Spot posted on IG @ecstaticdance_oc",
+   "city": "Laguna Beach",
+   "region": "Orange County",
+   "kinds": [
+    "dance"
+   ],
+   "calendar": null,
+   "how": "so far found via ecstaticdance.org",
+   "listed": 0,
+   "recurring": 1,
+   "lastChecked": null
+  },
+  {
+   "name": "Steez Jiu Jitsu Club",
+   "city": "Tustin",
+   "region": "Orange County",
+   "kinds": [
+    "sound"
+   ],
+   "calendar": null,
+   "how": "so far found via theartofsoundhealing.com",
+   "listed": 1,
+   "recurring": 0,
+   "lastChecked": null
+  },
+  {
+   "name": "Stillmind Wellness Center",
+   "city": "Santa Ana",
+   "region": "Orange County",
+   "kinds": [
+    "sound"
+   ],
+   "calendar": null,
+   "how": "so far found via eventbrite.com",
+   "listed": 1,
+   "recurring": 0,
+   "lastChecked": null
+  },
+  {
+   "name": "Teopahtcalli",
+   "city": "Santa Ana",
+   "region": "Orange County",
+   "kinds": [
+    "dance"
+   ],
+   "calendar": null,
+   "how": "so far found via eventbrite.com",
+   "listed": 1,
+   "recurring": 0,
+   "lastChecked": null
+  },
+  {
+   "name": "Terrace Theater",
+   "city": "Long Beach",
+   "region": "Orange County",
+   "kinds": [
+    "comedy",
+    "concert",
+    "theater"
+   ],
+   "calendar": null,
+   "how": "so far found via gametime.co",
+   "listed": 9,
+   "recurring": 0,
+   "lastChecked": null
+  },
+  {
+   "name": "The Coach House",
+   "city": "San Juan Capistrano",
+   "region": "Orange County",
+   "kinds": [
+    "concert"
+   ],
+   "calendar": null,
+   "how": "so far found via thecoachhouse.com",
+   "listed": 39,
+   "recurring": 0,
+   "lastChecked": null
+  },
+  {
+   "name": "The Observatory",
+   "city": "Santa Ana",
+   "region": "Orange County",
+   "kinds": [
+    "concert"
+   ],
+   "calendar": null,
+   "how": "so far found via gametime.co",
+   "listed": 36,
+   "recurring": 0,
+   "lastChecked": null
+  },
+  {
+   "name": "The Parish, House of Blues",
+   "city": "Anaheim",
+   "region": "Orange County",
+   "kinds": [
+    "concert"
+   ],
+   "calendar": null,
+   "how": "so far found via gametime.co",
+   "listed": 1,
+   "recurring": 0,
+   "lastChecked": null
+  },
+  {
+   "name": "The Richland",
+   "city": "Orange",
+   "region": "Orange County",
+   "kinds": [
+    "sound"
+   ],
+   "calendar": null,
+   "how": "so far found via eventbrite.com",
+   "listed": 1,
+   "recurring": 0,
+   "lastChecked": null
+  },
+  {
+   "name": "The Wayfarer",
+   "city": "Costa Mesa",
+   "region": "Orange County",
+   "kinds": [
+    "openmic"
+   ],
+   "calendar": null,
+   "how": "so far found via openmikes.org",
+   "listed": 0,
+   "recurring": 1,
+   "lastChecked": null
+  },
+  {
+   "name": "TIME Nightclub",
+   "city": "Costa Mesa",
+   "region": "Orange County",
+   "kinds": [
+    "club"
+   ],
+   "calendar": null,
+   "how": "so far found via timenightclub.com",
+   "listed": 9,
+   "recurring": 0,
+   "lastChecked": null
+  },
+  {
+   "name": "Veterans Memorial Stadium",
+   "city": "Long Beach",
+   "region": "Orange County",
+   "kinds": [
+    "art"
+   ],
+   "calendar": null,
+   "how": "so far found via longbeachantiquemarket.com",
+   "listed": 0,
+   "recurring": 1,
+   "lastChecked": null
+  },
+  {
+   "name": "Westwood Coast",
+   "city": "Costa Mesa",
+   "region": "Orange County",
+   "kinds": [
+    "social"
+   ],
+   "calendar": null,
+   "how": "so far found via google.com",
+   "listed": 0,
+   "recurring": 2,
+   "lastChecked": null
+  },
+  {
+   "name": "Yee Lim Photography",
+   "city": "Huntington Beach",
+   "region": "Orange County",
+   "kinds": [
+    "sound"
+   ],
+   "calendar": null,
+   "how": "so far found via eventbrite.com",
+   "listed": 1,
+   "recurring": 0,
+   "lastChecked": null
+  },
+  {
+   "name": "Yogalution Movement & Wellness",
+   "city": "Long Beach",
+   "region": "Orange County",
+   "kinds": [
+    "dance"
+   ],
+   "calendar": null,
+   "how": "so far found via eventbrite.com",
+   "listed": 1,
+   "recurring": 0,
+   "lastChecked": null
+  },
+  {
+   "name": "Yost Theater",
+   "city": "Santa Ana",
+   "region": "Orange County",
+   "kinds": [
+    "club",
+    "concert"
+   ],
+   "calendar": null,
+   "how": "so far found via app.discotech.me",
+   "listed": 5,
+   "recurring": 0,
+   "lastChecked": null
+  },
+  {
+   "name": "Arts District Liberty Station",
+   "city": "San Diego",
+   "region": "San Diego",
+   "kinds": [
+    "art"
+   ],
+   "calendar": null,
+   "how": "so far found via artsdistrictlibertystation.org",
+   "listed": 0,
+   "recurring": 1,
+   "lastChecked": null
+  },
+  {
+   "name": "Barrio Logan Cultural District",
+   "city": "San Diego",
+   "region": "San Diego",
+   "kinds": [
+    "art"
+   ],
+   "calendar": null,
+   "how": "so far found via google.com",
+   "listed": 0,
+   "recurring": 1,
+   "lastChecked": null
+  },
+  {
+   "name": "Belly Up Tavern",
+   "city": "Solana Beach",
+   "region": "San Diego",
+   "kinds": [
+    "concert"
+   ],
+   "calendar": null,
+   "how": "so far found via bellyup.com",
+   "listed": 70,
+   "recurring": 0,
+   "lastChecked": null
+  },
+  {
+   "name": "Champion Ballroom",
+   "city": "San Diego",
+   "region": "San Diego",
+   "kinds": [
+    "social"
+   ],
+   "calendar": null,
+   "how": "so far found via google.com",
+   "listed": 0,
+   "recurring": 1,
+   "lastChecked": null
+  },
+  {
+   "name": "Dance Headquarters",
+   "city": "San Diego",
+   "region": "San Diego",
+   "kinds": [
+    "social"
+   ],
+   "calendar": null,
+   "how": "so far found via google.com",
+   "listed": 0,
+   "recurring": 1,
+   "lastChecked": null
+  },
+  {
+   "name": "Downtown Grand Ave",
+   "city": "Escondido",
+   "region": "San Diego",
+   "kinds": [
+    "art"
+   ],
+   "calendar": null,
+   "how": "so far found via visitescondido.com",
+   "listed": 0,
+   "recurring": 1,
+   "lastChecked": null
+  },
+  {
+   "name": "Feeding San Diego",
+   "city": "San Diego",
+   "region": "San Diego",
+   "kinds": [
+    "volunteer"
+   ],
+   "calendar": null,
+   "how": "so far found via feedingsandiego.org",
+   "listed": 0,
+   "recurring": 1,
+   "lastChecked": null
+  },
+  {
+   "name": "Harrah's Resort SoCal Events Center",
+   "city": "Valley Center",
+   "region": "San Diego",
+   "kinds": [
+    "comedy",
+    "concert"
+   ],
+   "calendar": "https://www.harrahssocal.com/play/the-events-center/",
+   "how": "venue page (JS) → Ticketmaster event links",
+   "listed": 9,
+   "recurring": 0,
+   "lastChecked": "2026-11-11"
+  },
+  {
+   "name": "House of Blues San Diego",
+   "city": "San Diego",
+   "region": "San Diego",
+   "kinds": [
+    "club",
+    "concert"
+   ],
+   "calendar": null,
+   "how": "so far found via ticketmaster.com",
+   "listed": 55,
+   "recurring": 0,
+   "lastChecked": null
+  },
+  {
+   "name": "Humphreys Concerts by the Bay",
+   "city": "San Diego",
+   "region": "San Diego",
+   "kinds": [
+    "concert"
+   ],
+   "calendar": null,
+   "how": "so far found via vividseats.com",
+   "listed": 2,
+   "recurring": 0,
+   "lastChecked": null
+  },
+  {
+   "name": "InCahoots San Diego",
+   "city": "San Diego",
+   "region": "San Diego",
+   "kinds": [
+    "social"
+   ],
+   "calendar": null,
+   "how": "so far found via google.com",
+   "listed": 0,
+   "recurring": 1,
+   "lastChecked": null
+  },
+  {
+   "name": "Infinity Dance Sport Center",
+   "city": "San Diego",
+   "region": "San Diego",
+   "kinds": [
+    "social"
+   ],
+   "calendar": null,
+   "how": "so far found via google.com",
+   "listed": 0,
+   "recurring": 1,
+   "lastChecked": null
+  },
+  {
+   "name": "Jamul Casino",
+   "city": "Jamul",
+   "region": "San Diego",
+   "kinds": [
+    "concert",
+    "social"
+   ],
+   "calendar": "https://www.jamulcasino.com/entertainment/",
+   "how": "venue page (JS); free lounge bands; Thu Latin night is a weekly social",
+   "listed": 3,
+   "recurring": 1,
+   "lastChecked": "2026-11-11"
+  },
+  {
+   "name": "La Jolla Village",
+   "city": "La Jolla",
+   "region": "San Diego",
+   "kinds": [
+    "art"
+   ],
+   "calendar": null,
+   "how": "so far found via mcasd.org",
+   "listed": 0,
+   "recurring": 1,
+   "lastChecked": null
+  },
+  {
+   "name": "Little Italy",
+   "city": "San Diego",
+   "region": "San Diego",
+   "kinds": [
+    "art"
+   ],
+   "calendar": null,
+   "how": "so far found via google.com",
+   "listed": 0,
+   "recurring": 1,
+   "lastChecked": null
+  },
+  {
+   "name": "Melómano",
+   "city": "San Diego",
+   "region": "San Diego",
+   "kinds": [
+    "social"
+   ],
+   "calendar": null,
+   "how": "so far found via google.com",
+   "listed": 0,
+   "recurring": 1,
+   "lastChecked": null
+  },
+  {
+   "name": "Music Box",
+   "city": "San Diego",
+   "region": "San Diego",
+   "kinds": [
+    "concert"
+   ],
+   "calendar": null,
+   "how": "so far found via musicboxsd.com",
+   "listed": 12,
+   "recurring": 0,
+   "lastChecked": null
+  },
+  {
+   "name": "Observatory North Park",
+   "city": "San Diego",
+   "region": "San Diego",
+   "kinds": [
+    "concert"
+   ],
+   "calendar": null,
+   "how": "so far found via ticketmaster.com",
+   "listed": 12,
+   "recurring": 0,
+   "lastChecked": null
+  },
+  {
+   "name": "Pala Casino Events Center",
+   "city": "Pala",
+   "region": "San Diego",
+   "kinds": [
+    "comedy",
+    "concert"
+   ],
+   "calendar": "https://www.palacasino.com/entertainment/upcoming-concerts/",
+   "how": "venue page (JS) → etix.com links with prices",
+   "listed": 4,
+   "recurring": 0,
+   "lastChecked": "2026-11-11"
+  },
+  {
+   "name": "Pechanga Arena",
+   "city": "San Diego",
+   "region": "San Diego",
+   "kinds": [
+    "concert"
+   ],
+   "calendar": null,
+   "how": "so far found via songkick.com",
+   "listed": 6,
+   "recurring": 0,
+   "lastChecked": null
+  },
+  {
+   "name": "Queen Bee's Art & Cultural Center",
+   "city": "San Diego",
+   "region": "San Diego",
+   "kinds": [
+    "social"
+   ],
+   "calendar": null,
+   "how": "so far found via google.com",
+   "listed": 0,
+   "recurring": 2,
+   "lastChecked": null
+  },
+  {
+   "name": "Rotating SD beaches",
+   "city": "San Diego",
+   "region": "San Diego",
+   "kinds": [
+    "volunteer"
+   ],
+   "calendar": null,
+   "how": "so far found via sandiego.surfrider.org",
+   "listed": 0,
+   "recurring": 1,
+   "lastChecked": null
+  },
+  {
+   "name": "San Clemente beach (spot on RSVP)",
+   "city": "San Clemente",
+   "region": "San Diego",
+   "kinds": [
+    "volunteer"
+   ],
+   "calendar": null,
+   "how": "so far found via coastkeeper.org",
+   "listed": 1,
+   "recurring": 0,
+   "lastChecked": null
+  },
+  {
+   "name": "San Diego Civic Theatre",
+   "city": "San Diego",
+   "region": "San Diego",
+   "kinds": [
+    "comedy",
+    "theater"
+   ],
+   "calendar": null,
+   "how": "so far found via gametime.co",
+   "listed": 5,
+   "recurring": 0,
+   "lastChecked": null
+  },
+  {
+   "name": "San Diego Woman's Club",
+   "city": "San Diego",
+   "region": "San Diego",
+   "kinds": [
+    "social"
+   ],
+   "calendar": null,
+   "how": "so far found via google.com",
+   "listed": 0,
+   "recurring": 1,
+   "lastChecked": null
+  },
+  {
+   "name": "Silvergate Three Stars Masonic",
+   "city": "San Diego",
+   "region": "San Diego",
+   "kinds": [
+    "social"
+   ],
+   "calendar": null,
+   "how": "so far found via google.com",
+   "listed": 0,
+   "recurring": 1,
+   "lastChecked": null
+  },
+  {
+   "name": "Soda Bar",
+   "city": "San Diego",
+   "region": "San Diego",
+   "kinds": [
+    "concert"
+   ],
+   "calendar": null,
+   "how": "so far found via gametime.co",
+   "listed": 5,
+   "recurring": 0,
+   "lastChecked": null
+  },
+  {
+   "name": "SOMA",
+   "city": "San Diego",
+   "region": "San Diego",
+   "kinds": [
+    "concert"
+   ],
+   "calendar": null,
+   "how": "so far found via tickpick.com",
+   "listed": 2,
+   "recurring": 0,
+   "lastChecked": null
+  },
+  {
+   "name": "Spin Nightclub",
+   "city": "San Diego",
+   "region": "San Diego",
+   "kinds": [
+    "club"
+   ],
+   "calendar": null,
+   "how": "so far found via app.discotech.me",
+   "listed": 2,
+   "recurring": 0,
+   "lastChecked": null
+  },
+  {
+   "name": "Sycuan Casino Resort",
+   "city": "El Cajon",
+   "region": "San Diego",
+   "kinds": [
+    "comedy",
+    "concert",
+    "theater"
+   ],
+   "calendar": "https://www.sycuan.com/events/live-and-up-close-events/",
+   "how": "venue page → yapsody ticket links; time is in the event URL slug",
+   "listed": 7,
+   "recurring": 0,
+   "lastChecked": "2026-11-11"
+  },
+  {
+   "name": "Tango Del Rey",
+   "city": "San Diego",
+   "region": "San Diego",
+   "kinds": [
+    "social"
+   ],
+   "calendar": null,
+   "how": "so far found via google.com",
+   "listed": 0,
+   "recurring": 1,
+   "lastChecked": null
+  },
+  {
+   "name": "The American Comedy Co.",
+   "city": "San Diego",
+   "region": "San Diego",
+   "kinds": [
+    "comedy"
+   ],
+   "calendar": null,
+   "how": "so far found via google.com",
+   "listed": 1,
+   "recurring": 0,
+   "lastChecked": null
+  },
+  {
+   "name": "The Casbah",
+   "city": "San Diego",
+   "region": "San Diego",
+   "kinds": [
+    "club",
+    "concert"
+   ],
+   "calendar": null,
+   "how": "so far found via gametime.co",
+   "listed": 24,
+   "recurring": 0,
+   "lastChecked": null
+  },
+  {
+   "name": "The Old Globe",
+   "city": "San Diego",
+   "region": "San Diego",
+   "kinds": [
+    "theater"
+   ],
+   "calendar": null,
+   "how": "so far found via theoldglobe.org",
+   "listed": 2,
+   "recurring": 0,
+   "lastChecked": null
+  },
+  {
+   "name": "The Rady Shell",
+   "city": "San Diego",
+   "region": "San Diego",
+   "kinds": [
+    "club",
+    "concert"
+   ],
+   "calendar": null,
+   "how": "so far found via gametime.co",
+   "listed": 7,
+   "recurring": 0,
+   "lastChecked": null
+  },
+  {
+   "name": "Viejas Arena",
+   "city": "San Diego",
+   "region": "San Diego",
+   "kinds": [
+    "comedy"
+   ],
+   "calendar": null,
+   "how": "so far found via google.com",
+   "listed": 1,
+   "recurring": 0,
+   "lastChecked": null
+  },
+  {
+   "name": "Buena Vista Aquatic Recreational Area",
+   "city": "Bakersfield",
+   "region": "Ventura/North",
+   "kinds": [
+    "festival"
+   ],
+   "calendar": null,
+   "how": "so far found via libfestival.org",
+   "listed": 1,
+   "recurring": 0,
+   "lastChecked": null
+  },
+  {
+   "name": "Balboa",
+   "city": "",
+   "region": "",
+   "kinds": [],
+   "calendar": null,
+   "how": "named in the refresh instructions; nothing listed yet",
+   "listed": 0,
+   "recurring": 0,
+   "lastChecked": null
+  },
+  {
+   "name": "Cal Coast Credit Union Amphitheater",
+   "city": "",
+   "region": "",
+   "kinds": [],
+   "calendar": null,
+   "how": "named in the refresh instructions; nothing listed yet",
+   "listed": 0,
+   "recurring": 0,
+   "lastChecked": null
+  },
+  {
+   "name": "Catch One",
+   "city": "",
+   "region": "",
+   "kinds": [],
+   "calendar": null,
+   "how": "named in the refresh instructions; nothing listed yet",
+   "listed": 0,
+   "recurring": 0,
+   "lastChecked": null
+  },
+  {
+   "name": "Dodger Stadium",
+   "city": "",
+   "region": "",
+   "kinds": [],
+   "calendar": null,
+   "how": "named in the refresh instructions; nothing listed yet",
+   "listed": 0,
+   "recurring": 0,
+   "lastChecked": null
+  },
+  {
+   "name": "Dynasty Typewriter",
+   "city": "",
+   "region": "",
+   "kinds": [],
+   "calendar": null,
+   "how": "named in the refresh instructions; nothing listed yet",
+   "listed": 0,
+   "recurring": 0,
+   "lastChecked": null
+  },
+  {
+   "name": "Enjoy Yoga",
+   "city": "Costa Mesa",
+   "region": "",
+   "kinds": [
+    "sound"
+   ],
+   "calendar": null,
+   "how": "so far found via eventbrite.com",
+   "listed": 1,
+   "recurring": 0,
+   "lastChecked": null
+  },
+  {
+   "name": "Flappers",
+   "city": "",
+   "region": "",
+   "kinds": [],
+   "calendar": null,
+   "how": "named in the refresh instructions; nothing listed yet",
+   "listed": 0,
+   "recurring": 0,
+   "lastChecked": null
+  },
+  {
+   "name": "Hollywood Forever",
+   "city": "",
+   "region": "",
+   "kinds": [],
+   "calendar": null,
+   "how": "named in the refresh instructions; nothing listed yet",
+   "listed": 0,
+   "recurring": 0,
+   "lastChecked": null
+  },
+  {
+   "name": "La Jolla Playhouse",
+   "city": "",
+   "region": "",
+   "kinds": [],
+   "calendar": null,
+   "how": "named in the refresh instructions; nothing listed yet",
+   "listed": 0,
+   "recurring": 0,
+   "lastChecked": null
+  },
+  {
+   "name": "Looma Birth",
+   "city": "Costa Mesa",
+   "region": "",
+   "kinds": [
+    "sound"
+   ],
+   "calendar": null,
+   "how": "so far found via eventbrite.com",
+   "listed": 1,
+   "recurring": 0,
+   "lastChecked": null
+  },
+  {
+   "name": "Pacific Amphitheatre",
+   "city": "",
+   "region": "",
+   "kinds": [],
+   "calendar": null,
+   "how": "named in the refresh instructions; nothing listed yet",
+   "listed": 0,
+   "recurring": 0,
+   "lastChecked": null
+  },
+  {
+   "name": "Petco Park",
+   "city": "",
+   "region": "",
+   "kinds": [],
+   "calendar": null,
+   "how": "named in the refresh instructions; nothing listed yet",
+   "listed": 0,
+   "recurring": 0,
+   "lastChecked": null
+  },
+  {
+   "name": "Quartyard",
+   "city": "",
+   "region": "",
+   "kinds": [],
+   "calendar": null,
+   "how": "named in the refresh instructions; nothing listed yet",
+   "listed": 0,
+   "recurring": 0,
+   "lastChecked": null
+  },
+  {
+   "name": "Resident",
+   "city": "",
+   "region": "",
+   "kinds": [],
+   "calendar": null,
+   "how": "named in the refresh instructions; nothing listed yet",
+   "listed": 0,
+   "recurring": 0,
+   "lastChecked": null
+  },
+  {
+   "name": "SD Civic Theatre",
+   "city": "",
+   "region": "",
+   "kinds": [],
+   "calendar": null,
+   "how": "named in the refresh instructions; nothing listed yet",
+   "listed": 0,
+   "recurring": 0,
+   "lastChecked": null
+  },
+  {
+   "name": "Snapdragon Stadium",
+   "city": "",
+   "region": "",
+   "kinds": [],
+   "calendar": null,
+   "how": "named in the refresh instructions; nothing listed yet",
+   "listed": 0,
+   "recurring": 0,
+   "lastChecked": null
+  },
+  {
+   "name": "Spin SD",
+   "city": "",
+   "region": "",
+   "kinds": [],
+   "calendar": null,
+   "how": "named in the refresh instructions; nothing listed yet",
+   "listed": 0,
+   "recurring": 0,
+   "lastChecked": null
+  },
+  {
+   "name": "The Continental Room & Programme Skate & Sound (Fullerton)",
+   "city": "",
+   "region": "",
+   "kinds": [],
+   "calendar": null,
+   "how": "named in the refresh instructions; nothing listed yet",
+   "listed": 0,
+   "recurring": 0,
+   "lastChecked": null
+  },
+  {
+   "name": "TIME Costa Mesa",
+   "city": "",
+   "region": "",
+   "kinds": [],
+   "calendar": null,
+   "how": "named in the refresh instructions; nothing listed yet",
+   "listed": 0,
+   "recurring": 0,
+   "lastChecked": null
+  },
+  {
+   "name": "Improv (Corona)",
+   "city": "Corona",
+   "region": "Inland Empire",
+   "kinds": [
+    "comedy"
+   ],
+   "calendar": null,
+   "how": "named in the refresh instructions; nothing listed yet",
+   "listed": 0,
+   "recurring": 0,
+   "lastChecked": null
+  }
+ ],
+ "sources": [
+  {
+   "name": "Insomniac events (raves, Factory 93, Dreamstate)",
+   "calendar": "https://www.insomniac.com/events/",
+   "how": "filter to Southern California; venue is on each event page"
+  },
+  {
+   "name": "Coachella / Stagecoach",
+   "calendar": "https://www.coachella.com/",
+   "how": "festival dates + pass sales"
+  }
+ ]
+}
