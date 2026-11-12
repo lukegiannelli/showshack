@@ -73,3 +73,12 @@ html.ui-b .bfc-tag,html.ui-b .bfc-free{height:22px;box-sizing:border-box;padding
 html.ui-b .bfc-tag .nic.nemo{width:14px;height:14px;margin:0;vertical-align:0}
 html.ui-b .bfc-f:has(.bfc-tag) .face.front,html.ui-b .bfc-f:has(.bfc-free) .face.front{padding-top:30px}
 html.ui-b .bfc-f:has(.bfc-free) .tr{margin-top:0}
+
+/* map: keep Leaflet's layers (z 400–1000) and the night bar inside the map box, so they never sit on top of the tab bar when you scroll */
+html.ui-b .bmap-stage{isolation:isolate}
+/* small phones (≤ 360 px wide): the map's start button wraps instead of running under the zoom buttons; section links stay on one line */
+@media (max-width:360px){
+  html.ui-b .bmap-start{white-space:normal;line-height:1.15;text-align:left;padding:6px 12px;font-size:13px}
+  html.ui-b .bpicks-h .blink{white-space:nowrap;flex:none}
+  html.ui-b .bpicks-h .bsec{min-width:0}
+}
