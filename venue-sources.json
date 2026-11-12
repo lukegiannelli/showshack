@@ -1,6 +1,6 @@
 {
  "about": "Every venue the Show Shack covers, in one place. The daily refresh routine sweeps the venues checked longest ago (null = never) and writes back lastChecked, calendar and how. Add a venue here and the refresh picks it up.",
- "updated": "2026-11-11",
+ "updated": "2026-11-12",
  "venues": [
   {
    "name": "Acrisure Arena",
@@ -9,11 +9,11 @@
    "kinds": [
     "concert"
    ],
-   "calendar": null,
-   "how": "so far found via gametime.co",
-   "listed": 4,
+   "calendar": "https://acrisurearena.com/events/",
+   "how": "acrisurearena.com and gametime.co are network-blocked in this session; WebSearch snippets of acrisurearena.com/events/detail/<slug> pages worked",
+   "listed": 5,
    "recurring": 0,
-   "lastChecked": null
+   "lastChecked": "2026-11-12"
   },
   {
    "name": "Agua Caliente Casino",
@@ -24,11 +24,11 @@
     "concert",
     "theater"
    ],
-   "calendar": null,
-   "how": "so far found via ticketmaster.com",
-   "listed": 31,
+   "calendar": "https://www.ticketmaster.com/the-show-at-agua-caliente-casino-tickets-rancho-mirage/venue/74695",
+   "how": "fetch blocked; WebSearch for 'The Show Agua Caliente 2027' surfaces ticketmaster venue page + eventticketscenter/stereoboard dated listings",
+   "listed": 32,
    "recurring": 0,
-   "lastChecked": null
+   "lastChecked": "2026-11-12"
   },
   {
    "name": "Backstreet Art District",
@@ -37,11 +37,11 @@
    "kinds": [
     "art"
    ],
-   "calendar": null,
-   "how": "so far found via google.com",
+   "calendar": "https://visitpalmsprings.com/?p=43698",
+   "how": "WebSearch only (WebFetch blocked). Visit Palm Springs + gaydesertguide list 1st Wed 5-7 PM year-round, free; district's FB/IG @backstreetartdistrict is the live source.",
    "listed": 0,
    "recurring": 1,
-   "lastChecked": null
+   "lastChecked": "2026-11-12"
   },
   {
    "name": "Dave & Buster's",
@@ -50,11 +50,11 @@
    "kinds": [
     "social"
    ],
-   "calendar": null,
-   "how": "so far found via google.com",
+   "calendar": "https://countrydancingtonight.com/best-country-bars-for-line-dancing-in-riverside-county",
+   "how": "Only third-party evidence (countrydancingtonight roundup: Mon 6-10 PM, free lessons, DJ); nothing on daveandbusters.com. Unverified for late 2026; low confidence.",
    "listed": 0,
    "recurring": 1,
-   "lastChecked": null
+   "lastChecked": "2026-11-12"
   },
   {
    "name": "El Paseo",
@@ -63,11 +63,11 @@
    "kinds": [
     "art"
    ],
-   "calendar": null,
-   "how": "so far found via google.com",
+   "calendar": "https://discoverpalmdesert.com/el-paseo-art-walk/",
+   "how": "discoverpalmdesert.com: First Fridays 4-7 PM, seasonal (Nov-Apr/May). NBC PS confirmed Nov 2025 season return; time could be set to 4:00-7:00 PM.",
    "listed": 0,
    "recurring": 1,
-   "lastChecked": null
+   "lastChecked": "2026-11-12"
   },
   {
    "name": "Empire Polo Club",
@@ -76,11 +76,11 @@
    "kinds": [
     "festival"
    ],
-   "calendar": null,
-   "how": "so far found via coachella.com",
+   "calendar": "https://www.coachella.com/",
+   "how": "news searches on Coachella/Stagecoach 2027 passes; Coachella GA+shuttle $779, VIP $1349-1399, standalone GA sold out; Stagecoach Apr 23-25 2027 (Riley Green, Zach Top, Garth Brooks)",
    "listed": 3,
    "recurring": 0,
-   "lastChecked": null
+   "lastChecked": "2026-11-12"
   },
   {
    "name": "Fantasy Springs Resort Casino",
@@ -90,11 +90,11 @@
     "comedy",
     "concert"
    ],
-   "calendar": null,
-   "how": "so far found via fantasyspringsresort.com",
+   "calendar": "https://www.gametime.co/venues/fantasy_springs_resort_casino",
+   "how": "fetch blocked; searches only re-confirmed existing Jan 2027 shows (Temptations, Yachtley Crew, BTO, El Flaco); Battle of the Badges boxing 2027-02-25 seen but skipped (sport)",
    "listed": 11,
    "recurring": 0,
-   "lastChecked": null
+   "lastChecked": "2026-11-12"
   },
   {
    "name": "FIND Food Bank",
@@ -103,11 +103,11 @@
    "kinds": [
     "volunteer"
    ],
-   "calendar": null,
-   "how": "so far found via findfoodbank.org",
+   "calendar": "https://findfoodbank.org/volunteer-opportunities",
+   "how": "findfoodbank.org volunteer page links to VolunteerHub calendar of warehouse shifts (18+; 14-17 w/ rules). Ongoing; shifts 8 AM-12 PM seen.",
    "listed": 0,
    "recurring": 1,
-   "lastChecked": null
+   "lastChecked": "2026-11-12"
   },
   {
    "name": "Palm Canyon Dr (Baristo–Amado)",
@@ -116,11 +116,11 @@
    "kinds": [
     "art"
    ],
-   "calendar": null,
-   "how": "so far found via google.com",
+   "calendar": "https://gaydesertguide.com/events/thursday-night-villagefest-2/var/ri-10.l-L1",
+   "how": "VillageFest every Thu: 6-10 PM Oct-May, 7-10 PM Jun-Sep (NBC PS 2026 summer-hours story confirms still running). villagefest.org is official.",
    "listed": 0,
    "recurring": 1,
-   "lastChecked": null
+   "lastChecked": "2026-11-12"
   },
   {
    "name": "Pappy & Harriet's",
@@ -129,11 +129,11 @@
    "kinds": [
     "concert"
    ],
-   "calendar": null,
-   "how": "so far found via gametime.co",
-   "listed": 28,
+   "calendar": "https://pappyandharriets.com/calendar/",
+   "how": "venue sells via wl.eventim.us/event/<slug>/<id>?afflky=pappyandharriets; search those plus jambase/songkick to find new dates",
+   "listed": 33,
    "recurring": 0,
-   "lastChecked": null
+   "lastChecked": "2026-11-12"
   },
   {
    "name": "Perez Art District",
@@ -142,11 +142,11 @@
    "kinds": [
     "art"
    ],
-   "calendar": null,
-   "how": "so far found via theperezartdistrict.com",
+   "calendar": "https://www.discovercathedralcity.com/organizer/the-perez-art-district/",
+   "how": "discovercathedralcity.com art category lists 4th Friday 4-7 PM walk (Sep-May) plus Second Saturday Showcase 11-3; NBC PS Oct 2026 segment shows district active. discovercathedralcity.com not fetchable",
    "listed": 0,
    "recurring": 1,
-   "lastChecked": null
+   "lastChecked": "2026-11-12"
   },
   {
    "name": "Spotlight 29 Casino",
@@ -169,11 +169,11 @@
    "kinds": [
     "social"
    ],
-   "calendar": null,
-   "how": "so far found via aureavista.com",
+   "calendar": "https://www.aureavista.com",
+   "how": "Only countrydancingtonight.com mentions Boots & Dukes Wednesdays (instructor Annemarie Dunn); no dated listing found. Low confidence, recheck via venue IG/FB.",
    "listed": 0,
    "recurring": 1,
-   "lastChecked": null
+   "lastChecked": "2026-11-12"
   },
   {
    "name": "Feeding America Riverside | San Bernardino",
@@ -182,11 +182,11 @@
    "kinds": [
     "volunteer"
    ],
-   "calendar": null,
-   "how": "so far found via feedingamericaie.org",
+   "calendar": "https://www.feedingamericaie.org/service-page/volunteer-saturday-1",
+   "how": "Wix booking page 'Volunteer Saturday' = 2nd Saturday 8-11 AM, 2950 Jefferson St; registration required, no walk-ins; 18+ or 12-17 with guardian.",
    "listed": 0,
    "recurring": 1,
-   "lastChecked": null
+   "lastChecked": "2026-11-12"
   },
   {
    "name": "Fox Performing Arts Center",
@@ -196,11 +196,11 @@
     "concert",
     "theater"
    ],
-   "calendar": null,
-   "how": "so far found via gametime.co",
-   "listed": 9,
+   "calendar": "https://www.ticketmaster.com/fox-performing-arts-center-billets-riverside/venue/90322",
+   "how": "WebFetch blocked this run (gametime/vividseats DNS fail); used WebSearch snippets: tickpick, hellotickets, ticketsmarter, eventticketscenter list 2027 dates",
+   "listed": 12,
    "recurring": 0,
-   "lastChecked": null
+   "lastChecked": "2026-11-12"
   },
   {
    "name": "Glen Helen Amphitheater",
@@ -209,11 +209,11 @@
    "kinds": [
     "concert"
    ],
-   "calendar": null,
-   "how": "so far found via vividseats.com",
+   "calendar": "https://www.livenation.com/venue/KovZpZAEA6eA/glen-helen-amphitheater-events",
+   "how": "Search only; Iron Maiden 4/24/27 is still the only 2027 date seen (songkick says 2 upcoming)",
    "listed": 1,
    "recurring": 0,
-   "lastChecked": null
+   "lastChecked": "2026-11-12"
   },
   {
    "name": "Miramonte Winery",
@@ -222,11 +222,11 @@
    "kinds": [
     "social"
    ],
-   "calendar": null,
-   "how": "so far found via temeculawines.org",
+   "calendar": "https://www.temeculawines.org/events/winery-events/",
+   "how": "temeculawines.org/event/11/... listings show salsa nights roughly monthly (1st/last Fri) through 2026-07-03 'Salsa Monte' 6-9 PM, all ages; nothing found after July 2026 and not clearly weekly anymore",
    "listed": 0,
    "recurring": 1,
-   "lastChecked": null
+   "lastChecked": "2026-11-12"
   },
   {
    "name": "Morongo Casino Resort",
@@ -236,11 +236,11 @@
     "comedy",
     "concert"
    ],
-   "calendar": null,
-   "how": "so far found via ticketmaster.com",
-   "listed": 12,
+   "calendar": "https://www.morongocasinoresort.com/entertainment/calendar-of-events",
+   "how": "Search only; official pages are /entertainment/calendar-of-events/<slug>; concerts50/eventworld snippets give 2027 dates and times",
+   "listed": 13,
    "recurring": 0,
-   "lastChecked": null
+   "lastChecked": "2026-11-12"
   },
   {
    "name": "NOS Events Center",
@@ -249,11 +249,11 @@
    "kinds": [
     "festival"
    ],
-   "calendar": null,
-   "how": "so far found via insomniac.com",
+   "calendar": "https://www.axs.com/venues/125074",
+   "how": "Search only; tickpick has Beyond Wonderland 2027 event pages; axs venue page is the ticketing hub",
    "listed": 4,
    "recurring": 0,
-   "lastChecked": null
+   "lastChecked": "2026-11-12"
   },
   {
    "name": "Ontario Improv",
@@ -262,11 +262,11 @@
    "kinds": [
     "comedy"
    ],
-   "calendar": null,
-   "how": "so far found via tickpick.com",
-   "listed": 2,
+   "calendar": "https://improv.com/calendar/ontario/",
+   "how": "WebFetch blocked; WebSearch snippets of comedy.tickets/venue/ontario-improv and improv.com/calendar/ontario/<mon-yyyy>/ give dated shows+prices",
+   "listed": 14,
    "recurring": 0,
-   "lastChecked": null
+   "lastChecked": "2026-11-12"
   },
   {
    "name": "Pechanga Resort Casino",
@@ -277,11 +277,11 @@
     "concert",
     "theater"
    ],
-   "calendar": null,
-   "how": "so far found via ticketmaster.com",
-   "listed": 12,
+   "calendar": "https://www.pechanga.com/entertain",
+   "how": "WebFetch blocked (no network); WebSearch snippets of pechanga.com/entertain + gametime venue page (gametime.co/pechanga-resort-casino-tickets/venues/pechanga_resort_casino) give dates & from-prices",
+   "listed": 14,
    "recurring": 0,
-   "lastChecked": null
+   "lastChecked": "2026-11-12"
   },
   {
    "name": "Riverside Art Museum",
@@ -290,11 +290,11 @@
    "kinds": [
     "art"
    ],
-   "calendar": null,
-   "how": "so far found via riversideartmuseum.org",
+   "calendar": "https://riversideartmuseum.org/events/",
+   "how": "riversideartmuseum.org events (tribe events calendar, ?ical=1 feeds) list ArtsWalk 1st Thu 6-9 PM, free; 2026 dates (Mar, Apr) seen.",
    "listed": 0,
    "recurring": 1,
-   "lastChecked": null
+   "lastChecked": "2026-11-12"
   },
   {
    "name": "Soboba Casino Resort",
@@ -318,11 +318,11 @@
    "kinds": [
     "art"
    ],
-   "calendar": null,
-   "how": "so far found via artsconnectionnetwork.org",
+   "calendar": "https://artsconnectionnetwork.org/dtsb-art-walk",
+   "how": "Arts Connection runs DTSB Art Walk quarterly (Mar 27, Jun 26, Sep 2026); their newsletter (arts-connection.kit.com) lists next walk Thu 2026-12-10, location TBA. The 12-18 date appears only on thecraf",
    "listed": 1,
    "recurring": 0,
-   "lastChecked": null
+   "lastChecked": "2026-11-12"
   },
   {
    "name": "Temecula Stampede",
@@ -331,11 +331,11 @@
    "kinds": [
     "social"
    ],
-   "calendar": null,
-   "how": "so far found via google.com",
+   "calendar": "https://www.eventbrite.com/o/temecula-stampede-20156297288",
+   "how": "No official calendar found; countrydancingtonight lists Fri/Sat 6 PM-2 AM, lessons 7 PM, 21+; Thu college night 18+ $10. ma.to listings show Aug 2026 Sat line dancing $10. Still running.",
    "listed": 0,
    "recurring": 1,
-   "lastChecked": null
+   "lastChecked": "2026-11-12"
   },
   {
    "name": "Town Square Park",
@@ -344,11 +344,11 @@
    "kinds": [
     "art"
    ],
-   "calendar": null,
-   "how": "so far found via temeculasunsetmarket.com",
+   "calendar": "https://www.temeculasunsetmarket.com",
+   "how": "Temecula Sunset Market ended: Valley News 'to end after three-year partnership with city', final market Thu 2025-10-23. No 2026 season.",
    "listed": 0,
-   "recurring": 1,
-   "lastChecked": null
+   "recurring": 0,
+   "lastChecked": "2026-11-12"
   },
   {
    "name": "Toyota Arena",
@@ -357,11 +357,11 @@
    "kinds": [
     "concert"
    ],
-   "calendar": null,
-   "how": "so far found via google.com",
-   "listed": 1,
+   "calendar": "https://seatgeek.com/venues/toyota-arena-ontario/tickets",
+   "how": "JS calendar unreadable; WebSearch 'Toyota Arena Ontario <month> 2027' + ticketmaster/gametime snippets",
+   "listed": 9,
    "recurring": 0,
-   "lastChecked": null
+   "lastChecked": "2026-11-12"
   },
   {
    "name": "Whiskey River Dancehall & Saloon",
