@@ -59,7 +59,8 @@ const MAP={
   "📷":["#FF8AD8",'<path d="M4 7.5h3.5L9 5h6l1.5 2.5H20a1 1 0 0 1 1 1V19a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V8.5a1 1 0 0 1 1-1Z"/><circle cx="12" cy="13.5" r="4"/>'],
   "📡":["#7FD4FF",'<path d="M12 12v9M8.5 21h7M8.5 8.5a5 5 0 0 0 0 7M15.5 8.5a5 5 0 0 1 0 7M5.5 5.5a9.2 9.2 0 0 0 0 13M18.5 5.5a9.2 9.2 0 0 1 0 13M12 12h.01"/>'],
   "🏷":["#FFC66B",'<path d="M3 12V4h8l10 10-8 8Z"/><path d="M7.5 8h.01"/>'],
-  "📊":["#7FD4FF",U("chart")]};
+  "📊":["#7FD4FF",U("chart")],
+  "🎧":["#7FD4FF",'<path d="M4 15v-3a8 8 0 0 1 16 0v3"/><rect x="3" y="14" width="4.5" height="6.5" rx="1.5"/><rect x="16.5" y="14" width="4.5" height="6.5" rx="1.5"/>']};
 MAP["📸"]=MAP["📷"];
 const keys=Object.keys(MAP).sort((a,b)=>b.length-a.length).map(k=>k.replace(/[.*+?^${}()|[\]\\]/g,"\\$&"));
 const RE=new RegExp("("+keys.join("|")+")\\uFE0F?","gu"),TEST=new RegExp(keys.join("|"),"u");

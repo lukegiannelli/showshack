@@ -7,3 +7,5 @@
 -- app_secrets         push signing key + cron token (server only; no one can read it through the API). Not in this repo.
 -- Edge Function "reminders" (supabase/functions/reminders) runs daily at 17:00 UTC (~9 AM Pacific) via pg_cron + pg_net:
 --   the day before a show you marked Interested, and when one drops in price. Free plan: well under the monthly limits.
+-- feature_counts      private usage counts (day + feature + number; no user ids). count_feature(name) is public but only accepts the app's feature names; admin_counts() is admins only.
+-- Edge Function "music" (supabase/functions/music): reads a PUBLIC Spotify playlist with the app's own Spotify key (spotify_client_id/secret in app_secrets) and returns artist names + genres. Keeps nothing.

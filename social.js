@@ -28,7 +28,9 @@ let prof=null,friends=null,board=null,msg="",busy=false;
 const myBeen=()=>new Set(SH.store.get("radar-been",[])||[]);
 async function loadSocial(){if(!C.user)return;try{const sb=await C.client();
   const [p,f]=await Promise.all([sb.from("profiles").select("name,friend_code,on_leaderboard,share_ratings").maybeSingle(),sb.rpc("my_friends")]);
-  prof=p.data||null;friends=f.data||[];}catch(e){msg="Couldn't load friends right now.";}
+  prof=p.data||null;friends=f.data||[];
+  // for the Crew builder badge (3 friends): just the count, kept on this phone
+  try{if(SH.store.raw("shack-friends-n")!==String(friends.length))SH.store.put("shack-friends-n",String(friends.length));}catch(e){}}catch(e){msg="Couldn't load friends right now.";}
   redraw();decorate();if(prof&&prof.share_ratings)syncRatings().catch(()=>{});}
 C.onUser(u=>{if(u){loadSocial();takePending();}else{prof=null;friends=null;msg="";redraw();decorate();}});
 

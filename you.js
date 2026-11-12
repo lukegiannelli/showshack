@@ -12,6 +12,10 @@ const E=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt
 const say=(m,a,f)=>{if(window.NIGHT&&NIGHT.toast)NIGHT.toast(m,a,f);};
 const dlgOpen=d=>{if(!d.open){if(d.showModal)d.showModal();else d.setAttribute("open","");}},dlgClose=d=>{d.close?d.close():d.removeAttribute("open");};
 const VAPID="BEtEpmMDVDp_B9DwYCAcK_whdpEXTK1sHCgId6DHcv1EFGUWwJoieTdvSiy01DmAExShwfzWu4PA3yJzIhb9-nc";   // public half of the push key (safe to publish)
+let counts=[];
+const FEAT={tab_shows:"Opened Shows",tab_map:"Opened Map",tab_venues:"Opened Venues",tab_saved:"Opened Saved",tab_plan:"Opened Plan",tab_you:"Opened You",share:"Used the Share sheet",
+  flyer_open:"Opened Add a flyer",flyer_add:"Added a flyer show",signin:"Signed in",reminders_on:"Turned on reminders",music_match:"Matched their music",ears_tap:"Tapped For your ears",
+  tonight_tap:"Tapped Still on tonight",star:"Starred a show",stamp:"Stamped a venue",search_none:"Search found nothing",add_missing:"Tapped add-missing",follow:"Followed a venue",night_send:"Sent a night",friend_add:"Added a friend"};
 let admin=false,review=null,remState=null,remMsg="",missMsg="",missDraft="";
 
 /* ===== offline: say so up front for things that need the internet ===== */
@@ -29,6 +33,7 @@ function youHTML(){const u=C.user,owner=SH.store.raw("shack-owner")==="1";
     ${u?"":`<p class="bset-p">Everything works without an account. Sign in (just your email, free) to sync across devices, get reminders and see friends.</p>`}
     ${badgeSec()}
     <section class="byou-sec"><h3>☁ Account &amp; sync</h3>${window.shackCloudHTML?shackCloudHTML():""}</section>
+    ${window.SHACK_MUSIC?SHACK_MUSIC.sectionHTML():""}
     <section class="byou-sec"><h3>🔔 Reminders</h3><div id="bRem">${remHTML()}</div></section>
     <section class="byou-sec"><h3>👥 Friends &amp; leaderboard</h3>${window.shackSocialHTML?shackSocialHTML():""}</section>
     <section class="byou-sec"><h3>↗ Share</h3><p class="bset-p">Your year, your passport, a night plan, or the Shack itself.</p><div class="bset-acts"><button type="button" data-yshare="all">Open the Share sheet</button></div></section>
@@ -116,7 +121,7 @@ document.addEventListener("submit",async ev=>{const f=ev.target.closest("[data-m
 
 /* ===== owner review: flyer shows, missing-show reports, coverage gaps ===== */
 async function refreshAdmin(){if(!C.user)return;try{const sb=await C.client();const {data}=await sb.rpc("is_admin");admin=!!data;
-  if(admin){const r=await sb.rpc("admin_review");review=r.data||null;}
+  if(admin){const r=await sb.rpc("admin_review");review=r.data||null;const c=await sb.rpc("admin_counts");counts=c.data||[];}
   const s=$("bYou");if(s&&s.open&&(admin||SH.store.raw("shack-owner")==="1")){if(!$("bAdm"))redrawYou();else $("bAdm").innerHTML=admHTML(SH.store.raw("shack-owner")==="1");}}catch(e){}}
 let COV=null;fetch("coverage.json",{cache:"no-cache"}).then(r=>r.ok?r.json():null).then(j=>{COV=j;}).catch(()=>{});
 function admHTML(owner){if(!admin)return owner?`<p class="bset-p">You opened owner mode on this phone. Make this account the Shack's admin to review flyer shows and reports. (Only works once, for the first person.)</p><div class="bset-acts"><button type="button" data-adm="claim">Make me the admin</button></div>`:"";
@@ -127,6 +132,7 @@ function admHTML(owner){if(!admin)return owner?`<p class="bset-p">You opened own
     ${fl.length?`<ul class="badm-list">${fl.map(x=>`<li class="${x.status==="hidden"?"off":""}"><div><b>${E(x.title)}</b><span>${E(d(x.start))} · ${E(x.venue)}, ${E(x.city)}${x.reports?` · ⚠ ${x.reports} report${x.reports>1?"s":""}`:""}${listed.has(x.start+"|"+String(x.venue).toLowerCase())?" · now on the official list":""}</span></div>
       ${x.flyer_path?`<a class="bpass-share" href="${E(SH.sb.url+"/storage/v1/object/public/flyers/"+x.flyer_path)}" target="_blank" rel="noopener">Flyer</a>`:""}<button type="button" class="bpass-share" data-adm="${x.status==="hidden"?"show":"hide"}" data-id="${E(x.id)}">${x.status==="hidden"?"Restore":"Hide"}</button></li>`).join("")}</ul>`:""}
     ${ms.length?`<h4 class="badm-h">Missing shows people asked for</h4><ul class="badm-list">${ms.map(x=>`<li><div><b>${E(x.what)}</b><span>${E(new Date(x.created_at).toLocaleDateString("en-US",{month:"short",day:"numeric"}))}${x.link?` · <a href="${E(x.link)}" target="_blank" rel="noopener">link ↗</a>`:""}</span></div><button type="button" class="bpass-share" data-adm="added" data-id="${E(x.id)}">Added</button><button type="button" class="bpass-share" data-adm="skip" data-id="${E(x.id)}">Skip</button></li>`).join("")}</ul>`:""}
+    ${counts.length?`<h4 class="badm-h">What people use (devices per feature · last 7 days / 30 days)</h4><ul class="badm-list bcnt">${counts.map(c=>`<li><div><b>${E(FEAT[c.feature]||c.feature)}</b></div><span class="bcnt-n">${c.week||0} / ${c.total}</span></li>`).join("")}</ul>`:`<p class="bset-p">Usage counts show up here once people start using the app (private: counts only, no names).</p>`}
     ${COV&&COV.gaps&&COV.gaps.length?`<h4 class="badm-h">Venues that may be missing shows (weekly check, ${E(COV.checked||"")})</h4><ul class="badm-list">${COV.gaps.slice(0,12).map(g=>`<li><div><b>${E(g.venue)}</b><span>We list ${g.ours} · Ticketmaster has ${g.tm} in the next 60 days</span></div></li>`).join("")}</ul>`:""}`;}
 document.addEventListener("click",async ev=>{const b=ev.target.closest("[data-adm]");if(!b)return;ev.preventDefault();ev.stopPropagation();const a=b.dataset.adm,id=b.dataset.id;b.disabled=true;
   try{const sb=await C.client();

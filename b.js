@@ -597,7 +597,8 @@ function badges(infos){const bv=infos.filter(v=>BEEN.has(v.k)),n=BEEN.size,rg=ne
     ["💃","Free mover","Stamp an ecstatic dance or contact improv space",cnt(v=>v.evs.some(e=>e.kind==="dance"||e.kind==="contact")),1],
     ["🥁","Drum circle","Stamp a drum circle",cnt(v=>v.evs.some(e=>e.kind==="drum")),1],["🤝","Community helper","Stamp a volunteer spot",cnt(v=>v.evs.some(e=>e.kind==="volunteer")),1],
     ["🎤","Open mic brave","Stamp 3 open-mic spots",cnt(v=>v.evs.some(e=>e.kind==="openmic")),3],["🔁","Repeat customer","Log 3 shows at one venue",rep,3],
-    ["🌙","Night architect","Plan 3 nights that happened",nights,3]]
+    ["🌙","Night architect","Plan 3 nights that happened",nights,3],
+    ["👥","Crew builder","Get 3 friends on the Shack (You → Friends)",+(SH.store.raw("shack-friends-n")||0),3]]
     .map(([ic,n2,how,have,need])=>({ic,n:n2,how,have:Math.min(have,need),need,on:have>=need}));}
 // badges you earned since you last looked fill in with a little animation, once
 const BSEEN=new Set(ld("shack-bseen",[]));

@@ -49,6 +49,8 @@ SH.audio={
 
 /* ---- Supabase project (free plan). The publishable key is meant to be public: the database's own rules do the locking. ---- */
 SH.sb={url:"https://tdahsfxcfsgalfqhsnal.supabase.co",key:"sb_publishable_ybHSIncwmDBn5nuUByG9vg_D194O2qo"};
+// Match my music (music.js): the free Last.fm API key (public by design; empty = the Last.fm option stays hidden)
+SH.music={lastfm:""};
 // call a public database function without signing in (used for live night links): SH.rpc("get_live_night",{p_id})
 SH.rpc=async(fn,args)=>{const r=await fetch(SH.sb.url+"/rest/v1/rpc/"+fn,{method:"POST",headers:{apikey:SH.sb.key,"Content-Type":"application/json"},body:JSON.stringify(args||{})});
   if(!r.ok)throw new Error("rpc "+r.status);return r.json();};
