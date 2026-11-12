@@ -99,7 +99,7 @@ const BEEN=new Set(); let starVen={};
 try{(JSON.parse(SH.store.raw("radar-been")||"[]")).forEach(k=>BEEN.add(k));starVen=JSON.parse(SH.store.raw("radar-starven")||"{}")||{};}catch(e){}
 function saveBeen(){try{SH.store.put("radar-been",JSON.stringify([...BEEN]));SH.store.put("radar-starven",JSON.stringify(starVen));}catch(e){}}
 function syncBeen(up){const today=new Date().toISOString().slice(0,10);let ch=false;
-  for(const e of up||[]){const k=skey(e);if(state.stars.has(k)&&(!starVen[k]||!starVen[k].t)){starVen[k]={v:venueKey(e),d:String(e.end||e.start).slice(0,10),t:String(e.title||"").slice(0,100)};ch=true;}}
+  for(const e of up||[]){const k=skey(e);if(state.stars.has(k)&&(!starVen[k]||!starVen[k].t||!starVen[k].kd)){starVen[k]={v:venueKey(e),d:String(e.end||e.start).slice(0,10),t:String(e.title||"").slice(0,100),kd:e.kind};ch=true;}}
   for(const [k,o] of Object.entries(starVen)){if(!state.stars.has(k)&&o.d>=today){delete starVen[k];ch=true;continue;}
     if(o.d<today&&state.stars.has(k)&&!BEEN.has(o.v)){BEEN.add(o.v);ch=true;}}
   if(ch)saveBeen();}
@@ -614,7 +614,7 @@ function surpriseMe(){
   if(c){c.classList.add("emerge");c.scrollIntoView({block:"center",behavior:"smooth"});}
 }
 
-/* ---- flip a card to its night-cost back: double-tap (or tap the 🌙 pill / ↩) ---- */
+/* ---- flip a card to its night-cost back: double-tap (or tap the 🌙 pill / ↩︎) ---- */
 function flipCard(card){if(!card)return;const on=!card.classList.contains("flipped");
   card.classList.toggle("flipped",on);on?state.flipped.add(card.id):state.flipped.delete(card.id);
   const f=card.querySelector(".front"),b=card.querySelector(".back");
@@ -1026,7 +1026,7 @@ async function copyOut(text,btn){
       body.innerHTML=step(1,"This app's built-in browser can't install it. Tap <kbd>⋯</kbd> or <kbd>Share</kbd> and choose <b>Open in Safari</b> (or your browser).")+
         step(2,"Then tap <b>Get</b> again from there.");
     }else if(iOS){
-      body.innerHTML=step(1,"Tap <kbd>⋯</kbd> at the bottom right of Safari, then <kbd>Share&nbsp;⬆</kbd>. <span class='note'>(Older iPhones: the <kbd>⬆</kbd> button is right on the bottom bar.)</span>")+
+      body.innerHTML=step(1,"Tap <kbd>⋯</kbd> at the bottom right of Safari, then <kbd>Share&nbsp;⬆︎</kbd>. <span class='note'>(Older iPhones: the <kbd>⬆︎</kbd> button is right on the bottom bar.)</span>")+
         step(2,"Scroll down and tap <kbd>Add to Home Screen</kbd>.")+
         step(3,"Make sure <b>Open as Web App</b> is on, then tap <kbd>Add</kbd>. 🛖")+
         `<p class="note">The Shack lands on your home screen and opens full screen, like any app.</p>`;

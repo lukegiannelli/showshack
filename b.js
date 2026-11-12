@@ -92,7 +92,7 @@ function pvStop(){if(PV.a){PV.a.pause();PV.a=null;}if(PV.btn){PV.btn.classList.r
 async function pvPlay(btn,e){if(PV.btn===btn){pvStop();return;}pvStop();btn.dataset.lbl=btn.dataset.lbl||btn.innerHTML;btn.textContent="Finding a preview…";
   const q=artistQ(e),t=await itunes(q);const note=btn.parentNode.parentNode.querySelector(".bpv-note")||btn.closest(".bfc-b,article.card")?.querySelector(".bpv-note");
   if(!t){btn.innerHTML=btn.dataset.lbl;if(note){note.hidden=false;note.textContent=`No preview found for ${q}.`;}return;}
-  try{SH.audio.solo();const a=new Audio(t.previewUrl);a.volume=.9;await a.play();PV={a,btn};btn.classList.add("on");btn.textContent="⏸ Stop preview";
+  try{SH.audio.solo();const a=new Audio(t.previewUrl);a.volume=.9;await a.play();PV={a,btn};btn.classList.add("on");btn.textContent="⏸︎ Stop preview";
     a.onended=pvStop;if(note){note.hidden=false;note.innerHTML=`♪ “${esc(t.trackName)}” · ${esc(t.artistName)} · <a href="${esc(t.trackViewUrl||"#")}" target="_blank" rel="noopener">Apple Music preview ↗</a>`;}}
   catch(err){btn.innerHTML=btn.dataset.lbl;if(note){note.hidden=false;note.textContent="Couldn't play the preview. Check your connection.";}}}
 document.addEventListener("click",ev=>{const b=ev.target.closest("[data-apv]");if(!b)return;ev.stopPropagation();ev.preventDefault();
@@ -323,7 +323,7 @@ const WHATSNEW=[["🍜","Space ramen","Pull the disco ball down. Four swipes ser
   ["🆕","New rows on Home","Recently added, Price dropped, Because you're into, and your going-out streak.",()=>{goHome();setTimeout(()=>{const t=[$("bBecBox"),$("bDropBox"),$("bFreshBox")].find(x=>x&&!x.hidden);if(t)t.scrollIntoView({behavior:"smooth",block:"start"});},250);}],
   ["🌙","Your nights, saved","Every plan you build is kept in Saved. Do a past night again with one tap.",()=>{const t=document.querySelector('#bTabs [data-tab="saved"]');if(t)t.click();}],
   ["⏱","Smarter planning","Drag stops to reorder, Tighten the night, the forecast, and drive vs rideshare home.",()=>{const t=document.querySelector('#bTabs [data-tab="budget"]');if(t)t.click();setTimeout(()=>{const n=$("bNight");if(n)n.scrollIntoView({behavior:"smooth",block:"start"});},200);}],
-  ["🎟️","Show passport","Tap a stamp to log past shows, earn hidden badges, and compare with a friend.",()=>{const t=document.querySelector('#bTabs [data-tab="venues"]');if(t)t.click();}],
+  ["🎟️","Show passport","Tap a stamp to log past shows, and compare with a friend. Your badges live on the You page.",()=>{const t=document.querySelector('#bTabs [data-tab="venues"]');if(t)t.click();}],
   ["🔥","Map extras","Tonight heatmap, Now button, route costs and Build a night here.",()=>{MAPV.heat=true;state.when="tonight";const t=document.querySelector('#bTabs [data-tab="map"]');if(t)t.click();}]];
 const dlgOpen=d=>{if(d.showModal)d.showModal();else d.setAttribute("open","");},dlgClose=d=>{d.close?d.close():d.removeAttribute("open");};
 function whatsNew(){$("bNewList").innerHTML=WHATSNEW.map(([ic,t,p],i)=>`<li><i aria-hidden="true">${ic}</i><div><b>${esc(t)}</b><p>${esc(p)}</p></div><button type="button" data-wn="${i}">Show me</button></li>`).join("");dlgOpen($("bNew"));
@@ -380,7 +380,7 @@ function drawMapUI(){
   // My night leads the row (before Free) so your route is one tap away
   $("bMapTools").innerHTML=(stops.length?`<button type="button" class="chip bmt bmt-route" data-mroute aria-pressed="${MAPV.route}">${ni("pin")} My night</button>`:"")
     +[["price","free","Free"],["price","u30","Under $30"],["age","all","All ages"],["age","21","21+"]].map(([k,v,l])=>`<button type="button" class="chip bmt" data-mf="${k}:${v}" aria-pressed="${MAPV[k]===v}">${l}</button>`).join("")
-    +`<button type="button" class="chip bmt" data-mhalf aria-pressed="${!!MAPV.half}">↔ Meet halfway</button>`
+    +`<button type="button" class="chip bmt" data-mhalf aria-pressed="${!!MAPV.half}">↔︎ Meet halfway</button>`
     +`<button type="button" class="chip bmt" data-mtransit aria-pressed="${MAPV.transit}">${ni("train")} Transit</button>`
     +`<button type="button" class="chip bmt" data-mheat aria-pressed="${MAPV.heat}">🔥 Tonight heatmap</button>`
     +`<button type="button" class="chip bmt bmt-pass" data-mpass aria-pressed="${MAPV.pass}">${ni("ticket")} Passport${MAPV.pass?` · ${BEEN.size} stamped`:""}</button>`;
@@ -586,17 +586,20 @@ function importNights(){if(!window.NIGHT||!NIGHT.allNights)return;const today=to
 const showCount=()=>[...BEEN].reduce((n,k)=>n+pastShows(k).length,0);
 const savePlog=()=>{try{SH.store.put("shack-plog",JSON.stringify(PLOG));}catch(e){}};
 function badges(infos){const bv=infos.filter(v=>BEEN.has(v.k)),n=BEEN.size,rg=new Set([...BEEN].map(regionOfK).filter(r=>r!=="Other")),cnt=f=>bv.filter(f).length;
+  // a stamped venue counts as a festival / comedy / sound-bath (etc.) spot only when that's mostly what it hosts,
+  // or when a show of that kind you starred there has happened. One festival on an arena's calendar doesn't make it a festival.
+  const td=todayStr(),spot=kd=>v=>{const m=v.evs.filter(e=>e.kind===kd).length;return (m>0&&m*2>=v.evs.length)||Object.values(starVen).some(o=>o&&o.v===v.k&&o.kd===kd&&o.d<td);};
   // each badge: [icon, name, how to earn, how far you are, how far you need]. Locked ones show faded and fill up as you go.
   const st=streak().best,rep=Math.max(0,...[...BEEN].map(k=>pastShows(k).length)),nights=window.NIGHT&&NIGHT.allNights?NIGHT.allNights().filter(x=>x.p.d&&x.p.d<todayStr()).length:0;
   return [[ni("ticket"),"First stamp","Stamp 1 venue",n,1],[ni("chart"),"Regular","Stamp 10 venues",n,10],[ni("map"),"Region hopper","Stamps in 3 regions",rg.size,3],
     [ni("palm"),"All of SoCal","Stamps in all 6 regions",rg.size,6],[ni("sun"),"Desert trip","Stamp a desert venue",+rg.has("Desert"),1],
     [ni("home"),"Small & local","Stamp 5 small venues",cnt(v=>v.evs.some(isSmall)),5],[ni("venue"),"Big room","Stamp an arena or stadium",cnt(v=>(+v.cap||0)>6000||/arena|stadium|forum|bowl|dome/i.test(v.name)),1],
-    [ni("mic"),"Comedy regular","Stamp 3 comedy clubs",cnt(v=>v.evs.some(e=>e.kind==="comedy")),3],[ni("list"),"Stub collector","Log 10 past shows",showCount(),10],
+    [ni("mic"),"Comedy regular","Stamp 3 comedy clubs",cnt(spot("comedy")),3],[ni("list"),"Stub collector","Log 10 past shows",showCount(),10],
     ["🔥","On a roll","3 weeks in a row out",st,3],["🌋","Hot streak","8 weeks in a row out",st,8],
-    ["⛺","First festival","Stamp a festival venue",cnt(v=>v.evs.some(e=>e.kind==="festival")),1],["🔔","Sound bath","Stamp a sound-bath space",cnt(v=>v.evs.some(e=>e.kind==="sound")),1],
-    ["💃","Free mover","Stamp an ecstatic dance or contact improv space",cnt(v=>v.evs.some(e=>e.kind==="dance"||e.kind==="contact")),1],
-    ["🥁","Drum circle","Stamp a drum circle",cnt(v=>v.evs.some(e=>e.kind==="drum")),1],["🤝","Community helper","Stamp a volunteer spot",cnt(v=>v.evs.some(e=>e.kind==="volunteer")),1],
-    ["🎤","Open mic brave","Stamp 3 open-mic spots",cnt(v=>v.evs.some(e=>e.kind==="openmic")),3],["🔁","Repeat customer","Log 3 shows at one venue",rep,3],
+    ["⛺","First festival","Stamp a festival venue",cnt(spot("festival")),1],["🔔","Sound bath","Stamp a sound-bath space",cnt(spot("sound")),1],
+    ["💃","Free mover","Stamp an ecstatic dance or contact improv space",cnt(v=>spot("dance")(v)||spot("contact")(v)),1],
+    ["🥁","Drum circle","Stamp a drum circle",cnt(spot("drum")),1],["🤝","Community helper","Stamp a volunteer spot",cnt(spot("volunteer")),1],
+    ["🎤","Open mic brave","Stamp 3 open-mic spots",cnt(spot("openmic")),3],["🔁","Repeat customer","Log 3 shows at one venue",rep,3],
     ["🌙","Night architect","Plan 3 nights that happened",nights,3],
     ["👥","Crew builder","Get 3 friends on the Shack (You → Friends)",+(SH.store.raw("shack-friends-n")||0),3]]
     .map(([ic,n2,how,have,need])=>({ic,n:n2,how,have:Math.min(have,need),need,on:have>=need}));}
@@ -714,8 +717,6 @@ renderVenues=function(){const list=$("list");loadStations();
     <div class="bpass-h"><span class="bpass-k"><img class="bshack-ic" src="hut.webp?v=2" alt="">Show passport</span><b>${beenV.length} <small>of ${tot} venues${(()=>{const n=showCount();return n?` · ${n} show${n===1?"":"s"}`:"";})()}</small></b></div>
     ${beenV.length?`<p class="bpass-tip">Tap a stamp to log shows you've seen there.</p><div class="bstamps">${stamps}</div>${plogPanel}<div class="bpass-regs">${regs.filter(x=>x[1]).map(([rg,a,b])=>`<span style="--pp:${Math.round(a/b*100)}%">${esc(rg)} <b>${a}</b>/${b}</span>`).join("")}</div>`
       :`<p>Tap <b>I've been here</b> on any venue you've been to. Shows you star stamp themselves the day after.</p>`}
-    ${(()=>{const on=bdg.filter(b=>b.on),lk=bdg.length-on.length;return `<p class="bbadge-n">${on.length?`${on.length} of ${bdg.length} badges earned`:`0 of ${bdg.length} badges yet`}${lk?` · <span>the rest fill in as you go</span>`:""}</p>`;})()}
-    <div class="bbadges">${[...bdg.filter(b=>b.on),...bdg.filter(b=>!b.on).sort((a,b)=>b.have/b.need-a.have/a.need)].map(badgeHtml).join("")}</div>
     <div class="bpass-acts">${beenV.length?`<button type="button" class="bpass-share" data-yshare="passport">${ni("share")} Share</button><button type="button" class="bpass-share" data-ppmap="1">${ni("map")} Passport map</button>`:""}
       <button type="button" class="bpass-share" data-yopen="1">☁ Sync, friends &amp; leaderboard</button></div>
   </div></div></div>`;
@@ -842,7 +843,7 @@ async function compareFrom(code){let d;try{d=await NIGHT.unpack(code);}catch(e){
     el.addEventListener("click",ev=>{if(ev.target===el||ev.target.closest("[data-cx]"))cmpClose();});document.addEventListener("keydown",ev=>{if(ev.key==="Escape"&&!el.hidden)cmpClose();});}
   const cmpClose=()=>{el.hidden=true;document.documentElement.classList.remove("rpop-on");if(el._opener&&el._opener.focus)el._opener.focus({preventScroll:true});};el._opener=opener;
   el.setAttribute("aria-label","Compare passports");
-  el.innerHTML=`<div class="rpop-in"><div class="rpop-top"><span class="rpop-k">↔ ${esc(who)} vs you</span><button type="button" class="rpop-x" data-cx aria-label="Close">✕</button></div>
+  el.innerHTML=`<div class="rpop-in"><div class="rpop-top"><span class="rpop-k">↔︎ ${esc(who)} vs you</span><button type="button" class="rpop-x" data-cx aria-label="Close">✕</button></div>
     <div class="bcmp-stats"><span><b>${theirs.size}</b>theirs</span><span><b>${both.length}</b>both</span><span><b>${BEEN.size}</b>yours</span></div>
     ${both.length?`<h3>You've both been to</h3><ul>${both.map(k=>row(k)).join("")}</ul>`:""}
     ${onlyT.length?`<h3>Only ${esc(who)} has been to · ideas for your next night</h3><ul>${onlyT.map(k=>row(k,1)).join("")}</ul>`:""}

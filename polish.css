@@ -61,3 +61,15 @@ html.ui-b .vcard .vf .vpin.bfollow{min-height:44px;margin:5px 4px 0 0}
 html.ui-b .bfc .bfb-foot .bfb-hint{min-height:44px;padding:0 6px!important}
 html.ui-b #list article.card.open .addcal{height:auto;min-height:44px}
 html.ui-b .vlink,html.ui-b .bn-sumlink,html.ui-b .bn-lnk,html.ui-b .vlogadd,html.ui-b .spc-book a,html.ui-b .bpv-note a{padding-block:15px;margin-block:-15px}
+
+/* ---- card front: compact Tickets button + banners that never cover the date or title ----
+   The 44px rule above (.tix) used a negative top margin that pulled the stub's Tickets button up over the month.
+   The button now stays small and sits under the month; an invisible ::after keeps a 44px-tall tap area. */
+html.ui-b .stubtix{min-height:0;height:30px;margin:8px 0 0;padding:0 2px;display:flex;align-items:center;justify-content:center;
+  font:700 11.5px/1 var(--body);border-radius:9px;border-width:1px;box-shadow:0 1.5px 0 #6b3f12;position:relative}
+html.ui-b .stubtix::after{content:"";position:absolute;inset:-7px -4px}
+/* banners on the flip cards: one fixed height, and the card content starts below them */
+html.ui-b .bfc-tag,html.ui-b .bfc-free{height:22px;box-sizing:border-box;padding:0 8px;display:inline-flex;align-items:center;gap:5px;line-height:1;white-space:nowrap}
+html.ui-b .bfc-tag .nic.nemo{width:14px;height:14px;margin:0;vertical-align:0}
+html.ui-b .bfc-f:has(.bfc-tag) .face.front,html.ui-b .bfc-f:has(.bfc-free) .face.front{padding-top:30px}
+html.ui-b .bfc-f:has(.bfc-free) .tr{margin-top:0}
