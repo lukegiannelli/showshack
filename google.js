@@ -146,6 +146,10 @@ function rput(k, v){ rmem[k] = v; const ks = Object.keys(rmem); if (ks.length > 
 const legMin = sec => Math.max(2, Math.round(sec/60));
 async function viaGoogle(pts, when){
   if (!ok || routeCalls >= ROUTE_MAX) return null; routeCalls++;
+  // shared daily budget for everyone (150/day in Supabase, take_route_slot): Google won't let us cap the Routes API,
+  // so we cap it here. No slot, or the check fails → skip Google and use the free router instead.
+  let slot = false; try { slot = !!(window.SH && SH.rpc && await SH.rpc("take_route_slot")); } catch(e) {}
+  if (!slot) return null;
   const ll = p => ({ location: { latLng: { latitude: p[0], longitude: p[1] } } });
   const body = { origin: ll(pts[0]), destination: ll(pts[pts.length-1]), intermediates: pts.slice(1, -1).map(ll),
     travelMode: "DRIVE", routingPreference: "TRAFFIC_AWARE", polylineEncoding: "GEO_JSON_LINESTRING" };
