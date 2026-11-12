@@ -29,7 +29,7 @@ const state = {flipped:new Set(), kind:"all", genre:"all", venue:"all", maxDrive
 try{(JSON.parse(localStorage.getItem("radar-stars")||"[]")).forEach(k=>state.stars.add(String(k)));}catch(e){}
 let starRef=null, starBusy=false, starAgain=false, starT, starCount=0;
 function skey(e){return (e.added?"p:":"e:")+e.id;}
-function saveStars(){try{localStorage.setItem("radar-stars",JSON.stringify([...state.stars]));}catch(e){} clearTimeout(starT); starT=setTimeout(flushStars,500);}
+function saveStars(){try{localStorage.setItem("radar-stars",JSON.stringify([...state.stars]));}catch(e){} clearTimeout(starT); starT=setTimeout(flushStars,500); if(window.shackCloudDirty)shackCloudDirty();}
 async function flushStars(){if(!starRef)return; if(starBusy){starAgain=true;return;} starBusy=true; try{await starRef.set({ids:[...state.stars]});}catch(e){if(e&&e.code==="invalid_argument")starRef=null;} starBusy=false; if(starAgain){starAgain=false;flushStars();}}
 function updateStarChip(){const c=document.getElementById("kindRow-starred");if(c)c.textContent="★ Starred"+(starCount>0?" · "+starCount:"");}
 try{const s=JSON.parse(localStorage.getItem("radar-prefs")||"{}");Object.assign(state,{kind:s.kind||"all",genre:s.genre||"all",maxDrive:s.maxDrive||180,sort:s.sort||"date",venue:"all",hideTBA:!!s.hideTBA,when:s.when||"any",flags:s.flags||{},car:s.car||1,mpg:+s.mpg>0?+s.mpg:25,gas:+s.gas>0?+s.gas:5.85,food:s.food!=null?+s.food:0,drinks:s.drinks!=null?+s.drinks:0,home:s.home||"drive",budget:+s.budget>0?+s.budget:0,pinV:Array.isArray(s.pinV)?s.pinV:[],poolOn:!!s.poolOn});}catch(e){}
@@ -88,7 +88,7 @@ function venueKey(e){return (e.venue||"")+" · "+(e.city||"");}
 // "Been here": venues you've marked, plus venues of starred shows whose date has passed (remembered when you star them).
 const BEEN=new Set(); let starVen={};
 try{(JSON.parse(localStorage.getItem("radar-been")||"[]")).forEach(k=>BEEN.add(k));starVen=JSON.parse(localStorage.getItem("radar-starven")||"{}")||{};}catch(e){}
-function saveBeen(){try{localStorage.setItem("radar-been",JSON.stringify([...BEEN]));localStorage.setItem("radar-starven",JSON.stringify(starVen));}catch(e){}}
+function saveBeen(){try{localStorage.setItem("radar-been",JSON.stringify([...BEEN]));localStorage.setItem("radar-starven",JSON.stringify(starVen));}catch(e){} if(window.shackCloudDirty)shackCloudDirty();}
 function syncBeen(up){const today=new Date().toISOString().slice(0,10);let ch=false;
   for(const e of up||[]){const k=skey(e);if(state.stars.has(k)&&!starVen[k]){starVen[k]={v:venueKey(e),d:String(e.end||e.start).slice(0,10)};ch=true;}}
   for(const [k,o] of Object.entries(starVen)){if(!state.stars.has(k)&&o.d>=today){delete starVen[k];ch=true;continue;}

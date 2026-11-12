@@ -258,6 +258,15 @@
 .bpass-acts{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px;align-items:center}
 .bpass-acts .bpass-share{margin:0;cursor:pointer}
 .bpass-msg{font:600 12px var(--body);color:#7ee0b8}
+.bcloud{display:flex;flex-wrap:wrap;gap:6px 8px;align-items:center;margin-top:10px;padding-top:10px;border-top:1px dashed rgba(255,255,255,.18)}
+.bcloud-t{flex:1 1 100%;font-size:13px;color:var(--muted)}
+.bcloud-t b{color:#fff;word-break:break-all}
+.bcloud-s{font:600 12px var(--body);color:#7ee0b8}
+.bcloud-s:empty{display:none}
+.bcloud-f{display:flex;flex-wrap:wrap;gap:6px;flex:1 1 100%}
+.bcloud-f input{flex:1 1 180px;min-width:0;min-height:34px;padding:0 12px;border-radius:999px;border:1px solid rgba(255,255,255,.25);background:rgba(0,0,0,.25);color:#fff;font:500 14px var(--body)}
+.bcloud .bpass-share{margin:0}
+.bcloud .bpass-share:disabled{opacity:.5}
 .bpass-regs span{background:linear-gradient(90deg,rgba(255,210,122,.22) var(--pp,0%),transparent var(--pp,0%))}
 .vrate{display:flex;gap:4px;margin:4px 0 6px}
 .vrate button{width:34px;height:34px;border-radius:10px;border:1px solid var(--line);background:var(--chip);color:var(--muted);font-size:17px;cursor:pointer}

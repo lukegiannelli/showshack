@@ -409,11 +409,12 @@ $("bMapStart").onclick=()=>{state.view="list";show("budget");setTimeout(()=>{con
 
 /* ---- venues: what's playing first, a one-line personality, follow + new-show dots, passport, jump to map ---- */
 let VQ="";const QUIET={};   // venue search text; venues.json spots with no listed shows (key → {c,ad,la,lo})
-/* ---- Show passport extras: log (rating + note per stamp), bucket list, badges, backup/restore. All on this device only. ---- */
+/* ---- Show passport extras: log (rating + note per stamp), bucket list, badges, backup/restore. On this device, plus optional email sync (cloud.js). ---- */
 const ld=(k,d)=>{try{return JSON.parse(localStorage.getItem(k)||"null")||d;}catch(e){return d;}};
 const PLOG=ld("shack-plog",{}),WANT=new Set(ld("shack-want",[]));let PASS=null;
-const savePlog=()=>{try{localStorage.setItem("shack-plog",JSON.stringify(PLOG));}catch(e){}};
-const saveWant=()=>{try{localStorage.setItem("shack-want",JSON.stringify([...WANT]));}catch(e){}};
+const savePlog=()=>{try{localStorage.setItem("shack-plog",JSON.stringify(PLOG));}catch(e){} if(window.shackCloudDirty)shackCloudDirty();};
+const saveWant=()=>{try{localStorage.setItem("shack-want",JSON.stringify([...WANT]));}catch(e){} if(window.shackCloudDirty)shackCloudDirty();};
+window.shackPass={PLOG,WANT,savePlog,saveWant};   // for cloud.js (passport sync)
 function badges(infos){const bv=infos.filter(v=>BEEN.has(v.k)),n=BEEN.size,rg=new Set([...BEEN].map(regionOfK).filter(r=>r!=="Other")),cnt=f=>bv.filter(f).length;
   return [[ni("ticket"),"First stamp","Stamp 1 venue",n>=1],[ni("chart"),"Regular","Stamp 10 venues",n>=10],[ni("map"),"Region hopper","Stamps in 3 regions",rg.size>=3],
     [ni("palm"),"All of SoCal","Stamps in all 6 regions",rg.size>=6],[ni("sun"),"Desert trip","Stamp a desert venue",rg.has("Desert")],
@@ -490,6 +491,7 @@ renderVenues=function(){const list=$("list");
     ${wantV.length?`<p class="bwant-p">♡ Bucket list: <b>${wantDone}</b> of ${wantV.length} done${wantV.length-wantDone?` · next up: ${esc(wantV.filter(k=>!BEEN.has(k)).slice(0,3).map(k=>k.split(" · ")[0]).join(", "))}`:""}</p>`:`<p class="bwant-p">Tap <b>♡ Bucket list</b> on venues you want to hit. They show up here.</p>`}
     <div class="bpass-acts">${beenV.length?`<button type="button" class="bpass-share" data-pshare="1">${ni("share")} Share my year</button><button type="button" class="bpass-share" data-ppmap="1">${ni("map")} Passport map</button>`:""}
       <button type="button" class="bpass-share" data-pback="1">Back up</button><label class="bpass-share">Restore<input type="file" accept="application/json,.json" data-prest hidden></label></div>
+    ${window.shackCloudHTML?shackCloudHTML():""}
   </div></div></div>`;
   const fol=infos.filter(v=>isPinned(v.k)).sort((a,b)=>newCount(b)-newCount(a)||byNext(a,b));
   const seg=`<div class="bseg bven-when">${WHEN.map(([w,l])=>`<button type="button" data-when="${w}" aria-pressed="${state.when===w}">${l}</button>`).join("")}</div>`;
