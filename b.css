@@ -294,6 +294,10 @@
 .bphoto .bpass-share{margin:0}
 .tag.vscore{color:#ffd36b;border-color:rgba(255,211,107,.45)}
 .fgo{margin:6px 0 0;font:600 12px var(--body);color:#7ee0b8}
+/* neon.js: emoji swapped for neon line icons, sized to the text around them */
+.nic.nemo{width:1.2em;height:1.2em;vertical-align:-.25em;margin:0 .06em;stroke-width:1.9}
+.bbadge .nic.nemo{width:22px;height:22px;margin:0}
+.bbadge:not(.on) .nic{--ic:#cfc6e8}
 /* flyers: Home row + the add-a-flyer sheet */
 .bfly-sub{margin:-4px 0 8px;font-size:13px;color:var(--muted)}
 .fly-open{overflow:hidden}

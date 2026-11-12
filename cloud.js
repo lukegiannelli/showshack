@@ -64,8 +64,9 @@ addEventListener("shack:store",ev=>{const k=ev.detail&&ev.detail.key;if(applying
 const esc2=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 window.shackCloudHTML=()=>{let body;
   if(user)body=`<span class="bcloud-t">☁ Synced to <b>${esc2(user.email||"your account")}</b>: passport, saved nights and settings.</span><span class="bcloud-s" aria-live="polite">${esc2(status)}</span><button type="button" class="bpass-share" data-cl="out">Sign out</button>`;
-  else if(ui==="email")body=`<form class="bcloud-f" data-cl-form="email"><input type="email" name="e" required autocomplete="email" placeholder="you@email.com" value="${esc2(email)}" aria-label="Your email"><button class="bpass-share">Send sign-in email</button><button type="button" class="bpass-share" data-cl="x">Cancel</button></form><span class="bcloud-s" aria-live="polite">${esc2(status)}</span>`;
-  else if(ui==="code")body=`<span class="bcloud-t">Check <b>${esc2(email)}</b>. Tap the link in it, or type the code here:</span><form class="bcloud-f" data-cl-form="code"><input name="c" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]{6,10}" required placeholder="Code" aria-label="Code from the email"><button class="bpass-share">Sign in</button><button type="button" class="bpass-share" data-cl="x">Cancel</button></form><span class="bcloud-s" aria-live="polite">${esc2(status)}</span>`;
+  // plain text boxes (not type=email / pattern) so a stray space can't block the button; spaces are stripped as you type
+  else if(ui==="email")body=`<form class="bcloud-f" data-cl-form="email" novalidate><input type="text" inputmode="email" name="e" autocomplete="email" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="you@email.com" value="${esc2(email)}" aria-label="Your email" data-cl-strip="email"><button class="bpass-share">Email me a code</button><button type="button" class="bpass-share" data-cl="x">Cancel</button></form><span class="bcloud-s" aria-live="polite">${esc2(status)}</span>`;
+  else if(ui==="code")body=`<span class="bcloud-t">We emailed a code to <b>${esc2(email)}</b>. Type it here (check spam if it's not there in a minute):</span><form class="bcloud-f" data-cl-form="code" novalidate><input name="c" type="text" inputmode="numeric" autocomplete="one-time-code" placeholder="Code" aria-label="Code from the email" maxlength="12" data-cl-strip="code"><button class="bpass-share">Sign in</button><button type="button" class="bpass-share" data-cl="resend">Send a new code</button><button type="button" class="bpass-share" data-cl="x">Cancel</button></form><span class="bcloud-s" aria-live="polite">${esc2(status)}</span>`;
   else body=`<span class="bcloud-t">☁ Sign in with your email to keep your passport, nights and settings on all your devices, share live night links, and see friends. Free.</span><button type="button" class="bpass-share" data-cl="in">Sign in with email</button><span class="bcloud-s" aria-live="polite">${esc2(status)}</span>`;
   return `<div class="bcloud" id="bCloud">${body}</div>`;};
 function redraw(){const el=document.getElementById("bCloud");if(!el)return;el.outerHTML=window.shackCloudHTML();
@@ -77,19 +78,28 @@ document.addEventListener("click",async ev=>{const b=ev.target.closest("[data-cl
   const a=b.dataset.cl;
   if(a==="in"){ui="email";status="";redraw();return;}
   if(a==="x"){ui="idle";status="";redraw();return;}
+  if(a==="resend"){ui="email";status="";redraw();return;}
   if(a==="out"){try{await sb.auth.signOut();}catch(e){}user=null;put(K_AT,null);ui="idle";status="Signed out. Everything stays on this device.";redraw();subs.forEach(f=>{try{f(null);}catch(e){}});}},true);
 document.addEventListener("submit",async ev=>{const f=ev.target.closest("[data-cl-form]");if(!f)return;ev.preventDefault();ev.stopPropagation();
   const btn=f.querySelector("button:not([type=button])");btn.disabled=true;
   try{await client();
-    if(f.dataset.clForm==="email"){email=f.e.value.trim();status="Sending…";redraw();
+    if(f.dataset.clForm==="email"){email=f.e.value.replace(/\s+/g,"").toLowerCase();
+      if(!/^[^@]+@[^@]+\.[a-z]{2,}$/i.test(email)){status="That email doesn't look right. Check it and try again.";redraw();return;}
+      status="Sending…";redraw();
       const {error}=await sb.auth.signInWithOtp({email,options:{emailRedirectTo:location.origin+location.pathname}});
       if(error)throw error;ui="code";status="";redraw();}
-    else{status="Checking…";redraw();
-      const {error}=await sb.auth.verifyOtp({email,token:f.c.value.trim(),type:"email"});
+    else{const token=f.c.value.replace(/\D+/g,"");
+      if(token.length<6){status="Type the whole code from the email (6 or more numbers).";redraw();return;}
+      status="Checking…";redraw();
+      const {error}=await sb.auth.verifyOtp({email,token,type:"email"});
       if(error)throw error;}
   }catch(e){const m=String(e&&e.message||"");
     status=/rate|too many|seconds/i.test(m)?"Too many emails for now. Try again in an hour.":/expired|invalid/i.test(m)?"That code didn't work. Check it or send a new email.":/lib/.test(m)?"Can't reach the sync service. Check your connection.":"Something went wrong. Try again.";
     redraw();}},true);
+
+// strip spaces as you type (email) / keep only numbers (code), so a stray space bar tap can't get in the way
+document.addEventListener("input",ev=>{const i=ev.target.closest("[data-cl-strip]");if(!i)return;
+  const v=i.dataset.clStrip==="code"?i.value.replace(/\D+/g,""):i.value.replace(/\s+/g,"");if(v!==i.value)i.value=v;},true);
 
 // pull again when you come back to the app (picks up changes from your other devices)
 document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible"&&user&&!busy)pull();});

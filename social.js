@@ -120,7 +120,9 @@ document.addEventListener("click",ev=>{const b=ev.target.closest("[data-so-unpho
 /* ===== decorate whatever's on screen: photo row in the passport log, ratings on venue cards, friends on show cards ===== */
 let decoT=0;
 function decorate(){clearTimeout(decoT);decoT=setTimeout(doDecorate,200);}
-const setText=(el,t)=>{if(el.textContent!==t)el.textContent=t;};   // only touch the page when something changed (keeps the watcher quiet)
+// only touch the page when something changed (keeps the watcher quiet). Compares what we last wrote, not textContent,
+// because neon.js swaps the emoji for an icon after we write it.
+const setText=(el,t)=>{if(el.dataset.t!==t){el.dataset.t=t;el.textContent=t;}};
 async function doDecorate(){const list=document.body;
   // sign-in box gets the friends panel right under it
   const cl=document.getElementById("bCloud");if(cl&&!document.getElementById("bSocial"))cl.insertAdjacentHTML("afterend",window.shackSocialHTML());
@@ -139,12 +141,12 @@ async function doDecorate(){const list=document.body;
   if(vcards.length){const S=await scores();if(S)vcards.forEach(b=>{const c=b.closest(".vcard"),s=S[b.dataset.pinv],old=c.querySelector(".vscore");
     if(!s){if(old)old.remove();return;}const txt=`★ ${(+s.avg_stars).toFixed(1)} · ${s.n} Shack rating${s.n===1?"":"s"}`;if(old){setText(old,txt);return;}
     let tags=c.querySelector(".vtags");if(!tags){const o=c.querySelector(".vopen");if(!o)return;o.insertAdjacentHTML("beforeend",'<span class="vtags"></span>');tags=c.querySelector(".vtags");}
-    tags.insertAdjacentHTML("afterbegin",`<span class="tag vscore">${E(txt)}</span>`);});}
+    tags.insertAdjacentHTML("afterbegin",`<span class="tag vscore" data-t="${E(txt)}">${E(txt)}</span>`);});}
   // friends who starred the same show
   const who={};(friends||[]).forEach(f=>(Array.isArray(f.stars)?f.stars:[]).forEach(k=>{(who[k]=who[k]||[]).push(f.name);}));
   list.querySelectorAll("button[data-star]").forEach(b=>{const face=b.closest(".body")||b.closest(".ev")||b.parentNode,old=face.querySelector(".fgo"),ns=who[b.dataset.star];
     if(!ns){if(old)old.remove();return;}const txt=`👥 ${ns.slice(0,3).join(", ")}${ns.length>3?` +${ns.length-3}`:""} starred this too`;
-    if(old){setText(old,txt);return;}face.insertAdjacentHTML("beforeend",`<p class="fgo">${E(txt)}</p>`);});}
+    if(old){setText(old,txt);return;}face.insertAdjacentHTML("beforeend",`<p class="fgo" data-t="${E(txt)}">${E(txt)}</p>`);});}
 // cards show up in several places (Shows, home picks, Saved, Venues), so watch the whole page for new ones
 new MutationObserver(ms=>{if(ms.some(m=>[...m.addedNodes].some(n=>n.nodeType===1&&!(n.matches&&n.matches(".fgo,.vscore,.vtags,.bphoto,#bSocial")))))decorate();}).observe(document.body,{childList:true,subtree:true});
 addEventListener("shack:store",ev=>{if(ev.detail&&(ev.detail.key==="shack-photos"))decorate();});
