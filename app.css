@@ -395,7 +395,7 @@ header .shack-share:active{transform:translateY(3px);box-shadow:inset 0 1px 0 rg
 .morecards{height:1px}
 /* header art: same geometry the old background used (center 96% / auto 106%), so nothing moves */
 .hutart{position:absolute;z-index:-1;height:106%;aspect-ratio:952/1024;left:50%;top:-5.76%;transform:translateX(-50%);
-  background:url(header.jpg?v=4) center/100% 100% no-repeat;perspective:900px}
+  background:url(header.jpg?v=5) center/100% 100% no-repeat;perspective:900px}
 .hutbtn{position:absolute;left:18.59%;top:14.55%;width:64.39%;height:73.34%;padding:0;border:0;background:none;cursor:pointer;
   -webkit-tap-highlight-color:transparent;transform-style:preserve-3d;outline-offset:4px}
 .hutbtn img{width:100%;height:100%;display:block;will-change:transform;transform-origin:47.8% 57.4%;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;pointer-events:none}
@@ -616,4 +616,4 @@ body.neb .vcard .vf .bvibe{color:#EDE6FF;opacity:1;text-shadow:0 1px 3px rgba(0,
 .gp-warn{color:var(--sold,#C0392B);font-weight:600}
 .gp-links{display:flex;flex-wrap:wrap;gap:12px}
 .gp-links a{color:inherit;font-weight:600}
-.gp-src{font-size:11px;color:var(--muted)}
+.gp-src{font-size:11px;color:var(--muted)}.tag.first{border-color:#7ee0b8;color:#7ee0b8}

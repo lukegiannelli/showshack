@@ -1,0 +1,63 @@
+/* ===== Polish (loads last): 44 px tap targets, focus rings, loading skeletons, offline banner, load error =====
+   Apple's minimum touch target is 44 × 44 pt. Buttons in tight rows grow their tappable area with a matching
+   negative margin, so the row keeps its size; inline text links grow with vertical padding (no layout change). */
+
+/* chips, selects and pill buttons: at least 44 tall */
+html.ui-b .chip,html.ui-b .bsubs .chip,html.ui-b .bvf2 .chip,html.ui-b .bft-row .chip,html.ui-b .bn-nights .chip,html.ui-b .bmap-chips .chip{min-height:44px;height:auto}
+html.ui-b select{min-height:44px}
+html.ui-b .bfb-acts>a,html.ui-b .bfb-acts>button,html.ui-b .bfb-full,html.ui-b .nadd,html.ui-b .ncal,html.ui-b .bpv,html.ui-b .share,html.ui-b .listenbtn,
+html.ui-b .nightbtn,html.ui-b .links.wide a,html.ui-b .bms-a a,html.ui-b .bms-a button,html.ui-b .bms-night a,html.ui-b .bms-night button,html.ui-b .bpass-share,
+html.ui-b .bvmap,html.ui-b .vbeen,html.ui-b .vall,html.ui-b .bn-row button,html.ui-b .bn-go button,html.ui-b .bnc-act>button,html.ui-b .bn-flipb,
+html.ui-b .rpop-go button,html.ui-b .bset-acts>*,html.ui-b .shack-share,html.ui-b .getbtn,html.ui-b .spc-act a,html.ui-b .spc-act button,html.ui-b .bplog-f button,
+html.ui-b .nv-main>a,html.ui-b .nv-main>button,html.ui-b .nv-flipb,html.ui-b .bnew-list button,html.ui-b .bcmp li button{min-height:44px;box-sizing:border-box}
+html.ui-b .blink{min-height:44px;display:inline-flex;align-items:center;padding-inline:6px}
+html.ui-b .bfc .bfb-acts{row-gap:8px}
+
+/* tight rows: grow the tappable box, give the space back with a negative margin */
+html.ui-b .starbtn{width:44px;height:44px;margin:-7px}
+html.ui-b .tix{min-height:44px;margin-block:-6px}
+html.ui-b .bmore{min-height:44px;margin-block:-6px}
+html.ui-b .vpin{min-height:44px;margin-block:-7px}
+html.ui-b .spc-fav{width:44px;height:44px;margin:-5px -5px -5px -1px}
+html.ui-b .getx{min-width:44px;min-height:44px;margin:-6px}
+html.ui-b .binfo-btn{width:44px;height:44px}
+html.ui-b .bset-btn{right:12px;bottom:64px}   /* stacked above the "?", clear of the Share pill */
+html.ui-b .bn-trash,html.ui-b .bnc-del{width:44px;height:44px}
+html.ui-b .bplog-del,html.ui-b .bplog-x,html.ui-b .binfo-x,html.ui-b .nv-x,html.ui-b .rpop-x,html.ui-b .bms-x{width:44px;height:44px}
+html.ui-b .bft-ppl button{min-width:44px;min-height:44px}
+/* inline text links inside sentences: taller hit area, same look */
+html.ui-b .vlink,html.ui-b .bn-sumlink,html.ui-b .bn-lnk,html.ui-b .vlogadd,html.ui-b .spc-book a,html.ui-b .bpv-note a{padding-block:12px;margin-block:-12px;display:inline}
+
+/* keyboard focus: one clear ring everywhere */
+html.ui-b :is(button,a,[role="button"],select,input,textarea,summary):focus-visible{outline:2px solid #FFC66B;outline-offset:2px}
+
+/* screen readers: a real "flip" button on each flip card (the visible hint is decoration) */
+.sr-only{position:absolute!important;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+.bfc-sr:focus-visible{position:absolute!important;width:auto;height:auto;clip:auto;left:10px;bottom:10px;z-index:4;padding:8px 12px;border-radius:999px;background:#FFC66B;color:#1d1030;font:700 13px var(--body)}
+.bfb-hint{border:0;background:none;color:inherit;font:inherit;cursor:pointer;min-height:44px;padding:0 4px}
+
+/* loading skeletons: the shape of what's coming, while the show list loads */
+.bskel{flex:none;width:min(290px,78vw);height:208px;border-radius:18px;background:linear-gradient(100deg,rgba(255,255,255,.05) 30%,rgba(255,255,255,.12) 50%,rgba(255,255,255,.05) 70%) 0 0/300% 100%;border:1px solid rgba(255,255,255,.08);animation:bskel 1.4s ease-in-out infinite}
+.bskel.row{width:100%;height:132px;margin-bottom:10px}
+@keyframes bskel{0%{background-position:100% 0}100%{background-position:0 0}}
+@media (prefers-reduced-motion:reduce){.bskel{animation:none}}
+
+/* show list failed to load: say why, offer a retry */
+.bload-err{display:flex;flex-direction:column;align-items:flex-start;gap:8px;padding:16px;border-radius:16px;border:1px solid rgba(255,138,174,.5);background:rgba(255,92,138,.08);color:var(--ink,#fff)}
+.bload-err b{font:700 16px var(--body)}
+.bload-err p{margin:0;font-size:13.5px;color:var(--muted,#cfc6ea)}
+.bload-err button{min-height:44px;padding:0 18px;border-radius:999px;border:0;background:linear-gradient(90deg,#ffd38a,#ff7ab8);color:#1d1030;font:700 14px var(--body);cursor:pointer}
+
+/* offline banner */
+.boff{position:fixed;left:0;right:0;top:0;z-index:1150;display:flex;align-items:center;justify-content:center;gap:8px;
+  padding:calc(env(safe-area-inset-top,0px) + 8px) max(16px,env(safe-area-inset-right,0px)) 8px max(16px,env(safe-area-inset-left,0px));
+  background:rgba(40,24,70,.97);border-bottom:1px solid rgba(255,198,107,.5);color:#fff;font:600 13px/1.35 var(--body);text-align:center;transform:translateY(-110%);transition:transform .25s}
+.boff.on{transform:none}
+.boff.back{border-color:#7ee0b8;color:#7ee0b8}
+@media (prefers-reduced-motion:reduce){.boff{transition:none}}
+/* the last few that older, more specific rules were holding small */
+html.ui-b .bseg button{height:44px}
+html.ui-b .vcard .vf .vpin.bfollow{min-height:44px;margin:5px 4px 0 0}
+html.ui-b .bfc .bfb-foot .bfb-hint{min-height:44px;padding:0 6px!important}
+html.ui-b #list article.card.open .addcal{height:auto;min-height:44px}
+html.ui-b .vlink,html.ui-b .bn-sumlink,html.ui-b .bn-lnk,html.ui-b .vlogadd,html.ui-b .spc-book a,html.ui-b .bpv-note a{padding-block:15px;margin-block:-15px}

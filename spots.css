@@ -116,17 +116,43 @@
 .ui-b .btile::before{content:"";position:absolute;z-index:0;inset:-45%;pointer-events:none;
   background:radial-gradient(circle at 35% 35%,color-mix(in srgb,var(--vc) 38%,transparent) 0,transparent 42%);
   animation:btglow 11s ease-in-out infinite alternate;animation-delay:var(--d,0s)}
-/* ONE sheen for the whole grid: each tile's ::after is a grid-sized layer shifted back by the tile's own offset
-   (--tx/--ty, set by spots.js), so every tile shows its slice of the same light band as it crosses all six */
-/* the band is a soft, slightly wavy curve (blurred SVG stroke). It starts fully off the left of the grid and leaves past the right,
-   tilting a little as it goes. The layer is centred on the grid's left edge, then moved by transform (all tiles share the clock). */
-.ui-b .btile::after{content:"";position:absolute;z-index:0;pointer-events:none;
-  width:150px;height:calc(var(--gh,100%) * 1.5);left:calc(-1 * var(--tx,0px) - 75px);top:calc(-1 * var(--ty,0px) - var(--gh,100%) * .25);
-  background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 600' preserveAspectRatio='none'%3E%3Cdefs%3E%3Cfilter id='b' x='-60%25' y='-5%25' width='220%25' height='110%25'%3E%3CfeGaussianBlur stdDeviation='9'/%3E%3C/filter%3E%3C/defs%3E%3Cpath d='M60 -20C95 60 25 140 60 220S95 380 60 460 25 560 60 640' fill='none' stroke='white' stroke-opacity='.22' stroke-width='34' filter='url(%23b)'/%3E%3C/svg%3E") center/100% 100% no-repeat;
-  animation:btsheen 9s ease-in-out infinite}
-/* every tile runs the same clock, so the glow and the sheen stay in step */
-.ui-b .btile.bt-sync::before,.ui-b .btile.bt-sync::after{animation:none!important}
+/* every tile runs the same clock, so the glows stay in step */
+.ui-b .btile.bt-sync::before{animation:none!important}
 @keyframes btglow{0%{transform:translate(-12%,-8%)}50%{transform:translate(18%,12%)}100%{transform:translate(-4%,22%)}}
-@keyframes btsheen{0%,50%{transform:translateX(calc(var(--gh,300px) * -.5 - 120px)) rotate(15deg)}
-  88%,100%{transform:translateX(calc(var(--gw,300px) + var(--gh,300px) * .5 + 120px)) rotate(22deg)}}
-@media (prefers-reduced-motion:reduce){.ui-b .btile::before,.ui-b .btile::after{animation:none}}
+@media (prefers-reduced-motion:reduce){.ui-b .btile::before{animation:none}}
+
+/* ===== space ramen: the bowl (disco.js draws it) + the food / afters pop-up ===== */
+.dball.ramen,.dball.ramen.lv1,.dball.ramen.lv2{box-shadow:none;transition:none}   /* no fade: the round glow fading out under the bowl read as a square */
+.dball.ramen{filter:drop-shadow(0 6px 18px rgba(255,150,60,.25))}
+.dball.ramen.lv2{filter:drop-shadow(0 6px 26px rgba(255,170,70,.55))}
+.dball.flydown{animation:dflydown .32s cubic-bezier(.5,0,.9,.5) forwards}
+@keyframes dflydown{to{transform:translateY(170px) scale(.55) rotate(18deg);opacity:0}}
+@media (prefers-reduced-motion:reduce){.dball.flydown{animation:none}}
+html.rpop-on,html.rpop-on body{overflow:hidden}
+.rpop{position:fixed;inset:0;z-index:1100;overflow-y:auto;-webkit-overflow-scrolling:touch;display:flex;align-items:flex-start;justify-content:center;
+  background:radial-gradient(120% 70% at 50% 0%,rgba(255,140,60,.32),rgba(10,5,26,.97) 60%),#0b0620;
+  padding:calc(env(safe-area-inset-top,0px) + 18px) 16px calc(env(safe-area-inset-bottom,0px) + 24px)}
+.rpop[hidden]{display:none}
+.rpop-in{width:100%;max-width:440px;display:flex;flex-direction:column;gap:12px;color:#fff}
+.rpop-top{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.rpop-k{font:800 22px/1.1 var(--display,var(--body));letter-spacing:.03em;text-transform:uppercase;background:linear-gradient(90deg,#ffe08a,#ffad33 40%,#ff6fa5);-webkit-background-clip:text;background-clip:text;color:transparent}
+.rpop-x{width:40px;height:40px;border-radius:50%;border:1px solid rgba(255,255,255,.2);background:rgba(255,255,255,.08);color:#fff;font-size:16px;cursor:pointer}
+.rpop-cards{display:flex;flex-direction:column;gap:12px}
+.rpop-slot{display:flex;flex-direction:column;gap:6px}
+.rpop-l{align-self:flex-start;font:700 12px var(--mono);letter-spacing:.5px;text-transform:uppercase;padding:3px 9px;border-radius:999px;color:#160a2e;background:var(--vc);box-shadow:0 0 14px -4px var(--vc)}
+.rpop .spc{background:color-mix(in srgb,color-mix(in srgb,var(--vc) 12%,#1a1030) 92%,transparent)}
+.rpop-gap{margin:-4px 0 0;text-align:center;font:600 12.5px var(--mono);color:#cfc6ea}
+.rpop-go{display:flex;flex-wrap:wrap;gap:8px}
+.rpop-go button{min-height:44px;padding:0 16px;border-radius:999px;border:1px solid rgba(255,255,255,.2);background:rgba(255,255,255,.08);color:#fff;font:700 14px var(--body);cursor:pointer}
+.rpop-go .rpop-main{flex:1;border:0;background:linear-gradient(90deg,#ffd38a,#ff7ab8);color:#1d1030}
+.rpop-go button:disabled{opacity:.75}
+.rpop-fine{margin:0;font-size:12px;color:#a59cc4}
+/* the ball hint changes with the mode (disco / globe / ramen): keep its height so the ball never jumps under your finger */
+.ui-b .bdisco-h p{min-height:4.4em}
+/* first-visit ghost finger on the ball */
+.dghost{position:absolute;left:50%;top:60%;pointer-events:none;z-index:3;display:flex;flex-direction:column;align-items:center;gap:4px;transform:translateX(-50%);transition:opacity .3s}
+.dghost.bye{opacity:0}
+.dghost i{font-style:normal;font-size:34px;filter:drop-shadow(0 0 8px rgba(255,255,255,.7));animation:dghost 4.2s ease-in-out infinite}
+.dghost span{font:600 11px var(--mono);color:#fff;white-space:nowrap;padding:3px 8px;border-radius:999px;background:rgba(20,10,40,.7);border:1px solid rgba(255,255,255,.2);order:-1;transform:translateY(-118px)}
+@keyframes dghost{0%{transform:translate(-50px,0);opacity:0}8%{opacity:.95}28%{transform:translate(50px,0)}46%{transform:translate(-50px,0)}58%{transform:translate(0,-10px)}74%{transform:translate(0,40px);opacity:.95}88%,100%{transform:translate(0,40px);opacity:0}}
+@media (prefers-reduced-motion:reduce){.dghost i{animation:none}}
