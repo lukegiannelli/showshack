@@ -23,7 +23,9 @@ async function pushLive(){const map=LIVE();if(!C.user||!window.NIGHT||!NIGHT.all
 addEventListener("shack:store",ev=>{if(!ev.detail||ev.detail.key!=="shack-nights"||!C.user)return;clearTimeout(liveT);liveT=setTimeout(()=>pushLive().catch(()=>{}),2000);});
 window.SHACK_LIVE={link:liveLink,on:()=>!!C.user};
 // who you are on the Shack (for invite links): first name + friend code, or null when signed out
-window.SHACK_ME=()=>prof?{name:String(prof.name||"").split(/\s+/)[0].slice(0,20),code:prof.friend_code}:null;
+window.SHACK_ME=()=>prof?{name:String(prof.name||"").split(/\s+/)[0].slice(0,20),full:String(prof.name||"").trim().slice(0,30),code:prof.friend_code}:null;
+// friend codes are two silly words (GRUMPY-RACCOON); people see and type them as "grumpy raccoon"
+const pretty=c=>String(c||"").toLowerCase().replace(/-/g," ");
 
 /* ===== profile, friends, leaderboard ===== */
 let prof=null,friends=null,board=null,msg="",busy=false;
@@ -40,9 +42,9 @@ window.shackSocialHTML=()=>{const u=C.user;let h="";
   if(u&&!prof)h+=`<form class="bcloud-f" data-so-form="name"><input name="n" maxlength="30" required placeholder="Your name for friends" aria-label="Your name for friends" autocomplete="nickname"><button class="bpass-share">Save</button></form>
     <span class="bcloud-t">Pick a name to add friends, see who's going to the same shows and join the leaderboard.</span>`;
   if(u&&prof){const mine=myBeen();
-    h+=`<span class="bcloud-t">👥 Your friend code: <b class="bso-code">${E(prof.friend_code)}</b> (you're <b>${E(prof.name)}</b>)</span>
-      <button type="button" class="bpass-share" data-so="invite">Invite a friend</button>
-      <form class="bcloud-f" data-so-form="add"><input name="c" maxlength="12" required placeholder="Friend's code" aria-label="Friend's code" autocapitalize="characters" autocomplete="off"><button class="bpass-share">Add friend</button></form>`;
+    h+=`<span class="bcloud-t">👥 Your friend code: <b class="bso-code">${E(pretty(prof.friend_code))}</b> (you're <b>${E(prof.name)}</b>)</span>
+      <div class="bso-acts"><button type="button" class="bpass-share" data-so="invite">Invite a friend</button><button type="button" class="bpass-share" data-so="reroll">🎲 New code</button></div>
+      <form class="bcloud-f" data-so-form="add"><input name="c" maxlength="40" required placeholder="Friend's code, e.g. grumpy raccoon" aria-label="Friend's code" autocapitalize="off" autocomplete="off" spellcheck="false"><button class="bpass-share">Add friend</button></form>`;
     if(friends&&friends.length)h+=`<ul class="bso-list">${friends.map(f=>{const b=Array.isArray(f.been)?f.been:[],common=b.filter(k=>mine.has(k)).length,only=b.length-common;
       return `<li><b>${E(f.name)}</b><span>${b.length} venue${b.length===1?"":"s"} · ${common} in common${only?` · ${only} you haven't hit`:""}</span><button type="button" class="bso-x" data-so="rm" data-id="${E(f.friend_id)}" aria-label="Remove ${E(f.name)}">✕</button></li>`;}).join("")}</ul>`;
     else if(friends)h+=`<span class="bcloud-t">No friends yet. Send your invite link or trade codes.</span>`;
@@ -53,7 +55,9 @@ window.shackSocialHTML=()=>{const u=C.user;let h="";
     :`<span class="bcloud-t">Nobody's on it yet. Sign in and turn it on to be first.</span>`;
   if(msg)h+=`<span class="bcloud-s" aria-live="polite">${E(msg)}</span>`;
   return `<div class="bcloud bsocial" id="bSocial">${h}</div>`;};
-function redraw(){const el=document.getElementById("bSocial");if(el)el.outerHTML=window.shackSocialHTML();}
+function redraw(){const el=document.getElementById("bSocial");if(el)el.outerHTML=window.shackSocialHTML();
+  // the You page says hi by your Shack name once it's loaded
+  const h=document.getElementById("bYouName");if(h)h.textContent=prof&&prof.name?String(prof.name).trim():"there";}
 
 async function addFriend(code){const sb=await C.client();const {data,error}=await sb.rpc("add_friend",{p_code:code});
   if(error)throw error;msg=`You and ${data} are friends now ✓`;await loadSocial();}
@@ -62,7 +66,7 @@ const PK="shack-pending-friend";
 function takePending(){let c=null;try{c=localStorage.getItem(PK);}catch(e){}if(!c||!C.user)return;try{localStorage.removeItem(PK);}catch(e){}
   if(!prof){setTimeout(()=>{if(prof)addFriend(c).catch(e=>{msg=errMsg(e);redraw();});else{msg="Pick your name first, then add code "+c;redraw();}},1500);return;}
   addFriend(c).catch(e=>{msg=errMsg(e);redraw();});}
-(()=>{const m=/^#F=([A-Z0-9]{6,12})$/i.exec(window.NIGHT_HASH||location.hash||"");if(!m)return;
+(()=>{const m=/^#F=([A-Z0-9-]{4,40})$/i.exec(window.NIGHT_HASH||location.hash||"");if(!m)return;
   let by="";try{by=decodeURIComponent((/[?&]by=([^&#]+)/.exec(window.SHACK_SEARCH||location.search)||[])[1]||"").replace(/[^\p{L}\p{N} .'-]/gu,"").trim().slice(0,20);}catch(e){}
   try{localStorage.setItem(PK,m[1].toUpperCase());history.replaceState(null,"",location.pathname);}catch(e){}
   // wait until the "get the app" sheet is closed so the two don't stack
@@ -73,9 +77,11 @@ const errMsg=e=>{const m=String(e&&e.message||"");return /no one has/.test(m)?"N
 
 document.addEventListener("click",async ev=>{const b=ev.target.closest("[data-so]");if(!b)return;ev.stopPropagation();ev.preventDefault();const a=b.dataset.so;
   try{if(a==="board"){if(board){board=null;redraw();return;}board=await SH.rpc("leaderboard",{});redraw();return;}
-    if(a==="invite"&&prof){const url=base()+"?get=1&by="+encodeURIComponent(String(prof.name||"").split(/\s+/)[0].slice(0,20))+"#F="+prof.friend_code,text=`Add me on The Show Shack so we can see who's going to what 🛖 My code: ${prof.friend_code}`;
+    if(a==="invite"&&prof){const url=base()+"?get=1&by="+encodeURIComponent(String(prof.name||"").split(/\s+/)[0].slice(0,20))+"#F="+prof.friend_code,text=`Add me on The Show Shack so we can see who's going to what 🛖 My code: ${pretty(prof.friend_code)}`;
       if(navigator.share){try{await navigator.share({text,url});}catch(e){}return;}
       try{await navigator.clipboard.writeText(text+"\n"+url);b.textContent="Invite copied ✓";}catch(e){prompt("Copy your invite link",url);}return;}
+    if(a==="reroll"&&prof){if(!confirm("Roll a new friend code? Invite links you already sent stop working. Friends you have stay friends."))return;
+      const sb=await C.client();const {data,error}=await sb.rpc("new_friend_code");if(error)throw error;prof.friend_code=data;msg=`Your new code: ${pretty(data)} ✓`;redraw();return;}
     if(a==="rm"){const f=(friends||[]).find(x=>x.friend_id===b.dataset.id);if(!confirm(`Remove ${f?f.name:"this friend"}? You'll both stop seeing each other.`))return;
       const sb=await C.client();const {error}=await sb.rpc("remove_friend",{p_friend:b.dataset.id});if(error)throw error;msg="Removed.";await loadSocial();return;}
   }catch(e){msg=a==="board"?"Couldn't load the leaderboard.":errMsg(e);redraw();}},true);

@@ -1,0 +1,6 @@
+﻿-- The Show Shack · fun friend codes (already applied to the live project as migration "fun_friend_codes").
+-- Codes are two silly words, stored like GRUMPY-RACCOON, shown and typed as "grumpy raccoon".
+-- public.fun_code(): picks an unused adjective-noun pair (adds a number only if they ever run out); profiles.friend_code defaults to it.
+-- public.add_friend(p_code): matches ignoring spaces, dashes and capitals.
+-- public.new_friend_code(): rolls you a new code (the 🎲 New code button); friends you have stay friends.
+-- See the Supabase dashboard (Database → Functions) for the full word lists.

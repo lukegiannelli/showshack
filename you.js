@@ -29,7 +29,7 @@ addEventListener("submit",ev=>{if(navigator.onLine)return;if(!ev.target.closest(
 function youHTML(){const u=C.user,owner=SH.store.raw("shack-owner")==="1";
   return `<button type="button" class="binfo-x" data-close aria-label="Close">✕</button>
     <p class="binfo-kick"><img class="bshack-ic" src="hut.webp?v=2" alt="">you</p>
-    <h2 id="bYouH">${u?"Hey"+(u.email?", <span class='byou-mail'>"+E(u.email)+"</span>":""):"Make the Shack yours"}</h2>
+    <h2 id="bYouH">${u?`Hey, <span id="bYouName">${E((window.SHACK_ME&&SHACK_ME()||{}).full||"there")}</span>`:"Make the Shack yours"}</h2>
     ${u?"":`<p class="bset-p">Everything works without an account. Sign in (just your email, free) to sync across devices, get reminders and see friends.</p>`}
     ${passSec()}
     <section class="byou-sec"><h3>☁ Account &amp; sync</h3>${window.shackCloudHTML?shackCloudHTML():""}</section>

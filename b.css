@@ -331,6 +331,8 @@
 .byou-pass .bbadges{margin:6px 0 0}
 .byou-pass .bbadges.clip{max-height:204px;overflow:hidden;-webkit-mask-image:linear-gradient(#000 70%,transparent);mask-image:linear-gradient(#000 70%,transparent)}
 .byou-pass .bpass-acts{margin-top:4px}
+.bso-acts{display:flex;flex-wrap:wrap;gap:6px}.bso-acts .bpass-share{margin:0}
+.bso-code{color:#FFC66B;text-shadow:0 0 8px rgba(255,198,107,.5)}
 /* Venues: the one-line way into the passport */
 .ui-b .bpass-mini{padding:0}
 .bpass-go{all:unset;box-sizing:border-box;width:100%;display:flex;align-items:center;gap:10px;padding:12px 14px;cursor:pointer;min-height:56px}
