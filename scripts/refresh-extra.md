@@ -14,6 +14,17 @@ Every show card says "✓ Listing checked <date>" from the show's `updatedAt`, a
 - For the community kinds (dance, contact, sound, drum, social, art, volunteer, openmic), set `updatedAt` to today only
   when you saw the listing itself today.
 
+## Shows the Ticketmaster job added (every run)
+
+The "Ticketmaster prices" GitHub Action also adds shows we're missing at venues we already list. Those carry
+`"src": "tm-auto"` and a `tmId`.
+
+- Before you add a show, look for a `tm-auto` show at the same venue on the same date. If there is one, it's the same
+  night: update that entry (title, time, price, url to the official event page) instead of adding a second one.
+  Keep its `id`, `src` and `tmId`.
+- If the venue's own calendar doesn't have a `tm-auto` show (and the date is within the next 60 days), it may be a
+  private or rental event. Leave it, but mention it in your note so Luke can check.
+
 ## Food & afters deals (Sundays and Wednesdays only, about 15 tool calls)
 
 `afters.json` holds the food and afters spots. A spot can have a `deal`:

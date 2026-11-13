@@ -2,7 +2,8 @@
 """Fill in Ticketmaster prices on events.json (runs in GitHub Actions, after the daily refresh).
 
 Uses Ticketmaster's free Discovery API (official data, no scraping). Needs the repo secret TM_API_KEY.
-It only touches price fields (and marks shows Ticketmaster lists as cancelled). No UI changes.
+It touches price fields, marks shows Ticketmaster lists as cancelled, and adds up to 60 missing shows a day at
+venues we already list (see add_missing below). No UI changes.
 
 Rules
 - Match a show only when the date is the same AND the venue matches AND the title/artist matches.
@@ -49,7 +50,10 @@ def venue_ok(ours, theirs):
 
 def title_ok(ev, tm):
     names = [tm["name"]] + tm["artists"]
-    ours = [ev.get("title") or ""] + [x for x in re.split(r",|·|/| w/ | with ", ev.get("artists") or "") if x.strip()]
+    arts = ev.get("artists") or ""
+    if isinstance(arts, list):   # a few listings keep artists as a list
+        arts = ", ".join(str(a) for a in arts if a)
+    ours = [ev.get("title") or ""] + [x for x in re.split(r",|·|/| w/ | with ", str(arts)) if x.strip()]
     best = 0.0
     for o in ours:
         for n in names:
@@ -106,9 +110,14 @@ def fetch_all():
                 for x in (j.get("_embedded") or {}).get("events", []):
                     v = ((x.get("_embedded") or {}).get("venues") or [{}])[0]
                     pr = [p for p in (x.get("priceRanges") or []) if (p.get("min") or 0) > 0 and (p.get("currency") or "USD") == "USD"]  # $0 = "no price set", never "free"
+                    cl = (x.get("classifications") or [{}])[0]
                     out.append({
                         "id": x.get("id"), "name": x.get("name") or "", "url": clean_url(x.get("url")),
                         "date": ((x.get("dates") or {}).get("start") or {}).get("localDate"),
+                        "time": ((x.get("dates") or {}).get("start") or {}).get("localTime"),
+                        "seg": (cl.get("segment") or {}).get("name") or "", "genre": (cl.get("genre") or {}).get("name") or "",
+                        "sub": (cl.get("subGenre") or {}).get("name") or "",
+                        "max": max((p.get("max") or 0 for p in pr), default=None),
                         "status": (((x.get("dates") or {}).get("status") or {}).get("code") or "").lower(),
                         "onsale": ((x.get("sales") or {}).get("public") or {}).get("startDateTime"),
                         "venue": v.get("name") or "", "city": (v.get("city") or {}).get("name") or "",
@@ -122,11 +131,107 @@ def fetch_all():
             d = e
     return out
 
+# ---- adding shows we're missing ----
+# Only at venues we already list (so the name, city and map pin are ours), only on dates where we list NOTHING at that
+# venue (so a show we have under a different title can't be added twice), one show per venue per night, music, comedy
+# and theater only, no parking/VIP/package listings. Added shows carry "src": "tm-auto" and "tmId"; the daily refresh
+# updates them instead of adding its own copy (scripts/refresh-extra.md).
+ADD_MAX, ADD_PER_VENUE = 60, 10   # per run; it runs every morning, so the backlog fills in over a few days
+JUNK = re.compile(r"\b(parking|vip|packages?|upgrades?|add[- ]?ons?|gift ?cards?|vouchers?|tailgate|suites?|premium seat|"
+                  r"club access|lounge access|camping|shuttle|lockers?|season pass|meet ?(and|&) ?greets?|soundcheck|merch|"
+                  r"fast ?lane|early entry|cabanas?)\b", re.I)
+GENRE = [("hip-hop", "hiphop"), ("rap", "hiphop"), ("dance/electronic", "electronic"), ("electronic", "electronic"),
+         ("latin", "latin"), ("regional mexican", "latin"), ("reggae", "reggae"), ("pop", "pop"), ("jazz", "jazz"),
+         ("r&b", "jazz"), ("blues", "jazz"), ("soul", "jazz"), ("rock", "indie"), ("alternative", "indie"),
+         ("metal", "indie"), ("punk", "indie"), ("indie", "indie"), ("folk", "indie"), ("country", "indie")]
+
+def kind_of(t):
+    g = (t["genre"] or "").lower()
+    if g == "comedy" or (t["sub"] or "").lower() == "comedy":
+        return "comedy"
+    if t["seg"] == "Music":
+        return "concert"
+    if t["seg"] == "Arts & Theatre" and g in ("theatre", "musical", "performance art", "variety", "magic & illusion", "dance"):
+        return "theater"
+    return None
+
+def clock(s):
+    try:
+        h, m = int(s[:2]), int(s[3:5])
+    except Exception:
+        return None
+    return f"{(h % 12) or 12}:{m:02d} {'AM' if h < 12 else 'PM'}"
+
+def slug(s, n=40):
+    s = unicodedata.normalize("NFKD", str(s or "")).encode("ascii", "ignore").decode().lower()
+    return re.sub(r"[^a-z0-9]+", "-", s).strip("-")[:n].strip("-")
+
+def add_missing(data, tm, today):
+    evs = data.get("events", [])
+    today_s, last = today.isoformat(), (today + timedelta(days=HORIZON_DAYS)).isoformat()
+    venues = {}   # our venues with a map pin: (venue, city) -> {lat, lon, n}
+    for e in evs:
+        if e.get("venue") and e.get("city") and isinstance(e.get("lat"), (int, float)) and "see tickets" not in e["venue"]:
+            v = venues.setdefault((e["venue"], e["city"]), {"lat": e["lat"], "lon": e["lon"], "n": 0})
+            v["n"] += 1
+    taken, ids, tm_ids = set(), {e.get("id") for e in evs}, {e.get("tmId") for e in evs if e.get("tmId")}
+    for e in evs:   # every night each of our venues already has something (incl. multi-night runs)
+        if e.get("start") and not e.get("recurrence"):
+            try:
+                d0 = date.fromisoformat(e["start"]); end = date.fromisoformat(e.get("end") or e["start"])
+            except ValueError:
+                continue
+            d = d0
+            while d <= end and (d - d0).days < 60:
+                taken.add((norm(e.get("venue")), d.isoformat())); d += timedelta(days=1)
+    by_date = {}
+    for e in evs:
+        if e.get("start"):
+            by_date.setdefault(e["start"], []).append(e)
+    added, per_venue = 0, {}
+    for t in sorted(tm, key=lambda x: x["date"] or ""):
+        if added >= ADD_MAX:
+            break
+        d = t["date"]
+        if not d or d < today_s or d > last or t["id"] in tm_ids or t["status"] != "onsale" or JUNK.search(t["name"]):
+            continue
+        k = kind_of(t)
+        if not k:
+            continue
+        mine = [(vk, v) for vk, v in venues.items() if norm(vk[1]) == norm(t["city"]) and venue_ok(vk[0], t["venue"])]
+        if not mine:
+            continue
+        (vname, vcity), v = max(mine, key=lambda x: x[1]["n"])
+        if (norm(vname), d) in taken or per_venue.get(vname, 0) >= ADD_PER_VENUE:
+            continue
+        if any(title_ok(o, t) for o in by_date.get(d, [])):   # same show listed under another venue name
+            continue
+        title = t["name"].strip()
+        artists = ", ".join(a for a in t["artists"] if norm(a) != norm(title)) or None
+        genres = sorted({g for key, g in GENRE if key in (t["genre"] + " " + t["sub"]).lower()}) if k == "concert" else []
+        eid, i = f"{slug(title)}-{slug(vname, 20)}-{d}", 2
+        while eid in ids:
+            eid, i = f"{slug(title)}-{slug(vname, 20)}-{d}-{i}", i + 1
+        onsale = (t.get("onsale") or "")[:10]
+        lo = int(round(t["min"])) if t["min"] else None
+        hi = int(round(t["max"])) if t.get("max") and lo is not None and t["max"] > t["min"] else None
+        evs.append({"id": eid, "title": title, "artists": artists, "kind": k, "genres": genres, "venue": vname, "city": vcity,
+                    "lat": v["lat"], "lon": v["lon"], "start": d, "end": None, "time": clock(t.get("time") or ""),
+                    "priceFrom": lo, "priceTo": hi, "priceEst": False, "priceAvg": None, "priceNote": None,
+                    "priceAsOf": today_s if lo is not None else None, "priceSrc": "ticketmaster" if lo is not None else None,
+                    "priceWas": None, "priceChangedAt": None, "onSaleAt": onsale if onsale > today_s else None, "ages": None,
+                    "note": None, "url": t["url"], "status": "announced" if onsale > today_s else "on sale",
+                    "updatedAt": today_s, "src": "tm-auto", "tmId": t["id"]})
+        ids.add(eid); tm_ids.add(t["id"]); taken.add((norm(vname), d)); by_date.setdefault(d, []).append(evs[-1])
+        per_venue[vname] = per_venue.get(vname, 0) + 1; added += 1
+    return added
+
 def main():
     if not KEY:
         print("No TM_API_KEY secret yet; skipping Ticketmaster prices.")
         return 0
     data = json.load(open(PATH, encoding="utf-8"))
+    n_start = len(data.get("events", []))
     tm = fetch_all()
     by_date = {}
     for t in tm:
@@ -175,11 +280,12 @@ def main():
         if "google.com/search" in (ev.get("url") or "") and live[0].get("url"):
             ev["url"] = live[0]["url"]  # a real ticket page beats a search link
         priced += 1
-    note = f"Ticketmaster: {len(tm)} listings checked, {matched} matched, {priced} priced, {changed} price moves, {cancelled} cancelled."
+    added = add_missing(data, tm, today)
+    note = f"Ticketmaster: {len(tm)} listings checked, {matched} matched, {priced} priced, {changed} price moves, {cancelled} cancelled, {added} added."
     data["tmNote"], data["tmRun"] = note, datetime.now(timezone.utc).isoformat(timespec="seconds")
     n_before = len(data.get("events", []))
     s = json.dumps(data, ensure_ascii=False, separators=(",", ":"))
-    assert len(json.loads(s)["events"]) == n_before
+    assert len(json.loads(s)["events"]) == n_before and n_before >= n_start
     open(PATH, "w", encoding="utf-8").write(s)
     print(note)
     return 0
