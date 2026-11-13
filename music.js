@@ -110,7 +110,18 @@ async function readLink(link){const ctl=new AbortController(),t=setTimeout(()=>c
   catch(e){return {error:navigator.onLine===false?"You're offline. Try again once you're back.":"That took too long. Try again in a minute."};}
   finally{clearTimeout(t);}}
 const keep=(u,j)=>{C[u]={a:j.artists.map(a=>a.n),c:j.artists.map(a=>a.c||1),at:Date.now()};};
-function changed(){IDX=null;MEMO=null;build();const b=$("bEars");if(b)b.dataset.sig="";drawRow();redraw();}
+function changed(){IDX=null;MEMO=null;build();const b=$("bEars");if(b)b.dataset.sig="";drawRow();redraw();upArtists();}
+/* ===== "Just announced" alerts: your top 300 artists go to your own private row (follow_artists) when signed in, so the
+   daily reminders function can ping you when one of them gets a new show. Only sent when the list changes. ===== */
+const KU="shack-music-up";let upT=null;
+function upArtists(){clearTimeout(upT);upT=setTimeout(async()=>{const cl=window.SHACK_CLOUD;if(!cl||!cl.user)return;
+  const names=ART.slice(0,300).map(a=>String(a.n).slice(0,60)),sig=cl.user.id+"|"+names.join("|");
+  if(SH.store.raw(KU)===String(sig.length)+":"+names.slice(0,20).join("|"))return;
+  try{const sb=await cl.client();
+    const {error}=names.length?await sb.from("follow_artists").upsert({user_id:cl.user.id,names,updated_at:new Date().toISOString()}):await sb.from("follow_artists").delete().eq("user_id",cl.user.id);
+    if(!error)SH.store.put(KU,String(sig.length)+":"+names.slice(0,20).join("|"));}catch(e){}},2500);}
+if(window.SHACK_CLOUD&&SHACK_CLOUD.onUser)SHACK_CLOUD.onUser(u=>{if(u)upArtists();});
+upArtists();
 // re-read saved links: ones this device has never read (added on another device) right away, the rest every couple of days
 async function refresh(force){if(!M||refreshing)return;refreshing=true;let got=0,bad=0;
   try{const due=M.links.filter(l=>l.u&&(force||!C[l.u]||!(C[l.u].a||[]).length||Date.now()-(C[l.u].at||0)>AGE));
