@@ -225,7 +225,9 @@ function fmtClock(mins){mins=((mins%1440)+1440)%1440;const h=Math.floor(mins/60)
 // Open mics: the sign-up time matters more than the start (the list fills). "6:00 PM (sign-up 5:00)" or "Sign-up 6:00 PM".
 function signupOf(e){const m=String(e.time||"").match(/sign[- ]?up\s*(\d{1,2})(?::(\d{2}))?\s*(AM|PM)?/i);if(!m)return null;
   let h=+m[1]%12;const ap=m[3]||((String(e.time).match(/(AM|PM)/i)||[])[1])||"PM";if(/pm/i.test(ap))h+=12;return h*60+(+m[2]||0);}
-function leaveBy(e){const su=signupOf(e),st=su??parseTime(e.time);if(st==null||!e._drive)return null;return fmtClock(Math.floor((st-e._drive.mins-(su!=null?10:15))/5)*5);}
+// Buffer before you need to be there: 10 min before a known sign-up, 15 before a start, 35 for an open mic with no
+// posted sign-up time (the list fills before the start, so "arrive early" has to mean something).
+function leaveBy(e){const su=signupOf(e),st=su??parseTime(e.time);if(st==null||!e._drive)return null;const buf=su!=null?10:e.kind==="openmic"?35:15;return fmtClock(Math.floor((st-e._drive.mins-buf)/5)*5);}
 function calLink(e){const st=parseTime(e.time);const d=String(e.start).replace(/-/g,"");let dates;
   if(st!=null){const pad=n=>String(n).padStart(2,"0");const s1=pad(Math.floor(st/60))+pad(st%60)+"00";const en=st+180;const dd=en>=1440?ymd(new Date(parseDay(e.start).getTime()+86400000)).replace(/-/g,""):d;dates=d+"T"+s1+"/"+dd+"T"+pad(Math.floor((en%1440)/60))+pad(en%60)+"00";}
   else{const end=parseDay(e.kind==="festival"&&e.end?e.end:e.start);end.setDate(end.getDate()+1);dates=d+"/"+ymd(end).replace(/-/g,"");}
@@ -528,7 +530,7 @@ function cardHtml(e){
     const apx=approxPin(e), mi=e._drive&&e._drive.miles<1?"<1":e._drive&&e._drive.miles;
     const drv = e._drive ? `<span class="drive">${e._drive.real&&!apx?"":"~"}${fmtMins(e._drive.mins)} · ${apx&&mi!=="<1"?"~":""}${mi} mi</span>${apx?`<span class="pn">to ${esc(e.city)} center · exact spot not listed</span>`:""}` :(origin ? '<span class="na">n/a</span>' : '<span class="na">Set start point</span>');
     const su=mic?signupOf(e):null, micTime=String(e.time||"").replace(/\s*\(?sign[- ]?up[^)]*\)?/i,"").trim();
-    const time = mic ? `<span>${esc(e.recurrence?.text||"")}${micTime?" · "+esc(micTime):""}</span>${su!=null?`<span class="signup">${ni("mic")} Sign-up ${fmtClock(su)}</span>`:`<span class="signup none">${ni("mic")} Sign-up: arrive early</span>`}` : e.time ? `<span>${esc(e.time)}</span>` : '<span class="na">Time TBA</span>';
+    const time = mic ? `<span>${esc(e.recurrence?.text||"")}${micTime?" · "+esc(micTime):""}</span>${su!=null?`<span class="signup">${ni("mic")} Sign-up ${fmtClock(su)}</span>`:e.kind==="openmic"?`<span class="signup none">${ni("mic")} Sign-up: arrive early</span>`:""}` : e.time ? `<span>${esc(e.time)}</span>` : '<span class="na">Time TBA</span>';
     const tix=safeUrl(e.url)||(mic?null:safeUrl("https://www.google.com/search?q="+encodeURIComponent([e.title,e.venue,e.city,"tickets"].filter(Boolean).join(" "))));
     const tixLabel = tix ? tixWord(e,pi) : "";
     const dest = encodeURIComponent((e.venue||"")+", "+(e.city||""));
