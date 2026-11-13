@@ -38,7 +38,7 @@ const MAP={
   "🔁":["#7FD4FF",'<path d="M17 2.5l3 3-3 3M4 11.5v-1a5 5 0 0 1 5-5h11M7 21.5l-3-3 3-3M20 12.5v1a5 5 0 0 1-5 5H4"/>'],
   "🏠":["#7FD4FF",U("home")],
   "✨":["#FFE7A3",'<path d="M11 3l1.8 5.2L18 10l-5.2 1.8L11 17l-1.8-5.2L4 10l5.2-1.8Z"/><path d="M19 14.5l.7 1.8 1.8.7-1.8.7-.7 1.8-.7-1.8-1.8-.7 1.8-.7Z"/>'],
-  "🥩":"kbbq","🕹":"arcade","🎳":"bowl","♨":"spa","🎷":"jazz","🌃":"roof","🔭":"stars","🌊":"beach","🎱":"pool",
+  "🥩":"kbbq","🕹":"arcade","🎳":"bowl","♨":"spa","🎷":"jazz","🌃":"roof","🔭":"stars","🌊":"beach","🎱":"pool","🥃":"speak",
   "🍜":"ramen","🌮":"tacos","🍲":"pho","🥘":"korean","🍳":"diner","🦀":"boil","🥂":"fine","🥟":"dimsum","🍛":"thai","🍕":"pizza","🍨":"dessert","🏪":"hall",
   "📅":["#7FD4FF",U("cal")],
   "⚠":["#FFC66B",'<path d="M12 3.5 2.5 20h19Z"/><path d="M12 10v4.5M12 17.5h.01"/>'],

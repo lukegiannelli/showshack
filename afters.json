@@ -1,5 +1,5 @@
 {
-"note": "Afters spots for the Night Card. h = hours text; til = usual latest close on the 24h clock, past midnight keeps counting (26 = 2 AM); hq '~' = sources disagree or only third-party listings. No h = hours unknown. Food spots marked src 'osm' were matched on OpenStreetMap (name, address, hours). pp = estimated per-person food price before tax and tip (not quoted by the place); svc 'sit' or 'counter' overrides the category default. c 'hotel' = hotel bars and rooftops with music nights open to non-guests; h is the music schedule, u is where it came from. diet = dietary options tagged on OpenStreetMap. deal = a deal posted by the place itself {t what, d when, until end date, u where it's posted, chk last checked}; deals without an end date hide 120 days after chk. Checked Nov 2026; always check before you go.",
+"note": "Afters spots for the Night Card. h = hours text; til = usual latest close on the 24h clock, past midnight keeps counting (26 = 2 AM); hq '~' = sources disagree or only third-party listings. No h = hours unknown. Food spots marked src 'osm' were matched on OpenStreetMap (name, address, hours). pp = estimated per-person food price before tax and tip (not quoted by the place); svc 'sit' or 'counter' overrides the category default. c 'hotel' = hotel bars and rooftops with music nights open to non-guests; h is the music schedule, u is where it came from. diet = dietary options tagged on OpenStreetMap. deal = a deal posted by the place itself {t what, d when, until end date, u where it's posted, chk last checked}; deals without an end date hide 120 days after chk; via 'call' = confirmed by phoning the place (no u), hides 45 days after chk. c 'speak' = speakeasies and cocktail bars. Checked Nov 2026; always check before you go.",
 "places": [
 {
 "n": "Baekjeong Irvine",
@@ -2355,6 +2355,36 @@
 "u": "https://marriott.com/en-us/hotels/laxav-ac-hotel-downtown-los-angeles/experiences",
 "geo": "amenity",
 "src": "web"
+},
+{
+"n": "The Blind Rabbit",
+"c": "speak",
+"city": "Anaheim",
+"zip": "92805",
+"a": "440 S Anaheim Blvd (Anaheim Packing House)",
+"t": [
+"Hidden speakeasy, 21+",
+"Reservations recommended, 90-minute seatings"
+],
+"lat": 33.83151,
+"lon": -117.91194,
+"h": "Around 5 PM to 11 PM",
+"til": 23,
+"hq": "~",
+"geo": "building"
+},
+{
+"n": "Hammer Workshop & Bar",
+"c": "speak",
+"city": "Anaheim",
+"zip": "92805",
+"a": "440 S Anaheim Blvd (Anaheim Packing House)",
+"t": [
+"Craft cocktail bar, 21+"
+],
+"lat": 33.83151,
+"lon": -117.91194,
+"geo": "building"
 },
 {
 "n": "Lunasia Dim Sum House",

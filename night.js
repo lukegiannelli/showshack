@@ -8,7 +8,7 @@ const TYPES={meet:["📍","Meet up","#7ee0b8"],eat:["🍜","Eat","#FFC66B"],show
 const AC={kbbq:["🥩","Korean BBQ"],karaoke:["🎤","Karaoke"],arcade:["🕹️","Arcades & barcades"],bowl:["🎳","Bowling"],spa:["♨️","24h Korean spa"],jazz:["🎷","Jazz & listening bars"],roof:["🌃","Rooftops"],stars:["🔭","Stargazing"],beach:["🌊","Beaches"],pool:["🎱","Pool"],
   ramen:["🍜","Ramen"],tacos:["🌮","Tacos & Mexican"],pho:["🍲","Pho & Vietnamese"],korean:["🥘","Korean comfort food"],diner:["🍳","24h diners"],
   boil:["🦀","Seafood boils"],hotpot:["🍲","Hot pot"],hibachi:["🔥","Hibachi"],fine:["🥂","Tasting menus"],
-  hotel:["🛎️","Hotel bars"],
+  hotel:["🛎️","Hotel bars"],speak:["🥃","Speakeasies & cocktail bars"],
   dimsum:["🥟","Dim sum"],thai:["🍛","Thai"],pizza:["🍕","Pizza"],dessert:["🍨","Dessert & boba"],hall:["🏪","Food halls & markets"]};
 /* food that's an experience, not just a meal: fun = cheap-ish and hands-on, splurge = high-end night out */
 const EXP={kbbq:"fun",boil:"fun",hotpot:"fun",hibachi:"fun",fine:"splurge"};
@@ -21,7 +21,7 @@ const PRICE={kbbq:[35,50,"sit","All-you-can-eat"],ramen:[17,24,"sit","Bowl and a
   pool:[8,15,"none","Table split 2 ways, about 1.5 hrs"],
   boil:[25,40,"sit","A pound of seafood and sides"],hotpot:[30,50,"sit","Broth, meats and sides"],hibachi:[35,55,"sit","Hibachi dinner"],
   fine:[175,350,"sit","Tasting menu before drinks (varies a lot)"],
-  hotel:[20,40,"bar","A drink or two; some nights have a table minimum"],
+  hotel:[20,40,"bar","A drink or two; some nights have a table minimum"],speak:[18,35,"bar","A cocktail or two"],
   dimsum:[25,40,"sit","Dim sum to share"],thai:[15,25,"sit","A main and a drink"],pizza:[8,15,"counter","A couple of slices"],
   dessert:[7,14,"counter","A treat or a boba"],hall:[15,30,"counter","A plate from one stall"],stars:[0,0,"none","Free"],beach:[0,0,"none","Free, parking may cost"]};
 const TAX=.09,TIP=.2;
@@ -53,6 +53,7 @@ IC.hotpot=["#FFC66B",'<path d="M3 11h18v2a7 7 0 0 1-7 7h-4a7 7 0 0 1-7-7Z"/><pat
 IC.hibachi=["#FF8A5C",'<path d="M2.5 20h19M5 20v-3h14v3"/><path d="M12 15c-3 0-4-2.2-3-4.5.7 1.2 1.6 1.4 1.6 1.4C10 9 11.5 6.5 13.5 5c-.4 2.2.8 3.2 1.6 4.4.9 1.4.6 5.6-3.1 5.6Z"/>'];
 IC.fine=["#FFE7A3",'<path d="M7 2.5h4l-.5 6a1.5 1.5 0 0 1-3 0Z"/><path d="M9 10v9.5M6.5 19.5h5"/><path d="M15.5 4h3.5l-.6 7.5a1.2 1.2 0 0 1-2.3 0Z"/><path d="M17.2 13v6.5M15 19.5h4.5"/><path d="M20.5 2l.6 1.2M22 4.5l-1.2.4" opacity=".8"/>'];
 IC.hotel=["#FFD27A",'<path d="M3 18h18M4.5 18a7.5 7.5 0 0 1 15 0"/><path d="M12 10.5V9M10.5 9h3"/><path d="M3 21h18"/><path d="M17.5 3.5v4.2"/><circle cx="16.3" cy="7.9" r="1.2"/><path d="M17.5 3.5l2.5.8" opacity=".85"/>'];
+IC.speak=["#FFB86B",'<path d="M5 8h14l-1.5 11a2 2 0 0 1-2 1.5h-7a2 2 0 0 1-2-1.5Z"/><path d="M5.6 12.5h12.8"/><rect x="9" y="14" width="3" height="3" rx=".5" opacity=".8"/><path d="M14 4l2 4" opacity=".8"/>'];
 IC.dimsum=["#FFE7A3",'<ellipse cx="12" cy="9" rx="8" ry="2.5"/><path d="M4 9v6c0 1.4 3.6 2.5 8 2.5s8-1.1 8-2.5V9M4 12.5c0 1.4 3.6 2.5 8 2.5s8-1.1 8-2.5"/><path d="M10 5.5c0-1 1-1 1-2M14 5.5c0-1 1-1 1-2" opacity=".8"/>'];
 IC.thai=["#7EE0B8",'<path d="M3 12h18a9 8 0 0 1-18 0Z"/><path d="M8 9c1-2 3-2.5 4-4.5M13 9c.5-1.5 2-2 2.5-3.5"/><path d="M17 4.5c1.5.3 2.5 1.6 2 3.5" opacity=".8"/>'];
 IC.pizza=["#FFC66B",'<path d="M3.5 6.5C9 2.5 15 2.5 20.5 6.5L12 21.5Z"/><path d="M5.3 8.6c4.4-2.7 9-2.7 13.4 0"/><circle cx="10" cy="11" r="1.2"/><circle cx="14" cy="13" r="1.1"/><circle cx="12" cy="16.5" r="1"/>'];
@@ -62,7 +63,7 @@ IC.fest=["#FF6FA5",'<path d="M2.5 20.5 12 4l9.5 16.5Z"/><path d="M8.5 20.5 12 13
 const GO={drive:"🚗",ride:"🚕",walk:"🚶",transit:"🚇",there:"📍"};
 const GOW={drive:"Driving",ride:"Rideshare",walk:"Walk",transit:"Transit",there:"Meet there"};
 let AFTERS=[];
-fetch("afters.json?v=11").then(r=>r.ok?r.json():{}).then(j=>{AFTERS=((j||{}).places||[]).filter(p=>typeof p.lat==="number"&&!p.gone);if(mapOn)drawLayer();document.dispatchEvent(new Event("shack:spots"));}).catch(()=>{});
+fetch("afters.json?v=12").then(r=>r.ok?r.json():{}).then(j=>{AFTERS=((j||{}).places||[]).filter(p=>typeof p.lat==="number"&&!p.gone);if(mapOn)drawLayer();document.dispatchEvent(new Event("shack:spots"));}).catch(()=>{});
 const allAfters=()=>[...AFTERS,...(typeof POOL!=="undefined"?POOL:[]).map(p=>({...p,c:"pool",t:[p.c==="hall"?"Pool hall":"Bar with pool",...(p.t||[])]}))];
 const GRP={dimsum:"food",thai:"food",pizza:"food",dessert:"food",hall:"food",boil:"food",hotpot:"food",hibachi:"food",fine:"food",kbbq:"food",ramen:"food",tacos:"food",pho:"food",korean:"food",diner:"food",beach:"chill",stars:"chill"},grp=p=>GRP[p.c]||"after";
 const icon=c=>c==="pool"&&typeof NEON8==="string"?NEON8:`<span class="nemo">${(AC[c]||TYPES.other)[0]}</span>`;
@@ -318,7 +319,7 @@ function backHtml(p=plan,mode=""){const S=p.s,st=typeof state!=="undefined"?stat
   const pays=S.filter(s=>s.vh||s.ch||s.amt).map(s=>`<li><span>${esc(s.dr||(s.vh?"@"+s.vh:s.ch?"$"+s.ch:"the host"))}${s.n?` · ${esc(s.n)}`:""}</span><b>${s.amt?"$"+s.amt:"—"}${s.vh?" Venmo":s.ch?" Cash App":""}</b></li>`);
   // timing
   const tms=S.map(s=>s.tm).filter(Boolean);let span="";if(tms.length>1){const a=tmin(tms[0]),z=tmin(tms[tms.length-1]);span=`${fmtT(tms[0])} → ${fmtT(tms[tms.length-1])}${z>a?` · ${Math.floor((z-a)/60)}h${(z-a)%60?" "+(z-a)%60+"m":""} of plans`:""}`;}
-  const late=tms.some(t=>tmin(t)>=22*60);const drives=S.some(s=>s.w==="drive"),drinks=S.some(s=>/bar|karaoke|rooftop|barcade|jazz|lounge/i.test((s.n||"")+(s.no||"")))||S.some(s=>["after"].includes(s.k));
+  const late=tms.some(t=>tmin(t)>=22*60);const drives=S.some(s=>s.w==="drive"),drinks=S.some(s=>/bar|karaoke|rooftop|barcade|jazz|lounge|speakeasy|cocktail/i.test((s.n||"")+(s.no||"")))||S.some(s=>["after"].includes(s.k));
   const notes=[];
   // getting home: drive (gas for the last leg ÷ carpool + parking at the show) vs rideshare (fare ÷ people riding)
   let homeCmp="";const lastS=[...pts].pop();
@@ -578,7 +579,7 @@ function nightFor(e){const now=todayISO();
   const food=near.filter(x=>grp(x.p)==="food"&&EXP[x.p.c]!=="splurge"&&x.mi<=6).slice(0,3),fp=food.length?rnd(food).p:null;
   const eat=fp?{...afterStop(fp),k:"eat",no:AC[fp.c][1]+" before the show"}:{k:"eat",n:"Dinner near the venue",u:"https://www.google.com/maps/search/?api=1&query="+encodeURIComponent("restaurants near "+show.p)};
   eat.tm=plusMin(st,-90);
-  const late=new Set(["karaoke","arcade","bowl","spa","jazz","roof","pool","hotel"]),opts=near.filter(x=>late.has(x.p.c)&&!(x.p.til&&x.p.til<23)).slice(0,6);
+  const late=new Set(["karaoke","arcade","bowl","spa","jazz","roof","pool","hotel","speak"]),opts=near.filter(x=>late.has(x.p.c)&&!(x.p.til&&x.p.til<23)).slice(0,6);
   const after=opts.length?afterStop(rnd(opts).p):{k:"after",n:"Late eats",u:"https://www.google.com/maps/search/?api=1&query="+encodeURIComponent("late night food near "+show.p)};
   after.tm=plusMin(st,150);
   const d=e.start<now?now:e.start,short=String(e.title).split(/[:(–—-]/)[0].trim().slice(0,40);

@@ -54,16 +54,17 @@ function price(p){const c=N.cost?N.cost(p):null;if(!c)return "";
     <small>${parts.join(" · ")}</small>${grp}<small class="spc-svc">${SVC[c.svc]||""} · typical price, not from the place</small></div>`;}
 const late24=p=>p.til>=24;
 /* ---- deals: ones the daily refresh found on the place's own site (afters.json "deal"), plus ones the owner adds on the
-   You page (Supabase food_deals). A deal shows until its end date; ones without an end date need a check in the last 120 days. ---- */
+   You page (Supabase food_deals). A deal shows until its end date; ones without an end date need a check in the last 120 days,
+   or the last 45 days when it was confirmed by calling the place (via "call": its site hides the deal or blocks checks). ---- */
 let DBD=null;
 const dk=(n,c)=>String(n||"").toLowerCase().trim()+"|"+String(c||"").toLowerCase().trim();
 function loadDeals(){SH.rpc("list_food_deals").then(r=>{DBD=Array.isArray(r)?r:[];home();if($("bSpots")&&BUI.screen==="spots")draw();}).catch(()=>{DBD=DBD||[];});}
 loadDeals();
-function dealOf(p){const t=todayStr(),old=new Date(Date.now()-120*864e5).toISOString().slice(0,10);
+function dealOf(p){const t=todayStr(),old=n=>new Date(Date.now()-n*864e5).toISOString().slice(0,10);
   const own=(DBD||[]).find(x=>dk(x.spot,x.city)===dk(p.n,p.city)||(!x.city&&dk(x.spot,"")===dk(p.n,"")));if(own)return own;
-  const d=p.deal;return d&&d.t&&(d.until?d.until>=t:(d.chk||"")>=old)?d:null;}
+  const d=p.deal;return d&&d.t&&(d.until?d.until>=t:(d.chk||"")>=old(d.via==="call"?45:120))?d:null;}
 function dealHtml(dl){if(!dl)return "";const u=dl.u&&safeUrl(dl.u),till=dl.until?parseDay(dl.until).toLocaleDateString("en-US",{month:"short",day:"numeric"}):"";
-  return `<p class="spc-deal"><span aria-hidden="true">🏷</span><span><b>${esc(dl.t)}</b>${dl.d?` · ${esc(dl.d)}`:""}${till?` · until ${esc(till)}`:""}${u?` · <a href="${esc(u)}" target="_blank" rel="noopener">Details ↗</a>`:""}</span></p>`;}
+  return `<p class="spc-deal"><span aria-hidden="true">🏷</span><span><b>${esc(dl.t)}</b>${dl.d?` · ${esc(dl.d)}`:""}${till?` · until ${esc(till)}`:""}${dl.via==="call"&&dl.chk?` · confirmed by phone ${esc(parseDay(dl.chk).toLocaleDateString("en-US",{month:"short",day:"numeric"}))}`:""}${u?` · <a href="${esc(u)}" target="_blank" rel="noopener">Details ↗</a>`:""}</span></p>`;}
 window.SHACK_DEALS={reload:loadDeals,spots:()=>N.ready()?N.spots().filter(p=>N.grp(p)!=="chill").map(p=>({n:p.n,city:p.city||""})):[]};
 function list(g){return N.spots().map((p,i)=>({p,i})).filter(x=>N.grp(x.p)===g);}
 function sorted(xs){return xs.map(x=>({...x,d:driveEstimate(x.p.lat,x.p.lon)}))
