@@ -14,7 +14,7 @@ const dlgOpen=d=>{if(!d.open){if(d.showModal)d.showModal();else d.setAttribute("
 const VAPID="BEtEpmMDVDp_B9DwYCAcK_whdpEXTK1sHCgId6DHcv1EFGUWwJoieTdvSiy01DmAExShwfzWu4PA3yJzIhb9-nc";   // public half of the push key (safe to publish)
 let counts=[];
 const FEAT={tab_shows:"Opened Shows",tab_map:"Opened Map",tab_venues:"Opened Venues",tab_saved:"Opened Saved",tab_plan:"Opened Plan",tab_you:"Opened You",share:"Used the Share sheet",
-  flyer_open:"Opened Add a flyer",flyer_add:"Added a flyer show",signin:"Signed in",reminders_on:"Turned on reminders",music_match:"Matched their music",ears_tap:"Tapped For your ears",
+  flyer_open:"Opened Add a flyer",flyer_add:"Added a flyer show",signin:"Signed in",reminders_on:"Turned on reminders",music_match:"Matched their music",ears_tap:"Tapped Match My Music",
   tonight_tap:"Tapped Still on tonight",star:"Starred a show",stamp:"Stamped a venue",search_none:"Search found nothing",add_missing:"Tapped add-missing",follow:"Followed a venue",night_send:"Sent a night",friend_add:"Added a friend"};
 let admin=false,review=null,remState=null,remMsg="",missMsg="",missDraft="";
 

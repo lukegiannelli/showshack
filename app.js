@@ -349,9 +349,10 @@ function render(){
   starCount=evs.filter(e=>state.stars.has(skey(e))).length; updateStarChip(); updateBudget();
   const venueCount=buildVenues(evs);
   const qw = state.q ? state.q.split(/\s+/) : null;
+  const mine = state.kind==="mymusic"&&window.SHACK_MUSIC ? SHACK_MUSIC.ids() : null;   // "Match My Music" list
   evs=evs.filter(e=>!qw||(h=>qw.every(w=>h.includes(w)))(norm([e.title,e.artists,e.venue,e.city].join(" "))))
     .filter(e=>state.venue==="all"||venueKey(e)===state.venue)
-    .filter(e=>state.kind==="all"||(String(state.kind).startsWith("g:")?!!(GROUPS[state.kind.slice(2)]&&GROUPS[state.kind.slice(2)].has(e.kind)):state.kind==="starred"?state.stars.has(skey(e)):state.kind==="picks"?e.added:state.kind==="rave"?isRave(e):e.kind===state.kind))
+    .filter(e=>state.kind==="all"||(String(state.kind).startsWith("g:")?!!(GROUPS[state.kind.slice(2)]&&GROUPS[state.kind.slice(2)].has(e.kind)):state.kind==="starred"?state.stars.has(skey(e)):state.kind==="picks"?e.added:state.kind==="mymusic"?!!(mine&&mine.has(e.id)):state.kind==="rave"?isRave(e):e.kind===state.kind))
     .filter(e=>!state.sub||(state.sub==="dj"?(e.kind==="club"||(e.genres||[]).includes("electronic")):e.kind===state.sub))
     .filter(e=>state.genre==="all"||(e.genres||[]).includes(state.genre))
     .filter(e=>state.maxDrive>=180||!origin||(e._drive&&e._drive.mins<=state.maxDrive))

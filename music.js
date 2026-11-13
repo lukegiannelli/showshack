@@ -89,16 +89,17 @@ function matches(){if(!ART.length)return {mine:[],vibe:[],top:[]};
   for(const e of up){const h=hitOf(e);if(h){mine.push({e,why:h.n,from:h.s});ids.add(e.id);for(const g of e.genres||[])w[g]=(w[g]||0)+1;}}
   const top=Object.entries(w).sort((a,b)=>b[1]-a[1]).slice(0,3).map(x=>x[0]);
   const score=e=>(e.genres||[]).reduce((s,g)=>s+(w[g]||0),0);
-  const vibe=top.length?up.filter(e=>!ids.has(e.id)&&(e.genres||[]).some(g=>top.includes(g))).sort((a,b)=>score(b)-score(a)||a.start.localeCompare(b.start)).slice(0,10)
-    .map(e=>({e,g:(e.genres||[]).filter(g=>top.includes(g)).sort((x,y)=>(w[y]||0)-(w[x]||0))[0]})):[];
-  const r={mine:mine.sort((a,b)=>a.e.start.localeCompare(b.e.start)),vibe,top};MEMO={evs,art:ART,today,n:evs.length,r};return r;}
+  const vibeAll=top.length?up.filter(e=>!ids.has(e.id)&&(e.genres||[]).some(g=>top.includes(g))).sort((a,b)=>score(b)-score(a)||a.start.localeCompare(b.start)):[];
+  const vibe=vibeAll.slice(0,10).map(e=>({e,g:(e.genres||[]).filter(g=>top.includes(g)).sort((x,y)=>(w[y]||0)-(w[x]||0))[0]}));
+  // all: every show that fits (your artists + every show in your top genres), for the full "Match My Music" list
+  const r={mine:mine.sort((a,b)=>a.e.start.localeCompare(b.e.start)),vibe,top,all:new Set([...ids,...vibeAll.map(e=>e.id)])};MEMO={evs,art:ART,today,n:evs.length,r};return r;}
 
-/* ===== Home row: For your ears (each pick says why it's there) ===== */
+/* ===== Home row: Match My Music (each pick says why it's there; "Your music" opens the full list) ===== */
 function drawRow(){if(!window.SHACK_FLIP||typeof state==="undefined")return;let box=$("bEarsBox");
   const r=matches(),list=[...r.mine.map(x=>({e:x.e,tag:`🎧 You play ${x.why}${x.from&&x.from!=="typed"&&NAME[x.from]?` · ${NAME[x.from]}`:""}`})),
     ...r.vibe.map(x=>({e:x.e,tag:`🎧 Your vibe: ${GNAME[x.g]||x.g||"your genres"}`}))].slice(0,12);
   if(!list.length){if(box)box.hidden=true;return;}
-  if(!box){const anchor=$("bBecBox")||$("bDropBox");if(!anchor)return;anchor.insertAdjacentHTML("beforebegin",`<div class="bpicks bears" id="bEarsBox"><div class="bpicks-h"><h2 class="bsec">For your ears</h2><button type="button" class="blink" data-yopen="1">Your music</button></div><div class="bpick-row" id="bEars"></div></div>`);box=$("bEarsBox");$("bEars").addEventListener("click",SHACK_FLIP.click,true);}
+  if(!box){const anchor=$("bBecBox")||$("bDropBox");if(!anchor)return;anchor.insertAdjacentHTML("beforebegin",`<div class="bpicks bears" id="bEarsBox"><div class="bpicks-h"><h2 class="bsec">Match My Music</h2><button type="button" class="blink" data-mymusic="1">Your music</button></div><div class="bpick-row" id="bEars"></div></div>`);box=$("bEarsBox");$("bEars").addEventListener("click",SHACK_FLIP.click,true);}
   box.hidden=false;const sig=list.map(x=>x.e.id+x.tag).join("|");if($("bEars").dataset.sig===sig)return;$("bEars").dataset.sig=sig;
   $("bEars").innerHTML=list.map(x=>SHACK_FLIP.html(x.e,`<i style="--vc:#7FD4FF"></i>${E(x.tag)}`)).join("");}
 
@@ -154,7 +155,7 @@ function artistsHTML(r){if(!ART.length)return "";const hit=new Set(r.mine.map(x=
 function sectionHTML(){const r=matches(),has=ART.length,signed=window.SHACK_CLOUD&&SHACK_CLOUD.user,links=(M&&M.links)||[];
   return `<section class="byou-sec bmus" id="bMusic"><h3>🎧 Match my music</h3>
     ${has?`<div class="bmus-stats"><span><b>${ART.length.toLocaleString()}</b>artists</span><span><b>${r.mine.length}</b>their shows</span><span><b>${links.length}</b>link${links.length===1?"":"s"}</span></div>
-      <p class="bset-p">${r.top&&r.top.length?`Your vibe here: <b>${E(r.top.map(g=>GNAME[g]||g).join(", "))}</b>. `:""}Picks are in <b>For your ears</b> on Home.</p>`
+      <p class="bset-p">${r.top&&r.top.length?`Your vibe here: <b>${E(r.top.map(g=>GNAME[g]||g).join(", "))}</b>. `:""}Picks are in <b>Match My Music</b> on Home.</p>`
       :`<p class="bset-p">Get show picks from the music you actually listen to. Add every account and playlist you like, they stack.</p>`}
     ${linksHTML()}
     ${artistsHTML(r)}
@@ -166,7 +167,7 @@ function sectionHTML(){const r=matches(),has=ART.length,signed=window.SHACK_CLOU
     ${msg?`<p class="bset-msg" role="status">${E(msg)}</p>`:""}</section>`;}
 function redraw(){const el=$("bMusic");if(el){const box=el.closest(".binfo-in"),top=box?box.scrollTop:0,inp=el.querySelector('[data-mus="link"] input'),draft=inp?inp.value:"";
   el.outerHTML=sectionHTML();const ni=document.querySelector('#bMusic [data-mus="link"] input');if(ni&&draft&&adding)ni.value=draft;if(box)box.scrollTop=top;}}
-window.SHACK_MUSIC={sectionHTML,matches};
+window.SHACK_MUSIC={sectionHTML,matches,ids:()=>matches().all||new Set()};
 
 /* ===== actions ===== */
 document.addEventListener("submit",async ev=>{const f=ev.target.closest("[data-mus]");if(!f)return;ev.preventDefault();ev.stopPropagation();const k=f.dataset.mus;
@@ -187,6 +188,7 @@ document.addEventListener("submit",async ev=>{const f=ev.target.closest("[data-m
   }catch(e){msg="Something went wrong. Try again.";}
   finally{adding=false;redraw();}},true);
 document.addEventListener("click",ev=>{
+  if(ev.target.closest("[data-mymusic]")){ev.preventDefault();if(window.BUI&&BUI.openMine)BUI.openMine();return;}
   if(ev.target.closest("[data-mus-art]")){ev.preventDefault();showArt=showArt?false:120;redraw();return;}
   if(ev.target.closest("[data-mus-more]")){ev.preventDefault();showArt=(showArt||0)+300;redraw();return;}
   const mu=ev.target.closest("[data-mus-mute]");if(mu){ev.preventDefault();M=M||blank();const n=mu.dataset.musMute;if(!M.mute.includes(n))M.mute.push(n);save();changed();msg=`Muted ${n}. Tap it under Muted to bring it back.`;redraw();return;}

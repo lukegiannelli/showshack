@@ -155,9 +155,9 @@ function outDays(){const today=todayStr(),days=new Set();
 function streak(){const wk=new Set([...outDays()].map(weekNo)),now=weekNo(todayStr());let w=wk.has(now)?now:now-1,n=0;while(wk.has(w)){n++;w--;}
   let best=0,run=0;[...wk].sort((a,b)=>a-b).forEach((x,i,a)=>{run=i&&x===a[i-1]+1?run+1:1;best=Math.max(best,run);});
   return {n,thisWeek:wk.has(now),best};}
-/* ---- price dropped: tickets that got cheaper since the Shack last checked (priceWas → priceFrom), biggest drop first ---- */
+/* ---- price dropped: tickets that got cheaper since the Shack last checked (priceWas → priceFrom), soonest show first ---- */
 function bDrops(up){return up.filter(e=>!e.added&&e.priceWas!=null&&e.priceFrom!=null&&Math.round(e.priceWas)>Math.round(e.priceFrom)&&!priceInfo(e).sold)
-  .map(e=>({e,pct:(e.priceWas-e.priceFrom)/e.priceWas})).sort((a,b)=>b.pct-a.pct||a.e.start.localeCompare(b.e.start)).slice(0,8).map(x=>x.e);}
+  .map(e=>({e,pct:(e.priceWas-e.priceFrom)/e.priceWas})).sort((a,b)=>a.e.start.localeCompare(b.e.start)||b.pct-a.pct).slice(0,8).map(x=>x.e);}
 
 /* ---- screens ---- */
 function inWhen(e){const r=dayRange(state.when);return !r||(e.start<=r[1]&&(e.end||e.start)>=r[0]);}
@@ -192,7 +192,10 @@ window.addEventListener("popstate",()=>{
   if(subPushed){subPushed=false;if(backTo&&screen==="results"){restoreBack();return;}}
   if(pushed){pushed=false;backTo=null;if(screen!=="home"){state.kind="all";state.sub=null;show("home",true);}}});
 $("bBack").onclick=()=>{if(backTo&&screen==="results"){if(subPushed){history.back();return;}restoreBack();return;}goHome();};
-window.BUI={show,goHome,get screen(){return screen;}};
+// "Your music" on the Match My Music row: every upcoming show that fits your music (music.js), by date
+function openMine(){backTo=null;openIds.clear();cur="mymusic";state.view="list";state.venue="all";state.kind="mymusic";state.sub=null;state.genre="all";state.when="any";state.surprise=null;
+  flags.hidden=true;$("bFilt").setAttribute("aria-expanded","false");show("results");}
+window.BUI={show,goHome,openMine,get screen(){return screen;}};
 function goHome(){backTo=null;state.venue="all";state.kind="all";state.sub=null;state.genre="all";state.view="list";show("home");}
 $("bTabs").addEventListener("click",ev=>{const b=ev.target.closest("[data-tab]");if(!b)return;const t=b.dataset.tab;
   if(t==="shows"){goHome();return;}
@@ -289,7 +292,7 @@ function after(){
   }
   if(screen==="results"||screen==="saved"){
     const v=VIBES.find(x=>x.k===cur);
-    $("bTitle").textContent=cur==="ins"?"Hivemind808 insights":screen==="saved"?"Saved":state.venue&&state.venue!=="all"?state.venue.split(" · ")[0]:v?v.name:cur==="surprise"?"Surprise pick":state.q?"Search":"All shows";
+    $("bTitle").textContent=cur==="ins"?"Hivemind808 insights":screen==="saved"?"Saved":state.venue&&state.venue!=="all"?state.venue.split(" · ")[0]:v?v.name:cur==="mymusic"?"Match My Music":cur==="surprise"?"Surprise pick":state.q?"Search":"All shows";
     const n=(state._shown||[]).length;$("bCount").textContent=n+(n===1?" event":" events")+(screen==="saved"?"":" · "+WHEN_WORD[state.when]);
     const subs=$("bSubs");let items=null,key="sub";
     if(cur==="music"){if(state.genre==="electronic"){state.genre="all";state.sub="dj";}items=[["","All"],["k:festival","Festival"],["k:dj","DJ / rave"],...GENRES.filter(([g])=>g!=="all"&&g!=="electronic")];key="music";} else if(SUBS[cur])items=SUBS[cur];
