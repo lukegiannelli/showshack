@@ -2851,24 +2851,6 @@
 "src": "osm"
 },
 {
-"n": "Serrano's Street Tacos & Bar",
-"c": "tacos",
-"city": "San Diego",
-"zip": "",
-"a": "624 E Street",
-"t": [
-"Tacos & Mexican",
-"Near Downtown / Gaslamp"
-],
-"lat": 32.71485,
-"lon": -117.15898,
-"h": "Tue–Thu 12 PM to 11 PM; Fri–Sat 12 PM to 2 AM; Sun 12 PM to 9 PM",
-"til": 26,
-"hq": "~",
-"geo": "amenity",
-"src": "osm"
-},
-{
 "n": "Far Corner",
 "c": "pizza",
 "city": "San Diego",
@@ -2922,15 +2904,60 @@
 ],
 "lat": 32.71067,
 "lon": -117.17028,
-"h": "11 AM to 10 PM",
+"h": "Sun–Thu 11 AM to 9 PM; Fri–Sat 11 AM to 10 PM",
 "til": 22,
-"hq": "~",
 "geo": "amenity",
 "src": "osm",
 "deal": {
 "t": "Happy hour margs & snacks; half-off tacos on Taco Tuesday",
 "d": "HH Mon–Fri 3–5 PM · tacos ½ off Tue 3 PM–close · dine-in",
 "u": "https://www.eatpuesto.com/location/san-diego/",
+"chk": "2026-11-13"
+}
+},
+{
+"n": "Puesto",
+"c": "tacos",
+"city": "Anaheim",
+"zip": "92802",
+"a": "1040 W Katella Ave",
+"t": [
+"Tacos & Mexican",
+"Inside the Westin Anaheim, near the Convention Center"
+],
+"lat": 33.80339,
+"lon": -117.92273,
+"svc": "sit",
+"h": "11 AM to 10 PM",
+"til": 22,
+"geo": "place",
+"deal": {
+"t": "Happy hour margs & snacks (+$1 each here); half-off tacos on Taco Tuesday",
+"d": "HH Mon–Fri 3–5 PM · tacos ½ off Tue 3 PM–close · dine-in",
+"u": "https://www.eatpuesto.com/location/anaheim/",
+"chk": "2026-11-13"
+}
+},
+{
+"n": "Puesto Los Olivos",
+"c": "tacos",
+"city": "Irvine",
+"zip": "92618",
+"a": "8577 Irvine Center Dr",
+"t": [
+"Tacos & Mexican",
+"Near Irvine Spectrum"
+],
+"lat": 33.64477,
+"lon": -117.74478,
+"svc": "sit",
+"h": "Mon–Fri 11 AM to 9 PM; Sat–Sun 11:30 AM to 9 PM",
+"til": 21,
+"geo": "place",
+"deal": {
+"t": "Happy hour margs & snacks, late night too; half-off tacos on Taco Tuesday",
+"d": "Daily 3–5 PM · Wed–Sun 8 PM–late at the bar · tacos ½ off Tue 3 PM–close · dine-in",
+"u": "https://www.eatpuesto.com/location/los-olivos/",
 "chk": "2026-11-13"
 }
 },
@@ -3460,7 +3487,7 @@
 "src": "osm",
 "deal": {
 "t": "Happy hour: cocktails, small plates & pizzas",
-"d": "Daily 4–7 PM, runs later on Wednesdays",
+"d": "Daily 4–7 PM, all night on Wednesdays",
 "u": "https://www.thetropicale.com/happy-hour",
 "chk": "2026-11-13"
 }
