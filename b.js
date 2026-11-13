@@ -964,6 +964,9 @@ const target=(location.hash||"").slice(1);
 if(/^pp=[01][A-Za-z0-9_-]+$/.test(target)){try{history.replaceState(null,"",location.pathname);}catch(e){}setTimeout(()=>compareFrom(target.slice(3)),300);}
 if(target&&/^[ep]-/.test(target)){cur="all";state.when="any";show("results",true);openCard(target);}
 else show("home",true);
-setTimeout(()=>{let seen="";try{seen=SH.store.raw("shack-new")||"";}catch(e){}if(seen!==WN_VER&&screen==="home"&&!document.querySelector("dialog[open],#nightView,#bCmp:not([hidden])"))whatsNew();},1600);
+setTimeout(()=>{let seen="";try{seen=SH.store.raw("shack-new")||"";}catch(e){}
+  // brand-new people get the app, not a changelog of things they have never seen
+  if(SH.firstVisit&&!seen){try{SH.store.put("shack-new",WN_VER);}catch(e){}return;}
+  if(seen!==WN_VER&&screen==="home"&&!document.querySelector("dialog[open],#nightView,#bCmp:not([hidden])"))whatsNew();},1600);
 })();
 

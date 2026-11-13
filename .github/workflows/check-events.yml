@@ -1,0 +1,17 @@
+name: Show list health
+# Fails (and GitHub emails you) if the daily refresh stopped or wrote broken shows. Warnings show in the run log.
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths: [events.json, scripts/check_events.py]
+  schedule: [{ cron: "20 18 * * *" }]   # ~10:20 AM PT, well after the morning refresh
+permissions:
+  contents: read
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - run: python3 scripts/check_events.py

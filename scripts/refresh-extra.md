@@ -32,3 +32,16 @@ Each run:
    to the same "Daily refresh" commit. Mention the deals in the commit message, for example "2 deals checked, 1 added".
 
 Deals the owner adds on the You page live in Supabase, not in this file. Leave those alone.
+
+## Show list quality (every run, last step)
+
+Run `python3 scripts/check_events.py` after writing `events.json` and fix what it reports before committing:
+
+- **Errors** (it exits 1) must be fixed: missing title/venue/date, price low above high, broken links, duplicate ids.
+- **Past shows:** drop any show whose `end` (or `start` if no end) is before today.
+- **Google-search links:** for each upcoming show whose `url` is a Google search, look for the real ticket or event
+  page (venue site, Ticketmaster, AXS, DICE, Eventbrite) and use it. Leave the search link only if none exists.
+- **Resale links:** when a show links to Gametime, TickPick, Vivid Seats, StubHub or SeatGeek, swap in the venue's own
+  page or the primary seller if one sells it. Resale is fine only when the show is sold out at face value.
+- **Never guess a price** into `priceFrom`/`priceTo`. Unknown stays `null`; donation or pay-what-you-can goes in
+  `priceNote` (with the suggested amount in `priceFrom`/`priceTo` only if the organizer states one).

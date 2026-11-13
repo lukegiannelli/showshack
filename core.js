@@ -3,6 +3,8 @@
    distance formulas, five time parsers with two different "late night" cut-offs, and four ways to start sound.) */
 (function(){
 const SH={};
+// true only on someone's very first visit: checked before any file saves anything (later files write keys at boot)
+SH.firstVisit=(()=>{try{const ls=localStorage;for(let i=0;i<ls.length;i++)if(/^(shack-|radar-)/.test(ls.key(i)||""))return false;return true;}catch(e){return false;}})();
 
 /* ---- distance and drive time (rough: straight line × 1.2 for roads, 55 mph + 6 min to park; Google times override where app.js has them) ---- */
 SH.miles=(a,b,c,d)=>{const R=3958.8,t=x=>x*Math.PI/180,x=Math.sin(t(c-a)/2)**2+Math.cos(t(a))*Math.cos(t(c))*Math.sin(t(d-b)/2)**2;return 2*R*Math.asin(Math.sqrt(x));};

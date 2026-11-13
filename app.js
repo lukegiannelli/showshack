@@ -21,7 +21,7 @@ let myUid=null, amOwner=false, dbRef=null;
 const REGIONS = ["Orange County","Los Angeles","Inland Empire","San Diego","Desert","Ventura","Other"];
 function region(e){const la=e.lat,lo=e.lon;if(typeof la!=="number"||typeof lo!=="number")return "Other";if(lo>-116.75)return "Desert";if(la<33.38)return "San Diego";if(lo<-118.65)return "Ventura";if(la<=33.95&&lo>=-118.12&&lo<=-117.41)return "Orange County";if(lo<=-117.65)return "Los Angeles";return "Inland Empire";}
 function ymd(d){return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");}
-function tixWord(e,pi){pi=pi||priceInfo(e);if(e.kind==="volunteer")return "Sign up";if(COMM.has(e.kind)||CONS.has(e.kind)||pi.free)return "Info";return "Tickets";}
+function tixWord(e,pi){pi=pi||priceInfo(e);if(/^https?:\/\/(www\.)?google\.[a-z.]+\/search/i.test(String(e.url||"")))return "Find tickets";if(e.kind==="volunteer")return "Sign up";if(e.kind==="openmic"||COMM.has(e.kind)||CONS.has(e.kind)||pi.free)return "Info";return "Tickets";}
 function nextOccurrence(r){
   if(r&&Array.isArray(r.nths)&&r.nths.length){const o=r.nths.map(n=>nextOccurrence({...r,nths:null,nth:n})).filter(Boolean).sort();return o[0]||null;}
   if(r&&Array.isArray(r.weekdays)&&r.weekdays.length){const o=r.weekdays.map(w=>nextOccurrence({...r,weekdays:null,weekday:w})).filter(Boolean).sort();return o[0]||null;}
@@ -128,6 +128,8 @@ function priceInfo(e){
   if(e.priceFrom===0) return {free:true,lo:0,hi:0};
   if(isRec(e)) return e.priceFrom!=null?{lo:e.priceFrom,hi:e.priceTo??e.priceFrom}:{none:true};
   if(e.priceFrom!=null) return {lo:e.priceFrom,hi:e.priceTo??e.priceAvg??null,est:!!e.priceEst};
+  // only guess a range for ticketed kinds at known venue sizes; community nights, donation and pay-what-you-can never get a made-up price
+  if(!KEST[e.kind]||/donat|pay what|sliding|by donation|free/i.test(String(e.priceNote||""))) return {none:true};
   const v=String(e.venue||"");
   let r=(e.kind==="comedy"&&/(theat|arena|bowl|hall|civic|observatory|humphreys)/i.test(v))?[45,150]:null;
   if(!r&&e.kind!=="festival") for(const [re,rg] of EST) if(re.test(v)){r=rg;break;}
@@ -500,7 +502,7 @@ function cardHtml(e){
     const $r=n=>"$"+Math.round(n);
     if(pi.sold) priceHtml=pi.cancel?'<span class="sold">Cancelled</span><span class="pn">per Ticketmaster · double-check</span>':'<span class="sold">Sold out</span>';
     else if(pi.free) priceHtml='<span class="price">Free</span>';
-    else if(pi.none) priceHtml='<span class="na">—</span>';
+    else if(pi.none) priceHtml=`<span class="na">Not listed yet</span>${/donat|pay what|sliding/i.test(String(e.priceNote||""))?'<span class="pn">donation-based</span>':""}`;
     else if(pi.est) priceHtml=`<span class="price est">≈${$r(pi.lo)}–${$r(pi.hi)}</span><span class="pn">typical · not yet listed</span>`;
     else if(pi.hi!=null&&Math.round(pi.hi)>Math.round(pi.lo)) priceHtml=`<span class="price">${$r(pi.lo)}–${$r(pi.hi)}</span><span class="pn">${e.priceSrc==="ticketmaster"?"face value · before fees":"cheapest seats listed"}</span>`;
     else priceHtml=`<span class="price">From ${$r(pi.lo)}</span><span class="pn">${e.priceSrc==="ticketmaster"?"face value · before fees":"cheapest seat"}</span>`;
