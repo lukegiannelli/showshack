@@ -769,3 +769,63 @@ body.neb .vcard .vf .bvibe{color:#EDE6FF;opacity:1;text-shadow:0 1px 3px rgba(0,
 /* owner: add a food deal */
 .bdeal-f input{min-width:0;height:42px;box-sizing:border-box;padding:0 11px;border-radius:11px;border:1px solid rgba(255,255,255,.18);background:rgba(10,6,28,.7);color:#fff;font:500 16px var(--body);color-scheme:dark}
 .bdeal-l{display:grid;gap:4px;font:500 12px var(--body);color:#cfc6e8}
+
+/* ---- You as a page (you.js): same frame as Shows / Saved / Plan. It takes the main column's place under the same backdrop,
+   keeps the tab bar, uses the page-title voice and the section-label voice, and its cards follow the light / dark theme. ---- */
+html.b-you .wrap{display:none}
+.ui-b .byou-page{position:static;display:none;inset:auto;width:auto;max-width:760px;height:auto;max-height:none;margin:0 auto;padding:0;border:0;background:none;color:var(--ink);overflow:visible}
+.ui-b .byou-page[open]{display:block;animation:byouIn .28s ease-out}
+@keyframes byouIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.ui-b .byou-page[open]{animation:none}}
+.ui-b .byou-page .binfo-in{max-height:none;overflow:visible;padding:14px 0 8px;border:0;border-radius:0;background:none;box-shadow:none;animation:none;isolation:auto}
+.ui-b .byou-page .binfo-in::before{content:none}
+.ui-b .byou-title h1{font-size:38px}
+.ui-b .byou-hi{margin:6px 0 0;font:600 12px var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.ui-b .byou-hi span{color:var(--ink)}
+.ui-b .byou-page .byou-lede{margin:10px 0 0;color:var(--muted);font-size:14px}
+/* cards: the same glassy surface + hairline as the cards on Saved and Plan */
+.ui-b .byou-page .byou-sec{margin-top:16px;padding:14px;border-radius:18px;color:var(--ink);
+  background:color-mix(in srgb,var(--surface) 80%,transparent);border:1px solid var(--line);-webkit-backdrop-filter:blur(14px) saturate(1.2);backdrop-filter:blur(14px) saturate(1.2);box-shadow:0 6px 22px -14px rgba(0,0,0,.45)}
+/* section labels: the "YOUR NIGHTS" / "SAVED SHOWS" voice */
+.ui-b .byou-page .byou-sec>h3{margin:0 0 8px;font-family:var(--display);font-weight:800;font-size:19px;letter-spacing:.05em;text-transform:uppercase;color:var(--lbl,#C2410C)}
+.ui-b .byou-page .bset-p{color:var(--muted)}
+.ui-b .byou-page .bset-p b,.ui-b .byou-page .bset-p strong{color:var(--ink)}
+.ui-b .byou-page .bset-msg{color:var(--drive)}
+.ui-b .byou-page .bset-acts>button,.ui-b .byou-page .bset-acts>label,.ui-b .byou-page .bpass-share{background:var(--chip);border:1px solid var(--line);color:var(--ink)}
+.ui-b .byou-page .bset-acts .bset-clear{background:transparent;border-color:color-mix(in srgb,#E0457A 55%,transparent);color:#C2185B}
+.ui-b .byou-page .bset-acts .bset-clear.sure{background:#E0457A;color:#fff;border-color:#E0457A}
+.ui-b .byou-page .bmiss-f textarea,.ui-b .byou-page .bmiss-f input,.ui-b .byou-page input:not([type=checkbox]):not([type=radio]),.ui-b .byou-page select{background:var(--surface);border:1px solid var(--line);color:var(--ink)}
+.ui-b .byou-page ::placeholder{color:var(--muted);opacity:.85}
+.ui-b .byou-page .byou-foot{margin-top:18px}
+/* the passport keeps its night-sky ticket look in both themes (it's a keepsake, like the year picture) */
+.ui-b .byou-page .byou-pass{background:linear-gradient(160deg,#2a1747,#151033 60%,#22143a);border-color:rgba(255,210,122,.45);color:#efe9ff;-webkit-backdrop-filter:none;backdrop-filter:none}
+/* Match my music */
+.ui-b .byou-page .bmus-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:2px 0 10px}
+.ui-b .byou-page .bmus-stats span{display:flex;flex-direction:column;align-items:center;gap:1px;padding:8px 4px;border-radius:12px;background:var(--chip);font:500 11.5px var(--body);color:var(--muted)}
+.ui-b .byou-page .bmus-stats b{font:700 19px var(--mono);color:var(--ink)}
+.ui-b .byou-page .bmus-links li{background:var(--chip);border-color:var(--line);color:var(--muted);font-size:13px}
+.ui-b .byou-page .bmus-links li>i{font-style:normal;font-size:18px;flex:none}
+.ui-b .byou-page .bmus-links li span{display:flex;flex-direction:column;gap:1px}
+.ui-b .byou-page .bmus-links li b{color:var(--ink);font-weight:650;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ui-b .byou-page .bmus-links li small{font-size:12px;color:var(--muted)}
+.ui-b .byou-page .bmus-links button{border-color:var(--line);color:var(--muted)}
+.ui-b .byou-page .bmus-err{color:#C2185B}
+.ui-b .byou-page .bmus-tog{color:var(--accent)}
+.ui-b .byou-page .bmus-chip{background:var(--chip);border-color:var(--line);color:var(--ink)}
+.ui-b .byou-page .bmus-chip.on{border-color:color-mix(in srgb,var(--drive) 70%,transparent);background:color-mix(in srgb,var(--drive) 16%,var(--chip))}
+.ui-b .byou-page .bmus-chip small{color:var(--muted)}
+.ui-b .byou-page .bmus-chip button,.ui-b .byou-page .bmus-un{color:var(--muted)}
+.ui-b .byou-page .bmus-un{border-color:var(--line)}
+.bmus-more{all:unset;cursor:pointer;padding:4px 12px;border-radius:999px;border:1px dashed var(--line);font:600 12.5px var(--body);color:var(--accent)}
+.bmus-chips{max-height:320px}
+.bmus-how{margin:8px 0 10px;font-size:13px;color:var(--muted)}
+.bmus-how summary{cursor:pointer;font:600 13px var(--body);color:var(--accent);padding:4px 0;min-height:28px}
+.bmus-how p{margin:6px 0 0;line-height:1.5}
+.bmus-how b{color:var(--ink)}
+.bmus .bmiss-f+.bmiss-f{margin-top:6px}
+.bmus .bmiss-f .bpass-share:disabled{opacity:.6;cursor:progress}
+.bmus .bmus-sync{font-size:12.5px;margin-top:10px}
+.bmus .bmus-acts{flex-direction:row;flex-wrap:wrap}
+.bmus .bmus-acts>button{flex:1 1 140px}
+@media (prefers-color-scheme:dark){:root.ui-b:not([data-theme="light"]) .byou-page .bmus-err,:root.ui-b:not([data-theme="light"]) .byou-page .bset-acts .bset-clear{color:#FF8AAE}}
+:root.ui-b[data-theme="dark"] .byou-page .bmus-err,:root.ui-b[data-theme="dark"] .byou-page .bset-acts .bset-clear{color:#FF8AAE}

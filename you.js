@@ -27,10 +27,8 @@ addEventListener("submit",ev=>{if(navigator.onLine)return;if(!ev.target.closest(
 
 /* ===== the You sheet ===== */
 function youHTML(){const u=C.user,owner=SH.store.raw("shack-owner")==="1";
-  return `<button type="button" class="binfo-x" data-close aria-label="Close">✕</button>
-    <p class="binfo-kick"><img class="bshack-ic" src="hut.webp?v=2" alt="">you</p>
-    <h2 id="bYouH">${u?`Hey, <span id="bYouName">${E((window.SHACK_ME&&SHACK_ME()||{}).full||"there")}</span>`:"Make the Shack yours"}</h2>
-    ${u?"":`<p class="bset-p">Everything works without an account. Sign in (just your email, free) to sync across devices, get reminders and see friends.</p>`}
+  return `<div class="btitle byou-title"><h1 id="bYouH">You</h1><p class="byou-hi">${u?`Hey, <span id="bYouName">${E((window.SHACK_ME&&SHACK_ME()||{}).full||"there")}</span>`:"Make the Shack yours"}</p></div>
+    ${u?"":`<p class="bset-p byou-lede">Everything works without an account. Sign in (just your email, free) to sync across devices, get reminders and see friends.</p>`}
     ${passSec()}
     <section class="byou-sec"><h3>☁ Account &amp; sync</h3>${window.shackCloudHTML?shackCloudHTML():""}</section>
     ${window.SHACK_MUSIC?SHACK_MUSIC.sectionHTML():""}
@@ -39,24 +37,39 @@ function youHTML(){const u=C.user,owner=SH.store.raw("shack-owner")==="1";
     <section class="byou-sec"><h3>↗ Share</h3><p class="bset-p">Your year, your passport, a night plan, or the Shack itself.</p><div class="bset-acts"><button type="button" data-yshare="all">Open the Share sheet</button></div></section>
     <section class="byou-sec"><h3>🏷 Missing a show?</h3><div id="bMiss">${missHTML()}</div></section>
     ${u&&(admin||owner)?`<section class="byou-sec byou-adm"><h3>📊 Owner: Hivemind808 &amp; review</h3>${insHTML()}<div id="bAdm">${admHTML(owner)}</div></section>`:""}
-    <div class="bset-acts"><button type="button" data-yset>Settings &amp; your data</button></div>
-    <button type="button" class="binfo-ok" data-close>Done</button>`;}
+    <div class="bset-acts byou-foot"><button type="button" data-yset>⚙ Settings &amp; your data</button></div>`;}
 // Show passport + badges in one card (built by b.js: stamps, show log, regions, badges)
 function passSec(){const P=window.SHACK_PASS;if(!P||!P.passHtml)return "";try{return P.passHtml();}catch(e){return "";}}
 function ensureDialog(id,label){let d=$(id);if(!d){d=document.createElement("dialog");d.id=id;d.className="binfo bset byou";d.setAttribute("aria-labelledby",label);d.innerHTML=`<div class="binfo-in"></div>`;document.body.appendChild(d);
   d.addEventListener("click",ev=>{if(ev.target===d||ev.target.closest("[data-close]"))dlgClose(d);});}return d;}
-function openYou(focus){const d=ensureDialog("bYou","bYouH");d.querySelector(".binfo-in").innerHTML=youHTML();dlgOpen(d);
+// The You tab is a page like Shows / Saved / Plan: it takes the place of the main column, keeps the tab bar and the backdrop.
+// (Still a <dialog> so everything that closes it keeps working; it's opened non-modal so the tab bar stays tappable.)
+function youPage(){let d=$("bYou");if(d)return d;d=document.createElement("dialog");d.id="bYou";d.className="byou byou-page";d.setAttribute("aria-labelledby","bYouH");
+  d.innerHTML=`<div class="binfo-in"></div>`;const w=document.querySelector(".wrap");(w?w.parentNode:document.body).insertBefore(d,w?w.nextSibling:null);
+  d.addEventListener("close",()=>{document.documentElement.classList.remove("b-you");const t=$("bYouTab");if(t)t.removeAttribute("aria-current");
+    const prev=d._prev&&document.querySelector(`#bTabs [data-tab="${d._prev}"]`);if(prev&&!document.querySelector("#bTabs [data-tab][aria-current]"))prev.setAttribute("aria-current","page");
+    window.scrollTo(0,d._y||0);});
+  return d;}
+function openYou(focus){const d=youPage();d.querySelector(".binfo-in").innerHTML=youHTML();
+  if(!d.open){const cur=document.querySelector("#bTabs [data-tab][aria-current]");d._prev=cur?cur.dataset.tab:"";d._y=window.scrollY;
+    document.querySelectorAll("#bTabs [aria-current]").forEach(b=>b.removeAttribute("aria-current"));const t=$("bYouTab");if(t)t.setAttribute("aria-current","page");
+    document.documentElement.classList.add("b-you");d.show();}
+  window.scrollTo(0,0);
   if(C.user)refreshAdmin();refreshRem();
   if(focus==="signin"){const b=d.querySelector('[data-cl="in"]');if(b)b.click();}
   if(focus==="pass"){const p=$("bYouPass");if(p)setTimeout(()=>p.scrollIntoView({block:"start"}),30);}
   if(focus==="missing"){const i=d.querySelector("[data-miss-form] textarea");if(i){i.scrollIntoView({block:"center"});i.focus();}}}
-function redrawYou(){const d=$("bYou");if(d&&d.open){const top=d.querySelector(".binfo-in").scrollTop;d.querySelector(".binfo-in").innerHTML=youHTML();d.querySelector(".binfo-in").scrollTop=top;}}
+function redrawYou(){const d=$("bYou");if(d&&d.open){const y=window.scrollY;d.querySelector(".binfo-in").innerHTML=youHTML();window.scrollTo(0,y);}}
+// leaving You: another tab, the phone's back gesture, or Esc
+document.addEventListener("click",ev=>{const t=ev.target.closest("#bTabs [data-tab]");const d=$("bYou");if(t&&d&&d.open){d._prev="";d._y=0;d.close();}},true);
+addEventListener("popstate",()=>{const d=$("bYou");if(d&&d.open)d.close();});
+addEventListener("keydown",ev=>{const d=$("bYou");if(ev.key==="Escape"&&d&&d.open&&!document.querySelector("dialog[open]:modal"))d.close();});
 C.onUser(()=>{admin=false;review=null;redrawYou();if(C.user)refreshAdmin();});
 window.SHACK_YOU={open:openYou};
 
 // bottom tab + header gear → You / Settings
 const tabs=$("bTabs");
-if(tabs&&!$("bYouTab")){tabs.insertAdjacentHTML("beforeend",`<button type="button" id="bYouTab" aria-haspopup="dialog"><svg class="ni" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>You</button>`);}
+if(tabs&&!$("bYouTab")){tabs.insertAdjacentHTML("beforeend",`<button type="button" id="bYouTab"><svg class="ni" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>You</button>`);}
 document.addEventListener("click",ev=>{
   if(ev.target.closest("#bYouTab,[data-yopen]")){ev.preventDefault();ev.stopPropagation();openYou();return;}
   if(ev.target.closest("[data-ypass]")){ev.preventDefault();ev.stopPropagation();openYou("pass");return;}
