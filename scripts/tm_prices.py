@@ -145,6 +145,20 @@ GENRE = [("hip-hop", "hiphop"), ("rap", "hiphop"), ("dance/electronic", "electro
          ("r&b", "jazz"), ("blues", "jazz"), ("soul", "jazz"), ("rock", "indie"), ("alternative", "indie"),
          ("metal", "indie"), ("punk", "indie"), ("indie", "indie"), ("folk", "indie"), ("country", "indie")]
 
+# Stricter than venue_ok (which is fine for pricing, where the date and title must match too): the city's words and
+# generic words don't count, so "Ventura Music Hall" is not "Ventura Promenade" and "Gaslamp Long Beach" is not
+# "Cal State Long Beach". What's left of one name must be contained in the other.
+GENERIC = {"theatre", "theater", "hall", "music", "club", "center", "centre", "lounge", "room", "bar", "house", "arena",
+           "amphitheatre", "amphitheater", "ballroom", "stage", "venue", "district", "village", "downtown", "beach",
+           "beaches", "park", "plaza", "promenade", "arts", "art", "artists", "concert", "concerts", "events", "sd", "ca"}
+
+def same_venue(ours, theirs, city):
+    if sim(ours, theirs) >= 0.9:
+        return True
+    c = toks(city)
+    a, b = toks(ours) - c - GENERIC, toks(theirs) - c - GENERIC
+    return bool(a and b and (a <= b or b <= a))
+
 def kind_of(t):
     g = (t["genre"] or "").lower()
     if g == "comedy" or (t["sub"] or "").lower() == "comedy":
@@ -198,7 +212,7 @@ def add_missing(data, tm, today):
         k = kind_of(t)
         if not k:
             continue
-        mine = [(vk, v) for vk, v in venues.items() if norm(vk[1]) == norm(t["city"]) and venue_ok(vk[0], t["venue"])]
+        mine = [(vk, v) for vk, v in venues.items() if norm(vk[1]) == norm(t["city"]) and same_venue(vk[0], t["venue"], vk[1])]
         if not mine:
             continue
         (vname, vcity), v = max(mine, key=lambda x: x[1]["n"])
@@ -221,7 +235,7 @@ def add_missing(data, tm, today):
                     "priceAsOf": today_s if lo is not None else None, "priceSrc": "ticketmaster" if lo is not None else None,
                     "priceWas": None, "priceChangedAt": None, "onSaleAt": onsale if onsale > today_s else None, "ages": None,
                     "note": None, "url": t["url"], "status": "announced" if onsale > today_s else "on sale",
-                    "updatedAt": today_s, "src": "tm-auto", "tmId": t["id"]})
+                    "updatedAt": today_s, "src": "tm-auto", "tmId": t["id"], "tmVenue": t["venue"]})
         ids.add(eid); tm_ids.add(t["id"]); taken.add((norm(vname), d)); by_date.setdefault(d, []).append(evs[-1])
         per_venue[vname] = per_venue.get(vname, 0) + 1; added += 1
     return added

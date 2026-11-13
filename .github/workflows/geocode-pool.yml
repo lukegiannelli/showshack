@@ -5,7 +5,7 @@ on:
   workflow_dispatch:
   push:
     branches: [main]
-    paths: [pool.json, afters.json]
+    paths: [pool.json, afters.json, events.json]   # events.json: pins for shows seeded with an "addr" (does nothing when there are none)
 permissions:
   contents: write
 concurrency: { group: events-json, cancel-in-progress: false }   # same group as the Ticketmaster job
