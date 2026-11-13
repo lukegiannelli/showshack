@@ -70,6 +70,7 @@ select{font:500 13px var(--body);background:var(--chip);color:var(--ink);border:
 .side .na{color:var(--muted)}
 .side .est{font-weight:500;opacity:.85}
 .side .pn{font-size:10px;color:var(--muted)}
+.side .price.small{font-size:12px;line-height:1.25}
 .side .sold{color:var(--sold);font-weight:600}
 /* card tint: left half = price, right half = drive time; green cheap/close to red pricey/far, blended in the middle */
 .ev{background:linear-gradient(90deg,var(--lc,transparent) 0%,var(--lc,transparent) 28%,var(--rc,transparent) 72%,var(--rc,transparent) 100%),var(--surface)}
@@ -173,6 +174,8 @@ header .shack-share:active{transform:translateY(3px);box-shadow:inset 0 1px 0 rg
 .badge.down{background:hsl(150 70% 40% / .16);color:hsl(150 70% 30%)}
 .badge.up{background:hsl(10 80% 50% / .14);color:hsl(10 75% 42%)}
 .badge.sale{background:hsl(45 95% 50% / .2);color:hsl(35 80% 30%)}
+.badge.stale{background:hsl(30 95% 50% / .16);color:hsl(25 80% 34%);font-weight:500;white-space:normal}
+.badge.stale a{color:inherit;text-decoration:underline}
 .tag.local{border-color:var(--drive);color:var(--drive)}
 .tag.transit{border-color:hsl(140 55% 40%);color:hsl(140 55% 35%)}
 .surprise{display:flex;flex-wrap:wrap;align-items:center;gap:8px;background:var(--surface);border:1.5px dashed var(--accent);border-radius:10px;padding:10px 12px;font-size:14px}
@@ -225,7 +228,7 @@ header .shack-share:active{transform:translateY(3px);box-shadow:inset 0 1px 0 rg
 .bar .t{height:10px;border-radius:5px;background:var(--chip);overflow:hidden}.bar .t i{display:block;height:100%;background:var(--accent);border-radius:5px}
 .bar .v{text-align:right;font-family:var(--mono);font-variant-numeric:tabular-nums;font-size:12.5px;white-space:nowrap}
 .bar .k{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .map .sea{fill:hsl(210 35% 22%)}:root:not([data-theme="light"]) .map .land{fill:hsl(230 12% 15%);stroke:hsl(210 25% 35%)}:root:not([data-theme="light"]) .map .city{fill:hsl(220 10% 70%)}:root:not([data-theme="light"]) .badge.down{color:hsl(150 60% 65%)}:root:not([data-theme="light"]) .badge.up{color:hsl(10 80% 70%)}:root:not([data-theme="light"]) .badge.sale{color:hsl(45 90% 70%)}}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .map .sea{fill:hsl(210 35% 22%)}:root:not([data-theme="light"]) .map .land{fill:hsl(230 12% 15%);stroke:hsl(210 25% 35%)}:root:not([data-theme="light"]) .map .city{fill:hsl(220 10% 70%)}:root:not([data-theme="light"]) .badge.down{color:hsl(150 60% 65%)}:root:not([data-theme="light"]) .badge.up{color:hsl(10 80% 70%)}:root:not([data-theme="light"]) .badge.sale{color:hsl(45 90% 70%)}:root:not([data-theme="light"]) .badge.stale{color:hsl(30 90% 70%)}}
 
 /* ---- planning box: beach water, animated ---- */
 .start{position:relative;overflow:hidden;isolation:isolate;border-color:rgba(255,255,255,.28);background:#6d7fa8 url(water.jpg?v=1) center/100% 100% no-repeat}

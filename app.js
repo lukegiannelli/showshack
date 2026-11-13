@@ -21,7 +21,7 @@ let myUid=null, amOwner=false, dbRef=null;
 const REGIONS = ["Orange County","Los Angeles","Inland Empire","San Diego","Desert","Ventura","Other"];
 function region(e){const la=e.lat,lo=e.lon;if(typeof la!=="number"||typeof lo!=="number")return "Other";if(lo>-116.75)return "Desert";if(la<33.38)return "San Diego";if(lo<-118.65)return "Ventura";if(la<=33.95&&lo>=-118.12&&lo<=-117.41)return "Orange County";if(lo<=-117.65)return "Los Angeles";return "Inland Empire";}
 function ymd(d){return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");}
-function tixWord(e,pi){pi=pi||priceInfo(e);if(e.kind==="volunteer")return "Sign up";if(COMM.has(e.kind)||CONS.has(e.kind)||pi.free)return "Info";return "Tickets";}
+function tixWord(e,pi){pi=pi||priceInfo(e);if(e.kind==="volunteer")return "Sign up";if(e.kind==="openmic"||COMM.has(e.kind)||CONS.has(e.kind)||pi.free||pi.donation)return "Info";return "Tickets";}
 function nextOccurrence(r){
   if(r&&Array.isArray(r.nths)&&r.nths.length){const o=r.nths.map(n=>nextOccurrence({...r,nths:null,nth:n})).filter(Boolean).sort();return o[0]||null;}
   if(r&&Array.isArray(r.weekdays)&&r.weekdays.length){const o=r.weekdays.map(w=>nextOccurrence({...r,weekdays:null,weekday:w})).filter(Boolean).sort();return o[0]||null;}
@@ -122,10 +122,21 @@ const EST=[
  [/troubadour|roxy|viper|casbah|alex'?s bar|soma|constellation|echo|lodge room|moroccan|teragram|resident|zebulon|permanent records|catch one|peppermint|whisky|redwood|che cafe|space bar/i,[15,40]],
  [/wiltern|palladium|youtube theater|fonda|belasco|novo|observatory|el rey|avalon|house of blues|glass house|fox|music box|belly up|coach house|wayfarer|garden amp|regent|bellwether|shrine|orpheum|yaamava|pappy|time nightclub|sound nightclub|exchange|spin nightclub/i,[35,95]]];
 const KEST={festival:[100,350],club:[20,60],comedy:[30,90],theater:[40,150],concert:[30,90]};
+const DONATE_RE=/\b(donation|pay what you (?:can|wish|want)|sliding[- ]scale|by donation)\b/i;
+// listing notes like "Venue coordinates approximate (city center)." / "Map pin approximate."
+const APPROX_RE=/\s*(?:Venue coordinates|Map pin|Coordinates|Pin)[^.]*approximate[^.]*\.\s*/i;
+function approxPin(e){return APPROX_RE.test(e.note||"");}
+// open mic notes like "Listing last updated Aug 2025. Call ahead to confirm (714-770-0411)."
+const STALE_RE=/\s*(?:Listing last updated|Last confirmed date was)\s+([^.]+?)\.\s*(?:Call ahead to confirm|Check the schedule before going)\s*(?:\(([^)]+)\))?\.?\s*/i;
+function staleOf(e){const m=STALE_RE.exec(e.note||"");return m?{when:m[1].trim(),phone:m[2]||""}:null;}
+// the note minus the bits the card already shows as a tag or in the drive box
+function cardNote(e){return String(e.note||"").replace(APPROX_RE," ").replace(STALE_RE," ").trim();}
 function priceInfo(e){
   if(e.status==="cancelled") return {sold:true,cancel:true};
   if(e.status==="sold out") return {sold:true};
   if(e.priceFrom===0) return {free:true,lo:0,hi:0};
+  // "donation-based" with no listed price: say so instead of guessing a typical range
+  if(e.priceFrom==null&&DONATE_RE.test([e.title,e.priceNote,e.note].join(" "))) return {none:true,donation:true};
   if(isRec(e)) return e.priceFrom!=null?{lo:e.priceFrom,hi:e.priceTo??e.priceFrom}:{none:true};
   if(e.priceFrom!=null) return {lo:e.priceFrom,hi:e.priceTo??e.priceAvg??null,est:!!e.priceEst};
   const v=String(e.venue||"");
@@ -155,7 +166,7 @@ function lastRideHtml(e,nc){
 }
 function transitOf(e){const v=String(e.venue||"");for(const [re,l] of TRANSIT)if(re.test(v))return l;return null;}
 function shareText(e){const d=parseDay(e.start);const pi=priceInfo(e);
-  const pr=pi.cancel?"cancelled (per Ticketmaster)":pi.sold?"sold out":pi.free?"free":pi.est?`~$${pi.lo}–$${pi.hi} (est.)`:pi.lo!=null?`from $${Math.round(pi.lo)}`:"";
+  const pr=pi.cancel?"cancelled (per Ticketmaster)":pi.sold?"sold out":pi.free?"free":pi.donation?"donation-based":pi.est?`~$${pi.lo}–$${pi.hi} (est.)`:pi.lo!=null?`from $${Math.round(pi.lo)}`:"";
   return [e.title+(e.artists?` (${e.artists})`:""),d.toLocaleDateString("en-US",{weekday:"short",month:"short",day:"numeric"})+(e.time?" · "+e.time:""),`${e.venue}, ${e.city}`,pr,e.url?tixWord(e)+": "+e.url:""].filter(Boolean).join(" · ")+"\n🛖 "+APP_URL+"#"+hid(e);}
 function eatLink(e){return "https://www.google.com/maps/search/?api=1&query="+encodeURIComponent("local restaurants and bars near "+(e.venue||"")+", "+(e.city||""));}
 const VOL_KNOWN=/coachella|stagecoach/i;
@@ -256,7 +267,7 @@ function weekendPicks(evs){
 function wkCard(p,i){const e=p.e,v=p.v,pi=priceInfo(e);
   const d=parseDay(e.start);
   const day=d.toLocaleDateString("en-US",{weekday:"short"}).toUpperCase()+(e.time?" · "+e.time:"");
-  const pr=pi.free?"Free":pi.none?"Price TBA":pi.lo!=null?(pi.est?"≈":"")+"$"+Math.round(pi.lo):"";
+  const pr=pi.free?"Free":pi.donation?"Donation":pi.none?"Price TBA":pi.lo!=null?(pi.est?"≈":"")+"$"+Math.round(pi.lo):"";
   const st=state.stars.has(skey(e));
   return `<article class="wkc" data-k="${esc(skey(e))}" data-h="${esc(hid(e))}" style="--vc:${v[3]}">
     <div class="wkv">${ni(v[1])}<span>${esc(v[2])}</span>${st?'<b class="wkon">★ starred</b>':""}</div>
@@ -500,7 +511,9 @@ function cardHtml(e){
     const $r=n=>"$"+Math.round(n);
     if(pi.sold) priceHtml=pi.cancel?'<span class="sold">Cancelled</span><span class="pn">per Ticketmaster · double-check</span>':'<span class="sold">Sold out</span>';
     else if(pi.free) priceHtml='<span class="price">Free</span>';
-    else if(pi.none) priceHtml='<span class="na">—</span>';
+    else if(pi.donation) priceHtml='<span class="price">Donation</span><span class="pn">pay what you can</span>';
+    else if(pi.none&&e.priceNote) priceHtml=`<span class="price small">${esc(e.priceNote)}</span><span class="pn">no cover listed</span>`;
+    else if(pi.none) priceHtml=`<span class="na">Not listed</span><span class="pn">${mic?"ask the venue":"check the link"}</span>`;
     else if(pi.est) priceHtml=`<span class="price est">≈${$r(pi.lo)}–${$r(pi.hi)}</span><span class="pn">typical · not yet listed</span>`;
     else if(pi.hi!=null&&Math.round(pi.hi)>Math.round(pi.lo)) priceHtml=`<span class="price">${$r(pi.lo)}–${$r(pi.hi)}</span><span class="pn">${e.priceSrc==="ticketmaster"?"face value · before fees":"cheapest seats listed"}</span>`;
     else priceHtml=`<span class="price">From ${$r(pi.lo)}</span><span class="pn">${e.priceSrc==="ticketmaster"?"face value · before fees":"cheapest seat"}</span>`;
@@ -508,9 +521,12 @@ function cardHtml(e){
     const nc=nightCost(e,pi), lb=leaveBy(e);
     const nightHtml = `<div class="flipbar"><button type="button" class="nightbtn" data-flip="1">🌙 Night out <b>≈ $${nc.n>1?nc.each+" each":nc.total}${nc.partial?"+":""}</b></button></div>`;
     const leaveHtml = lb ? `<span class="leave">Leave by ${lb}</span>` : "";
-    const al = alertOf(e).map(a=>`<span class="badge ${a.c}">${a.c==="sale"?ni("ticket")+" ":""}${a.t}</span>`).join("");
+    const stl=staleOf(e), tel=stl&&stl.phone?stl.phone.replace(/[^\d+]/g,""):"";
+    const al = alertOf(e).map(a=>`<span class="badge ${a.c}">${a.c==="sale"?ni("ticket")+" ":""}${a.t}</span>`).join("")
+      + (stl?`<span class="badge stale">⚠️ Not confirmed since ${esc(stl.when)} · ${tel?`<a href="tel:${esc(tel)}">call ahead</a>`:"call ahead"}</span>`:"");
     const ag = ageOf(e); const extraTags = (firstTimer(e)?`<span class="tag first">👋 First-timer friendly</span>`:"")+(isSmall(e)?`<span class="tag local">${ni("home")} Small &amp; local</span>`:"")+(ag?`<span class="tag age">${ag==="all"?"All ages":ag}</span>`:"")+(transitOf(e)?`<span class="tag transit">${ni("sprout")} ${transitOf(e)}</span>`:"");
-    const drv = e._drive ? `<span class="drive">${e._drive.real?"":"~"}${fmtMins(e._drive.mins)} · ${e._drive.miles} mi</span>` : (origin ? '<span class="na">n/a</span>' : '<span class="na">Set start point</span>');
+    const apx=approxPin(e), mi=e._drive&&e._drive.miles<1?"<1":e._drive&&e._drive.miles;
+    const drv = e._drive ? `<span class="drive">${e._drive.real&&!apx?"":"~"}${fmtMins(e._drive.mins)} · ${apx&&mi!=="<1"?"~":""}${mi} mi</span>${apx?`<span class="pn">to ${esc(e.city)} center · exact spot not listed</span>`:""}` :(origin ? '<span class="na">n/a</span>' : '<span class="na">Set start point</span>');
     const su=mic?signupOf(e):null, micTime=String(e.time||"").replace(/\s*\(?sign[- ]?up[^)]*\)?/i,"").trim();
     const time = mic ? `<span>${esc(e.recurrence?.text||"")}${micTime?" · "+esc(micTime):""}</span>${su!=null?`<span class="signup">${ni("mic")} Sign-up ${fmtClock(su)}</span>`:`<span class="signup none">${ni("mic")} Sign-up: arrive early</span>`}` : e.time ? `<span>${esc(e.time)}</span>` : '<span class="na">Time TBA</span>';
     const tix=safeUrl(e.url)||(mic?null:safeUrl("https://www.google.com/search?q="+encodeURIComponent([e.title,e.venue,e.city,"tickets"].filter(Boolean).join(" "))));
@@ -542,8 +558,8 @@ function cardHtml(e){
         <div class="where"><button type="button" class="vlink" data-venue="${esc(venueKey(e))}">${esc(e.venue)}</button> · ${esc(e.city)}</div>
         ${al?`<div class="row">${al}</div>`:""}
         <div class="facts">${time}${leaveHtml}${wxSpan(e)}</div>
-        ${e.priceNote?`<div class="note">${esc(e.priceNote)}</div>`:""}
-        ${e.note?`<div class="note">${esc(e.note)}</div>`:""}
+        ${e.priceNote&&!(pi.none&&!pi.donation)?`<div class="note">${esc(e.priceNote)}</div>`:""}
+        ${cardNote(e)?`<div class="note">${esc(cardNote(e))}</div>`:""}
         ${(tags||extraTags)?`<div class="tags">${extraTags}${tags}</div>`:""}
         ${volHtml(e)}
         <button type="button" class="bmore" data-bmore="1" aria-expanded="false">Details</button>

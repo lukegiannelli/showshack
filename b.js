@@ -102,10 +102,10 @@ window.SHACK_PV=e=>MUSIC_K.has(e.kind)&&!!artistQ(e)?`<button type="button" clas
 function backSide(e){const pi=priceInfo(e),d=parseDay(e.start);
   const tix=safeUrl(e.url),dest=encodeURIComponent((e.venue||"")+", "+(e.city||""));
   const maps=`https://www.google.com/maps/dir/?api=1${origin&&origin.address?"&origin="+encodeURIComponent(origin.address):""}&destination=${dest}&travelmode=driving`;
-  const pr=pi.sold?"Sold out":pi.free?"Free":pi.none?"Price not listed yet":pi.est?`≈$${Math.round(pi.lo)}–${Math.round(pi.hi)} typical`:`From $${Math.round(pi.lo)}${!pi.est&&e.priceAsOf?" · checked "+fmtShort(e.priceAsOf)+(priceStale(e)?" · may have changed":""):""}`;
+  const pr=pi.sold?"Sold out":pi.free?"Free":pi.donation?"Donation · pay what you can":pi.none?(e.priceNote||"Price not listed yet"):pi.est?`≈$${Math.round(pi.lo)}–${Math.round(pi.hi)} typical`:`From $${Math.round(pi.lo)}${!pi.est&&e.priceAsOf?" · checked "+fmtShort(e.priceAsOf)+(priceStale(e)?" · may have changed":""):""}`;
   const lq=(e.kind!=="openmic"&&e.kind!=="contact")?String(e.title||"").replace(/\s*\(.*?\)\s*/g," ").split(/:| & Friends/)[0].trim():"";
   const when=(isRec(e)&&e.recurrence?e.recurrence.text+" · next ":"")+d.toLocaleDateString("en-US",{weekday:"short",month:"short",day:"numeric"})+(e.time?" · "+e.time:"");
-  const note=e.note||e.priceNote||"";
+  const stl=staleOf(e),note=[stl?`Not confirmed since ${stl.when}. Call ahead${stl.phone?" ("+stl.phone+")":""}.`:"",cardNote(e)||(pi.none?"":e.priceNote)||""].filter(Boolean).join(" ");
   return `<div class="bfb-top"><b>${esc(e.title)}</b><span>${esc(when)}</span><span>${esc(e.venue)} · ${esc(e.city)}${e._drive?` · ${e._drive.real?"":"~"}${fmtMins(e._drive.mins)} drive`:""}</span></div>
     <div class="bfb-price">${esc(pr)}</div>
     ${note?`<p class="bfb-note">${esc(note)}</p>`:""}
@@ -537,7 +537,7 @@ function openSheet(g){const e0=g.evs[0],name=g.k.split(" · ")[0],city=g.k.split
   const dest=encodeURIComponent(name+", "+city);
   const dir=`https://www.google.com/maps/dir/?api=1${origin&&origin.address?"&origin="+encodeURIComponent(origin.address):""}&destination=${dest}`;
   const rows=g.evs.slice(0,6).map(e=>{const pi=priceInfo(e),d=parseDay(e.start),tix=safeUrl(e.url);
-    const pr=pi.sold?"Sold out":pi.free?"Free":pi.none?"":pi.est?"≈$"+Math.round(pi.lo):"From $"+Math.round(pi.lo);
+    const pr=pi.sold?"Sold out":pi.free?"Free":pi.donation?"Donation":pi.none?"":pi.est?"≈$"+Math.round(pi.lo):"From $"+Math.round(pi.lo);
     return `<div class="bms-row"><span class="bms-d">${esc(d.toLocaleDateString("en-US",{weekday:"short",month:"short",day:"numeric"}))}${e.time?" · "+esc(String(e.time).replace(/\s*\(.*\)/,"")):""}</span>
       <b>${esc(e.title)}</b><span class="bms-p">${esc(pr)}</span>
       <span class="bms-a">${tix?`<a href="${esc(tix)}" target="_blank" rel="noopener">${tixWord(e,pi)} ↗</a>`:""}<button type="button" data-card="${esc(hid(e))}">Full card</button></span></div>`;}).join("");
