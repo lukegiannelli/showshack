@@ -176,6 +176,7 @@ header .shack-share:active{transform:translateY(3px);box-shadow:inset 0 1px 0 rg
 .badge.sale{background:hsl(45 95% 50% / .2);color:hsl(35 80% 30%)}
 .badge.stale{background:hsl(30 95% 50% / .16);color:hsl(25 80% 34%);font-weight:500;white-space:normal}
 .badge.stale a{color:inherit;text-decoration:underline}
+.note.checked{font-size:11px;opacity:.85}
 .tag.local{border-color:var(--drive);color:var(--drive)}
 .tag.transit{border-color:hsl(140 55% 40%);color:hsl(140 55% 35%)}
 .surprise{display:flex;flex-wrap:wrap;align-items:center;gap:8px;background:var(--surface);border:1.5px dashed var(--accent);border-radius:10px;padding:10px 12px;font-size:14px}

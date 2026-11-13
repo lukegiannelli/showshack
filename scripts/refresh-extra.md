@@ -3,6 +3,17 @@
 The daily refresh routine reads this file and follows it after its main show update. Edit this file to change the extra
 jobs; the routine itself doesn't need to change.
 
+## Keep "Listing checked" honest (every run, no extra tool calls)
+
+Every show card says "✓ Listing checked <date>" from the show's `updatedAt`, and shows an amber
+"Not re-checked since…" badge when that date is more than 30 days old. So:
+
+- For every venue you checked this run, set `updatedAt` to today on each show we list there that its calendar (or
+  ticket page) still shows. Do this in the same Python script that applies the agents' results.
+- Leave `updatedAt` alone on shows you didn't actually see today.
+- For the community kinds (dance, contact, sound, drum, social, art, volunteer, openmic), set `updatedAt` to today only
+  when you saw the listing itself today.
+
 ## Food & afters deals (Sundays and Wednesdays only, about 15 tool calls)
 
 `afters.json` holds the food and afters spots. A spot can have a `deal`:

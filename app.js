@@ -130,6 +130,10 @@ function approxPin(e){return APPROX_RE.test(e.note||"");}
 const STALE_RE=/\s*(?:Listing last updated|Last confirmed date was)\s+([^.]+?)\.\s*(?:Call ahead to confirm|Check the schedule before going)\s*(?:\(([^)]+)\))?\.?\s*/i;
 function staleOf(e){const m=STALE_RE.exec(e.note||"");return m?{when:m[1].trim(),phone:m[2]||""}:null;}
 // the note minus the bits the card already shows as a tag or in the drive box
+// how many days since the daily refresh last checked this listing (null when we don't know)
+const STALE_DAYS=30;
+function checkedAge(e){if(!e||!/^\d{4}-\d\d-\d\d/.test(e.updatedAt||""))return null;const [y,m,d]=e.updatedAt.split("-").map(Number);return Math.max(0,Math.floor((Date.now()-new Date(y,m-1,d))/864e5));}
+function hostOf(u){try{return new URL(u).hostname.replace(/^www\./,"");}catch(_){return "";}}
 function cardNote(e){return String(e.note||"").replace(APPROX_RE," ").replace(STALE_RE," ").trim();}
 function priceInfo(e){
   if(e.status==="cancelled") return {sold:true,cancel:true};
@@ -523,9 +527,10 @@ function cardHtml(e){
     const nc=nightCost(e,pi), lb=leaveBy(e);
     const nightHtml = `<div class="flipbar"><button type="button" class="nightbtn" data-flip="1">🌙 Night out <b>≈ $${nc.n>1?nc.each+" each":nc.total}${nc.partial?"+":""}</b></button></div>`;
     const leaveHtml = lb ? `<span class="leave">Leave by ${lb}</span>` : "";
-    const stl=staleOf(e), tel=stl&&stl.phone?stl.phone.replace(/[^\d+]/g,""):"";
+    const stl=staleOf(e), tel=stl&&stl.phone?stl.phone.replace(/[^\d+]/g,""):"", chk=checkedAge(e);
     const al = alertOf(e).map(a=>`<span class="badge ${a.c}">${a.c==="sale"?ni("ticket")+" ":""}${a.t}</span>`).join("")
-      + (stl?`<span class="badge stale">⚠️ Not confirmed since ${esc(stl.when)} · ${tel?`<a href="tel:${esc(tel)}">call ahead</a>`:"call ahead"}</span>`:"");
+      + (stl?`<span class="badge stale">⚠️ Not confirmed since ${esc(stl.when)} · ${tel?`<a href="tel:${esc(tel)}">call ahead</a>`:"call ahead"}</span>`
+        : chk!=null&&chk>STALE_DAYS?`<span class="badge stale">⚠️ Not re-checked since ${esc(fmtShort(e.updatedAt))} · confirm before you go</span>`:"");
     const ag = ageOf(e); const extraTags = (firstTimer(e)?`<span class="tag first">👋 First-timer friendly</span>`:"")+(isSmall(e)?`<span class="tag local">${ni("home")} Small &amp; local</span>`:"")+(ag?`<span class="tag age">${ag==="all"?"All ages":ag}</span>`:"")+(transitOf(e)?`<span class="tag transit">${ni("sprout")} ${transitOf(e)}</span>`:"");
     const apx=approxPin(e), mi=e._drive&&e._drive.miles<1?"<1":e._drive&&e._drive.miles;
     const drv = e._drive ? `<span class="drive">${e._drive.real&&!apx?"":"~"}${fmtMins(e._drive.mins)} · ${apx&&mi!=="<1"?"~":""}${mi} mi</span>${apx?`<span class="pn">to ${esc(e.city)} center · exact spot not listed</span>`:""}` :(origin ? '<span class="na">n/a</span>' : '<span class="na">Set start point</span>');
@@ -562,6 +567,7 @@ function cardHtml(e){
         <div class="facts">${time}${leaveHtml}${wxSpan(e)}</div>
         ${e.priceNote&&!(pi.none&&!pi.donation)?`<div class="note">${esc(e.priceNote)}</div>`:""}
         ${cardNote(e)?`<div class="note">${esc(cardNote(e))}</div>`:""}
+        ${chk!=null&&!stl?`<div class="note checked">✓ Listing checked ${chk<1?"today":chk<2?"yesterday":esc(fmtShort(e.updatedAt))}${e.url?" · "+esc(hostOf(e.url)):""}</div>`:""}
         ${(tags||extraTags)?`<div class="tags">${extraTags}${tags}</div>`:""}
         ${volHtml(e)}
         <button type="button" class="bmore" data-bmore="1" aria-expanded="false">Details</button>
