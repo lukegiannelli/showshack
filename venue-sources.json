@@ -1,6 +1,6 @@
 {
  "about": "Every venue the Show Shack covers, in one place. The daily refresh routine sweeps the venues checked longest ago (null = never) and writes back lastChecked, calendar and how. Add a venue here and the refresh picks it up.",
- "updated": "2026-11-12",
+ "updated": "2026-11-13",
  "venues": [
   {
    "name": "Acrisure Arena",
@@ -771,11 +771,11 @@
    "kinds": [
     "comedy"
    ],
-   "calendar": null,
-   "how": "so far found via livenation.com",
+   "calendar": "https://improv.com/hollywood/calendar/",
+   "how": "improv.com blocked by WebFetch permission; gametime.co venue page works (partial list, 9 events)",
    "listed": 25,
    "recurring": 0,
-   "lastChecked": null
+   "lastChecked": "2026-11-13"
   },
   {
    "name": "Hollywood Palladium",
@@ -785,11 +785,11 @@
     "club",
     "concert"
    ],
-   "calendar": null,
-   "how": "so far found via ticketmaster.com",
-   "listed": 16,
+   "calendar": "https://www.hollywoodpalladium.com/events",
+   "how": "gametime.co venue page lists ~41 events with times/prices; ticketmaster venue page was stale (May-Sep 2026)",
+   "listed": 36,
    "recurring": 0,
-   "lastChecked": null
+   "lastChecked": "2026-11-13"
   },
   {
    "name": "Hollywood Pantages Theatre",
@@ -798,11 +798,11 @@
    "kinds": [
     "theater"
    ],
-   "calendar": null,
-   "how": "so far found via gametime.co",
-   "listed": 1,
+   "calendar": "https://broadwayinhollywood.com/venues/detail/pantagestheatre",
+   "how": "broadwayinhollywood.com venue page lists full season with date ranges; ticketmaster venue page stale. Run dates given as start/end (individual performances not listed)",
+   "listed": 14,
    "recurring": 0,
-   "lastChecked": null
+   "lastChecked": "2026-11-13"
   },
   {
    "name": "Kia Forum",
@@ -812,11 +812,11 @@
     "comedy",
     "concert"
    ],
-   "calendar": null,
-   "how": "so far found via thekiaforum.com",
-   "listed": 31,
+   "calendar": "https://www.thekiaforum.com/events",
+   "how": "songkick venue calendar page (songkick.com/venues/16272-kia-forum/calendar) lists all 34 events. Note: songkick shows Nessa Barrett (not The Neighbourhood) on 2026-12-04/05 and Foo Fighters/Weezer/Sub",
+   "listed": 33,
    "recurring": 0,
-   "lastChecked": null
+   "lastChecked": "2026-11-13"
   },
   {
    "name": "LA County beaches (rotates)",
@@ -825,11 +825,11 @@
    "kinds": [
     "volunteer"
    ],
-   "calendar": null,
-   "how": "so far found via healthebay.org",
-   "listed": 0,
+   "calendar": "https://healthebay.org/events/",
+   "how": "not researched (budget)",
+   "listed": 1,
    "recurring": 1,
-   "lastChecked": null
+   "lastChecked": "2026-11-13"
   },
   {
    "name": "LA venue (see tickets)",
@@ -839,11 +839,11 @@
     "club",
     "concert"
    ],
-   "calendar": null,
-   "how": "so far found via insomniac.com",
+   "calendar": "https://www.insomniac.com/events/",
+   "how": "not researched (budget)",
    "listed": 11,
    "recurring": 0,
-   "lastChecked": null
+   "lastChecked": "2026-11-13"
   },
   {
    "name": "Largo at the Coronet",
@@ -853,11 +853,11 @@
     "comedy",
     "concert"
    ],
-   "calendar": null,
-   "how": "so far found via gametime.co",
-   "listed": 26,
+   "calendar": "https://largo-la.com/",
+   "how": "gametime.co venue page lists all events (8 with prices); no new shows seen",
+   "listed": 25,
    "recurring": 0,
-   "lastChecked": null
+   "lastChecked": "2026-11-13"
   },
   {
    "name": "Laugh Factory",
@@ -866,11 +866,11 @@
    "kinds": [
     "comedy"
    ],
-   "calendar": null,
-   "how": "so far found via gametime.co",
-   "listed": 3,
+   "calendar": "https://www.laughfactory.com/clubs/hollywood",
+   "how": "gametime.co venue page; lists Saturday Night All Stars 7:30/9:45 weekly",
+   "listed": 7,
    "recurring": 0,
-   "lastChecked": null
+   "lastChecked": "2026-11-13"
   },
   {
    "name": "Little Light Venue",
@@ -879,11 +879,11 @@
    "kinds": [
     "social"
    ],
-   "calendar": null,
-   "how": "so far found via google.com",
-   "listed": 0,
+   "calendar": "https://www.google.com/search?q=Little+Light+Venue+Studio+City",
+   "how": "not researched (budget)",
+   "listed": 1,
    "recurring": 1,
-   "lastChecked": null
+   "lastChecked": "2026-11-13"
   },
   {
    "name": "Lodge Room",
@@ -892,11 +892,11 @@
    "kinds": [
     "concert"
    ],
-   "calendar": null,
-   "how": "so far found via lodgeroomhlp.com",
-   "listed": 18,
+   "calendar": "https://www.lodgeroomhlp.com/",
+   "how": "songkick venue page shows only the Minaret Winter Jazz Festival; gametime/vividseats venue pages not fetched",
+   "listed": 19,
    "recurring": 0,
-   "lastChecked": null
+   "lastChecked": "2026-11-13"
   },
   {
    "name": "Los Angeles Memorial Coliseum",
@@ -905,11 +905,11 @@
    "kinds": [
     "concert"
    ],
-   "calendar": null,
-   "how": "so far found via livenation.com",
+   "calendar": "https://www.coliseum.com/events",
+   "how": "WebFetch of songkick venue page lists few events; Alan Walker not found there",
    "listed": 1,
    "recurring": 0,
-   "lastChecked": null
+   "lastChecked": "2026-11-13"
   },
   {
    "name": "Louie's",
@@ -919,10 +919,10 @@
     "social"
    ],
    "calendar": null,
-   "how": "so far found via google.com",
-   "listed": 0,
+   "how": "Not verified; salsavida.com/somo.social list Latin Wednesdays",
+   "listed": 1,
    "recurring": 1,
-   "lastChecked": null
+   "lastChecked": "2026-11-13"
   },
   {
    "name": "Mark Taper Forum",
@@ -931,11 +931,11 @@
    "kinds": [
     "theater"
    ],
-   "calendar": null,
-   "how": "so far found via gametime.co",
+   "calendar": "https://www.centertheatregroup.org/shows-tickets/venues/mark-taper-forum/",
+   "how": "gametime venue page lists all performances (no URLs/links in fetch); CTG site gives no dates",
    "listed": 1,
    "recurring": 0,
-   "lastChecked": null
+   "lastChecked": "2026-11-13"
   },
   {
    "name": "Moroccan Lounge",
@@ -944,11 +944,11 @@
    "kinds": [
     "concert"
    ],
-   "calendar": null,
-   "how": "so far found via ticketmaster.com",
-   "listed": 5,
+   "calendar": "https://www.themoroccan.com/",
+   "how": "ticketmaster venue page stale (2026 Jan); concerts.consequence.net venue page lists current shows (no prices)",
+   "listed": 15,
    "recurring": 0,
-   "lastChecked": null
+   "lastChecked": "2026-11-13"
   },
   {
    "name": "Ontario Museum of History & Art",
@@ -957,11 +957,11 @@
    "kinds": [
     "art"
    ],
-   "calendar": null,
-   "how": "so far found via ontariomuseum.org",
+   "calendar": "https://www.ontariomuseum.org/",
+   "how": "WebFetch blocked; not verified",
    "listed": 1,
    "recurring": 0,
-   "lastChecked": null
+   "lastChecked": "2026-11-13"
   },
   {
    "name": "Orpheum Theatre",
@@ -972,11 +972,11 @@
     "concert",
     "theater"
    ],
-   "calendar": null,
-   "how": "so far found via gametime.co",
-   "listed": 10,
+   "calendar": "https://www.laorpheum.com/",
+   "how": "gametime venue page lists 22 events with prices (no event URLs); songkick venue page shows cancellations",
+   "listed": 19,
    "recurring": 0,
-   "lastChecked": null
+   "lastChecked": "2026-11-13"
   },
   {
    "name": "Oxnard Performing Arts Center",
@@ -985,11 +985,11 @@
    "kinds": [
     "concert"
    ],
-   "calendar": null,
-   "how": "so far found via google.com",
-   "listed": 1,
+   "calendar": "https://www.oxnardpac.com/",
+   "how": "songkick venue page lists upcoming; tickpick/vividseats/etickets for event pages",
+   "listed": 6,
    "recurring": 0,
-   "lastChecked": null
+   "lastChecked": "2026-11-13"
   },
   {
    "name": "Pasadena Ballroom Dance Association",
@@ -998,11 +998,11 @@
    "kinds": [
     "social"
    ],
-   "calendar": null,
-   "how": "so far found via pbda.dance",
-   "listed": 0,
+   "calendar": "https://pbda.dance",
+   "how": "WebFetch blocked; not verified",
+   "listed": 1,
    "recurring": 1,
-   "lastChecked": null
+   "lastChecked": "2026-11-13"
   },
   {
    "name": "Pasadena Masonic Hall",
@@ -1011,11 +1011,11 @@
    "kinds": [
     "social"
    ],
-   "calendar": null,
-   "how": "so far found via lindygroove.la",
-   "listed": 0,
+   "calendar": "https://lindygroove.la",
+   "how": "WebFetch blocked; not verified",
+   "listed": 1,
    "recurring": 1,
-   "lastChecked": null
+   "lastChecked": "2026-11-13"
   },
   {
    "name": "Pasadena Playhouse",
@@ -1024,11 +1024,11 @@
    "kinds": [
     "theater"
    ],
-   "calendar": null,
-   "how": "so far found via pasadenaplayhouse.org",
+   "calendar": "https://www.pasadenaplayhouse.org/",
+   "how": "WebFetch of pasadenaplayhouse.org/?p=24918 (2026/27 season page) works",
    "listed": 4,
    "recurring": 0,
-   "lastChecked": null
+   "lastChecked": "2026-11-13"
   },
   {
    "name": "Peacock Theater",
@@ -1037,11 +1037,11 @@
    "kinds": [
     "concert"
    ],
-   "calendar": null,
-   "how": "so far found via tickpick.com",
-   "listed": 1,
+   "calendar": "https://www.peacocktheater.com/events",
+   "how": "Official site blocked; songkick venue page + gametime venue page (prices, no per-event URLs) worked",
+   "listed": 8,
    "recurring": 0,
-   "lastChecked": null
+   "lastChecked": "2026-11-13"
   },
   {
    "name": "Pomona Arts Colony",
@@ -1050,11 +1050,11 @@
    "kinds": [
     "art"
    ],
-   "calendar": null,
-   "how": "so far found via downtownpomona.org",
-   "listed": 0,
+   "calendar": "https://www.downtownpomona.org",
+   "how": "Search only; Art Walk confirmed as every 2nd Saturday, no per-date data fetched",
+   "listed": 1,
    "recurring": 1,
-   "lastChecked": null
+   "lastChecked": "2026-11-13"
   },
   {
    "name": "RE:FRAME",
@@ -1063,11 +1063,11 @@
    "kinds": [
     "festival"
    ],
-   "calendar": null,
-   "how": "so far found via technoairlines.com",
-   "listed": 1,
+   "calendar": "https://app.discotech.me/los-angeles/reframe-studios",
+   "how": "discotech venue page lists events (no prices); technoairlines blocked as URL source",
+   "listed": 6,
    "recurring": 0,
-   "lastChecked": null
+   "lastChecked": "2026-11-13"
   },
   {
    "name": "Regent Theater",
@@ -1076,11 +1076,11 @@
    "kinds": [
     "concert"
    ],
-   "calendar": null,
-   "how": "so far found via tickpick.com",
-   "listed": 1,
+   "calendar": "https://www.songkick.com/venues/36035-regent-theater/calendar",
+   "how": "songkick venue /calendar page via WebFetch gives full list; ticketmaster page is stale (2025)",
+   "listed": 21,
    "recurring": 0,
-   "lastChecked": null
+   "lastChecked": "2026-11-13"
   },
   {
    "name": "Rose Bowl Stadium",
@@ -1090,11 +1090,11 @@
     "art",
     "concert"
    ],
-   "calendar": null,
-   "how": "so far found via google.com",
-   "listed": 1,
+   "calendar": "https://seatgeek.com/venues/rose-bowl-stadium/tickets",
+   "how": "seatgeek venue page via WebFetch lists events with prices and URLs",
+   "listed": 8,
    "recurring": 1,
-   "lastChecked": null
+   "lastChecked": "2026-11-13"
   },
   {
    "name": "ROW DTLA",
@@ -1103,11 +1103,11 @@
    "kinds": [
     "art"
    ],
-   "calendar": null,
-   "how": "so far found via la.smorgasburg.com",
-   "listed": 0,
+   "calendar": "https://la.smorgasburg.com/info",
+   "how": "la.smorgasburg.com/info: open every Sunday 10 AM-4 PM at 777 Alameda St",
+   "listed": 1,
    "recurring": 1,
-   "lastChecked": null
+   "lastChecked": "2026-11-13"
   },
   {
    "name": "Royce Hall",
@@ -1129,11 +1129,11 @@
    "kinds": [
     "volunteer"
    ],
-   "calendar": null,
-   "how": "so far found via folar.org",
-   "listed": 0,
+   "calendar": "https://folar.org",
+   "how": "Search only; no current FoLAR schedule found",
+   "listed": 1,
    "recurring": 1,
-   "lastChecked": null
+   "lastChecked": "2026-11-13"
   },
   {
    "name": "Shrine Expo Hall",
@@ -1142,11 +1142,11 @@
    "kinds": [
     "concert"
    ],
-   "calendar": null,
-   "how": "so far found via google.com",
-   "listed": 1,
+   "calendar": "https://songkick.com/venues/34391-shrine-expo-hall/calendar",
+   "how": "songkick /calendar page via WebFetch",
+   "listed": 11,
    "recurring": 0,
-   "lastChecked": null
+   "lastChecked": "2026-11-13"
   },
   {
    "name": "SoFi Stadium",
@@ -1155,11 +1155,11 @@
    "kinds": [
     "concert"
    ],
-   "calendar": null,
-   "how": "so far found via songkick.com",
-   "listed": 3,
+   "calendar": "https://songkick.com/venues/4351030-sofi-stadium",
+   "how": "songkick venue page via WebFetch; Usher 11/16 second show canceled",
+   "listed": 5,
    "recurring": 0,
-   "lastChecked": null
+   "lastChecked": "2026-11-13"
   },
   {
    "name": "Soho Dance LA",
@@ -1168,11 +1168,11 @@
    "kinds": [
     "social"
    ],
-   "calendar": null,
-   "how": "so far found via google.com",
-   "listed": 0,
+   "calendar": "https://sohodancela.ipstudio.co",
+   "how": "Search only; no dated Blen Blen events found",
+   "listed": 1,
    "recurring": 1,
-   "lastChecked": null
+   "lastChecked": "2026-11-13"
   },
   {
    "name": "Sound Nightclub",
@@ -1181,11 +1181,11 @@
    "kinds": [
     "club"
    ],
-   "calendar": null,
-   "how": "so far found via tickpick.com",
-   "listed": 2,
+   "calendar": "https://www.vividseats.com/sound-nightclub-tickets/venue/12885",
+   "how": "Vividseats venue page via WebFetch lists dates/times but no per-event prices; tickpick/songkick via search.",
+   "listed": 6,
    "recurring": 0,
-   "lastChecked": null
+   "lastChecked": "2026-11-13"
   },
   {
    "name": "Teragram Ballroom",
@@ -1195,11 +1195,11 @@
     "club",
     "concert"
    ],
-   "calendar": null,
-   "how": "so far found via gametime.co",
-   "listed": 26,
+   "calendar": "https://gametime.co/teragram-ballroom-tickets/venues/teragram_ballroom",
+   "how": "Gametime venue page via WebFetch gives dates/times/prices (no per-event URLs).",
+   "listed": 31,
    "recurring": 0,
-   "lastChecked": null
+   "lastChecked": "2026-11-13"
   },
   {
    "name": "The Belasco",
@@ -1208,11 +1208,11 @@
    "kinds": [
     "concert"
    ],
-   "calendar": null,
-   "how": "so far found via ticketmaster.com",
-   "listed": 21,
+   "calendar": "https://gametime.co/the-belasco-theater-tickets/venues/belasco_theatre",
+   "how": "Gametime venue page via WebFetch works; Maybe Happy Ending is a long theater run.",
+   "listed": 23,
    "recurring": 0,
-   "lastChecked": null
+   "lastChecked": "2026-11-13"
   },
   {
    "name": "The City Market of Los Angeles",
@@ -1221,11 +1221,11 @@
    "kinds": [
     "club"
    ],
-   "calendar": null,
-   "how": "so far found via tickpick.com",
+   "calendar": "https://www.vividseats.com/city-market-of-los-angeles-tickets/venue/28316",
+   "how": "Vividseats venue page via WebFetch; only one event listed.",
    "listed": 1,
    "recurring": 0,
-   "lastChecked": null
+   "lastChecked": "2026-11-13"
   },
   {
    "name": "The Comedy Store",
@@ -1234,11 +1234,11 @@
    "kinds": [
     "comedy"
    ],
-   "calendar": null,
-   "how": "so far found via comedy.tickets",
-   "listed": 12,
+   "calendar": "https://thecomedystore.com",
+   "how": "comedy.tickets Main Room venue page via WebFetch lists dates, times, prices and event URLs.",
+   "listed": 29,
    "recurring": 0,
-   "lastChecked": null
+   "lastChecked": "2026-11-13"
   },
   {
    "name": "The Continental Club",
@@ -1248,10 +1248,10 @@
     "social"
    ],
    "calendar": null,
-   "how": "so far found via google.com",
-   "listed": 0,
+   "how": "Eventbrite organizer pages for Salsa and Bachata Mondays appear in search but fetch showed stale 2025 date; nothing verified.",
+   "listed": 1,
    "recurring": 1,
-   "lastChecked": null
+   "lastChecked": "2026-11-13"
   },
   {
    "name": "The Fonda Theatre",
@@ -1260,11 +1260,11 @@
    "kinds": [
     "concert"
    ],
-   "calendar": null,
-   "how": "so far found via tickpick.com",
-   "listed": 7,
+   "calendar": "https://fondatheatre.com/ticket-info",
+   "how": "Gametime venue page via WebFetch gives dates/times/prices (no per-event URLs).",
+   "listed": 26,
    "recurring": 0,
-   "lastChecked": null
+   "lastChecked": "2026-11-13"
   },
   {
    "name": "The Ford",
@@ -1286,11 +1286,11 @@
    "kinds": [
     "concert"
    ],
-   "calendar": null,
-   "how": "so far found via gametime.co",
+   "calendar": "https://www.songkick.com/venues/1040-glass-house/calendar",
+   "how": "Gametime and Ticketmaster venue pages returned no events via WebFetch; songkick page only showed October shows. Nothing verified.",
    "listed": 6,
    "recurring": 0,
-   "lastChecked": null
+   "lastChecked": "2026-11-13"
   },
   {
    "name": "The Granada LA",
@@ -1300,10 +1300,10 @@
     "social"
    ],
    "calendar": null,
-   "how": "so far found via google.com",
-   "listed": 0,
+   "how": "salsavida/somo.social list the Friday/Saturday salsa and bachata night; nothing new.",
+   "listed": 1,
    "recurring": 1,
-   "lastChecked": null
+   "lastChecked": "2026-11-13"
   },
   {
    "name": "The Groundlings Theatre",
@@ -1325,11 +1325,11 @@
    "kinds": [
     "comedy"
    ],
-   "calendar": null,
-   "how": "so far found via comedy.tickets",
-   "listed": 2,
+   "calendar": "https://www.theicehouse.com",
+   "how": "Vividseats venue page only shows Adam Carolla; tickpick and events.leapevents.com list Ice House shows via search.",
+   "listed": 3,
    "recurring": 0,
-   "lastChecked": null
+   "lastChecked": "2026-11-13"
   },
   {
    "name": "The Mayan",
@@ -1338,11 +1338,11 @@
    "kinds": [
     "concert"
    ],
-   "calendar": null,
-   "how": "so far found via songkick.com",
+   "calendar": "https://www.nederlanderconcerts.com/venues/the-mayan",
+   "how": "gametime venue page has no server-rendered events; AXS venue page (axs.com/venues/101067) shows Don Toliver and OsamaSon without dates. Try songkick.com/venues/413-mayan-theater/calendar or nederlande",
    "listed": 1,
    "recurring": 0,
-   "lastChecked": null
+   "lastChecked": "2026-11-13"
   },
   {
    "name": "The Nimoy",
@@ -1367,11 +1367,11 @@
     "concert",
     "theater"
    ],
-   "calendar": null,
-   "how": "so far found via gametime.co",
-   "listed": 19,
+   "calendar": "https://thenovodtla.com/events",
+   "how": "Official site is AXS-hosted; gametime.co venue page (gametime.co/the-novo-tickets/venues/club_nokia) fetches fine with times and from-prices.",
+   "listed": 22,
    "recurring": 0,
-   "lastChecked": null
+   "lastChecked": "2026-11-13"
   },
   {
    "name": "The Roxy Theatre",
@@ -1381,11 +1381,11 @@
     "club",
     "concert"
    ],
-   "calendar": null,
-   "how": "so far found via gametime.co",
-   "listed": 39,
+   "calendar": "https://www.theroxy.com/events",
+   "how": "theroxy.com fetch was blocked (permission); gametime.co/roxy-theatre-tickets/venues/the_roxy_theatre lists all shows with times and from-prices.",
+   "listed": 40,
    "recurring": 0,
-   "lastChecked": null
+   "lastChecked": "2026-11-13"
   },
   {
    "name": "The Torch at LA Memorial Coliseum",
@@ -1394,11 +1394,11 @@
    "kinds": [
     "concert"
    ],
-   "calendar": null,
-   "how": "so far found via songkick.com",
+   "calendar": "https://www.thetorch.la",
+   "how": "gametime venue page not server-rendered; tickpick/etickets/songkick event pages exist for Ray Volpe.",
    "listed": 1,
    "recurring": 0,
-   "lastChecked": null
+   "lastChecked": "2026-11-13"
   },
   {
    "name": "The Victorian",
@@ -1407,11 +1407,11 @@
    "kinds": [
     "social"
    ],
-   "calendar": null,
-   "how": "so far found via google.com",
-   "listed": 0,
+   "calendar": "https://www.eventbrite.com/e/1431019791719",
+   "how": "Eventbrite 'Salsa & Bachata at the Victorian' event pages found via search; not fetched (budget). Dated weekly instances not verified.",
+   "listed": 1,
    "recurring": 1,
-   "lastChecked": null
+   "lastChecked": "2026-11-13"
   },
   {
    "name": "The Viper Room",
@@ -1420,11 +1420,11 @@
    "kinds": [
     "concert"
    ],
-   "calendar": null,
-   "how": "so far found via google.com",
-   "listed": 4,
+   "calendar": "https://www.theviperroom.com/events",
+   "how": "theviperroom.com and songkick venue page (songkick.com/venues/48-viper-room) fetches were blocked (permission); not verified this run.",
+   "listed": 3,
    "recurring": 0,
-   "lastChecked": null
+   "lastChecked": "2026-11-13"
   },
   {
    "name": "The Wiltern",
@@ -1433,11 +1433,11 @@
    "kinds": [
     "concert"
    ],
-   "calendar": null,
-   "how": "so far found via ticketmaster.com",
-   "listed": 11,
+   "calendar": "https://www.wiltern.com/events",
+   "how": "Songkick calendar (songkick.com/venues/780-wiltern/calendar) fetches fine (50 events through Mar 2027, page 2 not read); no times/prices there. wiltern.com not fetched.",
+   "listed": 30,
    "recurring": 0,
-   "lastChecked": null
+   "lastChecked": "2026-11-13"
   },
   {
    "name": "Troubadour",
@@ -1446,11 +1446,11 @@
    "kinds": [
     "concert"
    ],
-   "calendar": null,
-   "how": "so far found via gametime.co",
-   "listed": 16,
+   "calendar": "https://troubadour.com/events",
+   "how": "gametime.co/troubadour-tickets/venues/troubador_la lists all shows with times and from-prices; songkick calendar fetch was blocked.",
+   "listed": 35,
    "recurring": 0,
-   "lastChecked": null
+   "lastChecked": "2026-11-13"
   },
   {
    "name": "UCB Franklin",
@@ -1473,10 +1473,10 @@
     "social"
    ],
    "calendar": null,
-   "how": "so far found via visitventuraca.com",
-   "listed": 0,
+   "how": "Not researched this run (budget).",
+   "listed": 1,
    "recurring": 1,
-   "lastChecked": null
+   "lastChecked": "2026-11-13"
   },
   {
    "name": "Ventura Promenade",
@@ -1485,11 +1485,11 @@
    "kinds": [
     "volunteer"
    ],
-   "calendar": null,
-   "how": "so far found via ventura.surfrider.org",
-   "listed": 0,
+   "calendar": "https://ventura.surfrider.org",
+   "how": "Not researched this run (budget).",
+   "listed": 1,
    "recurring": 1,
-   "lastChecked": null
+   "lastChecked": "2026-11-13"
   },
   {
    "name": "Walt Disney Concert Hall",
