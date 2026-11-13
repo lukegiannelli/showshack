@@ -1447,7 +1447,13 @@
 "diet": [
 "Vegan (limited)",
 "Gluten-free"
-]
+],
+"deal": {
+"t": "Taco Tuesday: barbacoa taco special + $5 margaritas",
+"d": "Tuesdays, all day",
+"u": "https://www.tacomesa.com/locations/costa-mesa/weekly-promotions/taco-tuesday",
+"chk": "2026-11-13"
+}
 },
 {
 "n": "Tacos 1986",
@@ -2071,7 +2077,13 @@
 "lat": 33.10423,
 "lon": -117.31262,
 "geo": "amenity",
-"src": "osm"
+"src": "osm",
+"deal": {
+"t": "Happy hour: $3, $6 and $9 food & drink specials",
+"d": "Mon–Fri 3–6 PM, sushi bar & lounge",
+"u": "https://www.benihana.com/locations/carlsbad/",
+"chk": "2026-11-13"
+}
 },
 {
 "n": "Ten-Raku",
@@ -2872,7 +2884,13 @@
 "til": 23,
 "hq": "~",
 "geo": "amenity",
-"src": "osm"
+"src": "osm",
+"deal": {
+"t": "Happy hour: $6 drafts, wells & house wine, $8 bites",
+"d": "Daily 3–6 PM (non-Padres days)",
+"u": "https://www.farcornersd.com/happy-hour/",
+"chk": "2026-11-13"
+}
 },
 {
 "n": "Crab City Cajun Seafood & Bar",
@@ -2908,7 +2926,13 @@
 "til": 22,
 "hq": "~",
 "geo": "amenity",
-"src": "osm"
+"src": "osm",
+"deal": {
+"t": "Happy hour margs & snacks; half-off tacos on Taco Tuesday",
+"d": "HH Mon–Fri 3–5 PM · tacos ½ off Tue 3 PM–close · dine-in",
+"u": "https://www.eatpuesto.com/location/san-diego/",
+"chk": "2026-11-13"
+}
 },
 {
 "n": "Sisters Pizza",
@@ -2944,7 +2968,13 @@
 "til": 22,
 "hq": "~",
 "geo": "amenity",
-"src": "osm"
+"src": "osm",
+"deal": {
+"t": "Happy hour on tacos & cocktails",
+"d": "Sun–Fri 2–6 PM",
+"u": "https://lola55.com/",
+"chk": "2026-11-13"
+}
 },
 {
 "n": "Filippi's Pizza Grotto Little Italy",
@@ -3427,7 +3457,13 @@
 "til": 23,
 "hq": "~",
 "geo": "amenity",
-"src": "osm"
+"src": "osm",
+"deal": {
+"t": "Happy hour: cocktails, small plates & pizzas",
+"d": "Daily 4–7 PM, runs later on Wednesdays",
+"u": "https://www.thetropicale.com/happy-hour",
+"chk": "2026-11-13"
+}
 },
 {
 "n": "Lulu California Bistro",
