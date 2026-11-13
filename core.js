@@ -11,8 +11,12 @@ SH.driveMin=roadMi=>Math.max(5,Math.round((6+roadMi/55*60)/5)*5);
 
 /* ---- show times. Anything before 6 AM belongs to the night before, so 1 AM sorts after 11 PM (counts as 25:00) ---- */
 SH.LATE=6;
-// "8 PM", "8:30pm", "7 p.m.", "Doors 7 PM · show 8" (first time wins) → {h, m} on a 24-hour clock, or null
-SH.clock=t=>{const m=/(\d{1,2})(?::(\d\d))?\s*([ap])\.?\s?m\b/i.exec(String(t||""));if(!m)return null;let h=+m[1]%12;if(/p/i.test(m[3]))h+=12;return {h,m:+m[2]||0};};
+// "8 PM", "8:30pm", "7 p.m.", "Doors 7 PM · show 8" (first time wins) → {h, m} on a 24-hour clock, or null.
+// Ranges start at the START: "6:00–8:00 PM" → 6 PM (the AM/PM after a range belongs to both ends; "11–1 AM" → 11 PM).
+SH.clock=t=>{t=String(t||"");const m=/(\d{1,2})(?::(\d\d))?\s*([ap])\.?\s?m\b/i.exec(t);
+  const r=/\b(\d{1,2})(?::(\d\d))?\s*(?:[–—-]|to)\s*(\d{1,2})(?::(\d\d))?\s*([ap])\.?\s?m\b/i.exec(t);
+  if(r&&(!m||r.index<m.index)){const pm=/p/i.test(r[5]),end=(+r[3]%12+(pm?12:0))*60+(+r[4]||0);let h=+r[1]%12+(pm?12:0);if(h*60+(+r[2]||0)>end)h=(h+12)%24;return {h,m:+r[2]||0};}
+  if(!m)return null;let h=+m[1]%12;if(/p/i.test(m[3]))h+=12;return {h,m:+m[2]||0};};
 const late=h=>h<SH.LATE?h+24:h;
 SH.minOfText=t=>{const c=SH.clock(t);return c?late(c.h)*60+c.m:null;};          // "1 AM" → 1500
 SH.hhmmOfText=t=>{const c=SH.clock(t);return c?String(c.h).padStart(2,"0")+":"+String(c.m).padStart(2,"0"):"";};
