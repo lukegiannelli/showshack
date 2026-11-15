@@ -263,7 +263,13 @@
 "lon": -117.89233,
 "geo": "shop",
 "h": "Till 11 PM, 1 AM Sat",
-"til": 25
+"til": 25,
+"deal": {
+"t": "Night Strike: unlimited bowling + shoes $24.99",
+"d": "Sun from 6 PM, Mon–Thu from 7 PM (walk-in)",
+"u": "https://www.luckystrikeent.com/location/lucky-strike-orange/specials",
+"chk": "2026-11-15"
+}
 },
 {
 "n": "Lucky Strike Tustin",
@@ -292,7 +298,13 @@
 "lon": -117.91227,
 "geo": "amenity",
 "h": "Till midnight, 1 AM Fri–Sat",
-"til": 25
+"til": 25,
+"deal": {
+"t": "Night Strike: unlimited bowling + shoes $22.99",
+"d": "Sun from 6 PM, Mon–Thu from 7 PM (walk-in)",
+"u": "https://www.luckystrikeent.com/location/lucky-strike-anaheim",
+"chk": "2026-11-15"
+}
 },
 {
 "n": "Fountain Bowl",

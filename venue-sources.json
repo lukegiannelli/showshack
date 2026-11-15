@@ -1,6 +1,6 @@
 {
  "about": "Every venue the Show Shack covers, in one place. The daily refresh routine sweeps the venues checked longest ago (null = never) and writes back lastChecked, calendar and how. Add a venue here and the refresh picks it up.",
- "updated": "2026-11-14",
+ "updated": "2026-11-15",
  "venues": [
   {
    "name": "Acrisure Arena",
@@ -1352,11 +1352,11 @@
     "concert",
     "theater"
    ],
-   "calendar": "https://cap.ucla.edu/",
-   "how": "CAP UCLA calendar",
-   "listed": 2,
+   "calendar": "https://cap.ucla.edu/calendar?combine=&field_event_type_target_id=All&field_event_genre_target_id=All&field_event_venue_target_id=53",
+   "how": "CAP UCLA calendar filtered to Nimoy reads fine via WebFetch (no prices; tickets ucla.evenue.net)",
+   "listed": 19,
    "recurring": 0,
-   "lastChecked": "2026-11-11"
+   "lastChecked": "2026-11-15"
   },
   {
    "name": "The Novo",
@@ -1602,11 +1602,11 @@
    "kinds": [
     "social"
    ],
-   "calendar": null,
-   "how": "so far found via atomicballroom.com",
-   "listed": 0,
+   "calendar": "https://atomicballroom.com",
+   "how": "Official site returned only an old 2014 post; recurring series unconfirmed — try Eventbrite/Meetup",
+   "listed": 2,
    "recurring": 2,
-   "lastChecked": null
+   "lastChecked": "2026-11-15"
   },
   {
    "name": "Beach Hut Deli",
@@ -1657,10 +1657,10 @@
     "dance"
    ],
    "calendar": null,
-   "how": "so far found via eventbrite.com",
+   "how": "Eventbrite search returned nothing relevant; try PULSE LIVE site",
    "listed": 3,
    "recurring": 0,
-   "lastChecked": null
+   "lastChecked": "2026-11-15"
   },
   {
    "name": "Cal State Long Beach",
@@ -1825,11 +1825,11 @@
    "kinds": [
     "dance"
    ],
-   "calendar": null,
-   "how": "so far found via eventbrite.com",
-   "listed": 0,
+   "calendar": "https://ecstaticdance.org",
+   "how": "ecstaticdance.org has Ecstatic Dance OC pages but no dated listing fetched",
+   "listed": 1,
    "recurring": 1,
-   "lastChecked": null
+   "lastChecked": "2026-11-15"
   },
   {
    "name": "Honda Center",
@@ -1878,11 +1878,11 @@
    "kinds": [
     "festival"
    ],
-   "calendar": null,
-   "how": "so far found via google.com",
-   "listed": 1,
+   "calendar": "https://www.surfcityusa.com/events/",
+   "how": "Surf City USA events pages; 2027 US Open of Surfing dates not posted yet",
+   "listed": 0,
    "recurring": 0,
-   "lastChecked": null
+   "lastChecked": "2026-11-15"
   },
   {
    "name": "Intuit Dome",
@@ -1905,11 +1905,11 @@
    "kinds": [
     "sound"
    ],
-   "calendar": null,
-   "how": "so far found via eventbrite.com",
+   "calendar": "https://www.eventbrite.com/e/1993106154160",
+   "how": "Eventbrite monthly Sound Bath pages found only for 2026 dates through Aug; no upcoming dated listing as of Nov 15",
    "listed": 1,
    "recurring": 0,
-   "lastChecked": null
+   "lastChecked": "2026-11-15"
   },
   {
    "name": "Irvine Barclay Theatre",
@@ -1984,11 +1984,11 @@
    "kinds": [
     "concert"
    ],
-   "calendar": null,
-   "how": "so far found via google.com",
+   "calendar": "https://www.songkick.com/venues/73421-marina-green",
+   "how": "Songkick shows 0 upcoming; gametime no data",
    "listed": 1,
    "recurring": 0,
-   "lastChecked": null
+   "lastChecked": "2026-11-15"
   },
   {
    "name": "Musco Center for the Arts",
@@ -2115,11 +2115,11 @@
    "kinds": [
     "festival"
    ],
-   "calendar": null,
-   "how": "so far found via beachlifefestival.com",
+   "calendar": "https://www.beachlifefestival.com",
+   "how": "Gametime 3-day pass page confirms BeachLife Apr 30–May 2 2027",
    "listed": 1,
    "recurring": 0,
-   "lastChecked": null
+   "lastChecked": "2026-11-15"
   },
   {
    "name": "Second Harvest Distribution Center",
@@ -2168,11 +2168,11 @@
    "kinds": [
     "social"
    ],
-   "calendar": null,
-   "how": "so far found via eventbrite.com",
-   "listed": 0,
+   "calendar": "https://www.eventbrite.com/e/1722740486169",
+   "how": "Eventbrite Wednesday Salsa Bachata page only dated Dec 2025; no current listing confirmed",
+   "listed": 1,
    "recurring": 1,
-   "lastChecked": null
+   "lastChecked": "2026-11-15"
   },
   {
    "name": "Soka Performing Arts Center",
@@ -2233,11 +2233,11 @@
    "kinds": [
     "sound"
    ],
-   "calendar": null,
-   "how": "so far found via eventbrite.com",
+   "calendar": "https://app.proxi.co/l/stillmind-wellness-center-0GTj6ojJji439aibl",
+   "how": "Eventbrite search showed no Stillmind listings",
    "listed": 0,
    "recurring": 0,
-   "lastChecked": null
+   "lastChecked": "2026-11-15"
   },
   {
    "name": "Teopahtcalli",
@@ -2261,11 +2261,11 @@
     "concert",
     "theater"
    ],
-   "calendar": null,
-   "how": "so far found via gametime.co",
-   "listed": 9,
+   "calendar": "https://www.visitlongbeach.com/events/",
+   "how": "WebSearch of theater.guide/songkick/visitlongbeach lists (theater.guide prices only; don't use its URLs); try Gametime next",
+   "listed": 19,
    "recurring": 0,
-   "lastChecked": null
+   "lastChecked": "2026-11-15"
   },
   {
    "name": "The Coach House",
@@ -2274,11 +2274,11 @@
    "kinds": [
     "concert"
    ],
-   "calendar": null,
-   "how": "so far found via thecoachhouse.com",
-   "listed": 45,
+   "calendar": "https://www.thecoachhouse.com/events",
+   "how": "Official site not fetchable by subagent; WebSearch + tickpick event pages work",
+   "listed": 50,
    "recurring": 0,
-   "lastChecked": null
+   "lastChecked": "2026-11-15"
   },
   {
    "name": "The Observatory",
@@ -2287,11 +2287,11 @@
    "kinds": [
     "concert"
    ],
-   "calendar": null,
-   "how": "so far found via gametime.co",
-   "listed": 36,
+   "calendar": "https://gametime.co/the-observatory-tickets/venues/the_observatory",
+   "how": "Official site blocked; gametime venue page gives dates/times (no per-event URLs)",
+   "listed": 37,
    "recurring": 0,
-   "lastChecked": null
+   "lastChecked": "2026-11-15"
   },
   {
    "name": "The Parish, House of Blues",
@@ -2300,11 +2300,11 @@
    "kinds": [
     "concert"
    ],
-   "calendar": null,
-   "how": "so far found via gametime.co",
-   "listed": 1,
+   "calendar": "https://gametime.co/the-parish-at-the-house-of-blues-anaheim-tickets/venues/parish_la",
+   "how": "Gametime venue page lists shows with from-prices; Songkick concert pages give per-event URLs",
+   "listed": 11,
    "recurring": 0,
-   "lastChecked": null
+   "lastChecked": "2026-11-15"
   },
   {
    "name": "The Richland",
@@ -2339,11 +2339,11 @@
    "kinds": [
     "club"
    ],
-   "calendar": null,
-   "how": "so far found via timenightclub.com",
-   "listed": 10,
+   "calendar": "https://www.timenightclub.com/",
+   "how": "Site not fetchable; WebSearch shows events; gametime venue page https://gametime.co/time-nightclub-costa-mesa-tickets/venues/time_nightclub",
+   "listed": 9,
    "recurring": 0,
-   "lastChecked": null
+   "lastChecked": "2026-11-15"
   },
   {
    "name": "Veterans Memorial Stadium",
@@ -2365,11 +2365,11 @@
    "kinds": [
     "social"
    ],
-   "calendar": null,
-   "how": "so far found via google.com",
-   "listed": 0,
+   "calendar": "https://www.travelcostamesa.com/events/westwood-coast-21-line-dancing-lessons/",
+   "how": "travelcostamesa.com lists Westwood Coast 21+ line-dance lessons; no dated details",
+   "listed": 2,
    "recurring": 2,
-   "lastChecked": null
+   "lastChecked": "2026-11-15"
   },
   {
    "name": "Yee Lim Photography",
@@ -2392,10 +2392,10 @@
     "dance"
    ],
    "calendar": null,
-   "how": "so far found via eventbrite.com",
+   "how": "Eventbrite/WebSearch found nothing for this venue; try their own site or IG",
    "listed": 1,
    "recurring": 0,
-   "lastChecked": null
+   "lastChecked": "2026-11-15"
   },
   {
    "name": "Yost Theater",
@@ -2431,11 +2431,11 @@
    "kinds": [
     "art"
    ],
-   "calendar": null,
-   "how": "so far found via google.com",
-   "listed": 0,
+   "calendar": "https://www.kpbs.org/events/2026/10/10/barrio-art-crawl-market-and-event-series",
+   "how": "KPBS events lists Barrio Art Crawl (2nd Saturdays) dated Oct 2026 — still running",
+   "listed": 1,
    "recurring": 1,
-   "lastChecked": null
+   "lastChecked": "2026-11-15"
   },
   {
    "name": "Belly Up Tavern",
@@ -2524,11 +2524,11 @@
     "club",
     "concert"
    ],
-   "calendar": null,
-   "how": "so far found via ticketmaster.com",
-   "listed": 54,
+   "calendar": "https://www.songkick.com/venues/11976-house-of-blues-san-diego",
+   "how": "Songkick venue page via WebFetch confirms listings (houseofblues.com blocks)",
+   "listed": 58,
    "recurring": 0,
-   "lastChecked": null
+   "lastChecked": "2026-11-15"
   },
   {
    "name": "Humphreys Concerts by the Bay",
@@ -3136,10 +3136,10 @@
     "concert"
    ],
    "calendar": "https://cap.ucla.edu/calendar",
-   "how": null,
+   "how": "Duplicate of 'The Nimoy' — shows are listed under that venue name",
    "listed": 0,
    "recurring": 0,
-   "lastChecked": null
+   "lastChecked": "2026-11-15"
   }
  ],
  "sources": [
