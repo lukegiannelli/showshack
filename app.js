@@ -149,12 +149,12 @@ function priceInfo(e){
   r=r||KEST[e.kind]||KEST.concert;
   return {lo:r[0],hi:r[1],est:true};
 }
-// 10 color bands, cool → hot: teal, sea-green, green, lime, yellow, amber, orange, red-orange, red, magenta.
-// OKLCH hues at one lightness/chroma so every band reads equally strong (no neon green next to a dull red).
-const BAND_H=[195,168,148,128,100,76,56,40,24,350];
+// 10 color bands, cool → hot, pulled from the app's own palette (the Show Shack title gradient, the drive teal,
+// the bee yellow, the accent orange): cyan, teal, lime, sun yellow, bee gold, peach, accent orange, pink, orchid, purple.
+const BAND_C=["#6FF0FF","#4FC7B6","#B5E36B","#FFE66D","#FFC83D","#FFB347","#FF7A4D","#FF6FA5","#E77FD8","#B98CFF"];
 const P_STEPS=[20,30,40,50,65,80,100,130,175];   // $ upper edges
 const D_STEPS=[15,25,35,45,60,75,90,110,135];   // minutes upper edges
-function band(v,steps){let i=steps.findIndex(x=>v<x);if(i<0)i=steps.length;return `oklch(.74 .15 ${BAND_H[i]})`;}
+function band(v,steps){let i=steps.findIndex(x=>v<x);if(i<0)i=steps.length;return BAND_C[i];}
 const SMALL_RE=/casbah|alex'?s bar|viper room|troubadour|moroccan|lodge room|constellation|wayfarer|soma|che cafe|space bar|permanent records|zebulon|resident|catch one|gina woodruff|4th street market|beach hut|mystic water|durty nelly|callahan|pappy|ice house|american comedy|comedy store|whisky|echo\b|echoplex|teragram|redwood|alex|blue note/i;
 const TRANSIT=[[/palladium|avalon|fonda|pantages|dolby|academy|sound nightclub|el rey|wiltern|crypto\.com|peacock|novo|belasco|orpheum|mayan|ahmanson|mark taper|walt disney concert|exchange la|regent|teragram|moroccan|lodge room|coliseum|bmo stadium|torch|grand park|pasadena playhouse|terrace theater|blue note|city market/i,"Metro rail"],
  [/honda center|yost|glass house|fox theater pomona|fox performing arts/i,"Metrolink"],

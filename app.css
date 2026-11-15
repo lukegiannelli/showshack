@@ -72,19 +72,22 @@ select{font:500 13px var(--body);background:var(--chip);color:var(--ink);border:
 .side .pn{font-size:10px;color:var(--muted)}
 .side .price.small{font-size:12px;line-height:1.25}
 .side .sold{color:var(--sold);font-weight:600}
-/* card tint: left = price, right = drive time; teal/green cheap/close → red/magenta pricey/far.
-   A soft glow rises from each bottom corner (where the price and drive sit) and fades out before the middle,
-   so the two colors never mix into mud. A crisp bar on the bottom edge carries the full color. */
-.ev{--glow:36%;
+/* card tint: left = price, right = drive time, in the app's own colors: cyan/teal cheap/close → pink/purple pricey/far.
+   Three layers: a wash across the whole card (blended in OKLCH so two colors meet through a hue, never grey),
+   a stronger glow from each bottom corner where the price and drive sit, and a crisp full-color bar on the bottom edge. */
+.ev{--wash:24%;--glow:44%;
+  --lw:color-mix(in oklch,var(--lc,transparent) var(--wash),transparent);
+  --rw:color-mix(in oklch,var(--rc,transparent) var(--wash),transparent);
   --lg:color-mix(in oklch,var(--lc,transparent) var(--glow),transparent);
   --rg:color-mix(in oklch,var(--rc,transparent) var(--glow),transparent);
   background:
-    linear-gradient(90deg,var(--lc,transparent) 0 36%,transparent 50%,var(--rc,transparent) 64% 100%) left bottom/100% 4px no-repeat,
-    radial-gradient(85% 120% at 0% 100%,var(--lg),transparent 70%),
-    radial-gradient(85% 120% at 100% 100%,var(--rg),transparent 70%),
+    linear-gradient(90deg,var(--lc,transparent) 0 40%,var(--rc,transparent) 60% 100%) left bottom/100% 4px no-repeat,
+    radial-gradient(90% 130% at 0% 100%,var(--lg),transparent 72%),
+    radial-gradient(90% 130% at 100% 100%,var(--rg),transparent 72%),
+    linear-gradient(90deg in oklch,var(--lw) 0 25%,var(--rw) 75% 100%),
     var(--surface)}
-@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .ev{--glow:46%}}
-:root[data-theme="dark"] .ev{--glow:46%}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .ev{--wash:30%;--glow:56%}}
+:root[data-theme="dark"] .ev{--wash:30%;--glow:56%}
 
 
 
