@@ -72,8 +72,19 @@ select{font:500 13px var(--body);background:var(--chip);color:var(--ink);border:
 .side .pn{font-size:10px;color:var(--muted)}
 .side .price.small{font-size:12px;line-height:1.25}
 .side .sold{color:var(--sold);font-weight:600}
-/* card tint: left half = price, right half = drive time; green cheap/close to red pricey/far, blended in the middle */
-.ev{background:linear-gradient(90deg,var(--lc,transparent) 0%,var(--lc,transparent) 28%,var(--rc,transparent) 72%,var(--rc,transparent) 100%),var(--surface)}
+/* card tint: left = price, right = drive time; teal/green cheap/close → red/magenta pricey/far.
+   A soft glow rises from each bottom corner (where the price and drive sit) and fades out before the middle,
+   so the two colors never mix into mud. A crisp bar on the bottom edge carries the full color. */
+.ev{--glow:36%;
+  --lg:color-mix(in oklch,var(--lc,transparent) var(--glow),transparent);
+  --rg:color-mix(in oklch,var(--rc,transparent) var(--glow),transparent);
+  background:
+    linear-gradient(90deg,var(--lc,transparent) 0 36%,transparent 50%,var(--rc,transparent) 64% 100%) left bottom/100% 4px no-repeat,
+    radial-gradient(85% 120% at 0% 100%,var(--lg),transparent 70%),
+    radial-gradient(85% 120% at 100% 100%,var(--rg),transparent 70%),
+    var(--surface)}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .ev{--glow:46%}}
+:root[data-theme="dark"] .ev{--glow:46%}
 
 
 
