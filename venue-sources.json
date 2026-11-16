@@ -1,6 +1,6 @@
 {
  "about": "Every venue the Show Shack covers, in one place. The daily refresh routine sweeps the venues checked longest ago (null = never) and writes back lastChecked, calendar and how. Add a venue here and the refresh picks it up.",
- "updated": "2026-11-15",
+ "updated": "2026-11-16",
  "venues": [
   {
    "name": "Acrisure Arena",
@@ -210,10 +210,10 @@
     "concert"
    ],
    "calendar": "https://www.livenation.com/venue/KovZpZAEA6eA/glen-helen-amphitheater-events",
-   "how": "Search only; Iron Maiden 4/24/27 is still the only 2027 date seen (songkick says 2 upcoming)",
+   "how": "songkick fetches OK; livenation venue page is official",
    "listed": 1,
    "recurring": 0,
-   "lastChecked": "2026-11-12"
+   "lastChecked": "2026-11-16"
   },
   {
    "name": "Miramonte Winery",
@@ -492,10 +492,10 @@
     "concert"
    ],
    "calendar": "https://www.songkick.com/venues/3859524-bmo-stadium",
-   "how": "Songkick shows only Mau P 1/30/27; try expositionpark.ca.gov/calendar (bmo-concert) next",
+   "how": "songkick venue page; concerts rare (search for ticket listings)",
    "listed": 1,
    "recurring": 0,
-   "lastChecked": "2026-11-12"
+   "lastChecked": "2026-11-16"
   },
   {
    "name": "Catalina Jazz Club",
@@ -693,10 +693,10 @@
     "concert"
    ],
    "calendar": "https://grandparkla.org/nyela",
-   "how": "grandparkla.org lists its free events (NYELA); ticketed concerts via tickpick search results",
+   "how": "grandparkla.org fetches fine (NYELA); tickpick for ticketed shows",
    "listed": 2,
    "recurring": 0,
-   "lastChecked": "2026-11-12"
+   "lastChecked": "2026-11-16"
   },
   {
    "name": "Gold-Diggers",
@@ -1117,10 +1117,10 @@
     "theater"
    ],
    "calendar": "https://cap.ucla.edu/calendar",
-   "how": "cap.ucla.edu/calendar fetches cleanly; most CAP shows are at The Nimoy/Freud, few at Royce",
+   "how": "cap.ucla.edu/calendar blocked; CAP season PDF via search lists Royce dates",
    "listed": 2,
    "recurring": 0,
-   "lastChecked": "2026-11-12"
+   "lastChecked": "2026-11-16"
   },
   {
    "name": "Sepulveda Basin Wildlife Reserve",
@@ -1735,10 +1735,10 @@
     "art"
    ],
    "calendar": null,
-   "how": "so far found via google.com",
-   "listed": 0,
+   "how": "search found only 2023 listings for 1st Friday art walk; not confirmed running",
+   "listed": 1,
    "recurring": 1,
-   "lastChecked": null
+   "lastChecked": "2026-11-16"
   },
   {
    "name": "Downtown Santa Ana Artists Village",
@@ -1748,10 +1748,10 @@
     "art"
    ],
    "calendar": null,
-   "how": "so far found via octa.net",
-   "listed": 0,
+   "how": "search: newsantaana.com posts 2026 art walks; series running",
+   "listed": 1,
    "recurring": 1,
-   "lastChecked": null
+   "lastChecked": "2026-11-16"
   },
   {
    "name": "Durty Nelly's",
@@ -1787,10 +1787,10 @@
     "art"
    ],
    "calendar": "https://fingerprintsmusic.com/in-store-events",
-   "how": "fingerprintsmusic.com/in-store-events fetches; sorted by post date, read page 1",
+   "how": "fingerprintsmusic.com/in-store-events (blocked this run); store reportedly moving to Bixby Knolls",
    "listed": 1,
    "recurring": 0,
-   "lastChecked": "2026-11-12"
+   "lastChecked": "2026-11-16"
   },
   {
    "name": "Garden Amphitheatre",
@@ -2089,11 +2089,11 @@
    "kinds": [
     "festival"
    ],
-   "calendar": null,
-   "how": "so far found via tickpick.com",
+   "calendar": "https://www.tickpick.com/buy-dreamstate-socal-2-day-pass-tickets-queen-mary-waterfront-11-20-26-8pm/7958487/",
+   "how": "tickpick event pages give prices for Dreamstate",
    "listed": 1,
    "recurring": 0,
-   "lastChecked": null
+   "lastChecked": "2026-11-16"
   },
   {
    "name": "Rosie's Dog Beach",
@@ -2208,10 +2208,10 @@
     "dance"
    ],
    "calendar": null,
-   "how": "so far found via ecstaticdance.org",
-   "listed": 0,
+   "how": "ecstaticdance.org/?p=11055 says Sundays 4-6 PM on the sand $22 (undated; our listing says 6-8 PM $25)",
+   "listed": 1,
    "recurring": 1,
-   "lastChecked": null
+   "lastChecked": "2026-11-16"
   },
   {
    "name": "Steez Jiu Jitsu Club",
@@ -2327,10 +2327,10 @@
     "openmic"
    ],
    "calendar": null,
-   "how": "so far found via openmikes.org",
-   "listed": 0,
+   "how": "travelcostamesa.com lists Wed open mic (Jan 2026); not confirmed since",
+   "listed": 1,
    "recurring": 1,
-   "lastChecked": null
+   "lastChecked": "2026-11-16"
   },
   {
    "name": "TIME Nightclub",
@@ -2352,11 +2352,11 @@
    "kinds": [
     "art"
    ],
-   "calendar": null,
-   "how": "so far found via longbeachantiquemarket.com",
-   "listed": 0,
+   "calendar": "https://www.fleamapket.com/event/long-beach-outdoor-antique-and-collectible-market/2026-12-20/",
+   "how": "fleamapket.com page confirms monthly market (3rd Sun, 5:30 AM-2 PM, $6-12)",
+   "listed": 1,
    "recurring": 1,
-   "lastChecked": null
+   "lastChecked": "2026-11-16"
   },
   {
    "name": "Westwood Coast",
@@ -2405,11 +2405,11 @@
     "club",
     "concert"
    ],
-   "calendar": null,
-   "how": "so far found via app.discotech.me",
+   "calendar": "https://www.songkick.com/venues/48419-yost-theater",
+   "how": "songkick venue page lists all upcoming (4)",
    "listed": 4,
    "recurring": 0,
-   "lastChecked": null
+   "lastChecked": "2026-11-16"
   },
   {
    "name": "Arts District Liberty Station",
@@ -2444,11 +2444,11 @@
    "kinds": [
     "concert"
    ],
-   "calendar": null,
-   "how": "so far found via bellyup.com",
-   "listed": 70,
+   "calendar": "https://songkick.com/venues/28522-belly-up-tavern",
+   "how": "bellyup.com/calendar blocked; songkick venue page shows only next 5 of ~100",
+   "listed": 85,
    "recurring": 0,
-   "lastChecked": null
+   "lastChecked": "2026-11-16"
   },
   {
    "name": "Champion Ballroom",
@@ -2538,10 +2538,10 @@
     "concert"
    ],
    "calendar": null,
-   "how": "so far found via vividseats.com",
-   "listed": 3,
+   "how": "gametime & songkick JS-only (no dates); try humphreysconcerts.com or ticketmaster",
+   "listed": 2,
    "recurring": 0,
-   "lastChecked": null
+   "lastChecked": "2026-11-16"
   },
   {
    "name": "InCahoots San Diego",
@@ -2629,11 +2629,11 @@
    "kinds": [
     "concert"
    ],
-   "calendar": null,
-   "how": "so far found via musicboxsd.com",
-   "listed": 16,
+   "calendar": "https://songkick.com/venues/3052594-music-box",
+   "how": "musicboxsd.com blocked; songkick venue page shows only next 5; TM job adds most shows",
+   "listed": 25,
    "recurring": 0,
-   "lastChecked": null
+   "lastChecked": "2026-11-16"
   },
   {
    "name": "Observatory North Park",
@@ -2642,11 +2642,11 @@
    "kinds": [
     "concert"
    ],
-   "calendar": null,
-   "how": "so far found via ticketmaster.com",
-   "listed": 12,
+   "calendar": "https://www.livenation.com/venue/KovZ917AxAB/the-observatory-north-park-events?page=1",
+   "how": "livenation venue page (?page=1) lists all shows with times, no prices",
+   "listed": 33,
    "recurring": 0,
-   "lastChecked": null
+   "lastChecked": "2026-11-16"
   },
   {
    "name": "Pala Casino Events Center",
@@ -2669,11 +2669,11 @@
    "kinds": [
     "concert"
    ],
-   "calendar": null,
-   "how": "so far found via songkick.com",
-   "listed": 5,
+   "calendar": "https://www.songkick.com/venues/4124179-pechanga-arena",
+   "how": "songkick venue page fetches OK",
+   "listed": 4,
    "recurring": 0,
-   "lastChecked": null
+   "lastChecked": "2026-11-16"
   },
   {
    "name": "Queen Bee's Art & Cultural Center",
@@ -2722,11 +2722,11 @@
     "comedy",
     "theater"
    ],
-   "calendar": null,
-   "how": "so far found via gametime.co",
-   "listed": 4,
+   "calendar": "https://songkick.com/venues/1158-san-diego-civic-theatre",
+   "how": "songkick venue page shows only 5; official/ticket sites not reachable",
+   "listed": 13,
    "recurring": 0,
-   "lastChecked": null
+   "lastChecked": "2026-11-16"
   },
   {
    "name": "San Diego Woman's Club",
@@ -2761,11 +2761,11 @@
    "kinds": [
     "concert"
    ],
-   "calendar": null,
-   "how": "so far found via gametime.co",
-   "listed": 4,
+   "calendar": "https://www.songkick.com/venues/49641-soda-bar/calendar",
+   "how": "songkick /calendar page has dates+titles; ma.to/venue/sodabarsd and DICE give prices; gametime is JS-only",
+   "listed": 21,
    "recurring": 0,
-   "lastChecked": null
+   "lastChecked": "2026-11-16"
   },
   {
    "name": "SOMA",
@@ -2774,11 +2774,11 @@
    "kinds": [
     "concert"
    ],
-   "calendar": null,
-   "how": "so far found via tickpick.com",
-   "listed": 8,
+   "calendar": "https://www.songkick.com/venues/1298-soma",
+   "how": "songkick venue page shows first 5; try songkick /calendar subpage next",
+   "listed": 12,
    "recurring": 0,
-   "lastChecked": null
+   "lastChecked": "2026-11-16"
   },
   {
    "name": "Spin Nightclub",
@@ -2787,11 +2787,11 @@
    "kinds": [
     "club"
    ],
-   "calendar": null,
-   "how": "so far found via app.discotech.me",
-   "listed": 1,
+   "calendar": "https://www.technoairlines.com/club/spin-san-diego",
+   "how": "technoairlines club page lists dates (don't use its URLs); ticket links on discotech",
+   "listed": 10,
    "recurring": 0,
-   "lastChecked": null
+   "lastChecked": "2026-11-16"
   },
   {
    "name": "Sycuan Casino Resort",
