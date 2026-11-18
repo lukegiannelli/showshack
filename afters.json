@@ -285,7 +285,13 @@
 "geo": "place",
 "h": "Till ~11 PM–1 AM",
 "til": 25,
-"hq": "~"
+"hq": "~",
+"deal": {
+"t": "Night Strike: unlimited bowling + shoes $24.99",
+"d": "Sun from 6 PM, Mon–Thu from 7 PM (walk-in)",
+"u": "https://www.bowlero.com/location/bowlero-orange-county/specials",
+"chk": "2026-11-18"
+}
 },
 {
 "n": "Lucky Strike Anaheim",
@@ -368,7 +374,13 @@
 "lon": -118.34047,
 "geo": "amenity",
 "h": "Till 11 PM, 1 AM Fri–Sat",
-"til": 25
+"til": 25,
+"deal": {
+"t": "Night Strike: unlimited bowling + shoes $26.99",
+"d": "Sun from 6 PM, Mon–Thu from 7 PM (walk-in)",
+"u": "https://www.luckystrikeent.com/location/lucky-strike-hollywood/specials",
+"chk": "2026-11-18"
+}
 },
 {
 "n": "Lucky Strike Mar Vista",
@@ -381,7 +393,13 @@
 "lon": -118.43115,
 "geo": "leisure",
 "h": "Till 11 PM, 1 AM Sat",
-"til": 25
+"til": 25,
+"deal": {
+"t": "Night Strike: unlimited bowling + shoes $26.99",
+"d": "Sun from 6 PM, Mon–Thu from 7 PM (walk-in)",
+"u": "https://www.luckystrikeent.com/en/location/lucky-strike-mar-vista/specials",
+"chk": "2026-11-18"
+}
 },
 {
 "n": "Shatto 39 Lanes",
@@ -412,7 +430,13 @@
 "geo": "place",
 "h": "Till 11 PM, later weekends",
 "til": 24,
-"hq": "~"
+"hq": "~",
+"deal": {
+"t": "Night Strike: unlimited bowling + shoes $24.99",
+"d": "Sun from 6 PM, Mon–Thu from 7 PM (walk-in)",
+"u": "https://www.luckystrikeent.com/location/lucky-strike-torrance/specials",
+"chk": "2026-11-18"
+}
 },
 {
 "n": "Lucky Strike Pasadena",

@@ -306,10 +306,10 @@
     "theater"
    ],
    "calendar": "https://soboba.com/entertainment/calendar",
-   "how": "venue page (JS) with LOAD MORE",
-   "listed": 10,
+   "how": "Official calendar not readable by fetch; Vivid Seats venue page lists the full calendar",
+   "listed": 11,
    "recurring": 0,
-   "lastChecked": "2026-11-11"
+   "lastChecked": "2026-11-18"
   },
   {
    "name": "Sole Alley & the Breezeway",
@@ -399,11 +399,11 @@
     "comedy",
     "concert"
    ],
-   "calendar": "https://yaamava.com/entertainment/",
-   "how": "blocks plain downloads; AXS links",
-   "listed": 39,
+   "calendar": "https://gametime.co/yaamava-theater-tickets/venues/yaamava_theater",
+   "how": "yaamava.com blocked (permission); gametime venue page listed full calendar; prices only added for next 60 days",
+   "listed": 49,
    "recurring": 0,
-   "lastChecked": "2026-11-11"
+   "lastChecked": "2026-11-18"
   },
   {
    "name": "Academy LA",
@@ -1274,10 +1274,10 @@
     "concert"
    ],
    "calendar": "https://www.theford.com/",
-   "how": "2027 summer season not announced as of Nov 2026; recheck in spring",
+   "how": "theford.com not fetchable; search shows no 2027 season announced yet",
    "listed": 0,
    "recurring": 0,
-   "lastChecked": "2026-11-12"
+   "lastChecked": "2026-11-18"
   },
   {
    "name": "The Glass House",
@@ -1958,11 +1958,11 @@
    "kinds": [
     "art"
    ],
-   "calendar": null,
-   "how": "so far found via visitlagunabeach.com",
-   "listed": 0,
+   "calendar": "https://lagunaartmuseum.org/events/",
+   "how": "events page has no dates; First Thursdays Art Walk monthly 6-9 PM free, no dated one-offs found",
+   "listed": 1,
    "recurring": 1,
-   "lastChecked": null
+   "lastChecked": "2026-11-18"
   },
   {
    "name": "Laguna Playhouse",
@@ -2339,11 +2339,11 @@
    "kinds": [
     "club"
    ],
-   "calendar": "https://www.timenightclub.com/",
-   "how": "Site not fetchable; WebSearch shows events; gametime venue page https://gametime.co/time-nightclub-costa-mesa-tickets/venues/time_nightclub",
+   "calendar": "https://gametime.co/time-nightclub-costa-mesa-tickets/venues/time_nightclub",
+   "how": "gametime venue page lists 5 upcoming shows",
    "listed": 10,
    "recurring": 0,
-   "lastChecked": "2026-11-15"
+   "lastChecked": "2026-11-18"
   },
   {
    "name": "Veterans Memorial Stadium",
@@ -2722,11 +2722,11 @@
     "comedy",
     "theater"
    ],
-   "calendar": "https://songkick.com/venues/1158-san-diego-civic-theatre",
-   "how": "songkick venue page shows only 5; official/ticket sites not reachable",
-   "listed": 15,
+   "calendar": "https://songkick.com/venues/1158-san-diego-civic-theatre/calendar",
+   "how": "songkick venue page showed 12 upcoming, only 5 listed in fetch; times/prices unknown; Broadway San Diego season not itemized",
+   "listed": 17,
    "recurring": 0,
-   "lastChecked": "2026-11-16"
+   "lastChecked": "2026-11-18"
   },
   {
    "name": "San Diego Woman's Club",
@@ -2950,11 +2950,11 @@
    "city": "",
    "region": "",
    "kinds": [],
-   "calendar": null,
-   "how": "named in the refresh instructions; nothing listed yet",
-   "listed": 0,
+   "calendar": "https://www.songkick.com/venues/3820544-dynasty-typewriter-at-the-hayworth",
+   "how": "songkick venue page shows one upcoming show; gametime page was JS-empty",
+   "listed": 1,
    "recurring": 0,
-   "lastChecked": null
+   "lastChecked": "2026-11-18"
   },
   {
    "name": "Enjoy Yoga",
@@ -3031,11 +3031,11 @@
    "city": "",
    "region": "",
    "kinds": [],
-   "calendar": null,
-   "how": "named in the refresh instructions; nothing listed yet",
-   "listed": 0,
+   "calendar": "https://songkick.com/venues/15325-petco-park",
+   "how": "Songkick venue page readable (shows 5 of 13); gametime search results for dated 2027 shows; official site not read",
+   "listed": 4,
    "recurring": 0,
-   "lastChecked": null
+   "lastChecked": "2026-11-18"
   },
   {
    "name": "Quartyard",
@@ -3053,11 +3053,11 @@
    "city": "",
    "region": "",
    "kinds": [],
-   "calendar": null,
-   "how": "named in the refresh instructions; nothing listed yet",
+   "calendar": "https://www.songkick.com/venues/3143214-resident",
+   "how": "songkick and seatgeek both show 0 upcoming events (last shows Oct 2025); possibly inactive",
    "listed": 0,
    "recurring": 0,
-   "lastChecked": null
+   "lastChecked": "2026-11-18"
   },
   {
    "name": "SD Civic Theatre",
@@ -3065,10 +3065,10 @@
    "region": "",
    "kinds": [],
    "calendar": null,
-   "how": "named in the refresh instructions; nothing listed yet",
+   "how": "duplicate of San Diego Civic Theatre (shows listed under that name)",
    "listed": 0,
    "recurring": 0,
-   "lastChecked": null
+   "lastChecked": "2026-11-18"
   },
   {
    "name": "Snapdragon Stadium",
@@ -3109,10 +3109,10 @@
    "region": "",
    "kinds": [],
    "calendar": null,
-   "how": "named in the refresh instructions; nothing listed yet",
+   "how": "duplicate of TIME Nightclub (shows listed under that name)",
    "listed": 0,
    "recurring": 0,
-   "lastChecked": null
+   "lastChecked": "2026-11-18"
   },
   {
    "name": "Improv (Corona)",
@@ -3121,11 +3121,11 @@
    "kinds": [
     "comedy"
    ],
-   "calendar": null,
-   "how": "named in the refresh instructions; nothing listed yet",
-   "listed": 0,
+   "calendar": "https://www.livenation.com/fr-ca/venue/rZ7HnEZ17rbkf/corona-improv-events",
+   "how": "livenation venue page lists shows through Feb 2027 (times converted from 24h French); URLs are the venue page, no per-event URLs seen; prices not found; more shows after 2027-01-08 exist (Jan 9-10, 14",
+   "listed": 20,
    "recurring": 0,
-   "lastChecked": null
+   "lastChecked": "2026-11-18"
   },
   {
    "name": "The Nimoy (CAP UCLA)",
