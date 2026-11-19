@@ -1,6 +1,6 @@
 {
  "about": "Every venue the Show Shack covers, in one place. The daily refresh routine sweeps the venues checked longest ago (null = never) and writes back lastChecked, calendar and how. Add a venue here and the refresh picks it up.",
- "updated": "2026-11-17",
+ "updated": "2026-11-19",
  "venues": [
   {
    "name": "Acrisure Arena",
@@ -9,11 +9,11 @@
    "kinds": [
     "concert"
    ],
-   "calendar": "https://acrisurearena.com/events/",
-   "how": "acrisurearena.com and gametime.co are network-blocked in this session; WebSearch snippets of acrisurearena.com/events/detail/<slug> pages worked",
-   "listed": 3,
+   "calendar": "https://songkick.com/venues/4470709-acrisure-arena",
+   "how": "Songkick venue page lists Jonas Brothers 11/17, Yuridia 2/11/27; official site shows no upcoming concerts",
+   "listed": 2,
    "recurring": 0,
-   "lastChecked": "2026-11-12"
+   "lastChecked": "2026-11-19"
   },
   {
    "name": "Agua Caliente Casino",
@@ -157,10 +157,10 @@
     "concert"
    ],
    "calendar": "https://spotlight29.com/entertainment/",
-   "how": "venue page → Ticketmaster (showroom) and Eventbrite (Chairman's Lounge comedy)",
-   "listed": 13,
+   "how": "venue page → Ticketmaster (showroom) and Eventbrite (Chairman's Lounge comedy) | 11-19: official page fetch blocked; theater.guide confirmed 4 shows; Ticketmaster/consequence had nothing newer",
+   "listed": 14,
    "recurring": 0,
-   "lastChecked": "2026-11-11"
+   "lastChecked": "2026-11-19"
   },
   {
    "name": "Aurea Vista",
@@ -290,11 +290,11 @@
    "kinds": [
     "art"
    ],
-   "calendar": "https://riversideartmuseum.org/events/",
-   "how": "riversideartmuseum.org events (tribe events calendar, ?ical=1 feeds) list ArtsWalk 1st Thu 6-9 PM, free; 2026 dates (Mar, Apr) seen.",
+   "calendar": "https://riversideartmuseum.org/events/summary/?ical=1",
+   "how": "ical feed: ArtsWalk monthly 1st Thu 6-9 PM free, continuing through Feb 2028 (next Dec 3 2026, Jan 7, Feb 4, Mar 4, Apr 1 2027...). Also First Sunday free Dec 6 10AM-5PM",
    "listed": 0,
    "recurring": 1,
-   "lastChecked": "2026-11-12"
+   "lastChecked": "2026-11-19"
   },
   {
    "name": "Soboba Casino Resort",
@@ -374,7 +374,7 @@
    "how": "official site blocks fetch; only schedule found is Apr 2025 countrydancingtonight.com (lessons Tue-Fri/Sun 6-7pm) — try FB/IG next",
    "listed": 0,
    "recurring": 1,
-   "lastChecked": "2026-11-12"
+   "lastChecked": "2026-11-19"
   },
   {
    "name": "Wilson Creek Winery",
@@ -385,11 +385,11 @@
     "comedy",
     "concert"
    ],
-   "calendar": "https://www.wilsoncreekwinery.com/collection/events",
-   "how": "winery events (Sunday music, Jazz & Jokes)",
-   "listed": 3,
+   "calendar": "https://www.temeculawines.org/events/winery-event-calendar.php",
+   "how": "Temecula winegrowers calendar lists Wilson Creek events; no prices shown",
+   "listed": 4,
    "recurring": 0,
-   "lastChecked": "2026-11-11"
+   "lastChecked": "2026-11-19"
   },
   {
    "name": "Yaamava' Theater",
@@ -505,11 +505,11 @@
     "concert",
     "theater"
    ],
-   "calendar": "https://catalinajazzclub.com/",
-   "how": "venue page → ticketweb links with prices",
-   "listed": 16,
+   "calendar": "https://songkick.com/venues/242-catalina-bar-and-grill/calendar",
+   "how": "venue page → ticketweb links with prices | 11-19: Official site fetch blocked; Songkick calendar used (no times/prices)",
+   "listed": 32,
    "recurring": 0,
-   "lastChecked": "2026-11-11"
+   "lastChecked": "2026-11-19"
   },
   {
    "name": "Claremont Chamber Gallery",
@@ -545,10 +545,10 @@
     "social"
    ],
    "calendar": "https://www.countrydancingtonight.com/best-country-bars-dancing-in-los-angeles",
-   "how": "no official calendar; countrydancingtonight.com guide (Oct 2026): Sun lessons 4:30, $5 cover/$10 w/ lessons, open Wed-Sun",
+   "how": "no official calendar found",
    "listed": 0,
    "recurring": 1,
-   "lastChecked": "2026-11-12"
+   "lastChecked": "2026-11-19"
   },
   {
    "name": "Crypto.com Arena",
@@ -707,10 +707,10 @@
     "concert"
    ],
    "calendar": "https://gold-diggers.com/",
-   "how": "venue page → link.dice.fm links with prices (golddiggers.la is NOT their site)",
-   "listed": 17,
+   "how": "venue page → link.dice.fm links with prices (golddiggers.la is NOT their site) | 11-19: gold-diggers.com and dice venue page fetch blocked; search results stale (2025/Aug 2026 only); no changes verified",
+   "listed": 15,
    "recurring": 0,
-   "lastChecked": "2026-11-11"
+   "lastChecked": "2026-11-19"
   },
   {
    "name": "Greek Theatre",
@@ -883,7 +883,7 @@
    "how": "not researched (budget)",
    "listed": 0,
    "recurring": 1,
-   "lastChecked": "2026-11-13"
+   "lastChecked": "2026-11-19"
   },
   {
    "name": "Lodge Room",
@@ -1313,10 +1313,10 @@
     "comedy"
    ],
    "calendar": "https://groundlings.com/shows",
-   "how": "weekly shows; the app only repeats open mics/community, so list comedy as dated shows 3–4 weeks ahead",
-   "listed": 16,
+   "how": "groundlings.com/shows fetched OK; no prices listed (tickets at purchase.groundlings.com)",
+   "listed": 37,
    "recurring": 0,
-   "lastChecked": "2026-11-11"
+   "lastChecked": "2026-11-19"
   },
   {
    "name": "The Ice House",
@@ -1325,11 +1325,11 @@
    "kinds": [
     "comedy"
    ],
-   "calendar": "https://www.theicehouse.com",
-   "how": "Vividseats venue page only shows Adam Carolla; tickpick and events.leapevents.com list Ice House shows via search.",
+   "calendar": "https://comedy.tickets/venue/legendary-room-at-the-ice-house/",
+   "how": "comedy.tickets venue page confirms both listed shows and prices",
    "listed": 2,
    "recurring": 0,
-   "lastChecked": "2026-11-13"
+   "lastChecked": "2026-11-19"
   },
   {
    "name": "The Mayan",
@@ -1460,10 +1460,10 @@
     "comedy"
    ],
    "calendar": "https://ucbcomedy.com/shows/los-angeles/",
-   "how": "blocks plain downloads (403); LA shows only (skip NY + livestream-only)",
+   "how": "blocks plain downloads (403); LA shows only (skip NY + livestream-only) | 11-19: official page fetch blocked; no usable third-party schedule found",
    "listed": 14,
    "recurring": 0,
-   "lastChecked": "2026-11-11"
+   "lastChecked": "2026-11-19"
   },
   {
    "name": "Vaquero Y Mar",
@@ -1551,10 +1551,10 @@
     "openmic"
    ],
    "calendar": null,
-   "how": "so far found via sparkoc.com",
+   "how": "No dated info found",
    "listed": 0,
    "recurring": 1,
-   "lastChecked": null
+   "lastChecked": "2026-11-19"
   },
   {
    "name": "Alex's Bar",
@@ -1577,10 +1577,10 @@
     "drum"
    ],
    "calendar": null,
-   "how": "so far found via solaguna.com",
+   "how": "no official calendar found in search; nothing checked",
    "listed": 9,
    "recurring": 0,
-   "lastChecked": null
+   "lastChecked": "2026-11-19"
   },
   {
    "name": "Art studio near Fairview & Baker (address on RSVP)",
@@ -1593,7 +1593,7 @@
    "how": "so far found via soundbathsandyoga.com",
    "listed": 0,
    "recurring": 0,
-   "lastChecked": null
+   "lastChecked": "2026-11-19"
   },
   {
    "name": "ATOMIC Ballroom",
@@ -1602,11 +1602,11 @@
    "kinds": [
     "social"
    ],
-   "calendar": "https://atomicballroom.com",
-   "how": "Official site returned only an old 2014 post; recurring series unconfirmed — try Eventbrite/Meetup",
+   "calendar": "https://atomicballroom.com/evening-dances/",
+   "how": "Evening-dances page (stale, 2020) shows Wed salsa and Tue Sock Hop/Balboa; no dated one-offs",
    "listed": 0,
    "recurring": 2,
-   "lastChecked": "2026-11-15"
+   "lastChecked": "2026-11-19"
   },
   {
    "name": "Beach Hut Deli",
@@ -1619,7 +1619,7 @@
    "how": "so far found via openmikes.org",
    "listed": 0,
    "recurring": 1,
-   "lastChecked": null
+   "lastChecked": "2026-11-19"
   },
   {
    "name": "Behind the Lids Healing Collective",
@@ -1669,11 +1669,11 @@
    "kinds": [
     "contact"
    ],
-   "calendar": null,
-   "how": "so far found via badgoatdance.com",
+   "calendar": "https://happeningnext.com/event/2027-long-beach-contact-improvisation-festival-eid3a0dvaxnct",
+   "how": "Event aggregator page confirms Jan 15-18 2027 at CSULB Rugby Field; registration $325-$475",
    "listed": 1,
    "recurring": 0,
-   "lastChecked": null
+   "lastChecked": "2026-11-19"
   },
   {
    "name": "Callahan's Pub",
@@ -1683,10 +1683,10 @@
     "openmic"
    ],
    "calendar": null,
-   "how": "so far found via openmikes.org",
+   "how": "Not checked",
    "listed": 0,
    "recurring": 1,
-   "lastChecked": null
+   "lastChecked": "2026-11-19"
   },
   {
    "name": "Comedy & Magic Club",
@@ -1725,7 +1725,7 @@
    "how": "so far found via google.com",
    "listed": 0,
    "recurring": 1,
-   "lastChecked": null
+   "lastChecked": "2026-11-19"
   },
   {
    "name": "Downtown Fullerton",
@@ -1777,7 +1777,7 @@
    "how": "so far found via google.com",
    "listed": 0,
    "recurring": 1,
-   "lastChecked": null
+   "lastChecked": "2026-11-19"
   },
   {
    "name": "Fingerprints",
@@ -1816,7 +1816,7 @@
    "how": "so far found via openmikes.org",
    "listed": 0,
    "recurring": 1,
-   "lastChecked": null
+   "lastChecked": "2026-11-19"
   },
   {
    "name": "HeartSpace OC",
@@ -1909,7 +1909,7 @@
    "how": "Eventbrite monthly Sound Bath pages found only for 2026 dates through Aug; no upcoming dated listing as of Nov 15",
    "listed": 0,
    "recurring": 0,
-   "lastChecked": "2026-11-15"
+   "lastChecked": "2026-11-19"
   },
   {
    "name": "Irvine Barclay Theatre",
@@ -1971,11 +1971,11 @@
    "kinds": [
     "theater"
    ],
-   "calendar": "https://cultureoc.org/laguna-playhouse-announces-2026-27-season/",
-   "how": "lagunaplayhouse.com blocked in WebFetch. cultureoc.org season announcement (fetched) gives run dates: Wild Child Sep 9-Oct 4 2026, The 39 Steps Oct 27-Nov 15 2026, Rent Apr 7-May 2 2027, Bonnie & Clyde Jun 9-28 2027. Ren",
+   "calendar": "https://www.todaytix.com/los-angeles/shows/47586-rent",
+   "how": "todaytix show pages give dates and prices",
    "listed": 2,
    "recurring": 0,
-   "lastChecked": "2026-11-14"
+   "lastChecked": "2026-11-19"
   },
   {
    "name": "Marina Green Park",
@@ -1999,10 +1999,10 @@
     "theater"
    ],
    "calendar": "https://muscocenter.org/Online/default.asp",
-   "how": "Chapman box office list",
+   "how": "Chapman box office list | 11-19: Season article fetch redirected/blocked; no new data",
    "listed": 8,
    "recurring": 0,
-   "lastChecked": "2026-11-11"
+   "lastChecked": "2026-11-19"
   },
   {
    "name": "Mystic Water Kava Bar",
@@ -2028,7 +2028,7 @@
    "how": "so far found via google.com",
    "listed": 0,
    "recurring": 1,
-   "lastChecked": null
+   "lastChecked": "2026-11-19"
   },
   {
    "name": "Newport Pier",
@@ -2038,10 +2038,10 @@
     "volunteer"
    ],
    "calendar": null,
-   "how": "so far found via northoc.surfrider.org",
+   "how": "No one-off dated event found",
    "listed": 0,
    "recurring": 1,
-   "lastChecked": null
+   "lastChecked": "2026-11-19"
   },
   {
    "name": "North Paseo",
@@ -2067,7 +2067,7 @@
    "how": "so far found via eventbrite.com",
    "listed": 0,
    "recurring": 1,
-   "lastChecked": null
+   "lastChecked": "2026-11-19"
   },
   {
    "name": "OC Salsa Dance Studio",
@@ -2106,7 +2106,7 @@
    "how": "so far found via justinrudd.com",
    "listed": 0,
    "recurring": 1,
-   "lastChecked": null
+   "lastChecked": "2026-11-19"
   },
   {
    "name": "Seaside Lagoon",
@@ -2143,10 +2143,10 @@
     "theater"
    ],
    "calendar": "https://www.pacificsymphony.org/calendar-with-series",
-   "how": "Pacific Symphony calendar (also scfta.org for other presenters)",
-   "listed": 28,
+   "how": "Pacific Symphony calendar (also scfta.org for other presenters) | 11-19: Calendar fetch blocked; used Pacific Symphony press releases + tickpick URLs; no prices. Jazz series events are in Samueli Theatre (not listed); ABT Nutcracker Dec 10-24 and Sleeping Beauty Apr 22-25 venue unconfirmed (skipped)",
+   "listed": 59,
    "recurring": 0,
-   "lastChecked": "2026-11-11"
+   "lastChecked": "2026-11-19"
   },
   {
    "name": "Segerstrom Hall",
@@ -2172,7 +2172,7 @@
    "how": "Eventbrite Wednesday Salsa Bachata page only dated Dec 2025; no current listing confirmed",
    "listed": 0,
    "recurring": 1,
-   "lastChecked": "2026-11-15"
+   "lastChecked": "2026-11-19"
   },
   {
    "name": "Soka Performing Arts Center",
@@ -2224,7 +2224,7 @@
    "how": "so far found via theartofsoundhealing.com",
    "listed": 0,
    "recurring": 0,
-   "lastChecked": null
+   "lastChecked": "2026-11-19"
   },
   {
    "name": "Stillmind Wellness Center",
@@ -2379,10 +2379,10 @@
     "sound"
    ],
    "calendar": null,
-   "how": "so far found via eventbrite.com",
+   "how": "so far found via eventbrite.com | 11-19: Eventbrite HB sound bath search did not surface this organizer; nothing found",
    "listed": 0,
    "recurring": 0,
-   "lastChecked": null
+   "lastChecked": "2026-11-19"
   },
   {
    "name": "Yogalution Movement & Wellness",
@@ -2418,11 +2418,11 @@
    "kinds": [
     "art"
    ],
-   "calendar": null,
-   "how": "so far found via artsdistrictlibertystation.org",
+   "calendar": "https://artsdistrictlibertystation.org",
+   "how": "First Friday Open Studios still running in 2026 per kpbs/libertystation",
    "listed": 0,
    "recurring": 1,
-   "lastChecked": null
+   "lastChecked": "2026-11-19"
   },
   {
    "name": "Barrio Logan Cultural District",
@@ -2461,7 +2461,7 @@
    "how": "so far found via google.com",
    "listed": 0,
    "recurring": 1,
-   "lastChecked": null
+   "lastChecked": "2026-11-19"
   },
   {
    "name": "Dance Headquarters",
@@ -2474,7 +2474,7 @@
    "how": "so far found via google.com",
    "listed": 0,
    "recurring": 1,
-   "lastChecked": null
+   "lastChecked": "2026-11-19"
   },
   {
    "name": "Downtown Grand Ave",
@@ -2487,7 +2487,7 @@
    "how": "so far found via visitescondido.com",
    "listed": 0,
    "recurring": 1,
-   "lastChecked": null
+   "lastChecked": "2026-11-19"
   },
   {
    "name": "Feeding San Diego",
@@ -2500,7 +2500,7 @@
    "how": "so far found via feedingsandiego.org",
    "listed": 0,
    "recurring": 1,
-   "lastChecked": null
+   "lastChecked": "2026-11-19"
   },
   {
    "name": "Harrah's Resort SoCal Events Center",
@@ -2511,10 +2511,10 @@
     "concert"
    ],
    "calendar": "https://www.harrahssocal.com/play/the-events-center/",
-   "how": "venue page (JS) → Ticketmaster event links",
+   "how": "venue page fetched; all 8 listed shows confirmed; no new Events Center shows; time/price not shown",
    "listed": 8,
    "recurring": 0,
-   "lastChecked": "2026-11-11"
+   "lastChecked": "2026-11-19"
   },
   {
    "name": "House of Blues San Diego",
@@ -2551,10 +2551,10 @@
     "social"
    ],
    "calendar": null,
-   "how": "so far found via google.com",
+   "how": "Not checked",
    "listed": 0,
    "recurring": 1,
-   "lastChecked": null
+   "lastChecked": "2026-11-19"
   },
   {
    "name": "Infinity Dance Sport Center",
@@ -2567,7 +2567,7 @@
    "how": "so far found via google.com",
    "listed": 0,
    "recurring": 1,
-   "lastChecked": null
+   "lastChecked": "2026-11-19"
   },
   {
    "name": "Jamul Casino",
@@ -2594,7 +2594,7 @@
    "how": "so far found via mcasd.org",
    "listed": 0,
    "recurring": 1,
-   "lastChecked": null
+   "lastChecked": "2026-11-19"
   },
   {
    "name": "Little Italy",
@@ -2607,7 +2607,7 @@
    "how": "so far found via google.com",
    "listed": 0,
    "recurring": 1,
-   "lastChecked": null
+   "lastChecked": "2026-11-19"
   },
   {
    "name": "Melómano",
@@ -2620,7 +2620,7 @@
    "how": "so far found via google.com",
    "listed": 0,
    "recurring": 1,
-   "lastChecked": null
+   "lastChecked": "2026-11-19"
   },
   {
    "name": "Music Box",
@@ -2656,11 +2656,11 @@
     "comedy",
     "concert"
    ],
-   "calendar": "https://www.palacasino.com/entertainment/upcoming-concerts/",
-   "how": "venue page (JS) → etix.com links with prices",
+   "calendar": "https://americanarenas.com/venue/events-center-at-pala-casino-spa-and-resort/",
+   "how": "venue page (JS) → etix.com links with prices | 11-19: palacasino.com fetch blocked; americanarenas.com (resale) lists same 4 events; songkick shows Nov 27 only",
    "listed": 4,
    "recurring": 0,
-   "lastChecked": "2026-11-11"
+   "lastChecked": "2026-11-19"
   },
   {
    "name": "Pechanga Arena",
@@ -2682,11 +2682,11 @@
    "kinds": [
     "social"
    ],
-   "calendar": null,
-   "how": "so far found via google.com",
+   "calendar": "https://queenbeessd.eventbrite.com",
+   "how": "Eventbrite organizer page exists; no dated one-offs verified",
    "listed": 0,
    "recurring": 2,
-   "lastChecked": null
+   "lastChecked": "2026-11-19"
   },
   {
    "name": "Rotating SD beaches",
@@ -2696,10 +2696,10 @@
     "volunteer"
    ],
    "calendar": null,
-   "how": "so far found via sandiego.surfrider.org",
+   "how": "search returned only 2025 sdcoastkeeper pages; no 2026 dated events found",
    "listed": 0,
    "recurring": 1,
-   "lastChecked": null
+   "lastChecked": "2026-11-19"
   },
   {
    "name": "San Clemente beach (spot on RSVP)",
@@ -2712,7 +2712,7 @@
    "how": "so far found via coastkeeper.org",
    "listed": 1,
    "recurring": 0,
-   "lastChecked": null
+   "lastChecked": "2026-11-19"
   },
   {
    "name": "San Diego Civic Theatre",
@@ -2739,7 +2739,7 @@
    "how": "so far found via google.com",
    "listed": 0,
    "recurring": 1,
-   "lastChecked": null
+   "lastChecked": "2026-11-19"
   },
   {
    "name": "Silvergate Three Stars Masonic",
@@ -2752,7 +2752,7 @@
    "how": "so far found via google.com",
    "listed": 0,
    "recurring": 1,
-   "lastChecked": null
+   "lastChecked": "2026-11-19"
   },
   {
    "name": "Soda Bar",
@@ -2802,11 +2802,11 @@
     "concert",
     "theater"
    ],
-   "calendar": "https://www.sycuan.com/events/live-and-up-close-events/",
-   "how": "venue page → yapsody ticket links; time is in the event URL slug",
+   "calendar": "https://www.vividseats.com/live-and-up-close-theater-tickets/venue/38780",
+   "how": "venue page → yapsody ticket links; time is in the event URL slug | 11-19: official page blocked; vividseats venue page lists all shows with prices",
    "listed": 7,
    "recurring": 0,
-   "lastChecked": "2026-11-11"
+   "lastChecked": "2026-11-19"
   },
   {
    "name": "Tango Del Rey",
@@ -2816,10 +2816,10 @@
     "social"
    ],
    "calendar": null,
-   "how": "so far found via google.com",
+   "how": "Not checked",
    "listed": 0,
    "recurring": 1,
-   "lastChecked": null
+   "lastChecked": "2026-11-19"
   },
   {
    "name": "The American Comedy Co.",
@@ -2907,10 +2907,10 @@
    "region": "",
    "kinds": [],
    "calendar": null,
-   "how": "named in the refresh instructions; nothing listed yet",
+   "how": "not a venue (Balboa = swing dance style, covered by social series); shows went to Balboa Theatre",
    "listed": 0,
    "recurring": 0,
-   "lastChecked": null
+   "lastChecked": "2026-11-19"
   },
   {
    "name": "Cal Coast Credit Union Amphitheater",
@@ -3010,21 +3010,21 @@
     "sound"
    ],
    "calendar": null,
-   "how": "so far found via eventbrite.com",
+   "how": "eventbrite search gave no Looma-specific page",
    "listed": 1,
    "recurring": 0,
-   "lastChecked": null
+   "lastChecked": "2026-11-19"
   },
   {
    "name": "Pacific Amphitheatre",
    "city": "",
    "region": "",
    "kinds": [],
-   "calendar": null,
-   "how": "named in the refresh instructions; nothing listed yet",
+   "calendar": "https://songkick.com/venues/4594105-pacific-amphitheatre-at-the-oc-fair",
+   "how": "Songkick shows 0 upcoming; OC Fair season concerts (Jul-Aug 2027) not yet announced",
    "listed": 0,
    "recurring": 0,
-   "lastChecked": null
+   "lastChecked": "2026-11-19"
   },
   {
    "name": "Petco Park",
@@ -3043,10 +3043,10 @@
    "region": "",
    "kinds": [],
    "calendar": null,
-   "how": "named in the refresh instructions; nothing listed yet",
+   "how": "named in the refresh instructions; nothing listed yet | 11-19: Searches found only axs/dice venue pages; dice fetch failed, no dated events retrieved",
    "listed": 0,
    "recurring": 0,
-   "lastChecked": null
+   "lastChecked": "2026-11-19"
   },
   {
    "name": "Resident",
@@ -3075,33 +3075,33 @@
    "city": "",
    "region": "",
    "kinds": [],
-   "calendar": null,
-   "how": "named in the refresh instructions; nothing listed yet",
-   "listed": 0,
+   "calendar": "https://songkick.com/venues/4457079-snapdragon-stadium",
+   "how": "Songkick lists only Metallica May 13 2027",
+   "listed": 1,
    "recurring": 0,
-   "lastChecked": null
+   "lastChecked": "2026-11-19"
   },
   {
    "name": "Spin SD",
    "city": "",
    "region": "",
    "kinds": [],
-   "calendar": null,
-   "how": "named in the refresh instructions; nothing listed yet",
+   "calendar": "https://www.songkick.com/venues/3069909-spin-san-diego",
+   "how": "Songkick shows 0 upcoming; no official calendar found",
    "listed": 0,
    "recurring": 0,
-   "lastChecked": null
+   "lastChecked": "2026-11-19"
   },
   {
    "name": "The Continental Room & Programme Skate & Sound (Fullerton)",
    "city": "",
    "region": "",
    "kinds": [],
-   "calendar": null,
-   "how": "named in the refresh instructions; nothing listed yet",
+   "calendar": "https://songkick.com/venues/31944-continental-room",
+   "how": "Songkick and Vivid Seats show 0 upcoming events for Continental Room; Programme found no calendar via search",
    "listed": 0,
    "recurring": 0,
-   "lastChecked": null
+   "lastChecked": "2026-11-19"
   },
   {
    "name": "TIME Costa Mesa",
@@ -3136,10 +3136,10 @@
     "concert"
    ],
    "calendar": "https://cap.ucla.edu/calendar",
-   "how": "Duplicate of 'The Nimoy' — shows are listed under that venue name",
+   "how": "Duplicate of 'The Nimoy' — shows are listed under that venue name | 11-19: Duplicate of The Nimoy; skipped",
    "listed": 0,
    "recurring": 0,
-   "lastChecked": "2026-11-15"
+   "lastChecked": "2026-11-19"
   },
   {
    "name": "Cal Coast Credit Union Open Air Theatre",
@@ -3153,6 +3153,21 @@
    "listed": 3,
    "recurring": 0,
    "lastChecked": "2026-11-17"
+  },
+  {
+   "name": "Balboa Theatre",
+   "city": "San Diego",
+   "region": "San Diego",
+   "kinds": [
+    "concert",
+    "comedy",
+    "theater"
+   ],
+   "calendar": "https://sandiegotheatres.org/calendar?venue=227",
+   "how": "sandiegotheatres.org calendar fetch works (first 8 events; Load More not paged)",
+   "listed": 8,
+   "recurring": 0,
+   "lastChecked": "2026-11-19"
   }
  ],
  "sources": [
