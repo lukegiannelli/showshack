@@ -129,11 +129,11 @@
    "kinds": [
     "concert"
    ],
-   "calendar": "https://pappyandharriets.com/calendar/",
-   "how": "venue sells via wl.eventim.us/event/<slug>/<id>?afflky=pappyandharriets; search those plus jambase/songkick to find new dates",
-   "listed": 28,
+   "calendar": "https://songkick.com/venues/104336-pappy-and-harriets",
+   "how": "Songkick venue page readable (shows next 5 only); official calendar/gametime WebFetch blocked 11/20",
+   "listed": 56,
    "recurring": 0,
-   "lastChecked": "2026-11-12"
+   "lastChecked": "2026-11-20"
   },
   {
    "name": "Perez Art District",
@@ -613,11 +613,11 @@
    "kinds": [
     "concert"
    ],
-   "calendar": "https://gametime.co/el-rey-theatre-tickets/venues/el_rey_theatre",
-   "how": "theelrey.com is JS-only; gametime venue page is the best full list with prices; Songkick partial",
-   "listed": 31,
+   "calendar": "https://songkick.com/venues/1039-el-rey-theatre",
+   "how": "Songkick venue page readable (shows next 5 only); official calendar/gametime WebFetch blocked 11/20",
+   "listed": 29,
    "recurring": 0,
-   "lastChecked": "2026-11-12"
+   "lastChecked": "2026-11-20"
   },
   {
    "name": "Exchange LA",
