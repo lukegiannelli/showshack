@@ -829,3 +829,5 @@ html.b-you .wrap{display:none}
 .bmus .bmus-acts>button{flex:1 1 140px}
 @media (prefers-color-scheme:dark){:root.ui-b:not([data-theme="light"]) .byou-page .bmus-err,:root.ui-b:not([data-theme="light"]) .byou-page .bset-acts .bset-clear{color:#FF8AAE}}
 :root.ui-b[data-theme="dark"] .byou-page .bmus-err,:root.ui-b[data-theme="dark"] .byou-page .bset-acts .bset-clear{color:#FF8AAE}
+.ui-b #bTabs #bYouTab.bdot{position:relative}
+.ui-b #bTabs #bYouTab.bdot::after{content:"";position:absolute;top:7px;left:calc(50% + 9px);width:9px;height:9px;border-radius:50%;background:#FF6FA5;box-shadow:0 0 8px #FF6FA5}

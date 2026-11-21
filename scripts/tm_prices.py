@@ -94,6 +94,16 @@ def get(params, tries=4):
             time.sleep(1 + i)
     return None
 
+def first_sale(sales):
+    """The earliest moment anyone could buy (first presale or public on-sale), as YYYY-MM-DD.
+    Ticketmaster has no "announced" date; the first sale window is the closest public signal (announcements
+    usually land the same day or a few days before). Placeholder dates (1900, TBA) are ignored."""
+    ds = [((sales.get("public") or {}).get("startDateTime") or "")]
+    ds += [(p or {}).get("startDateTime") or "" for p in (sales.get("presales") or [])]
+    ds = [d[:10] for d in ds if len(d) >= 10 and d[:4] >= "2015"]
+    return min(ds) if ds else None
+
+
 def fetch_all():
     out, today = [], date.today()
     for seg in SEGMENTS:
@@ -120,6 +130,8 @@ def fetch_all():
                         "max": max((p.get("max") or 0 for p in pr), default=None),
                         "status": (((x.get("dates") or {}).get("status") or {}).get("code") or "").lower(),
                         "onsale": ((x.get("sales") or {}).get("public") or {}).get("startDateTime"),
+                        "sale0": first_sale(x.get("sales") or {}),
+                        "presale": first_sale({"presales": (x.get("sales") or {}).get("presales")}),
                         "venue": v.get("name") or "", "city": (v.get("city") or {}).get("name") or "",
                         "artists": [a.get("name") for a in ((x.get("_embedded") or {}).get("attractions") or []) if a.get("name")],
                         "min": min((p["min"] for p in pr), default=None),
@@ -235,7 +247,8 @@ def add_missing(data, tm, today):
                     "priceAsOf": today_s if lo is not None else None, "priceSrc": "ticketmaster" if lo is not None else None,
                     "priceWas": None, "priceChangedAt": None, "onSaleAt": onsale if onsale > today_s else None, "ages": None,
                     "note": None, "url": t["url"], "status": "announced" if onsale > today_s else "on sale",
-                    "updatedAt": today_s, "src": "tm-auto", "tmId": t["id"], "tmVenue": t["venue"]})
+                    "updatedAt": today_s, "src": "tm-auto", "tmId": t["id"], "tmVenue": t["venue"],
+                    "announcedAt": t.get("sale0")})
         ids.add(eid); tm_ids.add(t["id"]); taken.add((norm(vname), d)); by_date.setdefault(d, []).append(evs[-1])
         per_venue[vname] = per_venue.get(vname, 0) + 1; added += 1
     return added
@@ -254,7 +267,7 @@ def main():
     today = datetime.now(timezone.utc).astimezone().date()
     today_s = today.isoformat()
     fresh_cut = (today - timedelta(days=FRESH_DAYS)).isoformat()
-    matched = priced = changed = cancelled = 0
+    matched = priced = changed = cancelled = dated = 0
     for ev in data.get("events", []):
         if ev.get("url"):
             ev["url"] = clean_url(ev["url"])
@@ -267,6 +280,21 @@ def main():
         if not cands:
             continue
         matched += 1
+        sale0 = min((t["sale0"] for t in cands if t.get("sale0")), default=None)
+        if sale0 and (not ev.get("announcedAt") or sale0 < ev["announcedAt"]):
+            ev["announcedAt"] = sale0   # powers "Just announced" (scripts/firstseen.py)
+        # on-sale + presale dates (the Tickets hub, "On sale Sat" pills and the 9 AM on-sale push read these)
+        pub = min(((t.get("onsale") or "")[:10] for t in cands if (t.get("onsale") or "")[:4] >= "2015"), default=None)
+        pre = min((t["presale"] for t in cands if t.get("presale")), default=None)
+        if ev.get("status") not in ("sold out", "cancelled"):
+            if pub and pub > today_s:
+                if ev.get("status") != "announced" or ev.get("onSaleAt") != pub:
+                    dated += 1
+                ev["status"], ev["onSaleAt"] = "announced", pub
+            if pre and pre >= today_s and (not pub or pre < pub):
+                ev["presaleAt"] = pre
+            elif ev.get("presaleAt") and ev["presaleAt"] < today_s:
+                ev.pop("presaleAt")
         if any(t["status"] == "cancelled" for t in cands) and all(t["status"] == "cancelled" for t in cands):
             if ev.get("status") != "cancelled":
                 ev["status"] = "cancelled"; cancelled += 1
@@ -285,7 +313,7 @@ def main():
         if old is not None and abs(new - old) >= 5 and same_src:   # a real move, not just a different site's price
             ev["priceWas"], ev["priceChangedAt"] = old, today_s; changed += 1
         if ev.get("status") == "announced" and any(t["status"] == "onsale" for t in live):
-            ev["status"], ev["onSaleAt"] = "on sale", today_s
+            ev["status"], ev["onSaleAt"] = "on sale", (pub if pub and pub <= today_s else today_s)
         ev["priceFrom"], ev["priceEst"], ev["priceAsOf"] = new, False, today_s
         if new == tm_min:
             ev["priceSrc"] = "ticketmaster"
@@ -294,8 +322,15 @@ def main():
         if "google.com/search" in (ev.get("url") or "") and live[0].get("url"):
             ev["url"] = live[0]["url"]  # a real ticket page beats a search link
         priced += 1
+    # an "announced" show whose on-sale day has passed is on sale now (or sold out, which the refresh marks when listed)
+    for ev in data.get("events", []):
+        if ev.get("status") == "announced" and ev.get("onSaleAt") and ev["onSaleAt"] <= today_s:
+            ev["status"] = "on sale"; dated += 1
+        if ev.get("presaleAt") and ev["presaleAt"] < today_s:
+            ev.pop("presaleAt")
     added = add_missing(data, tm, today)
-    note = f"Ticketmaster: {len(tm)} listings checked, {matched} matched, {priced} priced, {changed} price moves, {cancelled} cancelled, {added} added."
+    note = (f"Ticketmaster: {len(tm)} listings checked, {matched} matched, {priced} priced, {changed} price moves, "
+            f"{cancelled} cancelled, {dated} on-sale dates fixed, {added} added.")
     data["tmNote"], data["tmRun"] = note, datetime.now(timezone.utc).isoformat(timespec="seconds")
     n_before = len(data.get("events", []))
     s = json.dumps(data, ensure_ascii=False, separators=(",", ":"))

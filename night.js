@@ -132,9 +132,9 @@ function parseTime(txt){return SH.hhmmOfText(txt);}
 function goLine(s){if(!s.w)return "";const w=s.w==="drive"&&s.dr?`${esc(s.dr)} is driving`:GOW[s.w];return `${GO[s.w]} ${w}`;}
 
 /* ---------- toast ---------- */
-let tt=0;function toast(msg,act,fn){let el=$("nToast");if(!el){el=document.createElement("div");el.id="nToast";el.className="ntoast";el.setAttribute("role","status");document.body.appendChild(el);}
+let tt=0;function toast(msg,act,fn,ms){let el=$("nToast");if(!el){el=document.createElement("div");el.id="nToast";el.className="ntoast";el.setAttribute("role","status");document.body.appendChild(el);}
   el.innerHTML=`<span>${msg}</span>${act?`<button type="button">${act}</button>`:""}`;if(act)el.querySelector("button").onclick=()=>{el.classList.remove("on");fn();};
-  el.classList.add("on");clearTimeout(tt);tt=setTimeout(()=>el.classList.remove("on"),3800);}
+  el.classList.add("on");clearTimeout(tt);tt=setTimeout(()=>el.classList.remove("on"),ms||3800);}
 const openPlan=()=>{const b=document.querySelector('#bTabs [data-tab="budget"]');if(b)b.click();setTimeout(()=>{const n=$("bNight");if(n)n.scrollIntoView({behavior:"smooth",block:"start"});},120);};
 
 /* ---------- adding stops from anywhere ---------- */
@@ -176,7 +176,7 @@ function addStop(st,quiet){if(plan.s.length>=MAXS){toast("A night tops out at "+
 const allEv=()=>[...((typeof state!=="undefined"&&state.events)||[]),...((typeof state!=="undefined"&&state.picks)||[]).map(p=>({...p,added:true}))];
 const evById=h=>allEv().find(e=>hid(e)===h);
 function showStop(e,quiet){const st={k:"show",n:e.title,p:[e.venue,e.city].filter(Boolean).join(", "),tm:parseTime(e.time),u:e.url,la:e.lat,lo:e.lon};
-  try{const pi=priceInfo(e);if(pi.free)st.c=0;else if(!pi.sold&&!pi.none&&pi.lo)st.c=Math.round(pi.lo);}catch(_){}
+  try{const pi=priceInfo(e);if(pi.free)st.c=0;else if(!pi.sold&&!pi.none&&pi.lo)st.c=Math.round(typeof allIn==="function"?allIn(e,pi.lo):pi.lo);}catch(_){}
   if(e.start)st.sd=e.start<todayISO()?todayISO():String(e.start).slice(0,10);return st;}
 function afterStop(p){return {cl:typeof p.til==="number"?p.til:undefined,k:grp(p)==="food"?"eat":"after",n:p.n,p:[p.a,p.city].filter(Boolean).join(", "),la:p.lat,lo:p.lon,no:"Hours: "+hrs(p)};}
 const todayISO=()=>{const d=new Date();return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");};
@@ -261,8 +261,9 @@ function stopRow(s,i){const T=TYPES[s.k],open=i===openI,f=(n,l,v,x)=>`<label cla
   const del=QUICKDEL.has(s.k)?`<button type="button" class="bn-trash" data-qdel="${i}" aria-label="Remove ${esc(s.n||T[1])} from your night">${tic("trash")}</button>`:"";
   const cls=(QUICKDEL.has(s.k)?" hasdel":"")+(plan.s.length>1?" hasgrip":"")+((CHK.rows[i]||{}).err?" bad":(CHK.rows[i]||{}).warn?" tight":"");
   const grip=plan.s.length>1?`<span class="bn-grip" data-grip="${i}" role="button" tabindex="-1" aria-label="Drag to reorder ${esc(s.n||T[1])}"><i></i><i></i><i></i><i></i><i></i><i></i></span>`:"";
-  if(!open)return `<li class="bn-stop${cls}" style="--sc:${T[2]}">${grip}${head}${del}</li>`;
-  return `<li class="bn-stop open${cls}" style="--sc:${T[2]}" data-i="${i}">${grip}${head}${del}<div class="bn-ed">
+  const tx=s.k==="show"&&window.SHACK_TIX?SHACK_TIX.stopHTML(s,plan.d):"";
+  if(!open)return `<li class="bn-stop${cls}" style="--sc:${T[2]}">${grip}${head}${del}${tx}</li>`;
+  return `<li class="bn-stop open${cls}" style="--sc:${T[2]}" data-i="${i}">${grip}${head}${del}${tx}<div class="bn-ed">
     <div class="bn-two">${f("n","What",s.n,`placeholder="${esc(T[1])}" maxlength="80"`)}${f("tm","Time",s.tm,'type="time"')}</div>
     ${s.k==="house"?`<p class="bn-hint">${tic("house","sm")} No address here on purpose. Links get forwarded, so drop the address in your group chat.</p>${f("p","Whose place",s.p,'placeholder="e.g. Sam\'s place" maxlength="90"')}`
       :`${f("p","Where",s.p,'placeholder="Place name" maxlength="90"')}${f("a","Address (optional)",s.a,'placeholder="Street, city" maxlength="120"')}`}
@@ -519,7 +520,7 @@ function view(p,preview,liveId){if(!$("nightView"))VOPENER=document.activeElemen
     return `<li style="--sc:${T[2]}"><span class="nv-dot">${T[0]}</span><div class="nv-b"><span class="nv-tm">${s.tm?fmtT(s.tm):T[1]}</span><b>${esc(s.n||T[1])}</b>
       ${s.p?`<span class="nv-p">${esc(s.p)}</span>`:""}${s.a?`<span class="nv-p">${esc(s.a)}</span>`:""}${s.k==="house"?'<span class="nv-p">Address in the group chat</span>':""}
       ${s.w?`<span class="nv-go">${goLine(s)}</span>`:""}${s.c?`<span class="nv-c">≈ $${s.c} each</span>`:""}${s.no?`<p class="nv-no">${esc(s.no)}</p>`:""}
-      ${acts?`<div class="nv-acts">${acts}</div>`:""}</div></li>`;}).join("");
+      ${acts?`<div class="nv-acts">${acts}</div>`:""}${s.k==="show"&&window.SHACK_TIX?SHACK_TIX.stopHTML(s,p.d):""}</div></li>`;}).join("");
   const pays=p.s.some(s=>s.vh||s.ch);
   const el=document.createElement("div");el.id="nightView";el.className="nview";el.setAttribute("role","dialog");el.setAttribute("aria-modal","true");el.setAttribute("aria-label","Night Card");
   el.innerHTML=`<div class="nv-card"><div class="nv-top"><span class="nv-kick">${auto?"🌍 Spun by the globe":"🌙 Night Card"+(preview?" · preview":"")}</span><span class="nv-topr">${tot?`<button type="button" class="nv-flipb" data-vflip="1">💸 The damage ↻</button>`:""}<button type="button" class="nv-x" aria-label="Close">✕</button></span></div>
