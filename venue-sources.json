@@ -1,6 +1,6 @@
 {
  "about": "Every venue the Show Shack covers, in one place. The daily refresh routine sweeps the venues checked longest ago (null = never) and writes back lastChecked, calendar and how. Add a venue here and the refresh picks it up.",
- "updated": "2026-11-19",
+ "updated": "2026-11-21",
  "venues": [
   {
    "name": "Acrisure Arena",
@@ -91,10 +91,10 @@
     "concert"
    ],
    "calendar": "https://www.gametime.co/venues/fantasy_springs_resort_casino",
-   "how": "fetch blocked; searches only re-confirmed existing Jan 2027 shows (Temptations, Yachtley Crew, BTO, El Flaco); Battle of the Badges boxing 2027-02-25 seen but skipped (sport)",
+   "how": "americanarenas.com venue page fetches OK (WebFetch blocked elsewhere); lists arena shows",
    "listed": 10,
    "recurring": 0,
-   "lastChecked": "2026-11-12"
+   "lastChecked": "2026-11-21"
   },
   {
    "name": "FIND Food Bank",
@@ -197,10 +197,10 @@
     "theater"
    ],
    "calendar": "https://www.ticketmaster.com/fox-performing-arts-center-billets-riverside/venue/90322",
-   "how": "WebFetch blocked this run (gametime/vividseats DNS fail); used WebSearch snippets: tickpick, hellotickets, ticketsmarter, eventticketscenter list 2027 dates",
-   "listed": 12,
+   "how": "Songkick venue page via WebFetch (shows first 5 only)",
+   "listed": 15,
    "recurring": 0,
-   "lastChecked": "2026-11-12"
+   "lastChecked": "2026-11-21"
   },
   {
    "name": "Glen Helen Amphitheater",
@@ -250,10 +250,10 @@
     "festival"
    ],
    "calendar": "https://www.axs.com/venues/125074",
-   "how": "Search only; tickpick has Beyond Wonderland 2027 event pages; axs venue page is the ticketing hub",
-   "listed": 4,
+   "how": "Songkick venue page via WebFetch; axs venue page is ticket hub",
+   "listed": 5,
    "recurring": 0,
-   "lastChecked": "2026-11-12"
+   "lastChecked": "2026-11-21"
   },
   {
    "name": "Ontario Improv",
@@ -263,10 +263,10 @@
     "comedy"
    ],
    "calendar": "https://improv.com/calendar/ontario/",
-   "how": "WebFetch blocked; WebSearch snippets of comedy.tickets/venue/ontario-improv and improv.com/calendar/ontario/<mon-yyyy>/ give dated shows+prices",
-   "listed": 38,
+   "how": "WebSearch: tickpick event pages; comedy.tickets for prices",
+   "listed": 55,
    "recurring": 0,
-   "lastChecked": "2026-11-12"
+   "lastChecked": "2026-11-21"
   },
   {
    "name": "Pechanga Resort Casino",
@@ -278,10 +278,10 @@
     "theater"
    ],
    "calendar": "https://www.pechanga.com/entertain",
-   "how": "WebFetch blocked (no network); WebSearch snippets of pechanga.com/entertain + gametime venue page (gametime.co/pechanga-resort-casino-tickets/venues/pechanga_resort_casino) give dates & from-prices",
-   "listed": 19,
+   "how": "americanarenas.com Summit page fetches (arena only); theater/comedy room not covered",
+   "listed": 18,
    "recurring": 0,
-   "lastChecked": "2026-11-12"
+   "lastChecked": "2026-11-21"
   },
   {
    "name": "Riverside Art Museum",
@@ -345,7 +345,7 @@
     "art"
    ],
    "calendar": "https://www.temeculasunsetmarket.com",
-   "how": "Temecula Sunset Market ended: Valley News 'to end after three-year partnership with city', final market Thu 2025-10-23. No 2026 season.",
+   "how": "closed (Valley News: Temecula Sunset Market ended, final market 2025-10-23)",
    "listed": 0,
    "recurring": 0,
    "lastChecked": "2026-11-12"
@@ -358,10 +358,10 @@
     "concert"
    ],
    "calendar": "https://seatgeek.com/venues/toyota-arena-ontario/tickets",
-   "how": "JS calendar unreadable; WebSearch 'Toyota Arena Ontario <month> 2027' + ticketmaster/gametime snippets",
-   "listed": 12,
+   "how": "concerts50 page fetched for dates only (not a URL source); seatgeek/gametime for tickets",
+   "listed": 13,
    "recurring": 0,
-   "lastChecked": "2026-11-12"
+   "lastChecked": "2026-11-21"
   },
   {
    "name": "Whiskey River Dancehall & Saloon",
@@ -426,10 +426,10 @@
     "festival"
    ],
    "calendar": "https://americanarenas.com/venue/ace-mission-studios/",
-   "how": "no official calendar; americanarenas.com venue page + DICE/news searches",
+   "how": "WebSearch only; Time Warp, Skyline, ASOT LA confirmed",
    "listed": 4,
    "recurring": 0,
-   "lastChecked": "2026-11-12"
+   "lastChecked": "2026-11-21"
   },
   {
    "name": "Ahmanson Theatre",
@@ -438,11 +438,11 @@
    "kinds": [
     "theater"
    ],
-   "calendar": "https://www.centertheatregroup.org/shows-tickets/subscriptions/ahmanson-theatre/",
-   "how": "CTG Ahmanson subscription page lists full 2026/27 season with run dates (admin.centertheatregroup.org mirror fetches)",
+   "calendar": "https://admin.centertheatregroup.org/shows-tickets/venues/ahmanson-theatre/",
+   "how": "admin.centertheatregroup.org venue page WebFetch works (www blocked)",
    "listed": 5,
    "recurring": 0,
-   "lastChecked": "2026-11-12"
+   "lastChecked": "2026-11-21"
   },
   {
    "name": "Amoeba Music Hollywood",
@@ -574,10 +574,10 @@
     "theater"
    ],
    "calendar": "https://www.dolbytheatre.com/events",
-   "how": "dolbytheatre.com/events fetches cleanly with detail URLs; gametime venue page (dolby_theatre) adds times & prices",
-   "listed": 23,
+   "how": "WebSearch only (tickpick pages); official site blocked",
+   "listed": 22,
    "recurring": 0,
-   "lastChecked": "2026-11-12"
+   "lastChecked": "2026-11-21"
   },
   {
    "name": "Downtown & Midtown galleries",
@@ -627,10 +627,10 @@
     "club"
    ],
    "calendar": "https://www.exchangela.com/",
-   "how": "exchangela.com homepage lists ~23 events with official URLs; gametime venue page has prices for a few (10 PM starts)",
-   "listed": 23,
+   "how": "gametime venue page fetched (somewhat stale); exchangela.com blocked",
+   "listed": 24,
    "recurring": 0,
-   "lastChecked": "2026-11-12"
+   "lastChecked": "2026-11-21"
   },
   {
    "name": "Fairfax High School",
@@ -759,10 +759,10 @@
     "concert"
    ],
    "calendar": "https://www.hollywoodbowl.com/events/seasons/27",
-   "how": "Songkick for list, hollywoodbowl.com performance pages for times; gametime prices don't load",
-   "listed": 6,
+   "how": "songkick venue page via WebFetch (first 5 of list); hollywoodbowl.com blocked",
+   "listed": 7,
    "recurring": 0,
-   "lastChecked": "2026-11-12"
+   "lastChecked": "2026-11-21"
   },
   {
    "name": "Hollywood Improv",
@@ -772,10 +772,10 @@
     "comedy"
    ],
    "calendar": "https://improv.com/hollywood/calendar/",
-   "how": "improv.com blocked by WebFetch permission; gametime.co venue page works (partial list, 9 events)",
-   "listed": 23,
+   "how": "WebSearch: tickpick event pages; improv.com blocked by WebFetch",
+   "listed": 19,
    "recurring": 0,
-   "lastChecked": "2026-11-13"
+   "lastChecked": "2026-11-21"
   },
   {
    "name": "Hollywood Palladium",
@@ -786,10 +786,10 @@
     "concert"
    ],
    "calendar": "https://www.hollywoodpalladium.com/events",
-   "how": "gametime.co venue page lists ~41 events with times/prices; ticketmaster venue page was stale (May-Sep 2026)",
-   "listed": 33,
+   "how": "Songkick via WebFetch shows first 5 only; official site blocked",
+   "listed": 32,
    "recurring": 0,
-   "lastChecked": "2026-11-13"
+   "lastChecked": "2026-11-21"
   },
   {
    "name": "Hollywood Pantages Theatre",
@@ -813,10 +813,10 @@
     "concert"
    ],
    "calendar": "https://www.thekiaforum.com/events",
-   "how": "songkick venue calendar page (songkick.com/venues/16272-kia-forum/calendar) lists all 34 events. Note: songkick shows Nessa Barrett (not The Neighbourhood) on 2026-12-04/05 and Foo Fighters/Weezer/Sub",
-   "listed": 30,
+   "how": "songkick venue page via WebFetch (first 5 of 32); tickpick event pages via search",
+   "listed": 28,
    "recurring": 0,
-   "lastChecked": "2026-11-13"
+   "lastChecked": "2026-11-21"
   },
   {
    "name": "LA County beaches (rotates)",
@@ -854,10 +854,10 @@
     "concert"
    ],
    "calendar": "https://largo-la.com/",
-   "how": "gametime.co venue page lists all events (8 with prices); no new shows seen",
-   "listed": 24,
+   "how": "Songkick via WebFetch; largo-la.com blocked",
+   "listed": 22,
    "recurring": 0,
-   "lastChecked": "2026-11-13"
+   "lastChecked": "2026-11-21"
   },
   {
    "name": "Laugh Factory",
@@ -893,10 +893,10 @@
     "concert"
    ],
    "calendar": "https://www.lodgeroomhlp.com/",
-   "how": "songkick venue page shows only the Minaret Winter Jazz Festival; gametime/vividseats venue pages not fetched",
+   "how": "vividseats venue page + app.songkick.com venue page via WebFetch (partial)",
    "listed": 20,
    "recurring": 0,
-   "lastChecked": "2026-11-13"
+   "lastChecked": "2026-11-21"
   },
   {
    "name": "Los Angeles Memorial Coliseum",
@@ -1395,10 +1395,10 @@
     "concert"
    ],
    "calendar": "https://www.thetorch.la",
-   "how": "thetorch.la blocked; tickpick/songkick event pages via WebSearch",
+   "how": "Songkick venue page via WebFetch",
    "listed": 2,
    "recurring": 0,
-   "lastChecked": "2026-11-17"
+   "lastChecked": "2026-11-21"
   },
   {
    "name": "The Victorian",
@@ -2896,10 +2896,10 @@
     "festival"
    ],
    "calendar": "https://lightninginabottle.org",
-   "how": "WebSearch → vividseats LIB 2027 production page",
+   "how": "LIB 2027 May 26-30 confirmed via vividseats/search",
    "listed": 1,
    "recurring": 0,
-   "lastChecked": "2026-11-17"
+   "lastChecked": "2026-11-21"
   },
   {
    "name": "Balboa",
@@ -2986,10 +2986,10 @@
    "region": "Los Angeles",
    "kinds": [],
    "calendar": "https://songkick.com/venues/41564-hollywood-forever-cemetery",
-   "how": "songkick cemetery page via WebFetch; Masonic Lodge (songkick 37123) & Fairbanks Lawn not yet checked",
-   "listed": 2,
+   "how": "songkick cemetery (41564) + Masonic Lodge (37123) pages via WebFetch; TM job sometimes files Masonic Lodge shows under Lodge Room",
+   "listed": 6,
    "recurring": 0,
-   "lastChecked": "2026-11-17"
+   "lastChecked": "2026-11-21"
   },
   {
    "name": "La Jolla Playhouse",
