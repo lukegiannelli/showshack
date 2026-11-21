@@ -106,3 +106,62 @@ html.ui-b .tr .starbtn::before{width:22px;height:22px}
 .bins-mini{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;margin:4px 0 8px}
 .bins-mini span{display:flex;flex-direction:column;gap:2px;padding:8px 10px;border-radius:12px;background:rgba(255,198,107,.08);border:1px solid rgba(255,198,107,.28);font:500 11.5px var(--body);color:#cfc6e8}
 .bins-mini b{font:800 20px var(--display);color:#FFC66B;line-height:1.05;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+/* ===== Type system: Shrikhand headers, Bricolage Grotesque for everything else =====
+   Shrikhand is one weight (400) and built for mixed case, so headers drop the uppercase + tracking (and faux-bold).
+   Bricolage's width axis stands in for the old condensed numerals (dates, totals). */
+:root{--head:"Shrikhand","Cooper Black",Georgia,serif;--body:"Bricolage Grotesque",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --display:"Bricolage Grotesque","Arial Narrow",sans-serif}
+body{font-optical-sizing:auto}
+header h1,.shack-title,.month,.add-form h2,.surprise b,.ins h2,.vhead h2,.sheethead h2,.wkhead b,.wkdone b,.pool .ph,.bsec,
+.binfo h2,.nv-title,.bn-h h2,.ui-b .bhello h2,.ui-b .bbudget-h h1,.ui-b .btitle h1,.ui-b .byou-page .byou-sec>h3,#sheetTitle{
+  font-family:var(--head)!important;font-weight:400!important;text-transform:none!important;letter-spacing:.005em!important;font-synthesis:none}
+/* Shrikhand runs wide: pull the big ones in so they still fit a phone */
+.ui-b .bhello h2{font-size:clamp(30px,9vw,40px);line-height:1.08}
+.ui-b .bbudget-h h1{font-size:clamp(28px,8.4vw,34px);line-height:1.1}
+.ui-b .btitle h1{font-size:clamp(26px,8vw,30px);line-height:1.1}
+header h1.shack-title{font-size:clamp(30px,8.6vw,48px);line-height:1.02}
+.bsec{font-size:21px;line-height:1.15}
+.month{font-size:22px}
+.ui-b .byou-page .byou-sec>h3{font-size:19px;line-height:1.2}
+.nv-title{font-size:clamp(30px,9vw,44px)!important;line-height:1.05!important}
+.bn-h h2{font-size:24px;line-height:1.15}
+/* numbers keep the chunky, narrow look, now in Bricolage */
+.stub .day,.ntot b,.bn-big b,.ui-b .bpass-h b,.bins-mini b,.label{font-family:var(--display);font-stretch:75%;font-weight:800}
+
+/* ===== Your tickets (tix.js): You page section, night builder strip, Night Card strip ===== */
+.tx-lede{margin:0 0 8px}
+.tx-lede b{color:#FF6FA5}
+.tx-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
+.tx-row{display:grid;grid-template-columns:48px 1fr;gap:10px;padding:10px;border-radius:14px;background:rgba(255,255,255,.06);border:1px solid rgba(255,198,107,.22)}
+.tx-row.tx-s-buy{border-color:rgba(255,111,165,.55);box-shadow:0 0 18px -10px #FF6FA5}
+.tx-row.tx-s-got{opacity:.8}
+.tx-d{display:flex;flex-direction:column;align-items:center;justify-content:center;border-radius:10px;background:rgba(255,198,107,.1);padding:4px 0}
+.tx-d b{font:800 15px/1.1 var(--display);font-stretch:75%;text-align:center}
+.tx-d small{font:600 10.5px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.tx-b{min-width:0;display:flex;flex-direction:column;gap:2px}
+.tx-top{display:flex;flex-wrap:wrap;align-items:center;gap:6px}
+.tx-t{font:700 15px/1.25 var(--body);overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.tx-w{font-size:12.5px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tx-pr,.tx-src{font:600 11.5px var(--mono);color:var(--muted)}
+.tx-pill{font:700 10.5px/1 var(--mono);letter-spacing:.06em;text-transform:uppercase;padding:4px 7px;border-radius:999px;white-space:nowrap}
+.tx-pill.buy{background:#FF6FA5;color:#2a0a1a}
+.tx-pill.soon{background:#FFC66B;color:#2a1a05}
+.tx-pill.sold{background:rgba(255,92,138,.18);color:#ff8fae}
+.tx-pill.got{background:rgba(126,224,184,.2);color:#7ee0b8}
+.tx-acts,.bn-tix{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin-top:6px}
+.tx-buy,.tx-got,.tx-cal{display:inline-flex;align-items:center;gap:5px;min-height:38px;padding:0 14px;border-radius:999px;font:700 13.5px var(--body);text-decoration:none;cursor:pointer;border:1px solid transparent}
+.tx-buy{background:linear-gradient(90deg,#ffd38a,#ff7ab8);color:#1d1030;box-shadow:0 2px 0 #6b3f12}
+.tx-buy .ni{width:16px;height:16px}
+.tx-got,.tx-cal{background:transparent;color:var(--ink);border-color:rgba(255,198,107,.45)}
+.tx-got.on{background:rgba(126,224,184,.18);border-color:#7ee0b8;color:#7ee0b8}
+.tx-gotlist{margin-top:10px}
+.tx-gotlist summary{cursor:pointer;font:600 13px var(--body);color:var(--muted);padding:6px 0}
+.tx-fine{margin:8px 0 0;font-size:11.5px;color:var(--muted)}
+.bn-tix{margin:0 10px 8px 46px}
+.bn-tix .tx-buy,.bn-tix .tx-got,.bn-tix .tx-cal{min-height:34px;padding:0 12px;font-size:12.5px}
+.bn-tix.got .tx-pill,.bn-tix.got .tx-buy,.bn-tix.got .tx-cal{display:none}
+.nv-b .bn-tix{margin:8px 0 0}
+.nv-b .bn-tix .tx-got,.nv-b .bn-tix .tx-cal{color:#fff}
+:root:not([data-theme="dark"]) .tx-row{background:rgba(255,255,255,.55)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .tx-row{background:rgba(255,255,255,.06)}}

@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
   push:
     branches: [main]
-    paths: [events.json]
+    paths: [events.json, scripts/firstseen.py]
   schedule: [{ cron: "55 15 * * *" }]   # ~7:55 AM PT, after the daily refresh (backup if the push trigger didn't fire)
 permissions:
   contents: write

@@ -94,6 +94,16 @@ def get(params, tries=4):
             time.sleep(1 + i)
     return None
 
+def first_sale(sales):
+    """The earliest moment anyone could buy (first presale or public on-sale), as YYYY-MM-DD.
+    Ticketmaster has no "announced" date; the first sale window is the closest public signal (announcements
+    usually land the same day or a few days before). Placeholder dates (1900, TBA) are ignored."""
+    ds = [((sales.get("public") or {}).get("startDateTime") or "")]
+    ds += [(p or {}).get("startDateTime") or "" for p in (sales.get("presales") or [])]
+    ds = [d[:10] for d in ds if len(d) >= 10 and d[:4] >= "2015"]
+    return min(ds) if ds else None
+
+
 def fetch_all():
     out, today = [], date.today()
     for seg in SEGMENTS:
@@ -120,6 +130,7 @@ def fetch_all():
                         "max": max((p.get("max") or 0 for p in pr), default=None),
                         "status": (((x.get("dates") or {}).get("status") or {}).get("code") or "").lower(),
                         "onsale": ((x.get("sales") or {}).get("public") or {}).get("startDateTime"),
+                        "sale0": first_sale(x.get("sales") or {}),
                         "venue": v.get("name") or "", "city": (v.get("city") or {}).get("name") or "",
                         "artists": [a.get("name") for a in ((x.get("_embedded") or {}).get("attractions") or []) if a.get("name")],
                         "min": min((p["min"] for p in pr), default=None),
@@ -235,7 +246,8 @@ def add_missing(data, tm, today):
                     "priceAsOf": today_s if lo is not None else None, "priceSrc": "ticketmaster" if lo is not None else None,
                     "priceWas": None, "priceChangedAt": None, "onSaleAt": onsale if onsale > today_s else None, "ages": None,
                     "note": None, "url": t["url"], "status": "announced" if onsale > today_s else "on sale",
-                    "updatedAt": today_s, "src": "tm-auto", "tmId": t["id"], "tmVenue": t["venue"]})
+                    "updatedAt": today_s, "src": "tm-auto", "tmId": t["id"], "tmVenue": t["venue"],
+                    "announcedAt": t.get("sale0")})
         ids.add(eid); tm_ids.add(t["id"]); taken.add((norm(vname), d)); by_date.setdefault(d, []).append(evs[-1])
         per_venue[vname] = per_venue.get(vname, 0) + 1; added += 1
     return added
@@ -267,6 +279,9 @@ def main():
         if not cands:
             continue
         matched += 1
+        sale0 = min((t["sale0"] for t in cands if t.get("sale0")), default=None)
+        if sale0 and (not ev.get("announcedAt") or sale0 < ev["announcedAt"]):
+            ev["announcedAt"] = sale0   # powers "Just announced" (scripts/firstseen.py)
         if any(t["status"] == "cancelled" for t in cands) and all(t["status"] == "cancelled" for t in cands):
             if ev.get("status") != "cancelled":
                 ev["status"] = "cancelled"; cancelled += 1

@@ -29,6 +29,7 @@ addEventListener("submit",ev=>{if(navigator.onLine)return;if(!ev.target.closest(
 function youHTML(){const u=C.user,owner=SH.store.raw("shack-owner")==="1";
   return `<div class="btitle byou-title"><h1 id="bYouH">You</h1><p class="byou-hi">${u?`Hey, <span id="bYouName">${E((window.SHACK_ME&&SHACK_ME()||{}).full||"there")}</span>`:"Make the Shack yours"}</p></div>
     ${u?"":`<p class="bset-p byou-lede">Everything works without an account. Sign in (just your email, free) to sync across devices, get reminders and see friends.</p>`}
+    ${window.SHACK_TIX?SHACK_TIX.sectionHTML():""}
     ${passSec()}
     <section class="byou-sec"><h3>☁ Account &amp; sync</h3>${window.shackCloudHTML?shackCloudHTML():""}</section>
     ${window.SHACK_MUSIC?SHACK_MUSIC.sectionHTML():""}

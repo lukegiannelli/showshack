@@ -65,16 +65,20 @@ function undoToast(msg,fn){setTimeout(()=>{if(window.NIGHT&&NIGHT.toast)NIGHT.to
       off.className="boff on";off.textContent=`📴 You're offline. Showing the shows saved on this phone${m?` (list from ${m})`:""}. Maps, prices and previews need a connection.`;}
     else if(off.classList.contains("on")){off.className="boff on back";off.textContent="✓ Back online";t=setTimeout(()=>{off.className="boff";},2200);}}
   addEventListener("online",net);addEventListener("offline",net);net();})();
-/* ---- recently added: shows venues just put on sale, newest first (fresh.json dates each show the day it first showed up) ---- */
+/* ---- just announced: shows venues just added, newest first. fresh.json "new" = the day each show was announced
+   (Ticketmaster's first sale date, or the day we first saw it with venue backfill filtered out: see scripts/firstseen.py).
+   Older fresh.json files only have "seen" (first listed by the Shack), which over-counts, so it's only a fallback. ---- */
 let FRESH=null;
 fetch("fresh.json?v="+Math.floor(Date.now()/36e5)).then(r=>r.ok?r.json():null).then(j=>{if(j&&j.seen){FRESH=j;if(screen==="home")render();}}).catch(()=>{});
 const isoDay=d=>d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
-function freshWord(d){const t=new Date();t.setHours(0,0,0,0);const [y,m,x]=d.split("-").map(Number),n=Math.round((t-new Date(y,m-1,x))/864e5);
-  return n<=0?"Added today":n===1?"Added yesterday":n<7?"Added "+new Date(y,m-1,x).toLocaleDateString("en-US",{weekday:"short"}):"Added "+new Date(y,m-1,x).toLocaleDateString("en-US",{month:"short",day:"numeric"});}
-function bFreshPicks(up,skip){if(!FRESH)return [];const S=FRESH.seen,base=FRESH.base||"",t=new Date();t.setDate(t.getDate()-14);const since=isoDay(t);
-  const xs=up.filter(e=>!e.added&&S[e.id]&&S[e.id]>base&&S[e.id]>=since&&!skip.has(skey(e))&&!priceInfo(e).sold)
+const freshMap=()=>!FRESH?{}:FRESH.new||Object.fromEntries(Object.entries(FRESH.seen).filter(([,d])=>d>(FRESH.base||"")));
+function freshWord(d){const t=new Date();t.setHours(0,0,0,0);const [y,m,x]=d.split("-").map(Number),n=Math.round((t-new Date(y,m-1,x))/864e5),w=FRESH&&FRESH.new?"Announced":"Added";
+  return n<=0?w+" today":n===1?w+" yesterday":n<7?w+" "+new Date(y,m-1,x).toLocaleDateString("en-US",{weekday:"short"}):w+" "+new Date(y,m-1,x).toLocaleDateString("en-US",{month:"short",day:"numeric"});}
+function bFreshPicks(up,skip){if(!FRESH)return [];const S=freshMap(),t=new Date();t.setDate(t.getDate()-14);const since=isoDay(t);
+  const xs=up.filter(e=>!e.added&&S[e.id]&&S[e.id]>=since&&!skip.has(skey(e))&&!priceInfo(e).sold)
     .sort((a,b)=>S[b.id].localeCompare(S[a.id])||(state.stars.has(skey(b))-state.stars.has(skey(a)))||((a._drive?.mins??999)-(b._drive?.mins??999))||a.start.localeCompare(b.start));
-  const per={},out=[];for(const e of xs){const v=venueKey(e);if((per[v]=(per[v]||0)+1)>2)continue;out.push(e);if(out.length>=10)break;}   // max 2 per venue so one big drop doesn't fill the row
+  const per={},runs=new Set(),out=[];for(const e of xs){const v=venueKey(e),r=v+"|"+String(e.title||"").toLowerCase();
+    if(runs.has(r)||(per[v]=(per[v]||0)+1)>2)continue;runs.add(r);out.push(e);if(out.length>=10)break;}   // one card per multi-night run, max 2 per venue so one big drop doesn't fill the row
   return out;}
 
 /* ---- flip cards: real event cards in a row; tap flips to the details right there ---- */
@@ -284,9 +288,9 @@ function after(){
     const fr=bFreshPicks(up,new Set(wp?wp.picks.slice(0,5).map(p=>skey(p.e)):[]));
     const fsig=fr.map(skey).join("|")+(origin?"o":"");
     $("bFreshBox").hidden=!fr.length;
-    if(FRESH&&fsig!==$("bFresh").dataset.sig){$("bFresh").dataset.sig=fsig;   // FRESH (fresh.json) can arrive after the show list
-      $("bFresh").innerHTML=fr.map(e=>flipCardHtml(e,`<i style="--vc:#7ee0b8"></i>${freshWord(FRESH.seen[e.id])}`)).join("");
-      const wa=isoDay(new Date(Date.now()-6*864e5)),wk=up.filter(e=>!e.added&&FRESH.seen[e.id]>(FRESH.base||"")&&FRESH.seen[e.id]>=wa).length;$("bFreshN").textContent=wk?wk+" new this week":"";}
+    if(FRESH&&fsig!==$("bFresh").dataset.sig){$("bFresh").dataset.sig=fsig;const S=freshMap();   // FRESH (fresh.json) can arrive after the show list
+      $("bFresh").innerHTML=fr.map(e=>flipCardHtml(e,`<i style="--vc:#7ee0b8"></i>${freshWord(S[e.id])}`)).join("");
+      const wa=isoDay(new Date(Date.now()-6*864e5)),wk=up.filter(e=>!e.added&&S[e.id]>=wa).length;$("bFreshN").textContent=wk?wk+" this week":"";}
     trust();
     if(window.SPOTS)SPOTS.home();
   }
@@ -323,7 +327,7 @@ function trust(){const m=window.SHACK_META||{},el=$("bInfo");if(!el||!state.even
 /* ---- What's new: a one-time sheet (again from Settings) with a "Show me" for each thing ---- */
 const WN_VER="2026-11";
 const WHATSNEW=[["🍜","Space ramen","Pull the disco ball down. Four swipes serve a random food spot and afters.",()=>{goHome();setTimeout(()=>$("disco").scrollIntoView({behavior:"smooth",block:"center"}),250);}],
-  ["🆕","New rows on Home","Recently added, Price dropped, Because you're into, and your going-out streak.",()=>{goHome();setTimeout(()=>{const t=[$("bBecBox"),$("bDropBox"),$("bFreshBox")].find(x=>x&&!x.hidden);if(t)t.scrollIntoView({behavior:"smooth",block:"start"});},250);}],
+  ["🆕","New rows on Home","Just announced, Price dropped, Because you're into, and your going-out streak.",()=>{goHome();setTimeout(()=>{const t=[$("bBecBox"),$("bDropBox"),$("bFreshBox")].find(x=>x&&!x.hidden);if(t)t.scrollIntoView({behavior:"smooth",block:"start"});},250);}],
   ["🌙","Your nights, saved","Every plan you build is kept in Saved. Do a past night again with one tap.",()=>{const t=document.querySelector('#bTabs [data-tab="saved"]');if(t)t.click();}],
   ["⏱","Smarter planning","Drag stops to reorder, Tighten the night, the forecast, and drive vs rideshare home.",()=>{const t=document.querySelector('#bTabs [data-tab="budget"]');if(t)t.click();setTimeout(()=>{const n=$("bNight");if(n)n.scrollIntoView({behavior:"smooth",block:"start"});},200);}],
   ["🎟️","Show passport","Your stamps and badges live together on the You tab. Tap a stamp to log past shows, and compare with a friend.",()=>{if(window.SHACK_YOU)SHACK_YOU.open("pass");}],
@@ -865,19 +869,19 @@ async function yearImage(ns,top){try{const W=1080,H=1350,c=document.createElemen
   const bg=g.createLinearGradient(0,0,0,H);bg.addColorStop(0,"#160a2e");bg.addColorStop(.6,"#2a1650");bg.addColorStop(1,"#5a2a5e");g.fillStyle=bg;g.fillRect(0,0,W,H);
   for(let i=0;i<160;i++){g.fillStyle=`rgba(255,255,255,${Math.random()*.6})`;g.beginPath();g.arc(Math.random()*W,Math.random()*H*.8,Math.random()*2.2,0,6.283);g.fill();}
   const yr=new Date().getFullYear(),glow=(col,b)=>{g.shadowColor=col;g.shadowBlur=b;};
-  g.textAlign="center";glow("#ff6fe0",30);g.fillStyle="#fff";g.font="900 92px 'Big Shoulders Display',Impact,sans-serif";g.fillText(`MY ${yr} IN SHOWS`,W/2,170);
+  g.textAlign="center";glow("#ff6fe0",30);g.fillStyle="#fff";g.font="78px Shrikhand,'Cooper Black',serif";g.fillText(`My ${yr} in shows`,W/2,170);
   g.shadowBlur=0;g.fillStyle="#bfeaff";g.font="600 34px 'JetBrains Mono',monospace";g.fillText("🛖 THE SHOW SHACK · SHOW PASSPORT",W/2,230);
   const stats=[[ns,"shows"],[BEEN.size,"venues"],[(PASS&&PASS.regs||[]).filter(x=>x[1]).length,"regions"],[(PASS&&PASS.bdg||[]).filter(b=>b.on).length,"badges"]];
-  stats.forEach(([v,l],i)=>{const x=W/8+i*W/4,col=VIBES[i%4].c;glow(col,24);g.fillStyle=col;g.font="900 120px 'Big Shoulders Display',Impact,sans-serif";g.fillText(String(v),x,410);g.shadowBlur=0;g.fillStyle="#e4dcf5";g.font="600 32px 'Instrument Sans',sans-serif";g.fillText(l,x,460);});
+  stats.forEach(([v,l],i)=>{const x=W/8+i*W/4,col=VIBES[i%4].c;glow(col,24);g.fillStyle=col;g.font="800 110px 'Bricolage Grotesque',Impact,sans-serif";g.fillText(String(v),x,410);g.shadowBlur=0;g.fillStyle="#e4dcf5";g.font="600 32px 'Bricolage Grotesque',sans-serif";g.fillText(l,x,460);});
   const been=[...BEEN].slice(0,12);been.forEach((k,i)=>{const cx=150+(i%6)*156,cy=600+Math.floor(i/6)*170,col=VIBES[i%4].c,v={name:k.split(" · ")[0],city:k.split(" · ")[1]||""};
     g.save();g.translate(cx,cy);g.rotate(((i*37%30)-15)*Math.PI/180);glow(col,18);g.strokeStyle=col;g.lineWidth=5;g.setLineDash([12,8]);g.beginPath();g.arc(0,0,64,0,6.283);g.stroke();g.setLineDash([]);
     g.shadowBlur=0;g.fillStyle=col;g.font="800 40px 'JetBrains Mono',monospace";g.fillText(initials(v),0,8);g.font="700 20px 'JetBrains Mono',monospace";g.fillText(RABBR[regionOfK(k)]||"",0,40);g.restore();});
   const shows=[...BEEN].flatMap(k=>pastShows(k).map(x=>({...x,v:k.split(" · ")[0]}))).filter(x=>x.d.startsWith(String(yr))).sort((a,b)=>b.d.localeCompare(a.d)).slice(0,4);
   g.textAlign="left";let y=been.length?600+Math.ceil(been.length/6)*170+20:600;
-  if(shows.length){g.fillStyle="#FFC66B";g.font="800 38px 'Big Shoulders Display',Impact,sans-serif";g.fillText("LATELY",90,y);y+=56;
+  if(shows.length){g.fillStyle="#FFC66B";g.font="40px Shrikhand,'Cooper Black',serif";g.fillText("Lately",90,y);y+=56;
     // only as many as fit above the web address at the bottom (two rows of stamps leave room for three)
-    shows.slice(0,Math.max(1,Math.floor((H-144-y)/84)+1)).forEach(x=>{g.fillStyle="#fff";g.font="600 34px 'Instrument Sans',sans-serif";g.fillText(x.t.slice(0,34),90,y);g.fillStyle="#cfc6e8";g.font="500 26px 'JetBrains Mono',monospace";g.fillText(x.v.slice(0,40),90,y+34);y+=84;});}
-  else if(top){g.fillStyle="#fff";g.font="600 38px 'Instrument Sans',sans-serif";g.fillText(`Most stamps in ${top[0]} (${top[1]})`,90,y);}
+    shows.slice(0,Math.max(1,Math.floor((H-144-y)/84)+1)).forEach(x=>{g.fillStyle="#fff";g.font="600 34px 'Bricolage Grotesque',sans-serif";g.fillText(x.t.slice(0,34),90,y);g.fillStyle="#cfc6e8";g.font="500 26px 'JetBrains Mono',monospace";g.fillText(x.v.slice(0,40),90,y+34);y+=84;});}
+  else if(top){g.fillStyle="#fff";g.font="600 38px 'Bricolage Grotesque',sans-serif";g.fillText(`Most stamps in ${top[0]} (${top[1]})`,90,y);}
   g.textAlign="center";g.fillStyle="#bfeaff";g.font="600 28px 'JetBrains Mono',monospace";g.fillText(APP_URL.replace(/^https?:\/\//,""),W/2,H-50);
   const blob=await new Promise(r=>c.toBlob(r,"image/png"));return blob?new File([blob],`my-${yr}-in-shows.png`,{type:"image/png"}):null;}catch(e){return null;}}
 /* ---- compare passports: your stamps travel inside a link (#pp=…), nothing is uploaded ---- */
