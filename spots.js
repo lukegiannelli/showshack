@@ -5,7 +5,7 @@
 if(!window.UI_B||!window.NIGHT||!window.BUI)return;
 const $=id=>document.getElementById(id), N=window.NIGHT;
 const KINDS={
-  food:{name:"Food & late eats",c:"#FF8A5C",title:"Food",blurb:"Eat before or after the show: seafood boils, hot pot, dim sum, Korean BBQ, ramen, Thai, tacos, pizza, dessert, food halls, 24-hour diners and tasting menus.",
+  food:{name:"Food & late eats",c:"#FF8A5C",title:"Food",blurb:"Eat before or after the show: seafood boils, hot pot, dim sum, Korean BBQ, ramen, sushi, Thai, tacos, burgers, pizza, dessert, food halls, 24-hour diners and tasting menus.",
     icon:'<path d="M4 11h16a8 8 0 0 1-16 0Z"/><path d="M8 7c0-1.5 1-1.5 1-3M12 7c0-1.5 1-1.5 1-3M16 7c0-1.5 1-1.5 1-3"/>'},
   after:{name:"Afters & late night",c:"#B48CFF",title:"Afters",blurb:"Where the night goes after the show, including hotel bars and rooftops anyone can walk into.",
     icon:'<path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5Z"/><path d="M17 3v4M15 5h4"/>'}};

@@ -51,6 +51,33 @@ The "Ticketmaster prices" GitHub Action also adds shows we're missing at venues 
 - If the venue's own calendar doesn't have a `tm-auto` show (and the date is within the next 60 days), it may be a
   private or rental event. Leave it, but mention it in your note so Luke can check.
 
+## Groupon comedy deals (Sundays only, about 10 tool calls)
+
+`groupon.json` holds Groupon deals for the comedy clubs we list. The app shows one under the price of that venue's
+comedy shows ("💸 Groupon: 2 GA tickets $24"), but only while `chk` is within 14 days and `until` hasn't passed. So
+every Sunday:
+
+1. Comedy clubs to check: the venues with the most upcoming `kind: "comedy"` shows (the Improvs in Irvine, Brea,
+   Ontario, Corona and Hollywood, The Ice House, Laugh Factory, The Comedy Store, Comedy & Magic Club, The American
+   Comedy Co., and any other comedy club we list). Skip theaters, arenas and casinos.
+2. WebSearch `groupon <venue name> <city>`. Only use a `groupon.com/deals/...` page that is clearly for **that exact
+   venue and location** (Groupon has Improvs in many states). Open it with WebFetch.
+3. If the page shows a live, buyable deal, write
+   `"<venue exactly as in events.json>": {"t": "2 GA tickets", "p": 24, "v": 50, "u": "<deal page>", "until": "YYYY-MM-DD" or null, "chk": "<today>", "fine": "Wed–Sun regular shows; 2-drink min; 21+"}`
+   with `p` = the cheapest option's Groupon price for what `t` says, and `v` = its listed value. Copy the numbers from
+   the page; never estimate them.
+4. If a venue's deal is gone, sold out or expired, delete its entry. If you can't load the page today, leave the entry
+   alone (it hides itself after 14 days).
+5. Set `"checked"` to today. Keep the file small and valid JSON (`json.dumps(data, ensure_ascii=False, indent=1)`), and
+   add it to the same "Daily refresh" commit. Mention it in the message, e.g. "Groupon: 3 comedy deals".
+
+## Food spots from OpenStreetMap (every run, no extra tool calls)
+
+The "Food near busy venues" workflow adds independent food spots near the busiest venues each Monday. They carry
+`"src": "osm"`. If one of the venue agents happens to see that a `src: "osm"` spot has closed or is actually a
+chain, set `"gone": 1` on it (don't delete it, so the weekly job doesn't add it back). Hours come from the Google
+Places job; don't type hours in for these.
+
 ## Food & afters deals (Sundays and Wednesdays only, about 15 tool calls)
 
 `afters.json` holds the food and afters spots. A spot can have a `deal`:
