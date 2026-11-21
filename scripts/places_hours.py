@@ -136,7 +136,7 @@ def main():
     except Exception as e:
         print("Stopped on error:", repr(e)[:300])
     for f in FILES:
-        with open(f, "w") as fh: fh.write(json.dumps(data[f], ensure_ascii=False, indent=0) + "\n")
+        with open(f, "w") as fh: fh.write(json.dumps(data[f], ensure_ascii=False, indent=0))   # same layout the morning refresh writes (no final newline)
     print(f"Updated {done}. Month total now: {b['details']} details, {b['search']} searches.")
 
 if __name__ == "__main__":

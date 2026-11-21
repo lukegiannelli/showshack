@@ -1,0 +1,29 @@
+name: Food near busy venues
+# Weekly: makes sure the 25 venues with the most upcoming shows each have ~3 independent food spots within a short walk
+# (OpenStreetMap, free, no key; chains skipped). New spots get real hours from the "Hours from Google Places" job,
+# which checks never-checked spots first. See scripts/food_near_venues.py.
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "41 10 * * 1"   # Mondays ~2:41 AM PT, before the hours job (11:17 UTC) and the morning refresh
+permissions:
+  contents: write
+concurrency: { group: afters-json, cancel-in-progress: false }
+jobs:
+  food:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - run: |
+          git config user.name "show-shack-bot"
+          git config user.email "show-shack-bot@users.noreply.github.com"
+          for i in 1 2 3 4; do
+            git fetch -q origin main && git reset -q --hard origin/main
+            python3 scripts/food_near_venues.py | tee /tmp/food.log
+            git diff --quiet afters.json && { echo "Nothing to add."; exit 0; }
+            n=$(grep -c '^  + ' /tmp/food.log || true)
+            git add afters.json && git commit -q -m "Food near busy venues: +$n local spots (OpenStreetMap)" && git push origin HEAD:main && exit 0
+            sleep 15
+          done
+          exit 1

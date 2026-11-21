@@ -139,6 +139,13 @@ function cardNote(e){return String(e.note||"").replace(APPROX_RE," ").replace(ST
 // and ~35% on Ticketmaster/AXS. Other sellers (Gametime, TickPick, Eventbrite...) show all-in prices under the FTC rule (May 2025).
 const FEE_TM=1.3;
 function allIn(e,n){return n==null?n:e.priceSrc==="ticketmaster"?Math.round(n*FEE_TM):n;}
+// Groupon deals for comedy clubs (groupon.json, filled on Sundays by the morning refresh; see scripts/refresh-extra.md).
+// Shown only on that venue's comedy shows, only while fresh (checked in the last 14 days and not past its end date).
+let GROUPON={};
+fetch("groupon.json?v="+Math.floor(Date.now()/36e5)).then(r=>r.ok?r.json():null).then(j=>{if(j&&j.venues&&Object.keys(j.venues).length){GROUPON=j.venues;if(state.loaded)render();}}).catch(()=>{});
+function grouponOf(e){const g=GROUPON[e.venue];if(!g||e.kind!=="comedy"||!safeUrl(g.u||""))return null;
+  const t=new Date(),iso=d=>d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0"),today=iso(t),old=iso(new Date(t-14*864e5));
+  if((g.until&&(g.until<today||(e.start&&e.start>g.until)))||!g.chk||g.chk<old)return null;return g;}
 function priceInfo(e){
   if(e.status==="cancelled") return {sold:true,cancel:true};
   if(e.status==="sold out") return {sold:true};
@@ -529,6 +536,8 @@ function cardHtml(e){
     else if(pi.hi!=null&&Math.round(pi.hi)>Math.round(pi.lo)) priceHtml=`<span class="price">${$r(pi.lo)}–${$r(pi.hi)}</span><span class="pn">${e.priceSrc==="ticketmaster"?`≈ ${$r(allIn(e,pi.lo))}–${$r(allIn(e,pi.hi))} with fees`:"cheapest seats listed"}</span>`;
     else priceHtml=`<span class="price">From ${$r(pi.lo)}</span><span class="pn">${e.priceSrc==="ticketmaster"?`≈ ${$r(allIn(e,pi.lo))} with fees`:"cheapest seat"}</span>`;
     if(!pi.est&&!pi.sold&&!pi.free&&!pi.none&&e.priceAsOf) priceHtml=priceHtml.replace(/<\/span>$/,` · checked ${fmtShort(e.priceAsOf)}${priceStale(e)?' · <em class="pstale">may have changed</em>':""}</span>`);
+    const gd=pi.sold?null:grouponOf(e);
+    if(gd)priceHtml+=`<a class="gdeal" href="${esc(safeUrl(gd.u))}" target="_blank" rel="noopener" title="${esc(gd.fine||"Check the fine print before you buy")}">💸 Groupon: ${esc(gd.t||"deal")}${gd.p!=null?" $"+Math.round(gd.p):""} ↗</a>`;
     const nc=nightCost(e,pi), lb=leaveBy(e);
     const nightHtml = `<div class="flipbar"><button type="button" class="nightbtn" data-flip="1">🌙 Night out <b>≈ $${nc.n>1?nc.each+" each":nc.total}${nc.partial?"+":""}</b></button></div>`;
     const leaveHtml = lb ? `<span class="leave">Leave by ${lb}</span>` : "";
