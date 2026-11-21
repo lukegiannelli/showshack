@@ -3,6 +3,32 @@
 The daily refresh routine reads this file and follows it after its main show update. Edit this file to change the extra
 jobs; the routine itself doesn't need to change.
 
+## Runs unattended: never wait on a person (every run)
+
+Nobody is watching this run, so anything that asks for approval is effectively a "no". `.claude/settings.json` in
+the repo pre-approves WebFetch and WebSearch so venue sites load without prompts.
+
+- If a fetch is still refused or blocked, don't keep retrying it and don't swap in a weaker source to fill the gap.
+  Leave that venue's `lastChecked` alone (so tomorrow's run picks it up first) and put "fetch blocked" in its `how`.
+- Tell the subagents the same: a refused fetch means skip the venue, and report it in `how`.
+- In the FINISH line, give how many venues were really read vs. blocked, e.g. "47 read, 3 blocked".
+
+## Accuracy rules (every run)
+
+- **Official first.** The venue's or promoter's own page, then the ticket seller's event page. Aggregators
+  (Songkick, americanarenas, gametime venue lists) are fine for *finding* a show, but confirm the date/time on an
+  official or ticket-seller page before adding it. If you can't confirm, don't add it: list it in the note instead.
+- **Two sources disagree:** the official page wins. Never "fix" an existing show (date, title, venue) from one
+  aggregator alone. Put it in the note for Luke.
+- **On-sale dates.** When a venue or ticket page shows a future on-sale or presale date, set `status` "announced",
+  `onSaleAt` to the public on-sale day and `presaleAt` to the first presale day (YYYY-MM-DD, Pacific). These power
+  the Tickets hub, the "On sale Sat" pills and the 9 AM "on sale today" phone ping. Once the date has passed and
+  tickets are buyable, `status` "on sale" (keep `onSaleAt`).
+- **Prices.** Write the number the seller shows. Ticketmaster prices come from the GitHub Action as face value and
+  the app adds an estimated ~30% for fees on its own, so never add fees yourself and never overwrite a
+  `priceSrc` "ticketmaster" price with a fee-inclusive one from another site unless it's lower.
+- **Don't guess.** No invented times, prices or coordinates. "Time TBA" and `null` are correct answers.
+
 ## Keep "Listing checked" honest (every run, no extra tool calls)
 
 Every show card says "✓ Listing checked <date>" from the show's `updatedAt`, and shows an amber

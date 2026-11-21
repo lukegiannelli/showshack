@@ -48,8 +48,10 @@ function items(){const t=today(),seen=new Set(),out=[];
 
 const gotBtn=(k,on,label)=>`<button type="button" class="tx-got${on?" on":""}" data-tixgot="${esc(k)}" aria-pressed="${on}">${on?"✓ Got tickets":label||"Got 'em?"}</button>`;
 const buyBtn=(k,url,label)=>url?`<a class="tx-buy" href="${esc(url)}" target="_blank" rel="noopener" data-tixbuy="${esc(k)}">${ni("ticket")} ${label||"Buy tickets"} ↗</a>`:"";
-function rowHTML(it){const pr=it.price&&!it.price.sold&&it.price.lo!=null&&!it.price.free?`${it.price.est?"≈ ":"from "}$${Math.round(it.price.lo)}`:"";
-  const when=it.st==="soon"?`<span class="tx-pill soon">On sale ${esc(fmtDay(it.on))}</span>`:it.st==="sold"?`<span class="tx-pill sold">Sold out</span>`
+function rowHTML(it){const p=it.price,fee=it.e&&it.e.priceSrc==="ticketmaster";
+  const pr=p&&!p.sold&&p.lo!=null&&!p.free?(p.est?"≈ $"+Math.round(p.lo)+" typical":fee?"≈ $"+allIn(it.e,p.lo)+" w/ fees":"from $"+Math.round(p.lo)):"";
+  const pre=it.e&&it.e.presaleAt&&it.e.presaleAt>=today()?`<span class="tx-pill soon">Presale ${esc(fmtDay(it.e.presaleAt))}</span>`:"";
+  const when=it.st==="soon"?pre+`<span class="tx-pill soon">On sale ${esc(fmtDay(it.on))}</span>`:it.st==="sold"?`<span class="tx-pill sold">Sold out</span>`
     :it.st==="cancel"?`<span class="tx-pill sold">Cancelled</span>`:it.st==="got"?`<span class="tx-pill got">You're set</span>`:`<span class="tx-pill buy">On sale now</span>`;
   const acts=it.st==="buy"?buyBtn(it.key,it.url)+gotBtn(it.key,false)
     :it.st==="soon"?`<button type="button" class="tx-cal" data-tixcal="${esc(it.key)}">⏰ Remind me</button>`+buyBtn(it.key,it.url,"Ticket page")
@@ -65,7 +67,7 @@ function sectionHTML(){const xs=items(),need=xs.filter(x=>x.st==="buy"),soon=xs.
   return `<section class="byou-sec tx-sec" id="bTix"><h3>🎟 Your tickets</h3>${lede}
     ${need.length||soon.length||rest.length?`<ul class="tx-list">${[...need,...soon,...rest].slice(0,12).map(rowHTML).join("")}</ul>`:""}
     ${got.length?`<details class="tx-gotlist"><summary>Got tickets (${got.length})</summary><ul class="tx-list">${got.map(rowHTML).join("")}</ul></details>`:""}
-    ${xs.length?`<p class="tx-fine">Prices are face value before fees. "Got tickets" lives on this phone (and syncs if you're signed in).</p>`:""}</section>`;}
+    ${xs.length?`<p class="tx-fine">Ticketmaster prices include an estimated ~30% in fees; other sellers' prices are all-in. "Got tickets" lives on this phone (and syncs if you're signed in).</p>`:""}</section>`;}
 function redraw(){const el=document.getElementById("bTix");if(el)el.outerHTML=sectionHTML();}
 // flip every "Got 'em" button for this show in place, wherever it's showing (You page, night builder, Night Card)
 function sync(k){document.querySelectorAll("[data-tixgot]").forEach(b=>{if(b.dataset.tixgot!==k)return;const on=has(k);b.classList.toggle("on",on);b.setAttribute("aria-pressed",String(on));b.textContent=on?"✓ Got tickets":"Got 'em?";
@@ -107,5 +109,20 @@ document.addEventListener("visibilitychange",()=>{if(document.hidden||!pending)r
   if(Date.now()-p.at<4000||has(p.k)||!(window.NIGHT&&NIGHT.toast))return;   // bounced right back: they didn't buy anything
   setTimeout(()=>NIGHT.toast(`Get tickets for <b>${esc(p.title.slice(0,60))}</b>?`,"✓ Got 'em",()=>set(p.k,true),9000),400);});
 
-window.SHACK_TIX={has,set,items,sectionHTML,stopHTML,stopKey,redraw};
+// a dot on the You tab when a show you care about just went on sale (last 3 days) or has a presale/on-sale today.
+// Opening You clears it until something new opens.
+const SEENK="shack-tix-seen";
+function alerts(){const t=today(),d3=day(new Date(Date.now()-3*864e5));
+  return items().filter(it=>it.e&&((it.st==="buy"&&it.e.onSaleAt&&it.e.onSaleAt>=d3&&it.e.onSaleAt<=t)||(it.st!=="got"&&(it.e.presaleAt===t||it.e.onSaleAt===t))))
+    .map(it=>it.key+"|"+(it.e.presaleAt===t?"pre":it.e.onSaleAt));}
+function dot(){const b=document.getElementById("bYouTab");if(!b)return;let seen=[];try{seen=SH.store.get(SEENK,[])||[];}catch(e){}
+  const n=alerts().filter(x=>!seen.includes(x)).length;b.classList.toggle("bdot",n>0);
+  if(n)b.setAttribute("aria-label",`You: ${n} show${n>1?"s":""} on sale`);else b.removeAttribute("aria-label");}
+function clearDot(){const a=alerts();try{SH.store.set(SEENK,a.slice(-60));}catch(e){}dot();}
+document.addEventListener("click",ev=>{if(ev.target.closest("#bYouTab"))setTimeout(clearDot,300);},true);
+addEventListener("shack:store",ev=>{const k=ev.detail&&ev.detail.key;if(k==="radar-stars"||k===KEY||k==="shack-nights"){clearTimeout(dot.t);dot.t=setTimeout(dot,800);}});
+[2500,7000].forEach(ms=>setTimeout(dot,ms));   // after the show list (and any cloud sync) has landed
+document.addEventListener("visibilitychange",()=>{if(!document.hidden)setTimeout(dot,500);});
+
+window.SHACK_TIX={has,set,items,sectionHTML,stopHTML,stopKey,redraw,dot};
 })();

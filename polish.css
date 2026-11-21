@@ -109,9 +109,10 @@ html.ui-b .tr .starbtn::before{width:22px;height:22px}
 
 /* ===== Type system: Shrikhand headers, Bricolage Grotesque for everything else =====
    Shrikhand is one weight (400) and built for mixed case, so headers drop the uppercase + tracking (and faux-bold).
-   Bricolage's width axis stands in for the old condensed numerals (dates, totals). */
+   Bricolage's width axis stands in for the old condensed numerals (dates, totals).
+   Space Mono (70s geometric, real 400 + 700) carries labels and prices. */
 :root{--head:"Shrikhand","Cooper Black",Georgia,serif;--body:"Bricolage Grotesque",system-ui,-apple-system,"Segoe UI",sans-serif;
-  --display:"Bricolage Grotesque","Arial Narrow",sans-serif}
+  --display:"Bricolage Grotesque","Arial Narrow",sans-serif;--mono:"Space Mono",ui-monospace,Menlo,Consolas,monospace}
 body{font-optical-sizing:auto}
 header h1,.shack-title,.month,.add-form h2,.surprise b,.ins h2,.vhead h2,.sheethead h2,.wkhead b,.wkdone b,.pool .ph,.bsec,
 .binfo h2,.nv-title,.bn-h h2,.ui-b .bhello h2,.ui-b .bbudget-h h1,.ui-b .btitle h1,.ui-b .byou-page .byou-sec>h3,#sheetTitle{
@@ -165,3 +166,19 @@ header h1.shack-title{font-size:clamp(30px,8.6vw,48px);line-height:1.02}
 .nv-b .bn-tix .tx-got,.nv-b .bn-tix .tx-cal{color:#fff}
 :root:not([data-theme="dark"]) .tx-row{background:rgba(255,255,255,.55)}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .tx-row{background:rgba(255,255,255,.06)}}
+
+/* Space Mono sets larger than JetBrains Mono did at the same size: pull the tight spots back in */
+.sides{font-size:12px}
+.sides .na{letter-spacing:-.02em}
+.blbl{letter-spacing:.04em!important;font-size:10.5px!important}
+.bpicks-h{gap:10px}
+.bpicks-h .blbl{text-align:right;flex:0 1 auto;min-width:0}
+
+/* One hero per screen: "What's the vibe?" keeps the rainbow. The wordmark on the (already loud) header art goes
+   solid cream with its dark outline, so the two don't fight. */
+header h1.shack-title{background:none!important;color:#FFF1D6!important;-webkit-text-fill-color:#FFF1D6!important;
+  text-shadow:0 0 18px rgba(255,111,165,.45)}
+/* inside the Plan screen, "Plan your night" is the hero; the night card's own title stays warm, not rainbow */
+.bn-h h2{background:none!important;color:#FFC66B!important;-webkit-text-fill-color:#FFC66B!important}
+/* the ticket rows only glow when there's something to buy */
+.tx-row.tx-s-buy{box-shadow:none}

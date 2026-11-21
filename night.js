@@ -176,7 +176,7 @@ function addStop(st,quiet){if(plan.s.length>=MAXS){toast("A night tops out at "+
 const allEv=()=>[...((typeof state!=="undefined"&&state.events)||[]),...((typeof state!=="undefined"&&state.picks)||[]).map(p=>({...p,added:true}))];
 const evById=h=>allEv().find(e=>hid(e)===h);
 function showStop(e,quiet){const st={k:"show",n:e.title,p:[e.venue,e.city].filter(Boolean).join(", "),tm:parseTime(e.time),u:e.url,la:e.lat,lo:e.lon};
-  try{const pi=priceInfo(e);if(pi.free)st.c=0;else if(!pi.sold&&!pi.none&&pi.lo)st.c=Math.round(pi.lo);}catch(_){}
+  try{const pi=priceInfo(e);if(pi.free)st.c=0;else if(!pi.sold&&!pi.none&&pi.lo)st.c=Math.round(typeof allIn==="function"?allIn(e,pi.lo):pi.lo);}catch(_){}
   if(e.start)st.sd=e.start<todayISO()?todayISO():String(e.start).slice(0,10);return st;}
 function afterStop(p){return {cl:typeof p.til==="number"?p.til:undefined,k:grp(p)==="food"?"eat":"after",n:p.n,p:[p.a,p.city].filter(Boolean).join(", "),la:p.lat,lo:p.lon,no:"Hours: "+hrs(p)};}
 const todayISO=()=>{const d=new Date();return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");};

@@ -3,6 +3,8 @@
 // notification the day before a show they're interested in (★), and when a show they're interested in drops in price.
 // Also "Just announced": when a show first appears (fresh.json) by an artist you listen to (follow_artists, from Match my
 // music, plus names you typed) or at a venue you follow (radar-prefs pinV), one bundled ping for the day.
+// Also "On sale today": a show you starred whose presale or public on-sale opens today (presaleAt / onSaleAt), unless you
+// already marked it "Got tickets" (shack-tix). The daily run is 9 AM Pacific, an hour before most on-sales open.
 // Also: a signed-in person can call it with {test:true} to get a test notification on their own devices.
 // Each reminder is sent once (push_log). Dead subscriptions (the phone unsubscribed) are cleaned up.
 import { createClient } from "npm:@supabase/supabase-js@2.45.4";
@@ -79,6 +81,7 @@ Deno.serve(async (req) => {
   const plan: { user: string; key: string; subs: Sub[]; msg: Msg }[] = [];
   for (const p of pp || []) {
     const stars: string[] = p.data?.k?.["radar-stars"]?.v || [];
+    const got: Record<string, string> = p.data?.k?.["shack-tix"]?.v || {};
     const mine = subs.filter((s) => s.user_id === p.user_id);
     for (const k of stars) {
       const e = byKey.get(k); if (!e) continue;
@@ -86,6 +89,11 @@ Deno.serve(async (req) => {
       if (e.start === tomorrow) {
         const to = mine.filter((s) => s.remind_day_before);
         if (to.length) plan.push({ user: p.user_id, key: `tmrw:${k}:${e.start}`, subs: to, msg: { title: "Tomorrow: " + e.title, body: [e.time, where].filter(Boolean).join(" · "), url: APP + "#" + hid(e.id) } });
+      }
+      const sale = e.presaleAt === today ? "Presale" : e.onSaleAt === today ? "On sale" : "";
+      if (sale && !got[k] && e.start >= today && e.status !== "cancelled" && e.status !== "sold out") {
+        const to = mine.filter((s) => s.remind_day_before || s.price_drops);
+        if (to.length) plan.push({ user: p.user_id, key: `sale:${k}:${today}`, subs: to, msg: { title: `🎟 ${sale} today: ` + e.title, body: [fmtDay(e.start), where, "Usually opens at 10 AM"].filter(Boolean).join(" · "), url: APP + "#" + hid(e.id) } });
       }
       if (e.priceChangedAt === today && e.priceWas > e.priceFrom && e.start >= today) {
         const to = mine.filter((s) => s.price_drops);
@@ -96,14 +104,16 @@ Deno.serve(async (req) => {
   const { data: log } = await db.from("push_log").select("user_id,key").in("user_id", users);
   const done = new Set((log || []).map((r: any) => r.user_id + "|" + r.key));
 
-  // "Just announced": shows first seen today or yesterday (the morning refresh lands before this runs), by an artist you
-  // listen to or at a venue you follow. One ping per person per day, listing up to 3; every show is only ever announced once.
+  // "Just announced": shows announced in the last few days (fresh.json "new": real announce dates with venue backfill
+  // filtered out; older files only have "seen", the day the Shack first listed it), by an artist you listen to or at a
+  // venue you follow. One ping per person per day, listing up to 3; every show is only ever announced once.
   const bundles: { user: string; keys: string[]; subs: Sub[]; msg: Msg }[] = [];
   try {
     const fresh = await (await fetch(APP + "fresh.json", { cache: "no-store" })).json();
-    const seen: Record<string, string> = fresh?.seen || {};
-    const yday = laDay(new Date(Date.now() - 864e5));
-    const newEvs = evs.filter((e) => (seen[e.id] === today || seen[e.id] === yday) && e.start && e.start >= today && fresh.base !== seen[e.id]);
+    const seen: Record<string, string> = fresh?.new || fresh?.seen || {};
+    // announce dates can be a few days old by the time the Ticketmaster pass reads them; push_log keeps it to one ping per show
+    const since = laDay(new Date(Date.now() - (fresh.new ? 3 : 1) * 864e5));
+    const newEvs = evs.filter((e) => seen[e.id] && seen[e.id] >= since && seen[e.id] <= today && e.start && e.start >= today && (fresh.new || fresh.base !== seen[e.id]));
     if (newEvs.length) {
       const { data: fa } = await db.from("follow_artists").select("user_id,names").in("user_id", users);
       const artistsOf = new Map((fa || []).map((r: any) => [r.user_id, r.names || []]));
@@ -116,9 +126,10 @@ Deno.serve(async (req) => {
         const pins = new Set<string>(p.data?.k?.["radar-prefs"]?.v?.pinV || []);
         if (!names.length && !pins.size) continue;
         const hit = matcher(names);
-        const found: { e: any; why: string }[] = [];
+        const found: { e: any; why: string }[] = [], dup: string[] = [];
         for (const e of newEvs) {
           if (done.has(p.user_id + "|new:" + e.id)) continue;
+          if (found.some((x) => x.e.venue === e.venue && N(x.e.title) === N(e.title))) { dup.push("new:" + e.id); continue; }   // one line per multi-night run (logged so it never pings later)
           const a = hit(e);
           if (a) found.push({ e, why: a });
           else if (pins.has((e.venue || "") + " · " + (e.city || ""))) found.push({ e, why: e.venue });
@@ -129,7 +140,7 @@ Deno.serve(async (req) => {
         const msg = found.length === 1
           ? { title: "Just announced: " + f.title, body: [fmtDay(f.start), f.time, where].filter(Boolean).join(" · "), url: APP + "#" + hid(f.id) }
           : { title: `${found.length} new shows for you`, body: found.slice(0, 3).map((x) => `${x.e.title} (${fmtDay(x.e.start)})`).join(" · ") + (found.length > 3 ? ` +${found.length - 3} more` : ""), url: APP };
-        bundles.push({ user: p.user_id, keys: found.map((x) => "new:" + x.e.id), subs: to, msg });
+        bundles.push({ user: p.user_id, keys: [...found.map((x) => "new:" + x.e.id), ...dup], subs: to, msg });
       }
     }
   } catch (_) { /* fresh.json or follow_artists not there yet: skip just-announced today */ }

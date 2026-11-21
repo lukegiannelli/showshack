@@ -135,6 +135,10 @@ const STALE_DAYS=30;
 function checkedAge(e){if(!e||!/^\d{4}-\d\d-\d\d/.test(e.updatedAt||""))return null;const [y,m,d]=e.updatedAt.split("-").map(Number);return Math.max(0,Math.floor((Date.now()-new Date(y,m-1,d))/864e5));}
 function hostOf(u){try{return new URL(u).hostname.replace(/^www\./,"");}catch(_){return "";}}
 function cardNote(e){return String(e.note||"").replace(APPROX_RE," ").replace(STALE_RE," ").trim();}
+// Ticketmaster's API gives face value; fees on top average ~29% of face value (NITO, NY primary-market study, Oct 2025)
+// and ~35% on Ticketmaster/AXS. Other sellers (Gametime, TickPick, Eventbrite...) show all-in prices under the FTC rule (May 2025).
+const FEE_TM=1.3;
+function allIn(e,n){return n==null?n:e.priceSrc==="ticketmaster"?Math.round(n*FEE_TM):n;}
 function priceInfo(e){
   if(e.status==="cancelled") return {sold:true,cancel:true};
   if(e.status==="sold out") return {sold:true};
@@ -199,7 +203,7 @@ function nightCost(e,pi){
   const n=state.carLink||state.car||1, mpg=state.mpg||25, gal=state.gas||5.85, food=state.food??0;
   const t=tier(e), dPrice=DRINK[t]??12, minTwo=t==="Comedy club";
   const dCount=CONS.has(e.kind)?0:Math.max(state.drinks??0, minTwo?2:0), drinks=dCount*dPrice*n;
-  const tixEach = pi.sold||pi.none||pi.lo==null ? null : pi.lo;
+  const tixEach = pi.sold||pi.none||pi.lo==null ? null : allIn(e,pi.lo);   // what you'll actually pay, fees in
   const miles = e._drive ? e._drive.miles*2 : null;
   // Getting home: sober driver (gas + parking), rideshare (round trip, one car per 4 people), or transit (per person).
   let home=state.home||"drive", tr=transitOf(e), fell=false;
@@ -211,7 +215,7 @@ function nightCost(e,pi){
   const move = home==="drive" ? (gas??0)+(park??0) : home==="ride" ? (ride??0) : (transit??0);
   const eat = food*n;
   const total = (tixEach??0)*n + move + eat + drinks;
-  return {n,mpg,gal,food,dCount,dPrice,drinks,minTwo,sober:CONS.has(e.kind),tixEach,tixEst:!!pi.est,miles,gas,park,eat,home,fell,tr,ride,transit,cars,
+  return {n,mpg,gal,food,dCount,dPrice,drinks,minTwo,sober:CONS.has(e.kind),tixEach,tixEst:!!pi.est,feeEst:tixEach!=null&&e.priceSrc==="ticketmaster",miles,gas,park,eat,home,fell,tr,ride,transit,cars,
     total:Math.round(total),each:Math.round(total/n),
     partial: tixEach==null || (home!=="transit" && !e._drive)};
 }
@@ -522,8 +526,8 @@ function cardHtml(e){
     else if(pi.none&&e.priceNote) priceHtml=`<span class="price small">${esc(e.priceNote)}</span><span class="pn">no cover listed</span>`;
     else if(pi.none) priceHtml=`<span class="na">Not listed</span><span class="pn">${mic?"ask the venue":"check the link"}</span>`;
     else if(pi.est) priceHtml=`<span class="price est">≈${$r(pi.lo)}–${$r(pi.hi)}</span><span class="pn">typical · not yet listed</span>`;
-    else if(pi.hi!=null&&Math.round(pi.hi)>Math.round(pi.lo)) priceHtml=`<span class="price">${$r(pi.lo)}–${$r(pi.hi)}</span><span class="pn">${e.priceSrc==="ticketmaster"?"face value · before fees":"cheapest seats listed"}</span>`;
-    else priceHtml=`<span class="price">From ${$r(pi.lo)}</span><span class="pn">${e.priceSrc==="ticketmaster"?"face value · before fees":"cheapest seat"}</span>`;
+    else if(pi.hi!=null&&Math.round(pi.hi)>Math.round(pi.lo)) priceHtml=`<span class="price">${$r(pi.lo)}–${$r(pi.hi)}</span><span class="pn">${e.priceSrc==="ticketmaster"?`≈ ${$r(allIn(e,pi.lo))}–${$r(allIn(e,pi.hi))} with fees`:"cheapest seats listed"}</span>`;
+    else priceHtml=`<span class="price">From ${$r(pi.lo)}</span><span class="pn">${e.priceSrc==="ticketmaster"?`≈ ${$r(allIn(e,pi.lo))} with fees`:"cheapest seat"}</span>`;
     if(!pi.est&&!pi.sold&&!pi.free&&!pi.none&&e.priceAsOf) priceHtml=priceHtml.replace(/<\/span>$/,` · checked ${fmtShort(e.priceAsOf)}${priceStale(e)?' · <em class="pstale">may have changed</em>':""}</span>`);
     const nc=nightCost(e,pi), lb=leaveBy(e);
     const nightHtml = `<div class="flipbar"><button type="button" class="nightbtn" data-flip="1">🌙 Night out <b>≈ $${nc.n>1?nc.each+" each":nc.total}${nc.partial?"+":""}</b></button></div>`;
@@ -580,7 +584,7 @@ function backHtml(e,nc,fl){
   const $=v=>"$"+Math.round(v), who=nc.n>1?`${nc.n} people`:"just you";
   const line=(ic,k,how,v)=>`<div class="nl"><span class="nk">${ic} ${k}</span><span class="nh">${how}</span><span class="nv">${v}</span></div>`;
   const tix = nc.tixEach==null ? line(ni("ticket"),"Tickets","price not listed yet","?")
-    : line(ni("ticket"),"Tickets",`${nc.tixEach===0?"free":(nc.tixEst?"≈":"")+$(nc.tixEach)}${nc.n>1?" × "+nc.n:""}${nc.tixEst?" · typical, not listed":""}`,$(nc.tixEach*nc.n));
+    : line(ni("ticket"),"Tickets",`${nc.tixEach===0?"free":(nc.tixEst?"≈":"")+$(nc.tixEach)}${nc.n>1?" × "+nc.n:""}${nc.tixEst?" · typical, not listed":nc.feeEst?" · incl. ~30% fees":""}`,$(nc.tixEach*nc.n));
   let gas="", park="";
   if(nc.home==="drive"){
     gas = nc.gas==null ? line(ni("fuel"),"Gas","set a start point","?")
