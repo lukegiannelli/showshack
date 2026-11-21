@@ -53,7 +53,12 @@
 "lat": 33.8588,
 "lon": -118.00536,
 "geo": "place",
-"a": "7311 Orangethorpe Ave"
+"a": "7311 Orangethorpe Ave",
+"gid": "ChIJhdBfQ-0r3YARPgtaK736QwM",
+"h": "Till 2 AM",
+"til": 26.0,
+"hs": "g",
+"hu": "2026-11-21"
 },
 {
 "n": "International Billiards",
@@ -97,7 +102,12 @@
 "lat": 33.7742,
 "lon": -117.96105,
 "geo": "place",
-"a": "9786 Garden Grove Blvd"
+"a": "9786 Garden Grove Blvd",
+"gid": "ChIJg1K3F3oo3YARL7sTFWyOBQE",
+"h": "Till 2 AM",
+"til": 26.0,
+"hs": "g",
+"hu": "2026-11-21"
 },
 {
 "n": "Billiard Thanh Tam",
@@ -108,7 +118,12 @@
 "lat": 33.75955,
 "lon": -117.93891,
 "geo": "place",
-"a": "10902 Westminster Ave"
+"a": "10902 Westminster Ave",
+"gid": "ChIJHQdPX-4n3YARNKbAawHUcHA",
+"h": "Till midnight",
+"til": 24.0,
+"hs": "g",
+"hu": "2026-11-21"
 },
 {
 "n": "Thanh Tam 2 Billiards",
@@ -130,7 +145,12 @@
 "lat": 33.76105,
 "lon": -117.92036,
 "geo": "place",
-"a": "13919 Harbor Blvd"
+"a": "13919 Harbor Blvd",
+"gid": "ChIJmwqylwvY3IARGfOUfSfCyZM",
+"h": "Till 2 AM",
+"til": 26.0,
+"hs": "g",
+"hu": "2026-11-21"
 },
 {
 "n": "Kym Billiard Cafe",
@@ -277,7 +297,12 @@
 "lat": 33.76441,
 "lon": -118.15252,
 "geo": "place",
-"a": "3348 E Broadway"
+"a": "3348 E Broadway",
+"gid": "ChIJ9fvthqwx3YARtSH0So3JHys",
+"h": "Till 2 AM",
+"til": 26.0,
+"hs": "g",
+"hu": "2026-11-21"
 },
 {
 "n": "Q's Billiard Club",
@@ -392,7 +417,10 @@
 "t": [],
 "lat": 34.07097,
 "lon": -117.8887,
-"geo": "place"
+"geo": "place",
+"gid": "ChIJIzvJna0pw4ARisRPJBIVjvY",
+"gone": 1,
+"hu": "2026-11-21"
 },
 {
 "n": "Cue-Time Family Billiards",
@@ -596,7 +624,12 @@
 ],
 "lat": 33.62142,
 "lon": -117.69881,
-"geo": "craft"
+"geo": "craft",
+"gid": "ChIJ0XoCdvno3IAR_iUD6bVckFg",
+"h": "Till 2 AM",
+"til": 26.0,
+"hs": "g",
+"hu": "2026-11-21"
 },
 {
 "n": "Goody's Tavern",

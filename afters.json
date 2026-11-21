@@ -13,9 +13,11 @@
 "lat": 33.70804,
 "lon": -117.78377,
 "geo": "amenity",
-"h": "Till ~11 PM",
-"til": 23,
-"hq": "~"
+"h": "Till 10 PM, 11:15 PM Fri–Sat",
+"til": 23.2,
+"gid": "ChIJ1yf9U_Xc3IARldkj0KYVcN8",
+"hs": "g",
+"hu": "2026-11-21"
 },
 {
 "n": "Gangnam Station BBQ",
@@ -137,9 +139,11 @@
 "lat": 34.11887,
 "lon": -118.19417,
 "geo": "place",
-"h": "Till midnight, 2 AM Fri–Sun",
-"til": 26,
-"hq": "~"
+"h": "Till midnight, 2 AM Fri–Sat",
+"til": 26.0,
+"gid": "ChIJQ6Mnh7PFwoAR0ZN5z8FK3y4",
+"hs": "g",
+"hu": "2026-11-21"
 },
 {
 "n": "Blipsy Bar",
@@ -185,7 +189,12 @@
 ],
 "lat": 33.77497,
 "lon": -117.94069,
-"geo": "amenity"
+"geo": "amenity",
+"gid": "ChIJ58DHvAko3YAREE1crQVsQng",
+"h": "Till 1 AM, 11 PM Sun, midnight Wed–Thu, closed Mon–Tue",
+"til": 25.0,
+"hs": "g",
+"hu": "2026-11-21"
 },
 {
 "n": "Coin-Op Game Room North Park",
@@ -696,15 +705,17 @@
 "lat": 32.7086,
 "lon": -117.15873,
 "geo": "tourism",
-"h": "From 5 PM, till ~midnight–1 AM",
-"til": 25,
-"hq": "~",
+"h": "Till midnight, 1:30 AM Fri–Sat",
+"til": 25.5,
 "deal": {
 "t": "Happy hour on the 22nd-floor rooftop",
 "d": "Mon–Fri 5–7 PM",
 "u": "https://www.sandiego.org/members/altitude-sky-lounge-san-diego-marriott-gaslamp-quarter/493",
 "chk": "2026-11-12"
-}
+},
+"gid": "ChIJ-VCetFtT2YARLsCJsJCuQPM",
+"hs": "g",
+"hu": "2026-11-21"
 },
 {
 "n": "Fairweather",
@@ -1520,7 +1531,12 @@
 28
 ],
 "geo": "amenity",
-"src": "osm"
+"src": "osm",
+"gid": "ChIJ55uVE2PZ3IARDDbvnCBGAh4",
+"h": "Till 9 PM, 10 PM Fri–Sat",
+"til": 22.0,
+"hs": "g",
+"hu": "2026-11-21"
 },
 {
 "n": "BCD Tofu House",
@@ -1534,11 +1550,13 @@
 ],
 "lat": 34.06207,
 "lon": -118.30267,
-"h": "7 AM to 3 AM (4 AM Fri and Sat)",
-"til": 27,
-"hq": "~",
+"h": "Till 3 AM, 4 AM Fri–Sat",
+"til": 28.0,
 "geo": "amenity",
-"src": "osm"
+"src": "osm",
+"gid": "ChIJobNaHIO4woARmjJB77L7Heg",
+"hs": "g",
+"hu": "2026-11-21"
 },
 {
 "n": "Sun Nong Dan",
@@ -2083,9 +2101,8 @@
 ],
 "lat": 33.81773,
 "lon": -117.88735,
-"h": "11 AM to 10 PM (11 PM Fri and Sat)",
-"til": 23,
-"hq": "~",
+"h": "Till 10 PM, 11 PM Thu–Sat",
+"til": 23.0,
 "geo": "amenity",
 "src": "osm",
 "deal": {
@@ -2093,7 +2110,10 @@
 "d": "Mon–Fri 3–6 PM, sushi bar & lounge",
 "u": "https://www.benihana.com/locations/anaheim",
 "chk": "2026-11-12"
-}
+},
+"gid": "ChIJs8sSha_X3IAR4rxBXvHDE-I",
+"hs": "g",
+"hu": "2026-11-21"
 },
 {
 "n": "Benihana",
@@ -2107,7 +2127,12 @@
 "lat": 33.10423,
 "lon": -117.31262,
 "geo": "amenity",
-"src": "osm"
+"src": "osm",
+"gid": "ChIJl8h1Sihz3IAR-RK3axIPKF0",
+"h": "Till 10 PM, 11 PM Fri–Sat",
+"til": 23.0,
+"hs": "g",
+"hu": "2026-11-21"
 },
 {
 "n": "Ten-Raku",
@@ -2216,15 +2241,17 @@
 ],
 "lat": 34.03371,
 "lon": -118.22921,
-"h": "5 to 11 PM",
-"til": 23,
-"hq": "~",
+"h": "Till 11 PM",
+"til": 23.0,
 "pp": [
 60,
 100
 ],
 "geo": "amenity",
-"src": "osm"
+"src": "osm",
+"gid": "ChIJSRvZ1yHGwoARcLrfvc-APl4",
+"hs": "g",
+"hu": "2026-11-21"
 },
 {
 "n": "Addison",
@@ -2239,7 +2266,12 @@
 "lat": 32.93862,
 "lon": -117.19741,
 "geo": "amenity",
-"src": "osm"
+"src": "osm",
+"gid": "ChIJrVfI5sEH3IARfAmbFue9xNc",
+"h": "Till 9 PM, closed Mon, Sun",
+"til": 21.0,
+"hs": "g",
+"hu": "2026-11-21"
 },
 {
 "n": "Mélisse",
@@ -2267,10 +2299,14 @@
 ],
 "lat": 34.0865,
 "lon": -118.44642,
-"h": "Jazz trio Fri and Sat, pianist Sun to Thu, from 7 PM",
+"h": "Till 10 PM",
 "u": "https://www.dorchestercollection.com/los-angeles/hotel-bel-air/whats-on/live-entertainment",
 "geo": "amenity",
-"src": "web"
+"src": "web",
+"gid": "ChIJCyut3fC8woARXveMIyXrGWU",
+"til": 22.0,
+"hs": "g",
+"hu": "2026-11-21"
 },
 {
 "n": "Riviera 31 at Sofitel Beverly Hills",
@@ -2302,11 +2338,14 @@
 ],
 "lat": 34.09894,
 "lon": -118.33136,
-"h": "Jazz Tue from about 8 PM",
-"hq": "~",
+"h": "Till 2 AM, midnight Wed, closed Mon, Sun",
 "u": "https://hollywoodpartnership.com/go/bar-lis",
 "geo": "amenity",
-"src": "web"
+"src": "web",
+"gid": "ChIJ7_ZmZnq_woARM5bhOgi8kXw",
+"til": 26.0,
+"hs": "g",
+"hu": "2026-11-21"
 },
 {
 "n": "Gallery Bar at the Biltmore",
@@ -2343,7 +2382,9 @@
 "h": "DJs Fri and Sat from 8 PM, no cover Fri",
 "u": "https://acehotel.com/palm-springs/going-on/",
 "geo": "amenity",
-"src": "web"
+"src": "web",
+"gid": "ChIJ4Tk4iBQb24ARXDC6PU0MbZo",
+"hu": "2026-11-21"
 },
 {
 "n": "The Rooftop at Andaz San Diego",
@@ -2706,11 +2747,13 @@
 ],
 "lat": 33.7672,
 "lon": -117.9382,
-"h": "7 AM to 10 PM (11 PM Fri and Sat)",
-"til": 23,
-"hq": "~",
+"h": "Till 10 PM, 11 PM Fri–Sat",
+"til": 23.0,
 "geo": "amenity",
-"src": "osm"
+"src": "osm",
+"gid": "ChIJpY-R6uQn3YARl9BdvsjqFno",
+"hs": "g",
+"hu": "2026-11-21"
 },
 {
 "n": "Grand Central Market",
@@ -3048,11 +3091,13 @@
 ],
 "lat": 32.832,
 "lon": -117.16059,
-"h": "11:30 AM to midnight",
-"til": 24,
-"hq": "~",
+"h": "Till midnight",
+"til": 24.0,
 "geo": "amenity",
-"src": "osm"
+"src": "osm",
+"gid": "ChIJq25yHpv_24ARQtsH2buPm_A",
+"hs": "g",
+"hu": "2026-11-21"
 },
 {
 "n": "The Taco Stand",
@@ -3264,11 +3309,13 @@
 ],
 "lat": 34.12033,
 "lon": -116.44004,
-"h": "9 AM to 9 PM",
-"til": 21,
-"hq": "~",
+"h": "Till 9 PM",
+"til": 21.0,
 "geo": "amenity",
-"src": "osm"
+"src": "osm",
+"gid": "ChIJ61qQMuYn24ARZvNFTZo_Vjs",
+"hs": "g",
+"hu": "2026-11-21"
 },
 {
 "n": "Kasa Market",
@@ -3363,11 +3410,13 @@
 ],
 "lat": 34.03433,
 "lon": -117.75852,
-"h": "10 AM to 10 PM",
-"til": 22,
-"hq": "~",
+"h": "Till 10 PM, 11:30 PM Fri–Sat",
+"til": 23.5,
 "geo": "amenity",
-"src": "osm"
+"src": "osm",
+"gid": "ChIJi_7ynA0tw4ARkDQrK_rURyM",
+"hs": "g",
+"hu": "2026-11-21"
 },
 {
 "n": "Mi Pueblo Santa Rita 2",
@@ -3445,7 +3494,10 @@
 "til": 23,
 "hq": "~",
 "geo": "amenity",
-"src": "osm"
+"src": "osm",
+"gid": "ChIJ38Evvccb24ARC4NeiQ1gqKQ",
+"gone": 1,
+"hu": "2026-11-21"
 },
 {
 "n": "The Tropicale",
