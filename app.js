@@ -4,12 +4,17 @@ function cityGuess(text){const t=text.toLowerCase();let best=null;for(const k in
 // prices older than a week get a "may have changed" note
 function priceStale(e){if(!e||!e.priceAsOf)return false;const [y,m,d]=String(e.priceAsOf).split("-").map(Number);return (Date.now()-new Date(y,m-1,d))/864e5>7;}
 // search found nothing: venues that match, plus ways to add the missing show
-function noMatchHtml(q){const n=norm(q),vs=[],ws=n.split(/[^a-z0-9]+/).filter(w=>w.length>=5);
+// "Did you mean": closest artist / venue / city name within a couple of typos (odesa → ODESZA)
+function lev(a,b){if(Math.abs(a.length-b.length)>2)return 9;let p=[...Array(b.length+1).keys()];for(let i=1;i<=a.length;i++){const c=[i];for(let j=1;j<=b.length;j++)c[j]=Math.min(p[j]+1,c[j-1]+1,p[j-1]+(a[i-1]===b[j-1]?0:1));p=c;}return p[b.length];}
+function didYouMean(q){const k=s=>norm(s).replace(/[^a-z0-9]+/g,""),n=k(q);if(n.length<4)return "";const max=n.length>=7?2:1;let best="",bd=9;
+  const names=new Set();for(const e of state._up||[]){const t=String(e.title||"").split(/:| w\/ | with | \+ | - | – | \| /i)[0].trim();if(t)names.add(t);String(e.artists||"").split(/\s*[,;&]\s*/).forEach(a=>a&&names.add(a.trim()));if(e.venue)names.add(e.venue);if(e.city)names.add(e.city);}
+  for(const nm of names){const c=k(nm);if(!c||c===n)continue;const d=lev(n,c.length>n.length+2?c.slice(0,n.length):c);if(d<=max&&d<bd){bd=d;best=nm;if(d===1)break;}}return best;}
+function noMatchHtml(q){const n=norm(q),vs=[],ws=n.split(/[^a-z0-9]+/).filter(w=>w.length>=5);const dym=didYouMean(q);
   const hit=v=>{v=norm(v);return v.includes(n)||ws.some(w=>v.includes(w));};
   if(n.length>=3){const seen=new Set();for(const e of state._up||state.events||[]){const k=(e.venue||"")+" · "+(e.city||"");if(!seen.has(k)&&hit(e.venue)){seen.add(k);vs.push(k);}if(vs.length>=4)break;}}
-  return `<div class="empty bnomatch"><strong>No shows match “${esc(q)}”</strong>Check the spelling, try part of the name, or set the filters above to All.
+  return `<div class="empty bnomatch"><strong>No shows match “${esc(q)}”</strong>${dym?`<span class="bdym">Did you mean <button type="button" data-qdym="${esc(dym)}">${esc(dym)}</button>?</span>`:""}Check the spelling, try part of the name, or set the filters above to All.
     ${vs.length?`<span class="bnm-v">Venues with that name:</span><span class="bnm-row">${vs.map(k=>`<button type="button" class="chip" data-qvenue="${esc(k)}">${esc(k.split(" · ")[0])} →</button>`).join("")}</span>`:""}
-    <span class="bnm-v">Not on the Shack yet?</span>${q.trim().length>=2?`<button type="button" class="bwatch" data-qwatch="${esc(q.trim())}">${window.SHACK_MUSIC&&SHACK_MUSIC.watching&&SHACK_MUSIC.watching(q.trim())?"🔔 Watching “"+esc(q.trim())+"”":"🔔 Alert me when “"+esc(q.trim())+"” plays a Shack venue"}</button>`:""}<span class="bnm-row"><button type="button" class="chip" data-qflyer>📸 Add it from a flyer</button><button type="button" class="chip" data-qmiss="${esc(q)}">Tell us it's missing</button></span></div>`;}
+    <span class="bnm-v">Not on the Shack yet?</span>${q.trim().length>=2&&!dym?`<button type="button" class="bwatch" data-qwatch="${esc(q.trim())}">${window.SHACK_MUSIC&&SHACK_MUSIC.watching&&SHACK_MUSIC.watching(q.trim())?"🔔 Watching “"+esc(q.trim())+"”":"🔔 Alert me when “"+esc(q.trim())+"” plays a Shack venue"}</button>`:""}<span class="bnm-row"><button type="button" class="chip" data-qflyer>📸 Add it from a flyer</button><button type="button" class="chip" data-qmiss="${esc(q)}">Tell us it's missing</button></span></div>`;}
 const KINDS = [["all","All"],["starred","★ Interested"],["rave","Raves & DJs"],["festival","Festivals"],["concert","Concerts"],["comedy","Comedy"],["theater","Theater & arts"],["openmic","Open mics"],["dance","Ecstatic dance"],["contact","Contact improv"],["sound","Sound baths"],["drum","Drum circles"],["social","Dance socials"],["art","Art walks & markets"],["volunteer","Volunteer"]];
 const CONS=new Set(["dance","contact","sound","drum"]);
 // Vibe groups (new home screen): each maps to several kinds.
@@ -90,6 +95,22 @@ const sq=document.getElementById("q"), sqc=document.getElementById("qClear"); le
 function norm(s){return String(s||"").normalize("NFD").replace(/[̀-ͯ]/g,"").toLowerCase();}
 function setQ(v){state.q=norm(v.trim());sqc.hidden=!v;render();}
 sq.addEventListener("input",()=>{clearTimeout(qT);qT=setTimeout(()=>setQ(sq.value),120);});
+// suggestions while you type: artists, venues and cities with shows coming up (most shows first)
+const sug=document.createElement("ul");sug.className="bsug";sug.id="qSug";sug.hidden=true;sug.setAttribute("role","listbox");sq.closest("label").after(sug);
+let SUGIX=null,SUGN=0;
+function sugIndex(){const up=state._up||[];if(SUGIX&&SUGN===up.length)return SUGIX;const m=new Map(),add=(n,t)=>{n=String(n||"").trim();if(n.length<2)return;const k=t+"|"+n.toLowerCase();const o=m.get(k);if(o)o.c++;else m.set(k,{n,t,c:1,k:norm(n)});};
+  for(const e of up){const t=String(e.title||"").split(/:| w\/ | with | \+ | - | – | \| /i)[0].trim();if(t&&t.length<=40&&!/[!?]/.test(t))add(t,"Artist");add(e.venue,"Venue");add(e.city,"City");}
+  SUGIX=[...m.values()];SUGN=up.length;return SUGIX;}
+function drawSug(){const q=norm(sq.value.trim());if(q.length<2||document.activeElement!==sq){sug.hidden=true;return;}
+  const hits=sugIndex().map(x=>({x,s:x.k.startsWith(q)?0:x.k.includes(" "+q)?1:x.k.includes(q)?2:9})).filter(h=>h.s<9).sort((a,b)=>a.s-b.s||b.x.c-a.x.c).slice(0,6);
+  if(!hits.length||(hits.length===1&&hits[0].x.k===q)){sug.hidden=true;return;}
+  sug.innerHTML=hits.map(({x})=>`<li><button type="button" role="option" data-sug="${esc(x.n)}">${esc(x.n)}<small>${x.t} · ${x.c} show${x.c>1?"s":""}</small></button></li>`).join("");sug.hidden=false;}
+const pickSug=v=>{sq.value=v;sug.hidden=true;clearTimeout(qT);setQ(v);sq.blur();};
+sq.addEventListener("input",drawSug);sq.addEventListener("focus",drawSug);
+sq.addEventListener("blur",()=>setTimeout(()=>{sug.hidden=true;},180));
+sug.addEventListener("mousedown",ev=>ev.preventDefault());
+sug.addEventListener("click",ev=>{const b=ev.target.closest("[data-sug]");if(b)pickSug(b.dataset.sug);});
+document.addEventListener("click",ev=>{const b=ev.target.closest("[data-qdym]");if(b){ev.preventDefault();pickSug(b.dataset.qdym);}});
 sq.addEventListener("keydown",ev=>{if(ev.key==="Enter")sq.blur();if(ev.key==="Escape"){sq.value="";setQ("");}});
 sqc.onclick=()=>{sq.value="";setQ("");sq.focus();};
 
@@ -1106,6 +1127,13 @@ function logoOf(e){if(!["concert","festival","club"].includes(e.kind))return nul
 let POOL=[];fetch("pool.json?v=3").then(r=>r.ok?r.json():{}).then(j=>{POOL=((j||{}).places||[]).filter(p=>typeof p.lat==="number"&&!p.gone);if(state.view==="map"&&state.poolOn)render();}).catch(()=>{});
 let VOPEN={};fetch("venues.json").then(r=>r.ok?r.json():{}).then(j=>{VOPEN=j||{};if(state.view==="venues"||state.venue!=="all")render();}).catch(()=>{});
 let fileLoaded=false;
+// repeat visits: paint the last copy the service worker kept (if it's under 3 days old) right away,
+// then swap in the fresh file when the network answers. First visits just wait for the network.
+let paintedFrom=null;
+(async()=>{try{if(!("caches" in window))return;const c=await caches.match("events.json",{ignoreSearch:true});if(!c||fileLoaded)return;
+  const d=await c.json();if(fileLoaded||!d.lastRun||Date.now()-new Date(d.lastRun)>3*864e5)return;
+  const evs=(d.events||[]).filter(e=>e.title&&(e.start||isRec(e)));if(!evs.length||fileLoaded)return;
+  paintedFrom=d.lastRun;state.events=evs;state.loaded=true;window.SHACK_META={lastRun:d.lastRun,tmRun:d.tmRun,tmNote:d.tmNote};render();}catch(e){}})();
 (async()=>{
   try{
     const r=await fetch("events.json",{cache:"no-store"});
@@ -1119,6 +1147,7 @@ let fileLoaded=false;
     if(d.lastRun){const t=new Date(d.lastRun);el.innerHTML="Updated <b>"+esc(t.toLocaleDateString("en-US",{month:"short",day:"numeric"}))+"</b>";}
     render();
   }catch(err){
+    if(paintedFrom){fileLoaded=true;return;}   // offline or a hiccup: keep showing the cached list
     const fail=()=>{if(!fileLoaded&&!dbRef&&!state.loaded){state.loaded=true;state.loadErr=navigator.onLine===false?"offline":"failed";document.getElementById("refreshed").textContent="Couldn't load shows";render();}};
     if(window.claude)setTimeout(fail,12000);else fail();   // inside a Claude artifact a second source may still answer; on the live site, say so now
   }

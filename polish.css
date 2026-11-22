@@ -191,3 +191,37 @@ header h1.shack-title{background:none!important;color:#FFF1D6!important;-webkit-
 
 /* less noise: the "Tap to flip" hint only on the first card of a row, and only until you've flipped one */
 .ui-b .bfc:not(:first-child) .bfc-f .face.front::after,html.flipped.ui-b .bfc-f .face.front::after{content:none}
+
+/* ===== flow pass (Nov 22) ===== */
+/* 5 tabs: Plan lives inside Saved now */
+.ui-b .btabs{grid-template-columns:repeat(5,minmax(0,1fr))}
+@media (min-width:760px){.ui-b .btabs{width:480px}}
+.bsavseg{display:none!important;margin:0 0 12px}
+.ui-b.b-saved .bsavseg,.ui-b.b-budget .bsavseg{display:grid!important;grid-template-columns:1fr 1fr}
+.ui-b.b-budget .bsavseg{margin-top:12px}
+.bsavseg button[aria-selected="true"]{background:#F6EEE6;color:#17141F;box-shadow:0 1px 3px rgba(0,0,0,.08)}
+
+/* Home: secondary rows behind one calm toggle */
+.bmore-t{display:grid;grid-template-columns:1fr auto;align-items:center;width:100%;padding:14px 16px;border-radius:16px;border:1px solid var(--line,rgba(0,0,0,.1));background:var(--chip,rgba(255,255,255,.6));color:var(--ink);cursor:pointer;text-align:left;font:700 16px/1.2 var(--body,inherit)}
+.bmore-t small{grid-column:1;font:500 13px var(--body,inherit);color:var(--muted);margin-top:2px}
+.bmore-t svg{grid-column:2;grid-row:1/3;width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;transition:transform .25s ease}
+.bmore-t.on svg{transform:rotate(180deg)}
+.bmore-in{display:flex;flex-direction:column;gap:16px;margin-top:16px}
+.bmore-in[hidden]{display:none!important}
+
+/* Prices: just the number on the card face; the fine print (fees, checked date) shows when you open the card */
+.ui-b article.card:not(.open) .side.l .pn{display:none}
+.ui-b .bfc article.card .side.l .pn{display:none}
+
+/* Search suggestions */
+.bsug{list-style:none;margin:6px 0 0;padding:6px;border-radius:14px;background:var(--surface,#fff);border:1px solid var(--line,rgba(0,0,0,.1));box-shadow:0 10px 30px rgba(20,10,40,.14)}
+.bsug[hidden]{display:none}
+.bsug button{display:flex;gap:10px;align-items:center;width:100%;padding:10px;border:0;border-radius:10px;background:none;color:var(--ink);font:600 15px var(--body,inherit);text-align:left;cursor:pointer}
+.bsug button:hover,.bsug button:focus-visible{background:var(--chip,rgba(0,0,0,.05))}
+.bsug small{margin-left:auto;font:500 12px var(--mono,monospace);color:var(--muted)}
+.bdym{display:block;margin:8px 0 4px}
+.bdym button{border:0;background:none;padding:0;color:#C2410C;font:700 15px var(--body,inherit);text-decoration:underline;cursor:pointer}
+
+/* Screen changes cross-fade (View Transitions where supported) */
+::view-transition-old(root),::view-transition-new(root){animation-duration:.18s}
+@media (prefers-reduced-motion:reduce){::view-transition-old(root),::view-transition-new(root){animation:none}}

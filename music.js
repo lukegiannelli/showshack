@@ -99,7 +99,7 @@ function drawRow(){if(!window.SHACK_FLIP||typeof state==="undefined")return;let 
   const r=matches(),list=[...r.mine.map(x=>({e:x.e,tag:`🎧 You play ${x.why}${x.from&&x.from!=="typed"&&NAME[x.from]?` · ${NAME[x.from]}`:""}`})),
     ...r.vibe.map(x=>({e:x.e,tag:`🎧 Your vibe: ${GNAME[x.g]||x.g||"your genres"}`}))].slice(0,12);
   if(!list.length){if(box)box.hidden=true;return;}
-  if(!box){const anchor=$("bBecBox")||$("bDropBox");if(!anchor)return;anchor.insertAdjacentHTML("beforebegin",`<div class="bpicks bears" id="bEarsBox"><div class="bpicks-h"><h2 class="bsec">Match My Music</h2><button type="button" class="blink" data-mymusic="1">Your music</button></div><div class="bpick-row" id="bEars"></div></div>`);box=$("bEarsBox");$("bEars").addEventListener("click",SHACK_FLIP.click,true);}
+  if(!box){const anchor=$("bMoreBox")||$("bBecBox")||$("bDropBox");if(!anchor)return;anchor.insertAdjacentHTML("beforebegin",`<div class="bpicks bears" id="bEarsBox"><div class="bpicks-h"><h2 class="bsec">Match My Music</h2><button type="button" class="blink" data-mymusic="1">Your music</button></div><div class="bpick-row" id="bEars"></div></div>`);box=$("bEarsBox");$("bEars").addEventListener("click",SHACK_FLIP.click,true);}
   box.hidden=false;const sig=list.map(x=>x.e.id+x.tag).join("|");if($("bEars").dataset.sig===sig)return;$("bEars").dataset.sig=sig;
   $("bEars").innerHTML=list.map(x=>SHACK_FLIP.html(x.e,`<i style="--vc:#7FD4FF"></i>${E(x.tag)}`)).join("");}
 
