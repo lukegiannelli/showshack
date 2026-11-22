@@ -159,8 +159,10 @@
 "lon": -118.30905,
 "geo": "place",
 "h": "Till 2 AM",
-"til": 26,
-"hq": "~"
+"til": 26.0,
+"gid": "ChIJCfdPl6S4woARpWYjakJY6ic",
+"hs": "g",
+"hu": "2026-11-22"
 },
 {
 "n": "Walt's Bar",
@@ -208,9 +210,11 @@
 "lat": 32.74902,
 "lon": -117.13042,
 "geo": "amenity",
-"h": "Till ~1 AM, 2 AM weekends",
-"til": 26,
-"hq": "~"
+"h": "Till midnight, 2 AM Fri–Sat",
+"til": 26.0,
+"gid": "ChIJ_eT0k_ZU2YAR_Bpap6q7R3c",
+"hs": "g",
+"hu": "2026-11-22"
 },
 {
 "n": "Coin-Op Game Room Gaslamp",
@@ -224,9 +228,11 @@
 "lat": 32.71339,
 "lon": -117.15946,
 "geo": "manual",
-"h": "Till ~midnight",
-"til": 24,
-"hq": "~"
+"h": "Till midnight, 2 AM Fri–Sat",
+"til": 26.0,
+"gid": "ChIJFRqQV1hT2YARxYLwmn8tUoA",
+"hs": "g",
+"hu": "2026-11-22"
 },
 {
 "n": "Brewskis Bar & Arcade",
@@ -239,7 +245,12 @@
 ],
 "lat": 32.89433,
 "lon": -117.1374,
-"geo": "amenity"
+"geo": "amenity",
+"gid": "ChIJq6tj-dH424ARjcYFNuh7PqU",
+"h": "Till 2 AM",
+"til": 26.0,
+"hs": "g",
+"hu": "2026-11-22"
 },
 {
 "n": "Round1 Santa Ana",
@@ -485,11 +496,14 @@
 "t": [
 "Co-ed jjimjilbang"
 ],
-"h": "Open 24 hours",
+"h": "Till midnight",
 "lat": 34.05431,
 "lon": -118.3222,
 "geo": "place",
-"til": 30
+"til": 24.0,
+"gid": "ChIJO3X3s4y4woARcdInY2ScvgM",
+"hs": "g",
+"hu": "2026-11-22"
 },
 {
 "n": "Grand Spa",
@@ -552,7 +566,9 @@
 "lon": -118.33739,
 "geo": "amenity",
 "h": "Shows ~8:30 PM, dinner from 7",
-"hq": "~"
+"hq": "~",
+"gid": "ChIJpQFEASW_woAR5uyTP1jNcg4",
+"hu": "2026-11-22"
 },
 {
 "n": "The Dresden Room",
@@ -690,8 +706,11 @@
 "lat": 34.04492,
 "lon": -118.25674,
 "geo": "amenity",
-"h": "Noon–midnight",
-"til": 24
+"h": "Till midnight",
+"til": 24.0,
+"gid": "ChIJFV_xgLbHwoARMdc5sY4wPhA",
+"hs": "g",
+"hu": "2026-11-22"
 },
 {
 "n": "Altitude Sky Lounge",
@@ -1315,11 +1334,13 @@
 ],
 "lat": 33.76628,
 "lon": -117.97061,
-"h": "10:30 AM to 9:30 PM (10 PM Fri and Sat)",
-"til": 22,
-"hq": "~",
+"h": "Till 9:30 PM, 10 PM Fri–Sat",
+"til": 22.0,
 "geo": "amenity",
-"src": "osm"
+"src": "osm",
+"gid": "ChIJOc7x8X8o3YARWGA4DUL8-5U",
+"hs": "g",
+"hu": "2026-11-22"
 },
 {
 "n": "Daikokuya",
@@ -1839,7 +1860,12 @@
 14
 ],
 "geo": "amenity",
-"src": "osm"
+"src": "osm",
+"gid": "ChIJSX1t8tsn3YARlVzNjHQCtHk",
+"h": "Till 9 PM",
+"til": 21.0,
+"hs": "g",
+"hu": "2026-11-22"
 },
 {
 "n": "Hangari Kalguksu",
@@ -2062,15 +2088,17 @@
 ],
 "lat": 33.76138,
 "lon": -117.95323,
-"h": "11 AM to 11 PM",
-"til": 23,
-"hq": "~",
+"h": "Till 9 PM, 9:30 PM Fri–Sun",
+"til": 21.5,
 "pp": [
 18,
 26
 ],
 "geo": "amenity",
-"src": "osm"
+"src": "osm",
+"gid": "ChIJvUcukdwn3YARk3Zo_ma82iE",
+"hs": "g",
+"hu": "2026-11-22"
 },
 {
 "n": "Boiling Point",
@@ -2088,7 +2116,12 @@
 26
 ],
 "geo": "amenity",
-"src": "osm"
+"src": "osm",
+"gid": "ChIJRQ73rIrc3IARadeO8Km1Jxc",
+"h": "Till 9:30 PM, 10 PM Fri–Sun",
+"til": 22.0,
+"hs": "g",
+"hu": "2026-11-22"
 },
 {
 "n": "Benihana",
@@ -2464,7 +2497,12 @@
 "lat": 33.64932,
 "lon": -117.74333,
 "geo": "amenity",
-"src": "osm"
+"src": "osm",
+"gid": "ChIJAb8Sgfnn3IAR9q6J-Ojq8H8",
+"h": "Till 9 PM, 9:30 PM Fri–Sun",
+"til": 21.5,
+"hs": "g",
+"hu": "2026-11-22"
 },
 {
 "n": "Elite Restaurant",
@@ -2652,7 +2690,12 @@
 "lat": 32.74969,
 "lon": -117.16344,
 "geo": "amenity",
-"src": "osm"
+"src": "osm",
+"gid": "ChIJH--2xtBU2YARtFfRrkfB8NE",
+"h": "Till 9 PM, 10 PM Fri–Sat, closed Mon–Tue",
+"til": 22.0,
+"hs": "g",
+"hu": "2026-11-22"
 },
 {
 "n": "SomiSomi",
@@ -2719,9 +2762,8 @@
 ],
 "lat": 34.04704,
 "lon": -118.25657,
-"h": "8 AM to 10 PM (11 PM Fri and Sat)",
-"til": 23,
-"hq": "~",
+"h": "Till 10 PM, 11 PM Fri–Sat",
+"til": 23.0,
 "pp": [
 10,
 25
@@ -2733,7 +2775,10 @@
 "d": "3–6 PM, bar counter & bar tables",
 "u": "https://www.bottegalouie.com/pages/information",
 "chk": "2026-11-12"
-}
+},
+"gid": "ChIJ_yXhTrTHwoARU36hVDFInhg",
+"hs": "g",
+"hu": "2026-11-22"
 },
 {
 "n": "7 Leaves Cafe",
@@ -2965,11 +3010,13 @@
 ],
 "lat": 32.69991,
 "lon": -117.14555,
-"h": "Mon–Thu 11 AM to 9 PM; Fri–Sun 11 AM to 10 PM",
-"til": 22,
-"hq": "~",
+"h": "Till 9 PM, 10 PM Fri–Sun",
+"til": 22.0,
 "geo": "amenity",
-"src": "osm"
+"src": "osm",
+"gid": "ChIJFfo0PiRT2YAR7vcFRrAAQLQ",
+"hs": "g",
+"hu": "2026-11-22"
 },
 {
 "n": "Puesto",
@@ -3237,11 +3284,13 @@
 ],
 "lat": 33.98434,
 "lon": -117.37489,
-"h": "Mon–Thu 11 AM to 10 PM; Fri–Sat 11 AM to 11 PM; Sun 11 AM to 10 PM",
-"til": 23,
-"hq": "~",
+"h": "Till 10 PM, 11 PM Fri–Sat",
+"til": 23.0,
 "geo": "amenity",
-"src": "osm"
+"src": "osm",
+"gid": "ChIJvam2Xo6x3IARaUjBS8CSMzc",
+"hs": "g",
+"hu": "2026-11-22"
 },
 {
 "n": "Soho Ramen",
@@ -3273,11 +3322,13 @@
 ],
 "lat": 34.07371,
 "lon": -117.55675,
-"h": "10 AM to 9 PM",
-"til": 21,
-"hq": "~",
+"h": "Till 9 PM",
+"til": 21.0,
 "geo": "amenity",
-"src": "osm"
+"src": "osm",
+"gid": "ChIJBVMwYn01w4ARhw8ZUwI0h5U",
+"hs": "g",
+"hu": "2026-11-22"
 },
 {
 "n": "El Taco Bar",
@@ -3584,7 +3635,12 @@
 "lat": 33.80234,
 "lon": -116.3876,
 "geo": "amenity",
-"src": "osm"
+"src": "osm",
+"gid": "ChIJ-by2DQD92oARF9vSIseVZjU",
+"h": "Till 10 PM",
+"til": 22.0,
+"hs": "g",
+"hu": "2026-11-22"
 },
 {
 "n": "Taqueria Monte Alban",
@@ -3632,7 +3688,12 @@
 "lat": 33.69068,
 "lon": -116.18375,
 "geo": "amenity",
-"src": "osm"
+"src": "osm",
+"gid": "ChIJ18aKCI5Y2oARvBwYdDWoxus",
+"h": "Till 10 PM, 11 PM Fri–Sat",
+"til": 23.0,
+"hs": "g",
+"hu": "2026-11-22"
 }
 ]
 }

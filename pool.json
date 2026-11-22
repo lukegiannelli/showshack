@@ -262,7 +262,12 @@
 "a": "10781 Dale Ave",
 "lat": 33.8105,
 "lon": -117.9933,
-"geo": "manual"
+"geo": "manual",
+"gid": "ChIJj9zr3xwp3YARi0M_bgsiYFE",
+"h": "Till 2 AM",
+"til": 26.0,
+"hs": "g",
+"hu": "2026-11-22"
 },
 {
 "n": "The Wharf",
@@ -369,7 +374,12 @@
 ],
 "lat": 34.16926,
 "lon": -118.13212,
-"geo": "place"
+"geo": "place",
+"gid": "ChIJcVT2PCPDwoARW4ea62bRG1o",
+"h": "Till 12:15 AM, 1 AM Fri–Sat",
+"til": 25.0,
+"hs": "g",
+"hu": "2026-11-22"
 },
 {
 "n": "Embassy Billiards Club",
@@ -447,7 +457,12 @@
 ],
 "lat": 32.75717,
 "lon": -117.08157,
-"geo": "place"
+"geo": "place",
+"gid": "ChIJLd6x8CBU2YARon99M0NdIgk",
+"h": "Till 2 AM",
+"til": 26.0,
+"hs": "g",
+"hu": "2026-11-22"
 },
 {
 "n": "Society PB",
@@ -495,7 +510,12 @@
 ],
 "lat": 32.60391,
 "lon": -117.08248,
-"geo": "place"
+"geo": "place",
+"gid": "ChIJPdQhhStM2YARibzIUSnXhwg",
+"h": "Till 9 PM, 9:30 PM Fri–Sat",
+"til": 21.5,
+"hs": "g",
+"hu": "2026-11-22"
 },
 {
 "n": "Que Billiard",
@@ -587,7 +607,12 @@
 "t": [],
 "lat": 34.19559,
 "lon": -119.17849,
-"geo": "place"
+"geo": "place",
+"gid": "ChIJx6uNSoJO6IARIvDblpRgU9A",
+"h": "Till midnight, 1 AM Fri–Sun",
+"til": 25.0,
+"hs": "g",
+"hu": "2026-11-22"
 },
 {
 "n": "Champion Billiards & Arcade",
@@ -598,7 +623,9 @@
 "t": [],
 "lat": 34.18523,
 "lon": -119.17182,
-"geo": "place"
+"geo": "place",
+"hu": "2026-11-22",
+"gmiss": 1
 },
 {
 "n": "Pappy & Harriet's",

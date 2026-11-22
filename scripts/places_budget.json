@@ -1,6 +1,6 @@
 {
  "month": "2026-11",
- "search": 25,
- "details": 25,
+ "search": 50,
+ "details": 50,
  "note": "Google Places calls this month. Counted before sending. Caps: details 900, search 900."
 }
