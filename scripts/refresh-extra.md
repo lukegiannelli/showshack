@@ -8,6 +8,13 @@ jobs; the routine itself doesn't need to change.
 Nobody is watching this run, so anything that asks for approval is effectively a "no". `.claude/settings.json` in
 the repo pre-approves WebFetch and WebSearch so venue sites load without prompts.
 
+- **Search before you fetch (this is what blocked 11/20–11/22).** WebFetch refuses a URL with
+  `PROVENANCE_REQUIRED` ("permission request not answered in time") when the URL didn't come from a search result
+  or the user, e.g. a calendar URL copied out of venue-sources.json or a file you wrote for an agent. That refusal is
+  a permission prompt nobody is awake to answer. So every agent, for every venue: first WebSearch
+  (`"<venue> <city> calendar"` or `"<venue> events"`), then WebFetch only URLs that appeared in **that agent's own**
+  search results. Put this rule in each subagent's prompt word for word. The `calendar` URLs in venue-sources.json
+  are hints for what to search, not URLs to fetch directly.
 - If a fetch is still refused or blocked, don't keep retrying it and don't swap in a weaker source to fill the gap.
   Leave that venue's `lastChecked` alone (so tomorrow's run picks it up first) and put "fetch blocked" in its `how`.
 - Tell the subagents the same: a refused fetch means skip the venue, and report it in `how`.

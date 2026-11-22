@@ -9,7 +9,7 @@ function noMatchHtml(q){const n=norm(q),vs=[],ws=n.split(/[^a-z0-9]+/).filter(w=
   if(n.length>=3){const seen=new Set();for(const e of state._up||state.events||[]){const k=(e.venue||"")+" · "+(e.city||"");if(!seen.has(k)&&hit(e.venue)){seen.add(k);vs.push(k);}if(vs.length>=4)break;}}
   return `<div class="empty bnomatch"><strong>No shows match “${esc(q)}”</strong>Check the spelling, try part of the name, or set the filters above to All.
     ${vs.length?`<span class="bnm-v">Venues with that name:</span><span class="bnm-row">${vs.map(k=>`<button type="button" class="chip" data-qvenue="${esc(k)}">${esc(k.split(" · ")[0])} →</button>`).join("")}</span>`:""}
-    <span class="bnm-v">Not on the Shack yet?</span><span class="bnm-row"><button type="button" class="chip" data-qflyer>📸 Add it from a flyer</button><button type="button" class="chip" data-qmiss="${esc(q)}">Tell us it's missing</button></span></div>`;}
+    <span class="bnm-v">Not on the Shack yet?</span>${q.trim().length>=2?`<button type="button" class="bwatch" data-qwatch="${esc(q.trim())}">${window.SHACK_MUSIC&&SHACK_MUSIC.watching&&SHACK_MUSIC.watching(q.trim())?"🔔 Watching “"+esc(q.trim())+"”":"🔔 Alert me when “"+esc(q.trim())+"” plays a Shack venue"}</button>`:""}<span class="bnm-row"><button type="button" class="chip" data-qflyer>📸 Add it from a flyer</button><button type="button" class="chip" data-qmiss="${esc(q)}">Tell us it's missing</button></span></div>`;}
 const KINDS = [["all","All"],["starred","★ Interested"],["rave","Raves & DJs"],["festival","Festivals"],["concert","Concerts"],["comedy","Comedy"],["theater","Theater & arts"],["openmic","Open mics"],["dance","Ecstatic dance"],["contact","Contact improv"],["sound","Sound baths"],["drum","Drum circles"],["social","Dance socials"],["art","Art walks & markets"],["volunteer","Volunteer"]];
 const CONS=new Set(["dance","contact","sound","drum"]);
 // Vibe groups (new home screen): each maps to several kinds.
@@ -359,9 +359,12 @@ function render(){
   const upcoming=evs.length; state._up=evs; syncBeen(evs);
   starCount=evs.filter(e=>state.stars.has(skey(e))).length; updateStarChip(); updateBudget();
   const venueCount=buildVenues(evs);
-  const qw = state.q ? state.q.split(/\s+/) : null;
+  // search: punctuation-blind (AC/DC = acdc = ac dc), and the show's type and genres count too ("comedy", "jazz", "rave")
+  const qS=s=>s.replace(/[^a-z0-9 ]+/g,"");
+  const qw = state.q ? qS(state.q).split(/\s+/).filter(Boolean) : null;
+  const KW={club:"club dj nightlife rave",festival:"festival rave",comedy:"comedy standup stand up",theater:"theater theatre arts musical",openmic:"open mic",dance:"ecstatic dance",contact:"contact improv",sound:"sound bath",drum:"drum circle",social:"dance social salsa swing line",art:"art walk market",volunteer:"volunteer cleanup",concert:"concert live music"};
   const mine = state.kind==="mymusic"&&window.SHACK_MUSIC ? SHACK_MUSIC.ids() : null;   // "Match My Music" list
-  evs=evs.filter(e=>!qw||(h=>qw.every(w=>h.includes(w)))(norm([e.title,e.artists,e.venue,e.city].join(" "))))
+  evs=evs.filter(e=>!qw||!qw.length||(h=>qw.every(w=>h.includes(w)))(qS(norm([e.title,e.artists,e.venue,e.city,KW[e.kind]||e.kind,(e.genres||[]).join(" "),(e.genres||[]).includes("hiphop")?"hip hop rap rnb":""].join(" ")))))
     .filter(e=>state.venue==="all"||venueKey(e)===state.venue)
     .filter(e=>state.kind==="all"||(String(state.kind).startsWith("g:")?!!(GROUPS[state.kind.slice(2)]&&GROUPS[state.kind.slice(2)].has(e.kind)):state.kind==="starred"?state.stars.has(skey(e)):state.kind==="picks"?e.added:state.kind==="mymusic"?!!(mine&&mine.has(e.id)):state.kind==="rave"?isRave(e):e.kind===state.kind))
     .filter(e=>!state.sub||(state.sub==="dj"?(e.kind==="club"||(e.genres||[]).includes("electronic")):e.kind===state.sub))
@@ -547,7 +550,7 @@ function cardHtml(e){
         : chk!=null&&chk>STALE_DAYS?`<span class="badge stale">⚠️ Not re-checked since ${esc(fmtShort(e.updatedAt))} · confirm before you go</span>`:"");
     const ag = ageOf(e); const extraTags = (firstTimer(e)?`<span class="tag first">👋 First-timer friendly</span>`:"")+(isSmall(e)?`<span class="tag local">${ni("home")} Small &amp; local</span>`:"")+(ag?`<span class="tag age">${ag==="all"?"All ages":ag}</span>`:"")+(transitOf(e)?`<span class="tag transit">${ni("sprout")} ${transitOf(e)}</span>`:"");
     const apx=approxPin(e), mi=e._drive&&e._drive.miles<1?"<1":e._drive&&e._drive.miles;
-    const drv = e._drive ? `<span class="drive">${e._drive.real&&!apx?"":"~"}${fmtMins(e._drive.mins)} · ${apx&&mi!=="<1"?"~":""}${mi} mi</span>${apx?`<span class="pn">to ${esc(e.city)} center · exact spot not listed</span>`:""}` :(origin ? '<span class="na">n/a</span>' : '<span class="na">Set start point</span>');
+    const drv = e._drive ? `<span class="drive">${e._drive.real&&!apx?"":"~"}${fmtMins(e._drive.mins)} · ${apx&&mi!=="<1"?"~":""}${mi} mi</span>${apx?`<span class="pn">to ${esc(e.city)} center · exact spot not listed</span>`:""}` :(origin ? '<span class="na">n/a</span>' : '');
     const su=mic?signupOf(e):null, micTime=String(e.time||"").replace(/\s*\(?sign[- ]?up[^)]*\)?/i,"").trim();
     const time = mic ? `<span>${esc(e.recurrence?.text||"")}${micTime?" · "+esc(micTime):""}</span>${su!=null?`<span class="signup">${ni("mic")} Sign-up ${fmtClock(su)}</span>`:e.kind==="openmic"?`<span class="signup none">${ni("mic")} Sign-up: arrive early</span>`:""}` : e.time ? `<span>${esc(e.time)}</span>` : '<span class="na">Time TBA</span>';
     const tix=safeUrl(e.url)||(mic?null:safeUrl("https://www.google.com/search?q="+encodeURIComponent([e.title,e.venue,e.city,"tickets"].filter(Boolean).join(" "))));
@@ -587,7 +590,7 @@ function cardHtml(e){
         <button type="button" class="bmore" data-bmore="1" aria-expanded="false">Details</button>
       </div>
       <div class="links wide"><a href="${maps}" target="_blank" rel="noopener">Directions</a><a href="${maps.replace("travelmode=driving","travelmode=transit")}" target="_blank" rel="noopener">${ni("train")} Transit</a><a href="${esc(eatLink(e))}" target="_blank" rel="noopener">Eat nearby</a><button type="button" class="share" data-share="${esc(skey(e))}">Share</button>${listen}${canRm?`<button type="button" class="rm" data-rm="${esc(e.id)}">Remove</button>`:""}</div>${listenMenu}
-      <div class="sides"><div class="side l"><span class="sl">Price</span>${priceHtml}</div><div class="side r"><span class="sl">Drive</span>${drv}</div></div>${nightHtml}</div>
+      <div class="sides"><div class="side l"><span class="sl">Price</span>${priceHtml}</div>${drv?`<div class="side r"><span class="sl">Drive</span>${drv}</div>`:""}</div>${nightHtml}</div>
       ${backHtml(e,nc,fl)}</div></article>`;}
 function backHtml(e,nc,fl){
   const $=v=>"$"+Math.round(v), who=nc.n>1?`${nc.n} people`:"just you";

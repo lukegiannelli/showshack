@@ -26,7 +26,7 @@
 .ui-b header{border-radius:22px;clip-path:inset(0 round 22px);-webkit-clip-path:inset(0 round 22px);transform:translateZ(0)}
 .ui-b header::after{display:none}
 .ui-b .hutart::before,.ui-b .hutart::after{content:"";position:absolute;top:0;bottom:0;width:100%;background:url(header.jpg?v=5) center/100% 100% no-repeat;transform:scaleX(-1);pointer-events:none}
-.ui-b .hutart::before{right:100%}.ui-b .hutart::after{left:100%}
+.ui-b .hutart::before{right:calc(100% - 1px)}.ui-b .hutart::after{left:calc(100% - 1px)}
 .ui-b header .shack-share{background:linear-gradient(180deg,#FBE3A8 0%,#EFC27A 55%,#D99A4E 100%)}
 .ui-b header h1.shack-title{font-size:clamp(26px,8vw,46px)}
 .ui-b .shack-share{font-size:14px;padding:8px 16px}

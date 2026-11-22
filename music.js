@@ -167,7 +167,11 @@ function sectionHTML(){const r=matches(),has=ART.length,signed=window.SHACK_CLOU
     ${msg?`<p class="bset-msg" role="status">${E(msg)}</p>`:""}</section>`;}
 function redraw(){const el=$("bMusic");if(el){const box=el.closest(".binfo-in"),top=box?box.scrollTop:0,inp=el.querySelector('[data-mus="link"] input'),draft=inp?inp.value:"";
   el.outerHTML=sectionHTML();const ni=document.querySelector('#bMusic [data-mus="link"] input');if(ni&&draft&&adding)ni.value=draft;if(box)box.scrollTop=top;}}
-window.SHACK_MUSIC={sectionHTML,matches,ids:()=>matches().all||new Set()};
+const NM=s=>String(s||"").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/\s+/g," ").trim();
+// search → "Alert me": adds the name to your typed artists, which the daily reminders job already pings on ("Just announced")
+const watching=n=>!!(M&&M.typed.some(x=>NM(x)===NM(n)));
+function watch(n){n=String(n||"").trim().slice(0,80);if(!n||watching(n))return false;M=M||blank();M.typed=[n,...M.typed];save();changed();return true;}
+window.SHACK_MUSIC={sectionHTML,matches,ids:()=>matches().all||new Set(),watch,watching};
 
 /* ===== actions ===== */
 document.addEventListener("submit",async ev=>{const f=ev.target.closest("[data-mus]");if(!f)return;ev.preventDefault();ev.stopPropagation();const k=f.dataset.mus;
