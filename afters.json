@@ -30,7 +30,12 @@
 ],
 "lat": 33.88279,
 "lon": -117.9971,
-"geo": "place"
+"geo": "place",
+"gid": "ChIJEzxn_6gr3YARur8SMQwPAyw",
+"h": "Till 2 AM",
+"til": 26.0,
+"hs": "g",
+"hu": "2026-11-23"
 },
 {
 "n": "Thirsty Cow Korean BBQ",
@@ -120,11 +125,14 @@
 "Pinball",
 "DJs"
 ],
-"h": "Bar till 2 AM",
+"h": "Till 2 AM, closed Mon",
 "lat": 34.04531,
 "lon": -118.23725,
 "geo": "building",
-"til": 26
+"til": 26.0,
+"gid": "ChIJYRxXCTnGwoARRisFMg-cGS8",
+"hs": "g",
+"hu": "2026-11-23"
 },
 {
 "n": "Barcade LA",
@@ -342,9 +350,11 @@
 "lat": 33.71467,
 "lon": -117.95363,
 "geo": "leisure",
-"h": "Till ~10:30–11 PM",
-"til": 23,
-"hq": "~"
+"h": "Till 1 AM, 10:30 PM Mon, Sun, 11 PM Tue, midnight Wed–Thu",
+"til": 25.0,
+"gid": "ChIJQ_l_2xMn3YAR1ZZqloOnXJg",
+"hs": "g",
+"hu": "2026-11-23"
 },
 {
 "n": "Saddleback Lanes",
@@ -628,9 +638,11 @@
 "lat": 34.1092,
 "lon": -118.19396,
 "geo": "amenity",
-"h": "5 PM till ~midnight–2 AM",
-"til": 26,
-"hq": "~"
+"h": "Till 2 AM, midnight Mon–Tue, Sun",
+"til": 26.0,
+"gid": "ChIJ36O7Uy7FwoAR7Evqwm__aBw",
+"hs": "g",
+"hu": "2026-11-23"
 },
 {
 "n": "Tabula Rasa Bar",
@@ -745,7 +757,12 @@
 "t": [],
 "lat": 32.70877,
 "lon": -117.15756,
-"geo": "amenity"
+"geo": "amenity",
+"gid": "ChIJ39AhwltT2YAR0TQjJjCB95I",
+"h": "Open 24 hours",
+"til": 30,
+"hs": "g",
+"hu": "2026-11-23"
 },
 {
 "n": "The Rooftop Bar at Mission Pacific",
@@ -1354,11 +1371,13 @@
 ],
 "lat": 34.04997,
 "lon": -118.24008,
-"h": "11 AM to 10 PM (midnight Fri and Sat)",
-"til": 24,
-"hq": "~",
+"h": "Till 10 PM, midnight Fri–Sat",
+"til": 24.0,
 "geo": "amenity",
-"src": "osm"
+"src": "osm",
+"gid": "ChIJZ_1uw0fGwoARfKCD7TFSP8U",
+"hs": "g",
+"hu": "2026-11-23"
 },
 {
 "n": "Kitakata Ramen Ban Nai",
@@ -1656,7 +1675,12 @@
 "lat": 34.07194,
 "lon": -118.361,
 "geo": "amenity",
-"src": "osm"
+"src": "osm",
+"gid": "ChIJU4YaWjC5woARVQo20a_AX1A",
+"h": "Till 9 PM, midnight Fri–Sat",
+"til": 24.0,
+"hs": "g",
+"hu": "2026-11-23"
 },
 {
 "n": "House of Pies",
@@ -1912,15 +1936,17 @@
 ],
 "lat": 34.06239,
 "lon": -118.3413,
-"h": "11 AM to 10 PM (noon on weekends)",
-"til": 22,
-"hq": "~",
+"h": "Till 10 PM",
+"til": 22.0,
 "pp": [
 35,
 55
 ],
 "geo": "amenity",
-"src": "osm"
+"src": "osm",
+"gid": "ChIJqQ4Ix-C4woARVgFkT95yhko",
+"hs": "g",
+"hu": "2026-11-23"
 },
 {
 "n": "The Boiling Crab",
@@ -2393,11 +2419,14 @@
 ],
 "lat": 34.0493,
 "lon": -118.25352,
-"h": "Jazz Thu 7:30 to 9:30 PM",
-"hq": "~",
+"h": "Till 11:30 PM, 12:30 AM Fri–Sat",
 "u": "https://www.jazznearyou.com/losangeles/events/jazz-noir-trio-at-the-biltmore-los-angeles-on-july-23",
 "geo": "amenity",
-"src": "web"
+"src": "web",
+"gid": "ChIJq-DFobTHwoARLWXvwi_3XP4",
+"til": 24.5,
+"hs": "g",
+"hu": "2026-11-23"
 },
 {
 "n": "Amigo Room at Ace Hotel Palm Springs",
@@ -2519,7 +2548,10 @@
 "til": 21,
 "hq": "~",
 "geo": "amenity",
-"src": "osm"
+"src": "osm",
+"gid": "ChIJH9NyqorPwoARWCSv2H8V7pQ",
+"gone": 1,
+"hu": "2026-11-23"
 },
 {
 "n": "Din Tai Fung",
@@ -2533,11 +2565,13 @@
 ],
 "lat": 34.13517,
 "lon": -118.05189,
-"h": "11 AM to 9:30 PM (10 PM Fri and Sat)",
-"til": 22,
-"hq": "~",
+"h": "Till 10 PM, 10:30 PM Fri–Sat",
+"til": 22.5,
 "geo": "amenity",
-"src": "osm"
+"src": "osm",
+"gid": "ChIJ4TCvJKXbwoARrL4iN9Mk2xY",
+"hs": "g",
+"hu": "2026-11-23"
 },
 {
 "n": "Jitlada",
@@ -2902,11 +2936,13 @@
 ],
 "lat": 32.74862,
 "lon": -117.12843,
-"h": "Mon–Fri 4 PM to 10 PM; Sat–Sun 11 AM to 1 AM",
-"til": 25,
-"hq": "~",
+"h": "Till 10 PM, 9 PM Sun, midnight Thu, 2 AM Fri–Sat",
+"til": 26.0,
 "geo": "amenity",
-"src": "osm"
+"src": "osm",
+"gid": "ChIJoQ7H2JFV2YARezL5-t97vtI",
+"hs": "g",
+"hu": "2026-11-23"
 },
 {
 "n": "So Saap",
@@ -2992,11 +3028,13 @@
 ],
 "lat": 32.70958,
 "lon": -117.15583,
-"h": "11 AM to 11 PM",
-"til": 23,
-"hq": "~",
+"h": "Till 10 PM",
+"til": 22.0,
 "geo": "amenity",
-"src": "osm"
+"src": "osm",
+"gid": "ChIJ4QRo2K5T2YAR6m0tXq8mYYM",
+"hs": "g",
+"hu": "2026-11-23"
 },
 {
 "n": "Crab City Cajun Seafood & Bar",
@@ -3084,11 +3122,13 @@
 ],
 "lat": 32.72381,
 "lon": -117.16817,
-"h": "11 AM to 9:30 PM",
-"til": 21.5,
-"hq": "~",
+"h": "Till 9 PM, 10 PM Fri–Sat",
+"til": 22.0,
 "geo": "amenity",
-"src": "osm"
+"src": "osm",
+"gid": "ChIJZfEOBrJU2YARhgtI2_fjDQw",
+"hs": "g",
+"hu": "2026-11-23"
 },
 {
 "n": "Flamin' Pho & Sushi Bar",
@@ -3102,11 +3142,13 @@
 ],
 "lat": 32.72214,
 "lon": -117.15948,
-"h": "11 AM to 8:30 PM",
-"til": 20.5,
-"hq": "~",
+"h": "Till 9 PM, 10 PM Fri–Sat",
+"til": 22.0,
 "geo": "amenity",
-"src": "osm"
+"src": "osm",
+"gid": "ChIJS0KTGsJV2YARZ5mZkyb5LXc",
+"hs": "g",
+"hu": "2026-11-23"
 },
 {
 "n": "Min Sok Chon",
@@ -3248,11 +3290,13 @@
 ],
 "lat": 33.98198,
 "lon": -117.37416,
-"h": "Mon–Wed 11 AM to 10 PM; Thu 11 AM to 11 PM; Fri–Sat 11 AM to 2 AM; Sun 11 AM to 9 PM",
-"til": 26,
-"hq": "~",
+"h": "Till 10 PM, 11:30 PM Fri–Sat",
+"til": 23.5,
 "geo": "amenity",
-"src": "osm"
+"src": "osm",
+"gid": "ChIJIQfiZPWx3IARBp40JpscNDs",
+"hs": "g",
+"hu": "2026-11-23"
 },
 {
 "n": "Palenque Kitchen by Mezcal",
@@ -3342,11 +3386,13 @@
 ],
 "lat": 33.47912,
 "lon": -117.13651,
-"h": "8 AM to 10 PM",
-"til": 22,
-"hq": "~",
+"h": "Till 10 PM",
+"til": 22.0,
 "geo": "amenity",
-"src": "osm"
+"src": "osm",
+"gid": "ChIJ6Sq_Tdl_24AR3cLU6IfQQHc",
+"hs": "g",
+"hu": "2026-11-23"
 },
 {
 "n": "Algoberto's Taco Shop",
@@ -3616,11 +3662,13 @@
 ],
 "lat": 33.79718,
 "lon": -116.38742,
-"h": "9 AM to 8 PM",
-"til": 20,
-"hq": "~",
+"h": "Till 8 PM, closed Sun",
+"til": 20.0,
 "geo": "amenity",
-"src": "osm"
+"src": "osm",
+"gid": "ChIJBZ6Qsjv92oARniHYB3NW580",
+"hs": "g",
+"hu": "2026-11-23"
 },
 {
 "n": "Birrierias Sinaloa",

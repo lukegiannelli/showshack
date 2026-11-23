@@ -13,7 +13,12 @@
 "lat": 33.80477,
 "lon": -117.86699,
 "geo": "place",
-"a": "1096 N Main St"
+"a": "1096 N Main St",
+"gid": "ChIJFYr48nHX3IARLuwb48pFgsk",
+"h": "Till 2 AM",
+"til": 26.0,
+"hs": "g",
+"hu": "2026-11-23"
 },
 {
 "n": "The Classic Q",
@@ -40,7 +45,12 @@
 "lat": 33.6672,
 "lon": -117.86801,
 "geo": "building",
-"a": "4229 Birch St"
+"a": "4229 Birch St",
+"gid": "ChIJ7ebZs9jf3IARxEYOh8JGrhc",
+"h": "Till 11 PM",
+"til": 23.0,
+"hs": "g",
+"hu": "2026-11-23"
 },
 {
 "n": "Aloha Family Billiards",
@@ -194,7 +204,12 @@
 "lat": 33.83271,
 "lon": -118.16003,
 "geo": "place",
-"a": "4125 Paramount Blvd"
+"a": "4125 Paramount Blvd",
+"gid": "ChIJRXghW60z3YARdwrv53XkoNE",
+"h": "Till 2 AM",
+"til": 26.0,
+"hs": "g",
+"hu": "2026-11-23"
 },
 {
 "n": "Long Beach Port Pool Billiard",
@@ -392,7 +407,12 @@
 ],
 "lat": 34.10056,
 "lon": -118.09086,
-"geo": "place"
+"geo": "place",
+"gid": "ChIJWXVDdN7awoARZRbQmw8hhDE",
+"h": "Till 2 AM",
+"til": 26.0,
+"hs": "g",
+"hu": "2026-11-23"
 },
 {
 "n": "Vermont Karaoke & Billiards",
@@ -443,7 +463,12 @@
 ],
 "lat": 34.10651,
 "lon": -117.86721,
-"geo": "place"
+"geo": "place",
+"gid": "ChIJL3bhN44ow4AR5cCSXFPpZSE",
+"h": "Till 1 AM, midnight Sun, 1:30 AM Fri",
+"til": 25.5,
+"hs": "g",
+"hu": "2026-11-23"
 },
 {
 "n": "College Billiards",
@@ -698,7 +723,12 @@
 "a": "3046 Bristol St",
 "lat": 33.68161,
 "lon": -117.88537,
-"geo": "amenity"
+"geo": "amenity",
+"gid": "ChIJhSSy3Bjf3IARtZFtDErE4IM",
+"h": "Till 2 AM",
+"til": 26.0,
+"hs": "g",
+"hu": "2026-11-23"
 },
 {
 "n": "Patrick's Irish Pub",
@@ -738,7 +768,12 @@
 "a": "1830 Newport Blvd",
 "lat": 33.64051,
 "lon": -117.91963,
-"geo": "place"
+"geo": "place",
+"gid": "ChIJGZdoxY7f3IARFzUHoNXzJ28",
+"h": "Till 2 AM",
+"til": 26.0,
+"hs": "g",
+"hu": "2026-11-23"
 },
 {
 "n": "The Swinging Door Saloon",
