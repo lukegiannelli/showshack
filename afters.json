@@ -111,8 +111,10 @@
 "lon": -117.95485,
 "geo": "place",
 "h": "Till 2 AM",
-"til": 26,
-"hq": "~"
+"til": 26.0,
+"gid": "ChIJE6ao0m0n3YAR23RTKWcDOEE",
+"hs": "g",
+"hu": "2026-11-24"
 },
 {
 "n": "EightyTwo",
@@ -528,7 +530,10 @@
 "lat": 34.06379,
 "lon": -118.28689,
 "geo": "place",
-"til": 30
+"til": 30,
+"gid": "ChIJvY3Wk3DHwoARy5gFjroeVwY",
+"gone": 1,
+"hu": "2026-11-24"
 },
 {
 "n": "Spa Palace",
@@ -703,7 +708,9 @@
 "geo": "tourism",
 "h": "Till 9 PM, 11 PM Fri–Sat",
 "til": 23,
-"hq": "~"
+"hq": "~",
+"gid": "ChIJ2y1Dpbm6woARP3MtcSoZ8OI",
+"hu": "2026-11-24"
 },
 {
 "n": "Broken Shaker",
@@ -1403,11 +1410,13 @@
 ],
 "lat": 33.67632,
 "lon": -117.85562,
-"h": "11 AM to 9 PM",
-"til": 21,
-"hq": "~",
+"h": "Till 10 PM",
+"til": 22.0,
 "geo": "amenity",
-"src": "osm"
+"src": "osm",
+"gid": "ChIJF54QRfPe3IARev955iG3SXk",
+"hs": "g",
+"hu": "2026-11-24"
 },
 {
 "n": "Norms",
@@ -1492,11 +1501,13 @@
 ],
 "lat": 34.0466,
 "lon": -118.25065,
-"h": "9 AM to 10 PM (1:30 AM Fri and Sat)",
+"h": "Till 10 PM, 9 PM Sun, 1:30 AM Fri–Sat",
 "til": 25.5,
-"hq": "~",
 "geo": "amenity",
-"src": "osm"
+"src": "osm",
+"gid": "ChIJVfNmkUrGwoARPoiVkasCkqc",
+"hs": "g",
+"hu": "2026-11-24"
 },
 {
 "n": "Guisados",
@@ -1509,11 +1520,13 @@
 ],
 "lat": 34.08442,
 "lon": -118.38523,
-"h": "11 AM to midnight (2 AM Fri and Sat, 8 PM Sun)",
-"til": 26,
-"hq": "~",
+"h": "Till 10 PM, 9 PM Sun, 2 AM Fri–Sat",
+"til": 26.0,
 "geo": "amenity",
-"src": "osm"
+"src": "osm",
+"gid": "ChIJTe35kaW-woARPGxvfSXWZDE",
+"hs": "g",
+"hu": "2026-11-24"
 },
 {
 "n": "Taco Mesa",
@@ -1694,11 +1707,13 @@
 ],
 "lat": 34.10508,
 "lon": -118.29203,
-"h": "6:30 AM to 2 AM (3 AM Fri and Sat)",
-"til": 27,
-"hq": "~",
+"h": "Till 1 AM, 2 AM Fri–Sat",
+"til": 26.0,
 "geo": "amenity",
-"src": "osm"
+"src": "osm",
+"gid": "ChIJnSOQGa_AwoARVCBgUgjhlZA",
+"hs": "g",
+"hu": "2026-11-24"
 },
 {
 "n": "Mel's Drive-In",
@@ -1903,11 +1918,13 @@
 ],
 "lat": 34.06287,
 "lon": -118.2976,
-"h": "10 AM to 9 PM (10:30 PM Fri and Sat), closed Tue",
+"h": "Till 9 PM, 10 PM Thu, 10:30 PM Fri–Sat, closed Tue",
 "til": 22.5,
-"hq": "~",
 "geo": "amenity",
-"src": "osm"
+"src": "osm",
+"gid": "ChIJx5nRNIK4woARACjYThjJXB0",
+"hs": "g",
+"hu": "2026-11-24"
 },
 {
 "n": "Kobawoo House",
@@ -2031,11 +2048,13 @@
 ],
 "lat": 34.13345,
 "lon": -118.05304,
-"h": "11 AM to 10 PM (11 PM Fri and Sat)",
-"til": 23,
-"hq": "~",
+"h": "Till midnight, 1 AM Fri–Sat",
+"til": 25.0,
 "geo": "amenity",
-"src": "osm"
+"src": "osm",
+"gid": "ChIJ3xzY5LzbwoAR2cCqBGwfUzM",
+"hs": "g",
+"hu": "2026-11-24"
 },
 {
 "n": "Haidilao Hot Pot",
@@ -2049,7 +2068,12 @@
 "lat": 33.68775,
 "lon": -117.8342,
 "geo": "amenity",
-"src": "osm"
+"src": "osm",
+"gid": "ChIJXffy_pze3IART7nYLkq8YUg",
+"h": "Till midnight, 2 AM Fri–Sat",
+"til": 26.0,
+"hs": "g",
+"hu": "2026-11-24"
 },
 {
 "n": "Haidilao Hot Pot",
@@ -2064,7 +2088,12 @@
 "lat": 34.05961,
 "lon": -118.41883,
 "geo": "amenity",
-"src": "osm"
+"src": "osm",
+"gid": "ChIJ82pfBe27woARVYJAhWaHRV4",
+"h": "Till 11 PM, midnight Fri–Sat",
+"til": 24.0,
+"hs": "g",
+"hu": "2026-11-24"
 },
 {
 "n": "Haidilao Hot Pot",
@@ -2079,7 +2108,12 @@
 "lat": 32.87029,
 "lon": -117.21149,
 "geo": "amenity",
-"src": "osm"
+"src": "osm",
+"gid": "ChIJOTT025QH3IARjMLQjJsWlsg",
+"h": "Till midnight",
+"til": 24.0,
+"hs": "g",
+"hu": "2026-11-24"
 },
 {
 "n": "Shabu-Shabu House",
@@ -2271,7 +2305,12 @@
 "lat": 34.03377,
 "lon": -118.24192,
 "geo": "amenity",
-"src": "osm"
+"src": "osm",
+"gid": "ChIJt1RlQi_GwoARja7mYeFk2YI",
+"h": "Till 10:30 PM, closed Mon–Tue",
+"til": 22.5,
+"hs": "g",
+"hu": "2026-11-24"
 },
 {
 "n": "Orsa & Winston",
@@ -2585,11 +2624,13 @@
 ],
 "lat": 34.0986,
 "lon": -118.30402,
-"h": "11 AM to 3 PM and 5 to 10 PM, closed Mon",
-"til": 22,
-"hq": "~",
+"h": "Till 10 PM, closed Mon",
+"til": 22.0,
 "geo": "amenity",
-"src": "osm"
+"src": "osm",
+"gid": "ChIJsR6mEFS_woAR-bYcpwWGTSg",
+"hs": "g",
+"hu": "2026-11-24"
 },
 {
 "n": "Night + Market Song",
@@ -2687,11 +2728,13 @@
 ],
 "lat": 34.07032,
 "lon": -118.40499,
-"h": "9:30 AM to 11 PM (12:30 AM Fri and Sat)",
+"h": "Till 11 PM, midnight Thu, 12:30 AM Fri–Sat",
 "til": 24.5,
-"hq": "~",
 "geo": "amenity",
-"src": "osm"
+"src": "osm",
+"gid": "ChIJ1eGRCbS9woARq08h4tNkijk",
+"hs": "g",
+"hu": "2026-11-24"
 },
 {
 "n": "Prince Street Pizza",
@@ -2846,11 +2889,13 @@
 ],
 "lat": 34.05082,
 "lon": -118.24893,
-"h": "8 AM to 9 PM",
-"til": 21,
-"hq": "~",
+"h": "Till 9 PM",
+"til": 21.0,
 "geo": "amenity",
-"src": "osm"
+"src": "osm",
+"gid": "ChIJ53JDjkvGwoAR2NMG6_1OnUg",
+"hs": "g",
+"hu": "2026-11-24"
 },
 {
 "n": "Liberty Public Market",
@@ -3543,7 +3588,9 @@
 "lat": 34.07982,
 "lon": -117.71962,
 "geo": "amenity",
-"src": "osm"
+"src": "osm",
+"hu": "2026-11-24",
+"gmiss": 1
 },
 {
 "n": "Sanamluang Thai Cuisine",

@@ -79,7 +79,12 @@
 "lat": 33.75889,
 "lon": -118.01752,
 "geo": "place",
-"a": "6328 Westminster Blvd"
+"a": "6328 Westminster Blvd",
+"gid": "ChIJc5WXVKso3YARp9nDQ9r29Tk",
+"h": "Till 1 AM, 2 AM Fri–Sat, closed Mon",
+"til": 26.0,
+"hs": "g",
+"hu": "2026-11-24"
 },
 {
 "n": "Rack Cue Billiards",
@@ -182,7 +187,9 @@
 "lat": 33.74757,
 "lon": -117.89367,
 "geo": "building",
-"a": "1808 W 4th St"
+"a": "1808 W 4th St",
+"gid": "ChIJGyKJblnY3IARpx8EZNktGG0",
+"hu": "2026-11-24"
 },
 {
 "n": "The Bobkin",
@@ -255,7 +262,12 @@
 "lat": 33.8305,
 "lon": -118.02924,
 "geo": "building",
-"a": "9111 Valley View St"
+"a": "9111 Valley View St",
+"gid": "ChIJT6v7kqgu3YARnsE4IixHLco",
+"h": "Till 1 AM, 2 AM Fri–Sat",
+"til": 26.0,
+"hs": "g",
+"hu": "2026-11-24"
 },
 {
 "n": "Shooters",
@@ -350,7 +362,12 @@
 ],
 "lat": 34.15131,
 "lon": -118.4531,
-"geo": "building"
+"geo": "building",
+"gid": "ChIJb4kZocWXwoARiEKJJZJ3Vjk",
+"h": "Till 1:45 AM",
+"til": 25.8,
+"hs": "g",
+"hu": "2026-11-24"
 },
 {
 "n": "Highland Park Billiards",
@@ -363,7 +380,12 @@
 ],
 "lat": 34.12138,
 "lon": -118.20593,
-"geo": "place"
+"geo": "place",
+"gid": "ChIJZQLRMZHDwoARCYbXcjhimOk",
+"h": "Till 11 PM, midnight Fri–Sat",
+"til": 24.0,
+"hs": "g",
+"hu": "2026-11-24"
 },
 {
 "n": "Mr. Lucky's Billiards",
@@ -599,7 +621,9 @@
 "t": [],
 "lat": 33.4857,
 "lon": -117.14324,
-"geo": "osm-poi"
+"geo": "osm-poi",
+"hu": "2026-11-24",
+"gmiss": 1
 },
 {
 "n": "Stiix Billiards",
@@ -694,7 +718,12 @@
 ],
 "lat": 33.42666,
 "lon": -117.61213,
-"geo": "amenity"
+"geo": "amenity",
+"gid": "ChIJMbEn8W703IAR8pmkcIxv1L4",
+"h": "Till 2 AM",
+"til": 26.0,
+"hs": "g",
+"hu": "2026-11-24"
 },
 {
 "n": "The Huddle",
@@ -837,7 +866,10 @@
 "a": "17450 Bellflower Blvd",
 "lat": 33.8739,
 "lon": -118.12508,
-"geo": "place"
+"geo": "place",
+"gid": "ChIJFYB5O70y3YARVIaNCeAhKnc",
+"gone": 1,
+"hu": "2026-11-24"
 },
 {
 "n": "Stix Billiards Sports & Grill",
