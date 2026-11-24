@@ -1,6 +1,6 @@
 {
  "about": "Every venue the Show Shack covers, in one place. The daily refresh routine sweeps the venues checked longest ago (null = never) and writes back lastChecked, calendar and how. Add a venue here and the refresh picks it up.",
- "updated": "2026-11-23",
+ "updated": "2026-11-24",
  "venues": [
   {
    "name": "Acrisure Arena",
@@ -26,7 +26,7 @@
    ],
    "calendar": "https://www.ticketmaster.com/the-show-at-agua-caliente-casino-tickets-rancho-mirage/venue/74695",
    "how": "fetch blocked 11/22; WebSearch for 'The Show Agua Caliente 2027' surfaces ticketmaster venue page + eventticketscenter/stereoboard dated listings",
-   "listed": 33,
+   "listed": 32,
    "recurring": 0,
    "lastChecked": "2026-11-12"
   },
@@ -64,10 +64,10 @@
     "art"
    ],
    "calendar": "https://discoverpalmdesert.com/el-paseo-art-walk/",
-   "how": "fetch blocked 11/22; discoverpalmdesert.com: First Fridays 4-7 PM, seasonal (Nov-Apr/May). NBC PS confirmed Nov 2025 season return; time could be set to 4:00-7:00 PM.",
+   "how": "discoverpalmdesert page only has 2025-26 season",
    "listed": 1,
    "recurring": 1,
-   "lastChecked": "2026-11-12"
+   "lastChecked": "2026-11-24"
   },
   {
    "name": "Empire Polo Club",
@@ -104,10 +104,10 @@
     "volunteer"
    ],
    "calendar": "https://findfoodbank.org/volunteer-opportunities",
-   "how": "fetch blocked 11/22; search confirms volunteer page still live; shifts not re-verified",
+   "how": "shifts only on VolunteerHub calendar",
    "listed": 1,
    "recurring": 1,
-   "lastChecked": "2026-11-17"
+   "lastChecked": "2026-11-24"
   },
   {
    "name": "Palm Canyon Dr (Baristo–Amado)",
@@ -117,10 +117,10 @@
     "art"
    ],
    "calendar": "https://gaydesertguide.com/events/thursday-night-villagefest-2/var/ri-10.l-L1",
-   "how": "fetch blocked 11/22; VillageFest every Thu: 6-10 PM Oct-May, 7-10 PM Jun-Sep (NBC PS 2026 summer-hours story confirms still running). villagefest.org is official.",
+   "how": "villagefest.org via search: Thu 6–10 PM Oct–May",
    "listed": 1,
    "recurring": 1,
-   "lastChecked": "2026-11-12"
+   "lastChecked": "2026-11-24"
   },
   {
    "name": "Pappy & Harriet's",
@@ -143,10 +143,10 @@
     "art"
    ],
    "calendar": "https://www.discovercathedralcity.com/organizer/the-perez-art-district/",
-   "how": "fetch blocked 11/22; discovercathedralcity.com art category lists 4th Friday 4-7 PM walk (Sep-May) plus Second Saturday Showcase 11-3; NBC PS Oct 2026 segment shows district active. discovercathedralcity.com not fetchable",
+   "how": "Fourth Fridays page shows only old 2023 date",
    "listed": 1,
    "recurring": 1,
-   "lastChecked": "2026-11-12"
+   "lastChecked": "2026-11-24"
   },
   {
    "name": "Spotlight 29 Casino",
@@ -210,10 +210,10 @@
     "concert"
    ],
    "calendar": "https://www.livenation.com/venue/KovZpZAEA6eA/glen-helen-amphitheater-events",
-   "how": "fetch blocked 11/22; songkick fetches OK; livenation venue page is official",
+   "how": "livenation venue page via search",
    "listed": 1,
    "recurring": 0,
-   "lastChecked": "2026-11-16"
+   "lastChecked": "2026-11-24"
   },
   {
    "name": "Miramonte Winery",
@@ -223,10 +223,10 @@
     "social"
    ],
    "calendar": "https://www.temeculawines.org/events/winery-events/",
-   "how": "fetch blocked 11/22; temeculawines.org/event/11/... listings show salsa nights roughly monthly (1st/last Fri) through 2026-07-03 'Salsa Monte' 6-9 PM, all ages; nothing found after July 2026 and not clearly weekly anymore",
+   "how": "temeculawines.org calendar: live music only, salsa moved to Fazeli Cellars",
    "listed": 1,
    "recurring": 1,
-   "lastChecked": "2026-11-12"
+   "lastChecked": "2026-11-24"
   },
   {
    "name": "Morongo Casino Resort",
@@ -237,10 +237,10 @@
     "concert"
    ],
    "calendar": "https://www.morongocasinoresort.com/entertainment/calendar-of-events",
-   "how": "fetch blocked 11/22; Search only; official pages are /entertainment/calendar-of-events/<slug>; concerts50/eventworld snippets give 2027 dates and times",
-   "listed": 15,
+   "how": "songkick venue page (5 shown)",
+   "listed": 14,
    "recurring": 0,
-   "lastChecked": "2026-11-12"
+   "lastChecked": "2026-11-24"
   },
   {
    "name": "NOS Events Center",
@@ -319,10 +319,10 @@
     "art"
    ],
    "calendar": "https://artsconnectionnetwork.org/dtsb-art-walk",
-   "how": "fetch blocked 11/22; Arts Connection runs DTSB Art Walk quarterly (Mar 27, Jun 26, Sep 2026); their newsletter (arts-connection.kit.com) lists next walk Thu 2026-12-10, location TBA. The 12-18 date appears only on thecraf",
+   "how": "artsconnectionnetwork page stale (Mar 2026)",
    "listed": 1,
    "recurring": 0,
-   "lastChecked": "2026-11-12"
+   "lastChecked": "2026-11-24"
   },
   {
    "name": "Temecula Stampede",
@@ -413,10 +413,10 @@
     "club"
    ],
    "calendar": "https://academy.la",
-   "how": "fetch blocked 11/22; academy.la homepage lists events with per-event URLs (no times/prices); TM for prices",
-   "listed": 24,
+   "how": "songkick venue page (first 5 only); Tchami 12/30 unconfirmed",
+   "listed": 22,
    "recurring": 0,
-   "lastChecked": "2026-11-12"
+   "lastChecked": "2026-11-24"
   },
   {
    "name": "Ace Mission Studios",
@@ -466,10 +466,10 @@
     "concert"
    ],
    "calendar": "https://avalonhollywood.com",
-   "how": "fetch blocked 11/22; avalonhollywood.com homepage lists ~11 events with URLs; ?p=IDs from search show later ones; TM for prices",
-   "listed": 15,
+   "how": "livenation venue page via search lists all w/ ticketweb links",
+   "listed": 22,
    "recurring": 0,
-   "lastChecked": "2026-11-12"
+   "lastChecked": "2026-11-24"
   },
   {
    "name": "Blue Note Los Angeles",
@@ -479,10 +479,10 @@
     "concert"
    ],
    "calendar": "https://www.bluenotejazz.com/la/",
-   "how": "fetch blocked 11/22; bluenotejazz.com/la lists shows with tm-event URLs; gametime venue page (gametime.co/blue-note-la-tickets/venues/blue_note_la) gives sets, times & prices. More not yet added: Chrisette Michele 12/20, David Murray 12/21, Cory Henry 12/27, Seth MacFarlane 12/30-31, Fearless Flyers 1/19-20, Ladysmith 2/8-9, Joan Osborne 3/2-3",
-   "listed": 49,
+   "how": "gametime venue page via search (looked stale); official site JS",
+   "listed": 56,
    "recurring": 0,
-   "lastChecked": "2026-11-12"
+   "lastChecked": "2026-11-24"
   },
   {
    "name": "BMO Stadium",
@@ -492,10 +492,10 @@
     "concert"
    ],
    "calendar": "https://www.songkick.com/venues/3859524-bmo-stadium",
-   "how": "fetch blocked 11/22; songkick venue page; concerts rare (search for ticket listings)",
+   "how": "songkick venue page via search; same 2 shows",
    "listed": 2,
    "recurring": 0,
-   "lastChecked": "2026-11-16"
+   "lastChecked": "2026-11-24"
   },
   {
    "name": "Catalina Jazz Club",
@@ -519,10 +519,10 @@
     "art"
    ],
    "calendar": "https://www.pvaa.net/new-art-walk-page",
-   "how": "fetch blocked 11/22; PVAA art walk page: 1st Saturday monthly 5-8 PM, free",
+   "how": "pvaa.net art walk page via search: 1st Sat 5–8 PM free",
    "listed": 1,
    "recurring": 1,
-   "lastChecked": "2026-11-12"
+   "lastChecked": "2026-11-24"
   },
   {
    "name": "Contact Improv LA jam (Santa Monica)",
@@ -559,10 +559,10 @@
     "theater"
    ],
    "calendar": "https://gametime.co/crypto-com-arena-tickets/venues/staples_center",
-   "how": "fetch blocked 11/22; cryptoarena.com/events is sports-heavy with Load More; gametime venue page lists every non-sports date with prices",
-   "listed": 15,
+   "how": "gametime venue page via search; prices",
+   "listed": 16,
    "recurring": 0,
-   "lastChecked": "2026-11-12"
+   "lastChecked": "2026-11-24"
   },
   {
    "name": "Dolby Theatre",
@@ -601,10 +601,10 @@
     "concert"
    ],
    "calendar": "https://www.theecho.com/",
-   "how": "fetch blocked 11/22; theecho.com homepage has TM event URLs ~2 weeks out; gametime venue page for later dates & prices",
+   "how": "gametime venue page via search",
    "listed": 26,
    "recurring": 0,
-   "lastChecked": "2026-11-12"
+   "lastChecked": "2026-11-24"
   },
   {
    "name": "El Rey Theatre",
@@ -640,10 +640,10 @@
     "art"
    ],
    "calendar": "https://melrosetradingpost.org/",
-   "how": "fetch blocked 11/22; melrosetradingpost.org fetches: open every Sunday 10-5; Holiday Kick-Off Nov 29",
+   "how": "melrosetradingpost.org via search; Merry Melrose Sundays Nov 29–Dec 27 $6",
    "listed": 1,
    "recurring": 1,
-   "lastChecked": "2026-11-12"
+   "lastChecked": "2026-11-24"
   },
   {
    "name": "Fox Theater Pomona",
@@ -655,7 +655,7 @@
    ],
    "calendar": "https://www.foxpomona.com/",
    "how": "fetch blocked 11/22; foxpomona.com homepage fetches with AXS event URLs; gametime/AXS venue pages unusable",
-   "listed": 8,
+   "listed": 6,
    "recurring": 0,
    "lastChecked": "2026-11-12"
   },
@@ -667,10 +667,10 @@
     "art"
    ],
    "calendar": "https://www.timeout.com/los-angeles/things-to-do/downtown-los-angeles-art-walk",
-   "how": "fetch blocked 11/22; no official DTLA Art Walk site found; 2026 schedule unconfirmed",
+   "how": "no official 2026-27 schedule found",
    "listed": 1,
    "recurring": 1,
-   "lastChecked": "2026-11-12"
+   "lastChecked": "2026-11-24"
   },
   {
    "name": "Geffen Playhouse",
@@ -680,10 +680,10 @@
     "theater"
    ],
    "calendar": "https://www.geffenplayhouse.org/",
-   "how": "fetch blocked 11/22; geffenplayhouse.org homepage fetches with run dates for every production",
+   "how": "geffenplayhouse.org season page via search",
    "listed": 5,
    "recurring": 0,
-   "lastChecked": "2026-11-12"
+   "lastChecked": "2026-11-24"
   },
   {
    "name": "Gloria Molina Grand Park",
@@ -693,10 +693,10 @@
     "concert"
    ],
    "calendar": "https://grandparkla.org/nyela",
-   "how": "fetch blocked 11/22; grandparkla.org fetches fine (NYELA); tickpick for ticketed shows",
+   "how": "grandparkla.org/nyela via search",
    "listed": 2,
    "recurring": 0,
-   "lastChecked": "2026-11-16"
+   "lastChecked": "2026-11-24"
   },
   {
    "name": "Gold-Diggers",
@@ -720,10 +720,10 @@
     "concert"
    ],
    "calendar": "https://www.songkick.com/venues/523-greek-theatre",
-   "how": "fetch blocked 11/22; Songkick venue page fetches with full list; gametime event pages give times (prices don't load)",
+   "how": "songkick venue page (only first 5 shown)",
    "listed": 7,
    "recurring": 0,
-   "lastChecked": "2026-11-12"
+   "lastChecked": "2026-11-24"
   },
   {
    "name": "Heritage Square",
@@ -799,10 +799,10 @@
     "theater"
    ],
    "calendar": "https://broadwayinhollywood.com/venues/detail/pantagestheatre",
-   "how": "fetch blocked 11/22; broadwayinhollywood.com venue page lists full season with date ranges; ticketmaster venue page stale. Run dates given as start/end (individual performances not listed)",
-   "listed": 13,
+   "how": "broadwayinhollywood.com venue page via search; run end dates",
+   "listed": 12,
    "recurring": 0,
-   "lastChecked": "2026-11-13"
+   "lastChecked": "2026-11-24"
   },
   {
    "name": "Kia Forum",
@@ -868,7 +868,7 @@
    ],
    "calendar": "https://www.laughfactory.com/clubs/hollywood",
    "how": "fetch blocked 11/22; gametime.co venue page; lists Saturday Night All Stars 7:30/9:45 weekly",
-   "listed": 6,
+   "listed": 5,
    "recurring": 0,
    "lastChecked": "2026-11-13"
   },
@@ -932,10 +932,10 @@
     "theater"
    ],
    "calendar": "https://www.centertheatregroup.org/shows-tickets/venues/mark-taper-forum/",
-   "how": "fetch blocked 11/22; gametime venue page lists all performances (no URLs/links in fetch); CTG site gives no dates",
-   "listed": 26,
+   "how": "gametime venue page via search",
+   "listed": 24,
    "recurring": 0,
-   "lastChecked": "2026-11-13"
+   "lastChecked": "2026-11-24"
   },
   {
    "name": "Moroccan Lounge",
@@ -945,10 +945,10 @@
     "concert"
    ],
    "calendar": "https://www.themoroccan.com/",
-   "how": "fetch blocked 11/22; ticketmaster venue page stale (2026 Jan); concerts.consequence.net venue page lists current shows (no prices)",
-   "listed": 39,
+   "how": "songkick (first 5 only); try livenation/official next",
+   "listed": 36,
    "recurring": 0,
-   "lastChecked": "2026-11-13"
+   "lastChecked": "2026-11-24"
   },
   {
    "name": "Ontario Museum of History & Art",
@@ -959,7 +959,7 @@
    ],
    "calendar": "https://www.ontariomuseum.org/",
    "how": "fetch blocked 11/22; WebFetch blocked; not verified",
-   "listed": 1,
+   "listed": 0,
    "recurring": 0,
    "lastChecked": "2026-11-13"
   },
@@ -973,10 +973,10 @@
     "theater"
    ],
    "calendar": "https://www.laorpheum.com/",
-   "how": "fetch blocked 11/22; gametime venue page lists 22 events with prices (no event URLs); songkick venue page shows cancellations",
-   "listed": 24,
+   "how": "gametime venue page (search result) gives prices for all shows",
+   "listed": 23,
    "recurring": 0,
-   "lastChecked": "2026-11-13"
+   "lastChecked": "2026-11-24"
   },
   {
    "name": "Oxnard Performing Arts Center",
@@ -986,10 +986,10 @@
     "concert"
    ],
    "calendar": "https://www.oxnardpac.com/",
-   "how": "fetch blocked 11/22; songkick venue page lists upcoming; tickpick/vividseats/etickets for event pages",
+   "how": "songkick venue page via search; 5 upcoming, no times/prices",
    "listed": 7,
    "recurring": 0,
-   "lastChecked": "2026-11-13"
+   "lastChecked": "2026-11-24"
   },
   {
    "name": "Pasadena Ballroom Dance Association",
@@ -999,10 +999,10 @@
     "social"
    ],
    "calendar": "https://pbda.dance",
-   "how": "fetch blocked 11/22; WebFetch blocked; not verified",
+   "how": "swingdance.la/pbda via search: Sat lesson 7:30, dance 8–11:30, ~$25",
    "listed": 1,
    "recurring": 1,
-   "lastChecked": "2026-11-13"
+   "lastChecked": "2026-11-24"
   },
   {
    "name": "Pasadena Masonic Hall",
@@ -1012,10 +1012,10 @@
     "social"
    ],
    "calendar": "https://lindygroove.la",
-   "how": "fetch blocked 11/22; WebFetch blocked; not verified",
+   "how": "swingdance.la/lindygroove via search; Nov 26 dark",
    "listed": 1,
    "recurring": 1,
-   "lastChecked": "2026-11-13"
+   "lastChecked": "2026-11-24"
   },
   {
    "name": "Pasadena Playhouse",
@@ -1025,10 +1025,10 @@
     "theater"
    ],
    "calendar": "https://www.pasadenaplayhouse.org/",
-   "how": "fetch blocked 11/22; WebFetch of pasadenaplayhouse.org/?p=24918 (2026/27 season page) works",
+   "how": "season page via search",
    "listed": 4,
    "recurring": 0,
-   "lastChecked": "2026-11-13"
+   "lastChecked": "2026-11-24"
   },
   {
    "name": "Peacock Theater",
@@ -1038,10 +1038,10 @@
     "concert"
    ],
    "calendar": "https://www.peacocktheater.com/events",
-   "how": "fetch blocked 11/22; Official site blocked; songkick venue page + gametime venue page (prices, no per-event URLs) worked",
-   "listed": 8,
+   "how": "gametime venue page via search; 11/25 shows \"Smoke Me Out\" (ours: Legado 7), 11/27 Tierra Cali & 12/13 Armenian Music Awards not shown",
+   "listed": 7,
    "recurring": 0,
-   "lastChecked": "2026-11-13"
+   "lastChecked": "2026-11-24"
   },
   {
    "name": "Pomona Arts Colony",
@@ -1064,10 +1064,10 @@
     "festival"
    ],
    "calendar": "https://app.discotech.me/los-angeles/reframe-studios",
-   "how": "fetch blocked 11/22; discotech venue page lists events (no prices); technoairlines blocked as URL source",
+   "how": "discotech venue page via search (no prices)",
    "listed": 6,
    "recurring": 0,
-   "lastChecked": "2026-11-13"
+   "lastChecked": "2026-11-24"
   },
   {
    "name": "Regent Theater",
@@ -1077,10 +1077,10 @@
     "concert"
    ],
    "calendar": "https://www.songkick.com/venues/36035-regent-theater/calendar",
-   "how": "fetch blocked 11/22; songkick venue /calendar page via WebFetch gives full list; ticketmaster page is stale (2025)",
-   "listed": 32,
+   "how": "songkick first 5; Strawberry Fuzz x Plague Vendor 11/27 seen on consequence.net only (unconfirmed)",
+   "listed": 33,
    "recurring": 0,
-   "lastChecked": "2026-11-13"
+   "lastChecked": "2026-11-24"
   },
   {
    "name": "Rose Bowl Stadium",
@@ -1091,10 +1091,10 @@
     "concert"
    ],
    "calendar": "https://seatgeek.com/venues/rose-bowl-stadium/tickets",
-   "how": "fetch blocked 11/22; seatgeek venue page via WebFetch lists events with prices and URLs",
+   "how": "seatgeek venue page via search has prices",
    "listed": 9,
    "recurring": 1,
-   "lastChecked": "2026-11-13"
+   "lastChecked": "2026-11-24"
   },
   {
    "name": "ROW DTLA",
@@ -1104,10 +1104,10 @@
     "art"
    ],
    "calendar": "https://la.smorgasburg.com/info",
-   "how": "fetch blocked 11/22; la.smorgasburg.com/info: open every Sunday 10 AM-4 PM at 777 Alameda St",
+   "how": "la.smorgasburg.com/info via search: Sundays 10–4",
    "listed": 1,
    "recurring": 1,
-   "lastChecked": "2026-11-13"
+   "lastChecked": "2026-11-24"
   },
   {
    "name": "Royce Hall",
@@ -1117,10 +1117,10 @@
     "theater"
    ],
    "calendar": "https://cap.ucla.edu/calendar",
-   "how": "fetch blocked 11/22; cap.ucla.edu/calendar blocked; CAP season PDF via search lists Royce dates",
-   "listed": 2,
+   "how": "cap.ucla.edu season page via search",
+   "listed": 1,
    "recurring": 0,
-   "lastChecked": "2026-11-16"
+   "lastChecked": "2026-11-24"
   },
   {
    "name": "Sepulveda Basin Wildlife Reserve",
@@ -1156,10 +1156,10 @@
     "concert"
    ],
    "calendar": "https://songkick.com/venues/4351030-sofi-stadium",
-   "how": "fetch blocked 11/22; songkick venue page via WebFetch; Usher 11/16 second show canceled",
+   "how": "songkick venue page via search",
    "listed": 4,
    "recurring": 0,
-   "lastChecked": "2026-11-13"
+   "lastChecked": "2026-11-24"
   },
   {
    "name": "Soho Dance LA",
@@ -1222,10 +1222,10 @@
     "club"
    ],
    "calendar": "https://www.vividseats.com/city-market-of-los-angeles-tickets/venue/28316",
-   "how": "fetch blocked 11/22; Vividseats venue page via WebFetch; only one event listed.",
+   "how": "vividseats venue page: no upcoming",
    "listed": 0,
    "recurring": 0,
-   "lastChecked": "2026-11-13"
+   "lastChecked": "2026-11-24"
   },
   {
    "name": "The Comedy Store",
@@ -1408,10 +1408,10 @@
     "social"
    ],
    "calendar": "https://www.eventbrite.com/e/1431019791719",
-   "how": "fetch blocked 11/22; Eventbrite 'Salsa & Bachata at the Victorian' event pages found via search; not fetched (budget). Dated weekly instances not verified.",
+   "how": "Eventbrite only showed an ended May 2026 instance; no future weeks",
    "listed": 1,
    "recurring": 1,
-   "lastChecked": "2026-11-13"
+   "lastChecked": "2026-11-24"
   },
   {
    "name": "The Viper Room",
@@ -1486,10 +1486,10 @@
     "volunteer"
    ],
    "calendar": "https://ventura.surfrider.org",
-   "how": "fetch blocked 11/22; Not researched this run (budget).",
+   "how": "ventura.surfrider.org page via search: Dec 12 last 2026 date",
    "listed": 1,
    "recurring": 1,
-   "lastChecked": "2026-11-13"
+   "lastChecked": "2026-11-24"
   },
   {
    "name": "Walt Disney Concert Hall",
@@ -1866,10 +1866,10 @@
     "volunteer"
    ],
    "calendar": "https://www.coastkeeper.org/ccd",
-   "how": "fetch blocked 11/22; coastkeeper.org/ccd fetched OK; shows HB cleanups Nov 14 and Dec 12 (9-11 AM) only, no 2027 dates yet. Both already listed; recheck monthly for new dates.",
+   "how": "coastkeeper.org/ccd via search",
    "listed": 1,
    "recurring": 0,
-   "lastChecked": "2026-11-14"
+   "lastChecked": "2026-11-24"
   },
   {
    "name": "Huntington City Beach",
@@ -2077,10 +2077,10 @@
     "social"
    ],
    "calendar": "https://www.meetup.com/oc-salsa-meetup/",
-   "how": "fetch blocked 11/22; meetup.com/oc-salsa-meetup fetched OK; shows only the next few classes at 16131 Harbor Blvd, Fountain Valley. Prices not shown.",
+   "how": "Meetup page showed 0 events",
    "listed": 1,
    "recurring": 1,
-   "lastChecked": "2026-11-14"
+   "lastChecked": "2026-11-24"
   },
   {
    "name": "Queen Mary Waterfront",
@@ -2090,10 +2090,10 @@
     "festival"
    ],
    "calendar": "https://www.tickpick.com/buy-dreamstate-socal-2-day-pass-tickets-queen-mary-waterfront-11-20-26-8pm/7958487/",
-   "how": "fetch blocked 11/22; tickpick event pages give prices for Dreamstate",
-   "listed": 1,
+   "how": "no upcoming after Dreamstate 11/20",
+   "listed": 0,
    "recurring": 0,
-   "lastChecked": "2026-11-16"
+   "lastChecked": "2026-11-24"
   },
   {
    "name": "Rosie's Dog Beach",
@@ -2366,10 +2366,10 @@
     "social"
    ],
    "calendar": "https://www.travelcostamesa.com/events/westwood-coast-21-line-dancing-lessons/",
-   "how": "fetch blocked 11/22; travelcostamesa.com lists Westwood Coast 21+ line-dance lessons; no dated details",
+   "how": "travelcostamesa listing: line dance lessons 8–10 PM 21+ through Dec 31",
    "listed": 2,
    "recurring": 2,
-   "lastChecked": "2026-11-15"
+   "lastChecked": "2026-11-24"
   },
   {
    "name": "Yee Lim Photography",
