@@ -10,10 +10,10 @@
     "concert"
    ],
    "calendar": "https://songkick.com/venues/4470709-acrisure-arena",
-   "how": "fetch blocked 11/23; Songkick venue page lists Jonas Brothers 11/17, Yuridia 2/11/27; official site shows no upcoming concerts",
+   "how": "Songkick venue page read; only Yuridia upcoming",
    "listed": 2,
    "recurring": 0,
-   "lastChecked": "2026-11-19"
+   "lastChecked": "2026-11-25"
   },
   {
    "name": "Agua Caliente Casino",
@@ -25,10 +25,10 @@
     "theater"
    ],
    "calendar": "https://www.ticketmaster.com/the-show-at-agua-caliente-casino-tickets-rancho-mirage/venue/74695",
-   "how": "fetch blocked 11/22; WebSearch for 'The Show Agua Caliente 2027' surfaces ticketmaster venue page + eventticketscenter/stereoboard dated listings",
+   "how": "Songkick venue page shows only 5 shows; axs fetch refused; nothing new confirmed",
    "listed": 32,
    "recurring": 0,
-   "lastChecked": "2026-11-12"
+   "lastChecked": "2026-11-25"
   },
   {
    "name": "Backstreet Art District",
@@ -76,11 +76,11 @@
    "kinds": [
     "festival"
    ],
-   "calendar": "https://www.coachella.com/",
-   "how": "fetch blocked 11/22; news searches on Coachella/Stagecoach 2027 passes; Coachella GA+shuttle $779, VIP $1349-1399, standalone GA sold out; Stagecoach Apr 23-25 2027 (Riley Green, Zach Top, Garth Brooks)",
+   "calendar": "https://gametime.co/empire-polo-club-tickets/venues/empire_polo_club",
+   "how": "gametime venue page via search result: Coachella Apr 9-11/16-18 and Stagecoach Apr 23-25 2027 confirmed; no price changes applied (resale from-prices)",
    "listed": 3,
    "recurring": 0,
-   "lastChecked": "2026-11-12"
+   "lastChecked": "2026-11-25"
   },
   {
    "name": "Fantasy Springs Resort Casino",
@@ -131,7 +131,7 @@
    ],
    "calendar": "https://songkick.com/venues/104336-pappy-and-harriets",
    "how": "Songkick venue page readable (shows next 5 only); official calendar/gametime WebFetch blocked 11/20",
-   "listed": 56,
+   "listed": 55,
    "recurring": 0,
    "lastChecked": "2026-11-20"
   },
@@ -158,7 +158,7 @@
    ],
    "calendar": "https://spotlight29.com/entertainment/",
    "how": "venue page → Ticketmaster (showroom) and Eventbrite (Chairman's Lounge comedy) | 11-19: official page fetch blocked; theater.guide confirmed 4 shows; Ticketmaster/consequence had nothing newer",
-   "listed": 14,
+   "listed": 12,
    "recurring": 0,
    "lastChecked": "2026-11-19"
   },
@@ -198,7 +198,7 @@
    ],
    "calendar": "https://www.ticketmaster.com/fox-performing-arts-center-billets-riverside/venue/90322",
    "how": "Songkick venue page via WebFetch (shows first 5 only)",
-   "listed": 15,
+   "listed": 14,
    "recurring": 0,
    "lastChecked": "2026-11-21"
   },
@@ -264,7 +264,7 @@
    ],
    "calendar": "https://improv.com/calendar/ontario/",
    "how": "WebSearch: tickpick event pages; comedy.tickets for prices",
-   "listed": 55,
+   "listed": 58,
    "recurring": 0,
    "lastChecked": "2026-11-21"
   },
@@ -279,7 +279,7 @@
    ],
    "calendar": "https://www.pechanga.com/entertain",
    "how": "americanarenas.com Summit page fetches (arena only); theater/comedy room not covered",
-   "listed": 18,
+   "listed": 17,
    "recurring": 0,
    "lastChecked": "2026-11-21"
   },
@@ -307,7 +307,7 @@
    ],
    "calendar": "https://soboba.com/entertainment/calendar",
    "how": "Official calendar not readable by fetch; Vivid Seats venue page lists the full calendar",
-   "listed": 11,
+   "listed": 9,
    "recurring": 0,
    "lastChecked": "2026-11-18"
   },
@@ -359,7 +359,7 @@
    ],
    "calendar": "https://seatgeek.com/venues/toyota-arena-ontario/tickets",
    "how": "concerts50 page fetched for dates only (not a URL source); seatgeek/gametime for tickets",
-   "listed": 13,
+   "listed": 14,
    "recurring": 0,
    "lastChecked": "2026-11-21"
   },
@@ -387,7 +387,7 @@
    ],
    "calendar": "https://www.temeculawines.org/events/winery-event-calendar.php",
    "how": "Temecula winegrowers calendar lists Wilson Creek events; no prices shown",
-   "listed": 4,
+   "listed": 3,
    "recurring": 0,
    "lastChecked": "2026-11-19"
   },
@@ -401,7 +401,7 @@
    ],
    "calendar": "https://gametime.co/yaamava-theater-tickets/venues/yaamava_theater",
    "how": "yaamava.com blocked (permission); gametime venue page listed full calendar; prices only added for next 60 days",
-   "listed": 49,
+   "listed": 46,
    "recurring": 0,
    "lastChecked": "2026-11-18"
   },
@@ -440,7 +440,7 @@
    ],
    "calendar": "https://admin.centertheatregroup.org/shows-tickets/venues/ahmanson-theatre/",
    "how": "admin.centertheatregroup.org venue page WebFetch works (www blocked)",
-   "listed": 5,
+   "listed": 4,
    "recurring": 0,
    "lastChecked": "2026-11-21"
   },
@@ -480,7 +480,7 @@
    ],
    "calendar": "https://www.bluenotejazz.com/la/",
    "how": "gametime venue page via search (looked stale); official site JS",
-   "listed": 56,
+   "listed": 55,
    "recurring": 0,
    "lastChecked": "2026-11-24"
   },
@@ -507,7 +507,7 @@
    ],
    "calendar": "https://songkick.com/venues/242-catalina-bar-and-grill/calendar",
    "how": "venue page → ticketweb links with prices | 11-19: Official site fetch blocked; Songkick calendar used (no times/prices)",
-   "listed": 32,
+   "listed": 28,
    "recurring": 0,
    "lastChecked": "2026-11-19"
   },
@@ -575,7 +575,7 @@
    ],
    "calendar": "https://www.dolbytheatre.com/events",
    "how": "WebSearch only (tickpick pages); official site blocked",
-   "listed": 22,
+   "listed": 21,
    "recurring": 0,
    "lastChecked": "2026-11-21"
   },
@@ -602,7 +602,7 @@
    ],
    "calendar": "https://www.theecho.com/",
    "how": "gametime venue page via search",
-   "listed": 26,
+   "listed": 25,
    "recurring": 0,
    "lastChecked": "2026-11-24"
   },
@@ -615,7 +615,7 @@
    ],
    "calendar": "https://songkick.com/venues/1039-el-rey-theatre",
    "how": "Songkick venue page readable (shows next 5 only); official calendar/gametime WebFetch blocked 11/20",
-   "listed": 29,
+   "listed": 25,
    "recurring": 0,
    "lastChecked": "2026-11-20"
   },
@@ -654,10 +654,10 @@
     "concert"
    ],
    "calendar": "https://www.foxpomona.com/",
-   "how": "fetch blocked 11/22; foxpomona.com homepage fetches with AXS event URLs; gametime/AXS venue pages unusable",
+   "how": "gametime/axs fetch returned no events; songkick lists existing shows; 03 Greedo 2026-11-27 seen on songkick only, unconfirmed so not added",
    "listed": 6,
    "recurring": 0,
-   "lastChecked": "2026-11-12"
+   "lastChecked": "2026-11-25"
   },
   {
    "name": "Gallery Row",
@@ -681,7 +681,7 @@
    ],
    "calendar": "https://www.geffenplayhouse.org/",
    "how": "geffenplayhouse.org season page via search",
-   "listed": 5,
+   "listed": 4,
    "recurring": 0,
    "lastChecked": "2026-11-24"
   },
@@ -708,7 +708,7 @@
    ],
    "calendar": "https://gold-diggers.com/",
    "how": "venue page → link.dice.fm links with prices (golddiggers.la is NOT their site) | 11-19: gold-diggers.com and dice venue page fetch blocked; search results stale (2025/Aug 2026 only); no changes verified",
-   "listed": 15,
+   "listed": 8,
    "recurring": 0,
    "lastChecked": "2026-11-19"
   },
@@ -746,10 +746,10 @@
     "club"
    ],
    "calendar": "https://thehollywoodchristmasparade.org",
-   "how": "fetch blocked 11/22; public-street events: official parade site; ticketed shows via tickpick/vividseats search results",
+   "how": "official parade site fetched: parade confirmed Sun 2026-11-29; Solomun tickpick page fetch failed",
    "listed": 2,
    "recurring": 0,
-   "lastChecked": "2026-11-12"
+   "lastChecked": "2026-11-25"
   },
   {
    "name": "Hollywood Bowl",
@@ -773,7 +773,7 @@
    ],
    "calendar": "https://improv.com/hollywood/calendar/",
    "how": "WebSearch: tickpick event pages; improv.com blocked by WebFetch",
-   "listed": 19,
+   "listed": 15,
    "recurring": 0,
    "lastChecked": "2026-11-21"
   },
@@ -787,7 +787,7 @@
    ],
    "calendar": "https://www.hollywoodpalladium.com/events",
    "how": "Songkick via WebFetch shows first 5 only; official site blocked",
-   "listed": 32,
+   "listed": 29,
    "recurring": 0,
    "lastChecked": "2026-11-21"
   },
@@ -814,7 +814,7 @@
    ],
    "calendar": "https://www.thekiaforum.com/events",
    "how": "songkick venue page via WebFetch (first 5 of 32); tickpick event pages via search",
-   "listed": 28,
+   "listed": 30,
    "recurring": 0,
    "lastChecked": "2026-11-21"
   },
@@ -839,11 +839,11 @@
     "club",
     "concert"
    ],
-   "calendar": "https://www.insomniac.com/events/",
-   "how": "fetch blocked 11/22; not researched (budget)",
-   "listed": 10,
+   "calendar": "https://www.insomniac.com/events/concerts/los-angeles-ca/",
+   "how": "insomniac.com LA concerts page fetched via search result; venue names not shown on page",
+   "listed": 23,
    "recurring": 0,
-   "lastChecked": "2026-11-13"
+   "lastChecked": "2026-11-25"
   },
   {
    "name": "Largo at the Coronet",
@@ -855,7 +855,7 @@
    ],
    "calendar": "https://largo-la.com/",
    "how": "Songkick via WebFetch; largo-la.com blocked",
-   "listed": 22,
+   "listed": 20,
    "recurring": 0,
    "lastChecked": "2026-11-21"
   },
@@ -868,7 +868,7 @@
    ],
    "calendar": "https://www.laughfactory.com/clubs/hollywood",
    "how": "fetch blocked 11/22; gametime.co venue page; lists Saturday Night All Stars 7:30/9:45 weekly",
-   "listed": 5,
+   "listed": 4,
    "recurring": 0,
    "lastChecked": "2026-11-13"
   },
@@ -894,7 +894,7 @@
    ],
    "calendar": "https://www.lodgeroomhlp.com/",
    "how": "vividseats venue page + app.songkick.com venue page via WebFetch (partial)",
-   "listed": 20,
+   "listed": 19,
    "recurring": 0,
    "lastChecked": "2026-11-21"
   },
@@ -906,10 +906,10 @@
     "concert"
    ],
    "calendar": "https://www.songkick.com/venues/15-los-angeles-memorial-coliseum",
-   "how": "fetch blocked 11/22; songkick venue page via WebFetch (sparse); Alan Walker is at The Torch per Live Nation",
+   "how": "songkick venue page read",
    "listed": 1,
    "recurring": 0,
-   "lastChecked": "2026-11-17"
+   "lastChecked": "2026-11-25"
   },
   {
    "name": "Louie's",
@@ -933,7 +933,7 @@
    ],
    "calendar": "https://www.centertheatregroup.org/shows-tickets/venues/mark-taper-forum/",
    "how": "gametime venue page via search",
-   "listed": 24,
+   "listed": 23,
    "recurring": 0,
    "lastChecked": "2026-11-24"
   },
@@ -946,7 +946,7 @@
    ],
    "calendar": "https://www.themoroccan.com/",
    "how": "songkick (first 5 only); try livenation/official next",
-   "listed": 36,
+   "listed": 40,
    "recurring": 0,
    "lastChecked": "2026-11-24"
   },
@@ -1026,7 +1026,7 @@
    ],
    "calendar": "https://www.pasadenaplayhouse.org/",
    "how": "season page via search",
-   "listed": 4,
+   "listed": 3,
    "recurring": 0,
    "lastChecked": "2026-11-24"
   },
@@ -1078,7 +1078,7 @@
    ],
    "calendar": "https://www.songkick.com/venues/36035-regent-theater/calendar",
    "how": "songkick first 5; Strawberry Fuzz x Plague Vendor 11/27 seen on consequence.net only (unconfirmed)",
-   "listed": 33,
+   "listed": 32,
    "recurring": 0,
    "lastChecked": "2026-11-24"
   },
@@ -1143,10 +1143,10 @@
     "concert"
    ],
    "calendar": "https://songkick.com/venues/34391-shrine-expo-hall/calendar",
-   "how": "fetch blocked 11/22; songkick /calendar page via WebFetch",
+   "how": "songkick venue page read (5 of 9 shown)",
    "listed": 10,
    "recurring": 0,
-   "lastChecked": "2026-11-13"
+   "lastChecked": "2026-11-25"
   },
   {
    "name": "SoFi Stadium",
@@ -1182,10 +1182,10 @@
     "club"
    ],
    "calendar": "https://www.vividseats.com/sound-nightclub-tickets/venue/12885",
-   "how": "Vividseats venue page via WebFetch lists dates/times but no per-event prices; tickpick/songkick via search.",
-   "listed": 4,
+   "how": "vividseats venue page fetched (10 events, no prices used)",
+   "listed": 12,
    "recurring": 0,
-   "lastChecked": "2026-11-13"
+   "lastChecked": "2026-11-25"
   },
   {
    "name": "Teragram Ballroom",
@@ -1196,10 +1196,10 @@
     "concert"
    ],
    "calendar": "https://gametime.co/teragram-ballroom-tickets/venues/teragram_ballroom",
-   "how": "Gametime venue page via WebFetch gives dates/times/prices (no per-event URLs).",
-   "listed": 35,
+   "how": "gametime venue page read; no new shows beyond list; all dates/prices match",
+   "listed": 39,
    "recurring": 0,
-   "lastChecked": "2026-11-13"
+   "lastChecked": "2026-11-25"
   },
   {
    "name": "The Belasco",
@@ -1209,10 +1209,10 @@
     "concert"
    ],
    "calendar": "https://gametime.co/the-belasco-theater-tickets/venues/belasco_theatre",
-   "how": "Gametime venue page via WebFetch works; Maybe Happy Ending is a long theater run.",
-   "listed": 25,
+   "how": "gametime venue page via search result; Maybe Happy Ending run (Nov-Feb) not added as dated shows",
+   "listed": 32,
    "recurring": 0,
-   "lastChecked": "2026-11-13"
+   "lastChecked": "2026-11-25"
   },
   {
    "name": "The City Market of Los Angeles",
@@ -1236,7 +1236,7 @@
    ],
    "calendar": "https://thecomedystore.com",
    "how": "comedy.tickets Main Room venue page via WebFetch lists dates, times, prices and event URLs.",
-   "listed": 26,
+   "listed": 22,
    "recurring": 0,
    "lastChecked": "2026-11-13"
   },
@@ -1249,7 +1249,7 @@
    ],
    "calendar": null,
    "how": "Eventbrite organizer pages for Salsa and Bachata Mondays appear in search but fetch showed stale 2025 date; nothing verified.",
-   "listed": 0,
+   "listed": 1,
    "recurring": 1,
    "lastChecked": "2026-11-13"
   },
@@ -1260,11 +1260,11 @@
    "kinds": [
     "concert"
    ],
-   "calendar": "https://fondatheatre.com/ticket-info",
-   "how": "Gametime venue page via WebFetch gives dates/times/prices (no per-event URLs).",
-   "listed": 25,
+   "calendar": "https://gametime.co/the-fonda-theatre-tickets/venues/henry_fonda_theatre",
+   "how": "gametime venue page fetched (no per-event URLs)",
+   "listed": 30,
    "recurring": 0,
-   "lastChecked": "2026-11-13"
+   "lastChecked": "2026-11-25"
   },
   {
    "name": "The Ford",
@@ -1287,10 +1287,10 @@
     "concert"
    ],
    "calendar": "https://www.songkick.com/venues/1040-glass-house/calendar",
-   "how": "Gametime and Ticketmaster venue pages returned no events via WebFetch; songkick page only showed October shows. Nothing verified.",
-   "listed": 5,
+   "how": "songkick calendar read (22 events) but gametime page empty and no ticket-seller confirmation, so no new shows added; existing 4 all still listed (Fear Factory, Caskets, Cursive, Oberst); unconfirmed s",
+   "listed": 4,
    "recurring": 0,
-   "lastChecked": "2026-11-13"
+   "lastChecked": "2026-11-25"
   },
   {
    "name": "The Granada LA",
@@ -1301,7 +1301,7 @@
    ],
    "calendar": null,
    "how": "salsavida/somo.social list the Friday/Saturday salsa and bachata night; nothing new.",
-   "listed": 0,
+   "listed": 1,
    "recurring": 1,
    "lastChecked": "2026-11-13"
   },
@@ -1314,7 +1314,7 @@
    ],
    "calendar": "https://groundlings.com/shows",
    "how": "groundlings.com/shows fetched OK; no prices listed (tickets at purchase.groundlings.com)",
-   "listed": 37,
+   "listed": 30,
    "recurring": 0,
    "lastChecked": "2026-11-19"
   },
@@ -1325,11 +1325,11 @@
    "kinds": [
     "comedy"
    ],
-   "calendar": "https://comedy.tickets/venue/legendary-room-at-the-ice-house/",
-   "how": "fetch blocked 11/23; comedy.tickets venue page confirms both listed shows and prices",
-   "listed": 2,
+   "calendar": "https://gametime.co/the-ice-house-tickets/venues/ice_house_comedy",
+   "how": "gametime venue page via search result (no prices shown; page partly stale); comedy.tickets not fetched",
+   "listed": 12,
    "recurring": 0,
-   "lastChecked": "2026-11-19"
+   "lastChecked": "2026-11-25"
   },
   {
    "name": "The Mayan",
@@ -1354,7 +1354,7 @@
    ],
    "calendar": "https://cap.ucla.edu/calendar?combine=&field_event_type_target_id=All&field_event_genre_target_id=All&field_event_venue_target_id=53",
    "how": "CAP UCLA calendar filtered to Nimoy reads fine via WebFetch (no prices; tickets ucla.evenue.net)",
-   "listed": 19,
+   "listed": 18,
    "recurring": 0,
    "lastChecked": "2026-11-15"
   },
@@ -1367,11 +1367,11 @@
     "concert",
     "theater"
    ],
-   "calendar": "https://thenovodtla.com/events",
-   "how": "Official site is AXS-hosted; gametime.co venue page (gametime.co/the-novo-tickets/venues/club_nokia) fetches fine with times and from-prices.",
-   "listed": 18,
+   "calendar": "https://gametime.co/the-novo-tickets/venues/club_nokia",
+   "how": "gametime venue page read with times and from-prices",
+   "listed": 16,
    "recurring": 0,
-   "lastChecked": "2026-11-13"
+   "lastChecked": "2026-11-25"
   },
   {
    "name": "The Roxy Theatre",
@@ -1381,11 +1381,11 @@
     "club",
     "concert"
    ],
-   "calendar": "https://www.theroxy.com/events",
-   "how": "theroxy.com fetch was blocked (permission); gametime.co/roxy-theatre-tickets/venues/the_roxy_theatre lists all shows with times and from-prices.",
-   "listed": 42,
+   "calendar": "https://gametime.co/roxy-theatre-tickets/venues/the_roxy_theatre",
+   "how": "gametime venue page read (34 events); Au/Ra, MEEK, Lower Definition, Seth David, Travis Garland, Gabriel Jacoby not listed there",
+   "listed": 38,
    "recurring": 0,
-   "lastChecked": "2026-11-13"
+   "lastChecked": "2026-11-25"
   },
   {
    "name": "The Torch at LA Memorial Coliseum",
@@ -1420,11 +1420,11 @@
    "kinds": [
     "concert"
    ],
-   "calendar": "https://www.theviperroom.com/events",
-   "how": "theviperroom.com and songkick venue page (songkick.com/venues/48-viper-room) fetches were blocked (permission); not verified this run.",
+   "calendar": "https://www.vividseats.com/the-viper-room-tickets/venue/6551",
+   "how": "vividseats venue page fetched (only 1 event listed; existing shows not shown there)",
    "listed": 3,
    "recurring": 0,
-   "lastChecked": "2026-11-13"
+   "lastChecked": "2026-11-25"
   },
   {
    "name": "The Wiltern",
@@ -1433,11 +1433,11 @@
    "kinds": [
     "concert"
    ],
-   "calendar": "https://www.wiltern.com/events",
-   "how": "Songkick calendar (songkick.com/venues/780-wiltern/calendar) fetches fine (50 events through Mar 2027, page 2 not read); no times/prices there. wiltern.com not fetched.",
-   "listed": 37,
+   "calendar": "https://gametime.co/the-wiltern-tickets/venues/the_wiltern",
+   "how": "gametime venue page read with times and prices; Jerry Garcia 2026-12-18 not listed there (Concrete 8 PM listed instead)",
+   "listed": 77,
    "recurring": 0,
-   "lastChecked": "2026-11-13"
+   "lastChecked": "2026-11-25"
   },
   {
    "name": "Troubadour",
@@ -1446,11 +1446,11 @@
    "kinds": [
     "concert"
    ],
-   "calendar": "https://troubadour.com/events",
-   "how": "gametime.co/troubadour-tickets/venues/troubador_la lists all shows with times and from-prices; songkick calendar fetch was blocked.",
-   "listed": 35,
+   "calendar": "https://gametime.co/troubadour-tickets/venues/troubador_la",
+   "how": "gametime venue page via search result",
+   "listed": 40,
    "recurring": 0,
-   "lastChecked": "2026-11-13"
+   "lastChecked": "2026-11-25"
   },
   {
    "name": "UCB Franklin",
@@ -1461,7 +1461,7 @@
    ],
    "calendar": "https://ucbcomedy.com/shows/los-angeles/",
    "how": "blocks plain downloads (403); LA shows only (skip NY + livestream-only) | 11-19: official page fetch blocked; no usable third-party schedule found",
-   "listed": 14,
+   "listed": 9,
    "recurring": 0,
    "lastChecked": "2026-11-19"
   },
@@ -1474,7 +1474,7 @@
    ],
    "calendar": null,
    "how": "Not researched this run (budget).",
-   "listed": 0,
+   "listed": 1,
    "recurring": 1,
    "lastChecked": "2026-11-13"
   },
@@ -1499,10 +1499,10 @@
     "concert"
    ],
    "calendar": "https://gametime.co/walt-disney-concert-hall-tickets/venues/walt_disney_concert_hall",
-   "how": "WebFetch blocked on laphil.com (permission error). Gametime venue page fetched fine and lists all 116 events to 2027-05-27 with times and from-prices; songkick venue page shows only 5 events. Gametime prices drift, so pr",
-   "listed": 27,
+   "how": "gametime venue page read (81 events to 2027-03-30)",
+   "listed": 45,
    "recurring": 0,
-   "lastChecked": "2026-11-14"
+   "lastChecked": "2026-11-25"
   },
   {
    "name": "Whisky a Go Go",
@@ -1512,10 +1512,10 @@
     "concert"
    ],
    "calendar": "https://tickets.songkick.com/venues/16270-whisky-a-go-go/calendar",
-   "how": "whiskyagogo.com WebFetch was blocked (permission). Songkick venue calendar via WebFetch worked (page 1 covered through 2026-12-31; page 2 not read, so 2027 shows missed, e.g. Wig Wam 2027-05-02 on songkick). Times/prices",
-   "listed": 56,
+   "how": "songkick calendar page 1 read; no new adds (unconfirmed on ticket seller)",
+   "listed": 94,
    "recurring": 0,
-   "lastChecked": "2026-11-14"
+   "lastChecked": "2026-11-25"
   },
   {
    "name": "YouTube Theater",
@@ -1524,11 +1524,11 @@
    "kinds": [
     "concert"
    ],
-   "calendar": "https://www.songkick.com/venues/4404004-youtube-theater/calendar",
-   "how": "youtubetheater.com WebFetch blocked (permission). Songkick calendar page fetched fine for full list + concert URLs; gametime.co/you-tube-theater-tickets/venues/youtube_theater fetched for lowest prices (no per-event URLs",
-   "listed": 31,
+   "calendar": "https://gametime.co/you-tube-theater-tickets/venues/youtube_theater",
+   "how": "gametime venue page read; times and prices updated; Gerardo Ortiz rescheduled from 11/25",
+   "listed": 33,
    "recurring": 0,
-   "lastChecked": "2026-11-14"
+   "lastChecked": "2026-11-25"
   },
   {
    "name": "Zebulon",
@@ -1538,10 +1538,10 @@
     "concert"
    ],
    "calendar": "https://songkick.com/venues/3497989-zebulon/calendar",
-   "how": "Songkick calendar page via WebFetch works and lists ~3 months; page 2 needed for later dates. No prices or times on Songkick. Venue's own site not checked.",
-   "listed": 19,
+   "how": "Songkick calendar page 1 via search-result domain; no times/prices; Dagmar Zuniga 12-04 canceled (not in our file)",
+   "listed": 13,
    "recurring": 0,
-   "lastChecked": "2026-11-14"
+   "lastChecked": "2026-11-25"
   },
   {
    "name": "4th Street Market",
@@ -1552,7 +1552,7 @@
    ],
    "calendar": null,
    "how": "No dated info found",
-   "listed": 0,
+   "listed": 1,
    "recurring": 1,
    "lastChecked": "2026-11-19"
   },
@@ -1565,7 +1565,7 @@
    ],
    "calendar": "https://songkick.com/venues/31241-alexs-bar/calendar",
    "how": "Songkick venue /calendar page fetched fine and lists 12 upcoming shows (no times, no prices). No official site calendar fetched; WebFetch is only allowed for URLs seen in search results. Concert URLs are the songkick ven",
-   "listed": 10,
+   "listed": 7,
    "recurring": 0,
    "lastChecked": "2026-11-14"
   },
@@ -1578,7 +1578,7 @@
    ],
    "calendar": null,
    "how": "no official calendar found in search; nothing checked",
-   "listed": 9,
+   "listed": 8,
    "recurring": 0,
    "lastChecked": "2026-11-19"
   },
@@ -1617,7 +1617,7 @@
    ],
    "calendar": null,
    "how": "so far found via openmikes.org",
-   "listed": 0,
+   "listed": 1,
    "recurring": 1,
    "lastChecked": "2026-11-19"
   },
@@ -1642,11 +1642,11 @@
    "kinds": [
     "comedy"
    ],
-   "calendar": "https://comedy.tickets/venue/improv-comedy-club-brea/",
-   "how": "improv.com WebFetch blocked (permission). comedy.tickets venue page via WebFetch worked (first 30 of 71 shows, through 2026-12-16; rest behind Show More). Prices are comedy.tickets 'from' prices and look inflated by fees",
-   "listed": 38,
+   "calendar": "https://gametime.co/brea-improv-comedy-club-tickets/venues/brea_improv_comedy_club",
+   "how": "gametime venue page fetched (appears partly stale cache); no prices used",
+   "listed": 67,
    "recurring": 0,
-   "lastChecked": "2026-11-14"
+   "lastChecked": "2026-11-25"
   },
   {
    "name": "Bridge Hall, Neighborhood Congregational Church",
@@ -1658,7 +1658,7 @@
    ],
    "calendar": null,
    "how": "Eventbrite search returned nothing relevant; try PULSE LIVE site",
-   "listed": 3,
+   "listed": 2,
    "recurring": 0,
    "lastChecked": "2026-11-15"
   },
@@ -1684,7 +1684,7 @@
    ],
    "calendar": null,
    "how": "Not checked",
-   "listed": 0,
+   "listed": 1,
    "recurring": 1,
    "lastChecked": "2026-11-19"
   },
@@ -1695,11 +1695,11 @@
    "kinds": [
     "comedy"
    ],
-   "calendar": "https://theater.guide/venue/the-comedy-magic-club/",
-   "how": "Official comedymagicclub.com blocked in WebFetch. theater.guide venue page fetched OK (9 shows with times and from-prices; Jay Leno is a recurring Sunday 7 PM headliner). Craig Shoemaker 2026-12-03 not on theater.guide, ",
-   "listed": 11,
+   "calendar": "https://www.vividseats.com/the-comedy-and-magic-club-tickets/venue/13209",
+   "how": "vividseats venue page read (times only; prices not taken, comedy.tickets not read)",
+   "listed": 23,
    "recurring": 0,
-   "lastChecked": "2026-11-14"
+   "lastChecked": "2026-11-25"
   },
   {
    "name": "Constellation Room, The Observatory",
@@ -1708,11 +1708,11 @@
    "kinds": [
     "concert"
    ],
-   "calendar": "https://www.songkick.com/venues/4628782-constellation-room-at-the-observatory",
-   "how": "Songkick calendar fetch was blocked (permission); only search results used. Try observatoryoc.com or songkick calendar next time.",
-   "listed": 22,
+   "calendar": "https://gametime.co/constellation-room-tickets/venues/constellation_room",
+   "how": "gametime venue page via search result",
+   "listed": 28,
    "recurring": 0,
-   "lastChecked": "2026-11-14"
+   "lastChecked": "2026-11-25"
   },
   {
    "name": "Cowboy Country Saloon",
@@ -1723,7 +1723,7 @@
    ],
    "calendar": null,
    "how": "so far found via google.com",
-   "listed": 0,
+   "listed": 1,
    "recurring": 1,
    "lastChecked": "2026-11-19"
   },
@@ -1736,7 +1736,7 @@
    ],
    "calendar": null,
    "how": "search found only 2023 listings for 1st Friday art walk; not confirmed running",
-   "listed": 0,
+   "listed": 1,
    "recurring": 1,
    "lastChecked": "2026-11-16"
   },
@@ -1749,7 +1749,7 @@
    ],
    "calendar": null,
    "how": "search: newsantaana.com posts 2026 art walks; series running",
-   "listed": 0,
+   "listed": 1,
    "recurring": 1,
    "lastChecked": "2026-11-16"
   },
@@ -1775,7 +1775,7 @@
    ],
    "calendar": null,
    "how": "so far found via google.com",
-   "listed": 0,
+   "listed": 1,
    "recurring": 1,
    "lastChecked": "2026-11-19"
   },
@@ -1800,10 +1800,10 @@
     "concert"
    ],
    "calendar": "https://www.ticketmaster.com/garden-amp-tickets-garden-grove/venue/74785",
-   "how": "gardenamp.com WebFetch blocked; the ticketmaster venue page fetch returned stale April (old year) data. Songkick calendar (songkick.com/venues/2740283-garden-amphitheatre/calendar) gave full list with URLs; gametime.co/g",
-   "listed": 23,
+   "how": "Songkick shows only first 5 of 21 events",
+   "listed": 21,
    "recurring": 0,
-   "lastChecked": "2026-11-14"
+   "lastChecked": "2026-11-25"
   },
   {
    "name": "Gina Woodruff Gallery",
@@ -1814,7 +1814,7 @@
    ],
    "calendar": null,
    "how": "so far found via openmikes.org",
-   "listed": 0,
+   "listed": 1,
    "recurring": 1,
    "lastChecked": "2026-11-19"
   },
@@ -1839,11 +1839,11 @@
     "concert",
     "festival"
    ],
-   "calendar": "https://www.jambase.com/venue/honda-center",
-   "how": "hondacenter.com blocked in WebFetch. Jambase venue page (full list), consequence.net page 5 (times) and songkick venue page worked. Our Hilary Duff 2026-11-20 entry looks wrong: jambase shows Hilary Duff at Honda Center ",
-   "listed": 19,
+   "calendar": "https://gametime.co/honda-center-tickets/venues/honda_center",
+   "how": "gametime venue page fetched",
+   "listed": 17,
    "recurring": 0,
-   "lastChecked": "2026-11-14"
+   "lastChecked": "2026-11-25"
   },
   {
    "name": "House of Blues Anaheim",
@@ -1852,11 +1852,11 @@
    "kinds": [
     "concert"
    ],
-   "calendar": "https://www.songkick.com/venues/3445514-house-of-blues-anaheim",
-   "how": "houseofblues.com and songkick calendar fetches were blocked (permission); no new data obtained.",
-   "listed": 47,
+   "calendar": "https://gametime.co/house-of-blues-tickets/venues/house_of_blues_anaheim",
+   "how": "gametime venue page read (partial schedule); Kings of Queen 11-25, Nightmare of You 12-06 and others not seen there",
+   "listed": 56,
    "recurring": 0,
-   "lastChecked": "2026-11-14"
+   "lastChecked": "2026-11-25"
   },
   {
    "name": "Huntington Beach beach (spot on RSVP)",
@@ -1892,11 +1892,11 @@
     "comedy",
     "concert"
    ],
-   "calendar": "https://www.intuitdome.com/events",
-   "how": "intuitdome.com fetch was blocked (permission timeout). songkick.com/venues/4551429-intuit-dome fetched but only showed 5-6 of 19 events (Nick Cannon 2026-11-12; Three Days Grace 2026-11-22; Jingle Ball 2026-12-04; Pablo ",
-   "listed": 9,
+   "calendar": "https://gametime.co/intuit-dome-tickets/venues/intuit_dome",
+   "how": "gametime venue page via search result",
+   "listed": 20,
    "recurring": 0,
-   "lastChecked": "2026-11-14"
+   "lastChecked": "2026-11-25"
   },
   {
    "name": "Ipso Facto",
@@ -1920,10 +1920,10 @@
     "theater"
    ],
    "calendar": "https://songkick.com/venues/30441-irvine-barclay-theatre",
-   "how": "Fetches blocked; used search results only (eventworld/tickpick pages).",
-   "listed": 14,
+   "how": "songkick venue page read; new shows from tickpick search results",
+   "listed": 19,
    "recurring": 0,
-   "lastChecked": "2026-11-14"
+   "lastChecked": "2026-11-25"
   },
   {
    "name": "Irvine Improv",
@@ -1934,7 +1934,7 @@
    ],
    "calendar": "https://www.songkick.com/venues/11526-irvine-improv/calendar",
    "how": "irvine.improv.com WebFetch blocked. Songkick calendar worked for dates + concert URLs (no times/prices); concerts.consequence.net listing gives times. Songkick lacked many dates we already list (11/17, 11/20-22, 12/4, 12",
-   "listed": 28,
+   "listed": 57,
    "recurring": 0,
    "lastChecked": "2026-11-14"
   },
@@ -1947,7 +1947,7 @@
    ],
    "calendar": "https://lamiradatheatre.com/tickets/",
    "how": "Season announcement gives months only: Hairspray (April 2027), Les Miserables (June 2027), To Kill a Mockingbird (Feb 2027). Tickpick/etickets pages list individual performances but tickpick fetch failed; Mockingbird per",
-   "listed": 4,
+   "listed": 3,
    "recurring": 0,
    "lastChecked": "2026-11-14"
   },
@@ -1971,11 +1971,11 @@
    "kinds": [
     "theater"
    ],
-   "calendar": "https://www.todaytix.com/los-angeles/shows/47586-rent",
-   "how": "fetch blocked 11/23; todaytix show pages give dates and prices",
+   "calendar": "https://www.todaytix.com/los-angeles/shows/47589-bonnie-and-clyde",
+   "how": "todaytix Bonnie & Clyde page fetched via search result; cultureoc season announcement confirms Rent Apr 7 and Bonnie & Clyde Jun 9",
    "listed": 2,
    "recurring": 0,
-   "lastChecked": "2026-11-19"
+   "lastChecked": "2026-11-25"
   },
   {
    "name": "Marina Green Park",
@@ -1985,10 +1985,10 @@
     "concert"
    ],
    "calendar": "https://www.songkick.com/venues/73421-marina-green",
-   "how": "fetch blocked 11/22; Songkick shows 0 upcoming; gametime no data",
+   "how": "songkick shows 0 upcoming; Keyshia Cole show not confirmed",
    "listed": 1,
    "recurring": 0,
-   "lastChecked": "2026-11-15"
+   "lastChecked": "2026-11-25"
   },
   {
    "name": "Musco Center for the Arts",
@@ -2000,7 +2000,7 @@
    ],
    "calendar": "https://muscocenter.org/Online/default.asp",
    "how": "Chapman box office list | 11-19: Season article fetch redirected/blocked; no new data",
-   "listed": 8,
+   "listed": 7,
    "recurring": 0,
    "lastChecked": "2026-11-19"
   },
@@ -2026,7 +2026,7 @@
    ],
    "calendar": null,
    "how": "so far found via google.com",
-   "listed": 0,
+   "listed": 1,
    "recurring": 1,
    "lastChecked": "2026-11-19"
   },
@@ -2039,7 +2039,7 @@
    ],
    "calendar": null,
    "how": "No one-off dated event found",
-   "listed": 0,
+   "listed": 1,
    "recurring": 1,
    "lastChecked": "2026-11-19"
   },
@@ -2065,7 +2065,7 @@
    ],
    "calendar": null,
    "how": "so far found via eventbrite.com",
-   "listed": 0,
+   "listed": 1,
    "recurring": 1,
    "lastChecked": "2026-11-19"
   },
@@ -2104,7 +2104,7 @@
    ],
    "calendar": null,
    "how": "so far found via justinrudd.com",
-   "listed": 0,
+   "listed": 1,
    "recurring": 1,
    "lastChecked": "2026-11-19"
   },
@@ -2130,7 +2130,7 @@
    ],
    "calendar": null,
    "how": "search only; feedoc.org pages, no dated shifts",
-   "listed": 0,
+   "listed": 1,
    "recurring": 1,
    "lastChecked": "2026-11-17"
   },
@@ -2144,7 +2144,7 @@
    ],
    "calendar": "https://www.pacificsymphony.org/calendar-with-series",
    "how": "Pacific Symphony calendar (also scfta.org for other presenters) | 11-19: Calendar fetch blocked; used Pacific Symphony press releases + tickpick URLs; no prices. Jazz series events are in Samueli Theatre (not listed); ABT Nutcracker Dec 10-24 and Sleeping Beauty Apr 22-25 venue unconfirmed (skipped)",
-   "listed": 59,
+   "listed": 94,
    "recurring": 0,
    "lastChecked": "2026-11-19"
   },
@@ -2183,7 +2183,7 @@
    ],
    "calendar": "https://www.performingarts.soka.edu/tickets-events/calendar-events",
    "how": "official calendar WebFetch works (no prices on calendar)",
-   "listed": 20,
+   "listed": 18,
    "recurring": 0,
    "lastChecked": "2026-11-17"
   },
@@ -2209,7 +2209,7 @@
    ],
    "calendar": null,
    "how": "ecstaticdance.org/?p=11055 says Sundays 4-6 PM on the sand $22 (undated; our listing says 6-8 PM $25)",
-   "listed": 0,
+   "listed": 1,
    "recurring": 1,
    "lastChecked": "2026-11-16"
   },
@@ -2276,7 +2276,7 @@
    ],
    "calendar": "https://www.thecoachhouse.com/events",
    "how": "Official site not fetchable by subagent; WebSearch + tickpick event pages work",
-   "listed": 62,
+   "listed": 76,
    "recurring": 0,
    "lastChecked": "2026-11-15"
   },
@@ -2289,7 +2289,7 @@
    ],
    "calendar": "https://gametime.co/the-observatory-tickets/venues/the_observatory",
    "how": "Official site blocked; gametime venue page gives dates/times (no per-event URLs)",
-   "listed": 39,
+   "listed": 40,
    "recurring": 0,
    "lastChecked": "2026-11-15"
   },
@@ -2302,7 +2302,7 @@
    ],
    "calendar": "https://gametime.co/the-parish-at-the-house-of-blues-anaheim-tickets/venues/parish_la",
    "how": "Gametime venue page lists shows with from-prices; Songkick concert pages give per-event URLs",
-   "listed": 11,
+   "listed": 7,
    "recurring": 0,
    "lastChecked": "2026-11-15"
   },
@@ -2315,7 +2315,7 @@
    ],
    "calendar": null,
    "how": "happeningnext/eventbrite search; Full Moon sound bath still listed",
-   "listed": 1,
+   "listed": 0,
    "recurring": 0,
    "lastChecked": "2026-11-17"
   },
@@ -2328,7 +2328,7 @@
    ],
    "calendar": null,
    "how": "travelcostamesa.com lists Wed open mic (Jan 2026); not confirmed since",
-   "listed": 0,
+   "listed": 1,
    "recurring": 1,
    "lastChecked": "2026-11-16"
   },
@@ -2341,7 +2341,7 @@
    ],
    "calendar": "https://gametime.co/time-nightclub-costa-mesa-tickets/venues/time_nightclub",
    "how": "gametime venue page lists 5 upcoming shows",
-   "listed": 10,
+   "listed": 9,
    "recurring": 0,
    "lastChecked": "2026-11-18"
   },
@@ -2407,7 +2407,7 @@
    ],
    "calendar": "https://www.songkick.com/venues/48419-yost-theater",
    "how": "songkick venue page lists all upcoming (4)",
-   "listed": 4,
+   "listed": 2,
    "recurring": 0,
    "lastChecked": "2026-11-16"
   },
@@ -2446,7 +2446,7 @@
    ],
    "calendar": "https://songkick.com/venues/28522-belly-up-tavern",
    "how": "bellyup.com/calendar blocked; songkick venue page shows only next 5 of ~100",
-   "listed": 94,
+   "listed": 104,
    "recurring": 0,
    "lastChecked": "2026-11-16"
   },
@@ -2459,7 +2459,7 @@
    ],
    "calendar": null,
    "how": "so far found via google.com",
-   "listed": 0,
+   "listed": 1,
    "recurring": 1,
    "lastChecked": "2026-11-19"
   },
@@ -2472,7 +2472,7 @@
    ],
    "calendar": null,
    "how": "so far found via google.com",
-   "listed": 0,
+   "listed": 1,
    "recurring": 1,
    "lastChecked": "2026-11-19"
   },
@@ -2485,7 +2485,7 @@
    ],
    "calendar": null,
    "how": "so far found via visitescondido.com",
-   "listed": 0,
+   "listed": 1,
    "recurring": 1,
    "lastChecked": "2026-11-19"
   },
@@ -2498,7 +2498,7 @@
    ],
    "calendar": null,
    "how": "so far found via feedingsandiego.org",
-   "listed": 0,
+   "listed": 1,
    "recurring": 1,
    "lastChecked": "2026-11-19"
   },
@@ -2526,7 +2526,7 @@
    ],
    "calendar": "https://www.songkick.com/venues/11976-house-of-blues-san-diego",
    "how": "Songkick venue page via WebFetch confirms listings (houseofblues.com blocks)",
-   "listed": 65,
+   "listed": 73,
    "recurring": 0,
    "lastChecked": "2026-11-15"
   },
@@ -2539,7 +2539,7 @@
    ],
    "calendar": null,
    "how": "gametime & songkick JS-only (no dates); try humphreysconcerts.com or ticketmaster",
-   "listed": 2,
+   "listed": 4,
    "recurring": 0,
    "lastChecked": "2026-11-16"
   },
@@ -2552,7 +2552,7 @@
    ],
    "calendar": null,
    "how": "Not checked",
-   "listed": 0,
+   "listed": 1,
    "recurring": 1,
    "lastChecked": "2026-11-19"
   },
@@ -2565,7 +2565,7 @@
    ],
    "calendar": null,
    "how": "so far found via google.com",
-   "listed": 0,
+   "listed": 1,
    "recurring": 1,
    "lastChecked": "2026-11-19"
   },
@@ -2592,7 +2592,7 @@
    ],
    "calendar": null,
    "how": "so far found via mcasd.org",
-   "listed": 0,
+   "listed": 1,
    "recurring": 1,
    "lastChecked": "2026-11-19"
   },
@@ -2605,7 +2605,7 @@
    ],
    "calendar": null,
    "how": "so far found via google.com",
-   "listed": 0,
+   "listed": 1,
    "recurring": 1,
    "lastChecked": "2026-11-19"
   },
@@ -2618,7 +2618,7 @@
    ],
    "calendar": null,
    "how": "so far found via google.com",
-   "listed": 0,
+   "listed": 1,
    "recurring": 1,
    "lastChecked": "2026-11-19"
   },
@@ -2631,7 +2631,7 @@
    ],
    "calendar": "https://songkick.com/venues/3052594-music-box",
    "how": "musicboxsd.com blocked; songkick venue page shows only next 5; TM job adds most shows",
-   "listed": 30,
+   "listed": 35,
    "recurring": 0,
    "lastChecked": "2026-11-16"
   },
@@ -2658,7 +2658,7 @@
    ],
    "calendar": "https://americanarenas.com/venue/events-center-at-pala-casino-spa-and-resort/",
    "how": "venue page (JS) → etix.com links with prices | 11-19: palacasino.com fetch blocked; americanarenas.com (resale) lists same 4 events; songkick shows Nov 27 only",
-   "listed": 4,
+   "listed": 3,
    "recurring": 0,
    "lastChecked": "2026-11-19"
   },
@@ -2697,7 +2697,7 @@
    ],
    "calendar": null,
    "how": "search returned only 2025 sdcoastkeeper pages; no 2026 dated events found",
-   "listed": 0,
+   "listed": 1,
    "recurring": 1,
    "lastChecked": "2026-11-19"
   },
@@ -2724,7 +2724,7 @@
    ],
    "calendar": "https://songkick.com/venues/1158-san-diego-civic-theatre/calendar",
    "how": "songkick venue page showed 12 upcoming, only 5 listed in fetch; times/prices unknown; Broadway San Diego season not itemized",
-   "listed": 17,
+   "listed": 35,
    "recurring": 0,
    "lastChecked": "2026-11-18"
   },
@@ -2737,7 +2737,7 @@
    ],
    "calendar": null,
    "how": "so far found via google.com",
-   "listed": 0,
+   "listed": 1,
    "recurring": 1,
    "lastChecked": "2026-11-19"
   },
@@ -2750,7 +2750,7 @@
    ],
    "calendar": null,
    "how": "so far found via google.com",
-   "listed": 0,
+   "listed": 1,
    "recurring": 1,
    "lastChecked": "2026-11-19"
   },
@@ -2763,7 +2763,7 @@
    ],
    "calendar": "https://www.songkick.com/venues/49641-soda-bar/calendar",
    "how": "songkick /calendar page has dates+titles; ma.to/venue/sodabarsd and DICE give prices; gametime is JS-only",
-   "listed": 20,
+   "listed": 17,
    "recurring": 0,
    "lastChecked": "2026-11-16"
   },
@@ -2776,7 +2776,7 @@
    ],
    "calendar": "https://www.songkick.com/venues/1298-soma",
    "how": "songkick venue page shows first 5; try songkick /calendar subpage next",
-   "listed": 18,
+   "listed": 35,
    "recurring": 0,
    "lastChecked": "2026-11-16"
   },
@@ -2789,7 +2789,7 @@
    ],
    "calendar": "https://www.technoairlines.com/club/spin-san-diego",
    "how": "technoairlines club page lists dates (don't use its URLs); ticket links on discotech",
-   "listed": 10,
+   "listed": 7,
    "recurring": 0,
    "lastChecked": "2026-11-16"
   },
@@ -2804,7 +2804,7 @@
    ],
    "calendar": "https://www.vividseats.com/live-and-up-close-theater-tickets/venue/38780",
    "how": "venue page → yapsody ticket links; time is in the event URL slug | 11-19: official page blocked; vividseats venue page lists all shows with prices",
-   "listed": 7,
+   "listed": 6,
    "recurring": 0,
    "lastChecked": "2026-11-19"
   },
@@ -2817,7 +2817,7 @@
    ],
    "calendar": null,
    "how": "Not checked",
-   "listed": 0,
+   "listed": 1,
    "recurring": 1,
    "lastChecked": "2026-11-19"
   },
@@ -2844,7 +2844,7 @@
    ],
    "calendar": "https://www.vividseats.com/the-casbah-san-diego-tickets/venue/291",
    "how": "casbahsd.com blocked; vividseats venue page WebFetch lists ~25 shows with from-prices",
-   "listed": 40,
+   "listed": 36,
    "recurring": 0,
    "lastChecked": "2026-11-17"
   },
@@ -2857,7 +2857,7 @@
    ],
    "calendar": "https://www.theoldglobe.org/whats-on/",
    "how": "official site blocked; KPBS listing + tickpick search results worked",
-   "listed": 5,
+   "listed": 3,
    "recurring": 0,
    "lastChecked": "2026-11-17"
   },
@@ -2884,7 +2884,7 @@
    ],
    "calendar": "https://songkick.com/venues/493071-viejas-arena-at-aztec-bowl-san-diego-state-university",
    "how": "official site blocked; songkick venue page + Live Nation event pages",
-   "listed": 6,
+   "listed": 11,
    "recurring": 0,
    "lastChecked": "2026-11-17"
   },
@@ -2917,11 +2917,11 @@
    "city": "",
    "region": "",
    "kinds": [],
-   "calendar": "https://songkick.com/venues/36253-cal-coast-credit-union-open-air-theatre-at-sdsu",
-   "how": "fetch blocked 11/22; ambiguous name: Chula Vista amphitheater songkick page had only a past show; SDSU Open Air Theatre added as its own venue",
-   "listed": 0,
+   "calendar": "https://seatgeek.com/venues/cal-coast-credit-union-open-air-theatre-at-sdsu/tickets",
+   "how": "seatgeek venue page (SDSU Open Air Theatre) fetched",
+   "listed": 2,
    "recurring": 0,
-   "lastChecked": "2026-11-17"
+   "lastChecked": "2026-11-25"
   },
   {
    "name": "Catch One",
@@ -2930,7 +2930,7 @@
    "kinds": [],
    "calendar": "https://songkick.com/venues/34-catch-one",
    "how": "songkick venue page via WebFetch; no times/prices",
-   "listed": 4,
+   "listed": 5,
    "recurring": 0,
    "lastChecked": "2026-11-17"
   },
@@ -2940,10 +2940,10 @@
    "region": "Los Angeles",
    "kinds": [],
    "calendar": "https://gametime.co/uniqlo-field-at-dodger-stadium-tickets/venues/dodger_stadium",
-   "how": "fetch blocked 11/22; gametime venue page WebFetch (non-baseball events; no per-event URLs)",
+   "how": "gametime venue page read; only Fall Out Boy non-baseball",
    "listed": 1,
    "recurring": 0,
-   "lastChecked": "2026-11-17"
+   "lastChecked": "2026-11-25"
   },
   {
    "name": "Dynasty Typewriter",
@@ -2952,7 +2952,7 @@
    "kinds": [],
    "calendar": "https://www.songkick.com/venues/3820544-dynasty-typewriter-at-the-hayworth",
    "how": "fetch blocked 11/22; songkick venue page shows one upcoming show; gametime page was JS-empty",
-   "listed": 1,
+   "listed": 0,
    "recurring": 0,
    "lastChecked": "2026-11-18"
   },
@@ -2965,7 +2965,7 @@
    ],
    "calendar": null,
    "how": "search found no Enjoy Yoga sound bath listing",
-   "listed": 1,
+   "listed": 0,
    "recurring": 0,
    "lastChecked": "2026-11-17"
   },
@@ -3021,10 +3021,10 @@
    "region": "",
    "kinds": [],
    "calendar": "https://songkick.com/venues/4594105-pacific-amphitheatre-at-the-oc-fair",
-   "how": "fetch blocked 11/23; Songkick shows 0 upcoming; OC Fair season concerts (Jul-Aug 2027) not yet announced",
+   "how": "songkick shows 0 upcoming",
    "listed": 0,
    "recurring": 0,
-   "lastChecked": "2026-11-19"
+   "lastChecked": "2026-11-25"
   },
   {
    "name": "Petco Park",
@@ -3033,7 +3033,7 @@
    "kinds": [],
    "calendar": "https://songkick.com/venues/15325-petco-park",
    "how": "Songkick venue page readable (shows 5 of 13); gametime search results for dated 2027 shows; official site not read",
-   "listed": 4,
+   "listed": 9,
    "recurring": 0,
    "lastChecked": "2026-11-18"
   },
@@ -3076,10 +3076,10 @@
    "region": "",
    "kinds": [],
    "calendar": "https://songkick.com/venues/4457079-snapdragon-stadium",
-   "how": "fetch blocked 11/23; Songkick lists only Metallica May 13 2027",
+   "how": "Songkick venue page via search result lists only Metallica May 13 2027",
    "listed": 1,
    "recurring": 0,
-   "lastChecked": "2026-11-19"
+   "lastChecked": "2026-11-25"
   },
   {
    "name": "Spin SD",
@@ -3123,7 +3123,7 @@
    ],
    "calendar": "https://www.livenation.com/fr-ca/venue/rZ7HnEZ17rbkf/corona-improv-events",
    "how": "livenation venue page lists shows through Feb 2027 (times converted from 24h French); URLs are the venue page, no per-event URLs seen; prices not found; more shows after 2027-01-08 exist (Jan 9-10, 14",
-   "listed": 20,
+   "listed": 16,
    "recurring": 0,
    "lastChecked": "2026-11-18"
   },
@@ -3150,7 +3150,7 @@
    ],
    "calendar": "https://songkick.com/venues/36253-cal-coast-credit-union-open-air-theatre-at-sdsu",
    "how": "songkick venue page via WebFetch (no prices)",
-   "listed": 3,
+   "listed": 2,
    "recurring": 0,
    "lastChecked": "2026-11-17"
   },
@@ -3165,7 +3165,7 @@
    ],
    "calendar": "https://sandiegotheatres.org/calendar?venue=227",
    "how": "sandiegotheatres.org calendar fetch works (first 8 events; Load More not paged)",
-   "listed": 8,
+   "listed": 48,
    "recurring": 0,
    "lastChecked": "2026-11-19"
   }
