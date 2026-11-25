@@ -11,10 +11,12 @@ closing times (or "closed for good") land within a few days.
   python3 scripts/food_near_venues.py            # add spots
   python3 scripts/food_near_venues.py --dry      # print what it would add
 """
-import datetime, json, math, re, sys, urllib.parse, urllib.request
+import datetime, json, math, re, sys, time, urllib.error, urllib.parse, urllib.request
 from collections import Counter
 
 TOP, WANT, WALK_MI, MAX_ADD = 25, 3, 0.75, 40
+OVERPASS = ["https://overpass-api.de/api/interpreter", "https://overpass.kumi.systems/api/interpreter",
+            "https://overpass.private.coffee/api/interpreter"]
 FOOD = {"kbbq", "ramen", "tacos", "pho", "korean", "diner", "boil", "hotpot", "hibachi", "fine", "dimsum", "thai",
         "pizza", "dessert", "hall", "burger", "sushi"}
 SHOW_KINDS = {"concert", "festival", "club", "comedy", "theater"}
@@ -82,9 +84,19 @@ def overpass(points):
     parts = "".join(f'nwr["amenity"~"^(restaurant|fast_food|cafe|ice_cream|food_court)$"]["name"](around:{int(WALK_MI*1609)},{la},{lo});'
                     for la, lo in points)
     q = f"[out:json][timeout:120];({parts});out center tags;"
-    req = urllib.request.Request("https://overpass-api.de/api/interpreter", data=urllib.parse.urlencode({"data": q}).encode(),
-                                 headers={"User-Agent": "show-shack/1.0 (https://github.com/lukegiannelli/showshack)"})
-    return json.load(urllib.request.urlopen(req, timeout=180)).get("elements", [])
+    # the main Overpass server is often busy (502/504/429): retry, then fall back to public mirrors
+    err = None
+    for attempt in range(3):
+        for host in OVERPASS:
+            req = urllib.request.Request(host, data=urllib.parse.urlencode({"data": q}).encode(),
+                                         headers={"User-Agent": "show-shack/1.0 (https://github.com/lukegiannelli/showshack)"})
+            try:
+                return json.load(urllib.request.urlopen(req, timeout=180)).get("elements", [])
+            except (urllib.error.URLError, TimeoutError, ValueError) as e:
+                err = e
+                print(f"  Overpass {host.split('/')[2]} failed ({e}); trying the next one")
+        time.sleep(30 * (attempt + 1))
+    raise SystemExit(f"Every Overpass server failed, last error: {err}")
 
 
 def main():
