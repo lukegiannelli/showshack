@@ -91,11 +91,14 @@
 "Private rooms",
 "YouTube songs"
 ],
-"h": "3 PM to 2 AM",
+"h": "Till 2 AM",
 "lat": 33.77201,
 "lon": -117.95512,
 "geo": "place",
-"til": 26
+"til": 26.0,
+"gid": "ChIJQw15YnYo3YARTYS7bTW8kyI",
+"hs": "g",
+"hu": "2026-11-25"
 },
 {
 "n": "Hay Karaoke & Events",
@@ -292,14 +295,17 @@
 "lat": 33.78277,
 "lon": -117.89233,
 "geo": "shop",
-"h": "Till 11 PM, 1 AM Sat",
-"til": 25,
+"h": "Till 11 PM, 10 PM Sun, midnight Fri–Sat",
+"til": 24.0,
 "deal": {
 "t": "Night Strike: unlimited bowling + shoes $24.99",
 "d": "Sun from 6 PM, Mon–Thu from 7 PM (walk-in)",
 "u": "https://www.luckystrikeent.com/location/lucky-strike-orange/specials",
 "chk": "2026-11-15"
-}
+},
+"gid": "ChIJl0znByfY3IARdnRcUOEw-C0",
+"hs": "g",
+"hu": "2026-11-25"
 },
 {
 "n": "Lucky Strike Tustin",
@@ -313,15 +319,17 @@
 "lat": 33.70075,
 "lon": -117.82895,
 "geo": "place",
-"h": "Till ~11 PM–1 AM",
-"til": 25,
-"hq": "~",
+"h": "Till 11 PM, 10 PM Sun, midnight Fri–Sat",
+"til": 24.0,
 "deal": {
 "t": "Night Strike: unlimited bowling + shoes $24.99",
 "d": "Sun from 6 PM, Mon–Thu from 7 PM (walk-in)",
 "u": "https://www.bowlero.com/location/bowlero-orange-county/specials",
 "chk": "2026-11-18"
-}
+},
+"gid": "ChIJF9aBdR_c3IAR2cCsyu2ARlE",
+"hs": "g",
+"hu": "2026-11-25"
 },
 {
 "n": "Lucky Strike Anaheim",
@@ -333,14 +341,17 @@
 "lat": 33.8064,
 "lon": -117.91227,
 "geo": "amenity",
-"h": "Till midnight, 1 AM Fri–Sat",
-"til": 25,
+"h": "Till 11 PM, midnight Thu–Fri, 1 AM Sat",
+"til": 25.0,
 "deal": {
 "t": "Night Strike: unlimited bowling + shoes $22.99",
 "d": "Sun from 6 PM, Mon–Thu from 7 PM (walk-in)",
 "u": "https://www.luckystrikeent.com/location/lucky-strike-anaheim",
 "chk": "2026-11-15"
-}
+},
+"gid": "ChIJY1k7H8PX3IARylGS5Xbamlw",
+"hs": "g",
+"hu": "2026-11-25"
 },
 {
 "n": "Fountain Bowl",
@@ -383,17 +394,20 @@
 "t": [
 "DTLA"
 ],
-"h": "Till 1 AM weekdays, 2 AM weekends",
+"h": "Till 11 PM, 1 AM Fri–Sat",
 "lat": 34.0447,
 "lon": -118.26461,
 "geo": "tourism",
-"til": 26,
+"til": 25.0,
 "deal": {
 "t": "Night Strike: unlimited bowling + shoes $28.99",
 "d": "Sun from 6 PM, Mon–Thu from 7 PM",
 "u": "https://www.luckystrikeent.com/locations/los-angeles/",
 "chk": "2026-11-12"
-}
+},
+"gid": "ChIJr2FBKbjHwoARXplMuhu6egc",
+"hs": "g",
+"hu": "2026-11-25"
 },
 {
 "n": "Lucky Strike Hollywood",
@@ -406,13 +420,16 @@
 "lon": -118.34047,
 "geo": "amenity",
 "h": "Till 11 PM, 1 AM Fri–Sat",
-"til": 25,
+"til": 25.0,
 "deal": {
 "t": "Night Strike: unlimited bowling + shoes $26.99",
 "d": "Sun from 6 PM, Mon–Thu from 7 PM (walk-in)",
 "u": "https://www.luckystrikeent.com/location/lucky-strike-hollywood/specials",
 "chk": "2026-11-18"
-}
+},
+"gid": "ChIJxxS7wyO_woARu_slRPGtjmM",
+"hs": "g",
+"hu": "2026-11-25"
 },
 {
 "n": "Lucky Strike Mar Vista",
@@ -424,14 +441,17 @@
 "lat": 34.00544,
 "lon": -118.43115,
 "geo": "leisure",
-"h": "Till 11 PM, 1 AM Sat",
-"til": 25,
+"h": "Till midnight, 1 AM Fri–Sat",
+"til": 25.0,
 "deal": {
 "t": "Night Strike: unlimited bowling + shoes $26.99",
 "d": "Sun from 6 PM, Mon–Thu from 7 PM (walk-in)",
 "u": "https://www.luckystrikeent.com/en/location/lucky-strike-mar-vista/specials",
 "chk": "2026-11-18"
-}
+},
+"gid": "ChIJ0dypfVy6woARGht0UkcqMTU",
+"hs": "g",
+"hu": "2026-11-25"
 },
 {
 "n": "Shatto 39 Lanes",
@@ -460,15 +480,17 @@
 "lat": 33.82781,
 "lon": -118.30914,
 "geo": "place",
-"h": "Till 11 PM, later weekends",
-"til": 24,
-"hq": "~",
+"h": "Till 11 PM, 1 AM Fri–Sat",
+"til": 25.0,
 "deal": {
 "t": "Night Strike: unlimited bowling + shoes $24.99",
 "d": "Sun from 6 PM, Mon–Thu from 7 PM (walk-in)",
 "u": "https://www.luckystrikeent.com/location/lucky-strike-torrance/specials",
 "chk": "2026-11-18"
-}
+},
+"gid": "ChIJwaZ9G6NK3YARGX61XqoITyE",
+"hs": "g",
+"hu": "2026-11-25"
 },
 {
 "n": "Lucky Strike Pasadena",
@@ -481,7 +503,10 @@
 "lon": -118.07671,
 "geo": "building",
 "h": "Till 11 PM, 1 AM Fri–Sat",
-"til": 25
+"til": 25.0,
+"gid": "ChIJiQBotoLcwoARQ6hFh2XeFbo",
+"hs": "g",
+"hu": "2026-11-25"
 },
 {
 "n": "Wi Spa",
@@ -1398,7 +1423,12 @@
 "lat": 33.67948,
 "lon": -117.89376,
 "geo": "amenity",
-"src": "osm"
+"src": "osm",
+"gid": "ChIJEZBPWxbf3IARaKwlKV2Z9So",
+"h": "Till 10 PM, 9 PM Sun, midnight Fri–Sat",
+"til": 24.0,
+"hs": "g",
+"hu": "2026-11-25"
 },
 {
 "n": "HiroNori Craft Ramen",
@@ -1829,7 +1859,9 @@
 "lat": 32.74861,
 "lon": -117.12968,
 "geo": "amenity",
-"src": "osm"
+"src": "osm",
+"hu": "2026-11-25",
+"gmiss": 1
 },
 {
 "n": "Lucha Libre Gourmet Taco Shop",
@@ -1844,7 +1876,12 @@
 "lat": 32.74325,
 "lon": -117.18161,
 "geo": "amenity",
-"src": "osm"
+"src": "osm",
+"gid": "ChIJq8oURS6r3oARdtYfAS-k538",
+"h": "Till 10 PM, 11 PM Fri–Sat",
+"til": 23.0,
+"hs": "g",
+"hu": "2026-11-25"
 },
 {
 "n": "Tacos El Gordo",
@@ -1939,7 +1976,12 @@
 "lat": 34.06003,
 "lon": -118.29093,
 "geo": "amenity",
-"src": "osm"
+"src": "osm",
+"gid": "ChIJ0__2bXnHwoARF2OG9wa2ycY",
+"h": "Till 10 PM, closed Mon",
+"til": 22.0,
+"hs": "g",
+"hu": "2026-11-25"
 },
 {
 "n": "Genwa Korean BBQ",
@@ -2289,7 +2331,12 @@
 "lat": 34.03407,
 "lon": -118.24111,
 "geo": "amenity",
-"src": "osm"
+"src": "osm",
+"gid": "ChIJnd0gSmi7woARCdXsW5usqKU",
+"h": "Till 10 PM, closed Mon–Tue",
+"til": 22.0,
+"hs": "g",
+"hu": "2026-11-25"
 },
 {
 "n": "Hayato",
@@ -2517,10 +2564,14 @@
 ],
 "lat": 34.04091,
 "lon": -118.26724,
-"h": "DJ brunch Sundays, other nights rotate",
+"h": "Till midnight, 10 PM Thu, 11 PM Fri, closed Mon–Wed, Sun",
 "u": "https://marriott.com/en-us/hotels/laxav-ac-hotel-downtown-los-angeles/experiences",
 "geo": "amenity",
-"src": "web"
+"src": "web",
+"gid": "ChIJ54-aIqXHwoAR2LbBhhiuj7M",
+"til": 24.0,
+"hs": "g",
+"hu": "2026-11-25"
 },
 {
 "n": "Lunasia Dim Sum House",
@@ -2533,11 +2584,13 @@
 ],
 "lat": 34.09244,
 "lon": -118.13223,
-"h": "10:30 AM to 8:30 PM (from 9:30 AM weekends)",
+"h": "Till 8:30 PM",
 "til": 20.5,
-"hq": "~",
 "geo": "amenity",
-"src": "osm"
+"src": "osm",
+"gid": "ChIJj76MBSHFwoARhit_xu1N6y0",
+"hs": "g",
+"hu": "2026-11-25"
 },
 {
 "n": "Sea Harbour Seafood",
@@ -2909,11 +2962,13 @@
 ],
 "lat": 32.7402,
 "lon": -117.21124,
-"h": "10:30 AM to 9 PM",
-"til": 21,
-"hq": "~",
+"h": "Till 8 PM",
+"til": 20.0,
 "geo": "amenity",
-"src": "osm"
+"src": "osm",
+"gid": "ChIJqTNLdAOr3oARx08fgT_mxGg",
+"hs": "g",
+"hu": "2026-11-25"
 },
 {
 "n": "Smorgasburg LA",
@@ -3037,11 +3092,13 @@
 ],
 "lat": 32.70562,
 "lon": -117.1406,
-"h": "Mon–Thu, Sun 7 AM to 2 AM; Fri–Sat 7 AM to 3 AM",
-"til": 27,
-"hq": "~",
+"h": "Till 2 AM, 3 AM Fri–Sat",
+"til": 27.0,
 "geo": "amenity",
-"src": "osm"
+"src": "osm",
+"gid": "ChIJw_9yT25T2YARL25MQwI5JhE",
+"hs": "g",
+"hu": "2026-11-25"
 },
 {
 "n": "Serrano's Street Tacos & Bar",
@@ -3149,11 +3206,13 @@
 ],
 "lat": 32.71382,
 "lon": -117.15311,
-"h": "Mon–Thu 11 AM to 9 PM; Fri–Sat 11 AM to 10 PM",
-"til": 22,
-"hq": "~",
+"h": "Till 9 PM, 10 PM Fri–Sat",
+"til": 22.0,
 "geo": "amenity",
-"src": "osm"
+"src": "osm",
+"gid": "ChIJw5XbtL9T2YARqEzr91y6DaE",
+"hs": "g",
+"hu": "2026-11-25"
 },
 {
 "n": "Filippi's Pizza Grotto Little Italy",
@@ -3471,11 +3530,13 @@
 ],
 "lat": 34.12031,
 "lon": -116.44084,
-"h": "Mon–Sat 8 AM to 8 PM; Sun 8 AM to 7 PM",
-"til": 20,
-"hq": "~",
+"h": "Till 8 PM, 7 PM Sun",
+"til": 20.0,
 "geo": "amenity",
-"src": "osm"
+"src": "osm",
+"gid": "ChIJq1ES0Ocn24ARSznr8zfQWzc",
+"hs": "g",
+"hu": "2026-11-25"
 },
 {
 "n": "Sunright Tea Studio - Rancho Cucamonga",
@@ -3673,11 +3734,13 @@
 ],
 "lat": 33.82104,
 "lon": -116.5465,
-"h": "Mon–Thu 11 AM to 9 PM; Fri 11 AM to 10 PM; Sat 9 AM to 10 PM; Sun 9 AM to 9 PM",
-"til": 22,
-"hq": "~",
+"h": "Till 9 PM, 10 PM Fri–Sat",
+"til": 22.0,
 "geo": "amenity",
-"src": "osm"
+"src": "osm",
+"gid": "ChIJl5TL1KUb24ARBx95Q9G14ag",
+"hs": "g",
+"hu": "2026-11-25"
 },
 {
 "n": "Thai Smile",

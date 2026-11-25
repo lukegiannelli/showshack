@@ -106,7 +106,9 @@
 "lat": 33.77403,
 "lon": -117.98646,
 "geo": "place",
-"a": "8345 Garden Grove Blvd"
+"a": "8345 Garden Grove Blvd",
+"hu": "2026-11-25",
+"gmiss": 1
 },
 {
 "n": "2000 Points Billiards",
@@ -176,7 +178,9 @@
 "lat": 33.77429,
 "lon": -117.94725,
 "geo": "place",
-"a": "10706 Garden Grove Blvd"
+"a": "10706 Garden Grove Blvd",
+"hu": "2026-11-25",
+"gmiss": 1
 },
 {
 "n": "Hidalgo's Pool Hall",
@@ -227,7 +231,9 @@
 "lat": 33.76938,
 "lon": -118.19425,
 "geo": "place",
-"a": "145 W Broadway"
+"a": "145 W Broadway",
+"hu": "2026-11-25",
+"gmiss": 1
 },
 {
 "n": "The 8 Pool & Coffee Room",
@@ -852,7 +858,12 @@
 "a": "2220 W Lincoln Ave",
 "lat": 33.83231,
 "lon": -117.9604,
-"geo": "place"
+"geo": "place",
+"gid": "ChIJmQf545cp3YARql2pxZghVCQ",
+"h": "Till 11:30 PM, 12:30 AM Tue, 1 AM Thu, 2 AM Fri–Sat",
+"til": 26.0,
+"hs": "g",
+"hu": "2026-11-25"
 },
 {
 "n": "Hard Times Billiards",
