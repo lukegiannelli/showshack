@@ -183,7 +183,14 @@ function afterStop(p){return {cl:typeof p.til==="number"?p.til:undefined,k:grp(p
 const todayISO=()=>{const d=new Date();return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");};
 // capture phase so the flip cards / card toggles never see these taps
 document.addEventListener("click",ev=>{const b=ev.target.closest("[data-nadd],[data-naft]");if(!b)return;ev.stopPropagation();ev.preventDefault();
-  if(b.dataset.nadd){const e=evById(b.dataset.nadd);if(!e){toast("Couldn't find that show");return;}if(addStop(showStop(e))){b.classList.add("done");b.textContent="✓ In your night";}}
+  if(b.dataset.nadd){const e=evById(b.dataset.nadd);if(!e){toast("Couldn't find that show");return;}
+    const st=showStop(e);
+    // a night already has a show: keep that one saved and start a fresh night with this show (Undo puts it in the old night instead)
+    if(plan.s.some(x=>x.k==="show")){if(plan.s.some(x=>x.k==="show"&&x.n===st.n&&x.p===st.p)){toast("Already in your night","Open",openPlan);return;}
+      const prevId=planId,prev=cleanPlan(plan);useNight(newId(),{});addStop(st,true);const newIdNow=planId;
+      b.classList.add("done");b.textContent="✓ In a new night";
+      toast("Last night saved ✓ Started a new night","Undo",()=>{const i=NIGHTS.findIndex(x=>x.id===newIdNow);if(i>=0)NIGHTS.splice(i,1);putNights();useNight(prevId,prev);addStop(st,true);toast("Added to your earlier night instead","Open",openPlan);},6000);return;}
+    if(addStop(st)){b.classList.add("done");b.textContent="✓ In your night";}}
   else{const p=allAfters()[+b.dataset.naft];if(p&&addStop(afterStop(p))){b.classList.add("done");b.textContent="✓ Added";}}},true);
 const addBtn=h=>`<button type="button" class="nadd" data-nadd="${esc(h)}">＋ My night</button><button type="button" class="ncal" data-ncal="${esc(h)}" aria-label="Add to calendar">📅</button>`;
 // one show → a calendar file (start time from the listing, about 3 hours long; all-day when no time is listed)
@@ -390,14 +397,13 @@ function drawBuilder(){const el=$("bNight");if(!el)return;const n=plan.s.length,
     ${(()=>{checkNight();const L=CHK.list;return (L.length?`<div class="bn-chk${L.some(x=>x.e)?" err":""}" role="alert"><b>${L.some(x=>x.e)?"⚠️ This night won't work as timed":"Heads up on timing"}</b><ul>${L.map(x=>`<li class="${x.e?"e":""}">${x.txt}</li>`).join("")}</ul>${n>1?`<small>Tap ⏱ Tighten the night to re-time it, or change a stop's time.</small>`:""}</div>`:"")
       +(CHK.home?`<p class="bn-leavehome">🏠 ${CHK.home}</p>`:"");})()}
     ${n?`<ol class="bn-stops">${plan.s.map(stopRow).join("")}</ol>`:`<p class="bn-empty">Nothing yet. Add stops below, or tap <b>＋ My night</b> on any show.</p>`}
-    ${n>1&&plan.s.some(x=>x.tm)?`<button type="button" class="bn-tight" data-tight="1">⏱ Tighten the night <small>re-time every stop from the drive times</small></button>`:""}
     <div class="bn-add">${["meet","eat","show","after"].map(k=>`<button type="button" class="chip bn-addc" data-addk="${k}" aria-pressed="${pickK===k}">${tic(k,"sm")} ${TYPES[k][1]}</button>`).join("")}</div>
     ${picker()}
     <details class="bn-host"${plan.h||plan.ph?" open":""}><summary>Who's hosting (for "I'm in" texts)</summary>
       <div class="bn-two"><label class="bn-f"><span>Your name</span><input data-m="h" value="${esc(plan.h)}" maxlength="30"></label><label class="bn-f"><span>Phone (optional)</span><input data-m="ph" type="tel" value="${esc(plan.ph)}" maxlength="20"></label></div>
       <p class="bn-hint">Your number only goes inside the link you send, so friends' "I'm in" texts reach you. Leave it blank and they'll pick who to text.</p></details>
     ${n?`<div class="bn-sum">${n} stop${n>1?"s":""}${tot?` · ${D.approx?"≈ ":""}$${Math.round(tot)} each`:""}<button type="button" class="bn-sumlink" data-flip="1">See the damage ↻</button></div>`:""}
-    <div class="bn-go"><button type="button" class="bn-send" data-send="1"${n?"":" disabled"}>Send the link</button><button type="button" data-prev="1"${n?"":" disabled"}>Preview</button>${n?'<button type="button" class="bn-clr" data-nnew="1">＋ New night</button>':""}</div>
+    <div class="bn-go"><button type="button" class="bn-send" data-send="1"${n?"":" disabled"}>Send the link</button><button type="button" data-prev="1"${n?"":" disabled"}>Preview</button>${n?'<button type="button" class="bn-clr" data-nnew="1">Save my night</button>':""}</div>
     ${NIGHTS.length?`<p class="bn-fine">Every night you build is kept in <button type="button" class="bn-lnk" data-gosaved="1">Saved → Your nights</button>.</p>`:""}
     <p class="bn-fine">Changed something after you sent it? Send the new link. Every card shows when it was last updated, so the newest one is easy to spot.</p>`;
   nightWx();}
@@ -471,7 +477,7 @@ async function onClick(ev){const b=ev.target.closest("button");if(!b)return;cons
   if(d.qdel!=null){const i=+d.qdel,gone=plan.s[i];if(!gone)return;const li=b.closest(".bn-stop"),t0=plan.t,d0=plan.d,done=()=>{plan.s.splice(plan.s.indexOf(gone),1);unnameShow(gone);openI=-1;plan.up=Date.now();save();drawBuilder();
       toast(`Removed ${esc(gone.n||TYPES[gone.k][1])}`,"Undo",()=>{if(plan.s.length>=MAXS)return;plan.s.splice(Math.min(i,plan.s.length),0,gone);plan.t=t0;plan.d=d0;sortStops();plan.up=Date.now();save();drawBuilder();});};
     if(li&&li.animate&&!matchMedia("(prefers-reduced-motion: reduce)").matches)li.animate([{opacity:1,transform:"none"},{opacity:0,transform:"translateX(40px) scale(.96)"}],{duration:200,easing:"ease-in"}).onfinish=done;else done();return;}
-  if(d.nnew){const had=keep(plan);useNight(newId(),{});if(had)toast("Your last night is kept in Saved","Open",goSaved);return;}
+  if(d.nnew){const had=keep(plan);useNight(newId(),{});window.scrollTo({top:0,behavior:"smooth"});if(had)toast("Night saved ✓ Fresh page ready","See it",goSaved);return;}
   if(d.nuse){const x=NIGHTS.find(n=>n.id===d.nuse);if(x&&x.id!==planId)useNight(x.id,x.p);return;}
   if(d.gosaved){goSaved();return;}
   if(d.prev){view(cleanPlan({...plan,up:plan.up||Date.now()}),true);return;}
