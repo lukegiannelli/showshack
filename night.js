@@ -185,8 +185,11 @@ const todayISO=()=>{const d=new Date();return d.getFullYear()+"-"+String(d.getMo
 document.addEventListener("click",ev=>{const b=ev.target.closest("[data-nadd],[data-naft]");if(!b)return;ev.stopPropagation();ev.preventDefault();
   if(b.dataset.nadd){const e=evById(b.dataset.nadd);if(!e){toast("Couldn't find that show");return;}
     const st=showStop(e);
-    // a night already has a show: keep that one saved and start a fresh night with this show (Undo puts it in the old night instead)
-    if(plan.s.some(x=>x.k==="show")){if(plan.s.some(x=>x.k==="show"&&x.n===st.n&&x.p===st.p)){toast("Already in your night","Open",openPlan);return;}
+    if(plan.s.some(x=>x.k==="show"&&x.n===st.n&&x.p===st.p)){toast("Already in your night","Open",openPlan);return;}
+    // the night already has a show on a different date: keep that one saved and start a fresh night with this show
+    // (same date = a double-header, so it joins this night; Undo puts it in the old night instead)
+    const nightDay=plan.d||(plan.s.find(x=>x.k==="show"&&x.sd)||{}).sd;
+    if(plan.s.some(x=>x.k==="show")&&nightDay&&st.sd&&st.sd!==nightDay){
       const prevId=planId,prev=cleanPlan(plan);useNight(newId(),{});addStop(st,true);const newIdNow=planId;
       b.classList.add("done");b.textContent="✓ In a new night";
       toast("Last night saved ✓ Started a new night","Undo",()=>{const i=NIGHTS.findIndex(x=>x.id===newIdNow);if(i>=0)NIGHTS.splice(i,1);putNights();useNight(prevId,prev);addStop(st,true);toast("Added to your earlier night instead","Open",openPlan);},6000);return;}
