@@ -135,6 +135,14 @@ function setFlip(fc,on){const inn=fc.querySelector(".bfc-in");
   inn.animate([{transform:"scaleX(1)"},{transform:"scaleX(0.02)"}],half).onfinish=()=>{swapFlip(fc,on);
     const a=inn.animate([{transform:"scaleX(0.02)"},{transform:"scaleX(1)"}],{duration:170,easing:"cubic-bezier(.25,.6,.4,1)",fill:"forwards"});
     a.onfinish=()=>{a.cancel();inn.getAnimations().forEach(x=>x.cancel());fc._busy=false;};};}
+/* flip-card fronts are a fixed height: hide any line in the top part that would be cut off, so nothing shows half-sliced */
+function fitFronts(root){(root||document).querySelectorAll(".bfc-f .face.front>.body").forEach(b=>{
+  const lines=[...[...b.children].filter(x=>!x.matches(".facts")),...b.querySelectorAll(".facts>*")];lines.forEach(x=>x.style.removeProperty("visibility"));
+  const bot=b.getBoundingClientRect().bottom+1;if(!b.getBoundingClientRect().height)return;
+  lines.forEach(x=>{const r=x.getBoundingClientRect();if(r.height&&r.bottom>bot)x.style.visibility="hidden";});});}
+let fitT;const fitSoon=()=>{cancelAnimationFrame(fitT);fitT=requestAnimationFrame(()=>fitFronts());};
+new MutationObserver(ms=>{if(ms.some(m=>[...m.addedNodes].some(n=>n.nodeType===1&&(n.matches(".bfc")||n.querySelector(".bfc")))))fitSoon();}).observe(document.body,{childList:true,subtree:true});
+addEventListener("resize",fitSoon);if(document.fonts)document.fonts.ready.then(fitSoon);fitSoon();
 function swapFlip(fc,on){fc.classList.toggle("on",on);fc.querySelector(".bfc-b").setAttribute("aria-hidden",String(!on));fc.querySelector(".bfc-f").setAttribute("aria-hidden",String(on));}
 $("bPicks").addEventListener("click",flipRowClick,true);
 $("bFresh").addEventListener("click",flipRowClick,true);
