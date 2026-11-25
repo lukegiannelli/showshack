@@ -385,7 +385,7 @@ function render(){
   const qw = state.q ? qS(state.q).split(/\s+/).filter(Boolean) : null;
   const KW={club:"club dj nightlife rave",festival:"festival rave",comedy:"comedy standup stand up",theater:"theater theatre arts musical",openmic:"open mic",dance:"ecstatic dance",contact:"contact improv",sound:"sound bath",drum:"drum circle",social:"dance social salsa swing line",art:"art walk market",volunteer:"volunteer cleanup",concert:"concert live music"};
   const mine = state.kind==="mymusic"&&window.SHACK_MUSIC ? SHACK_MUSIC.ids() : null;   // "Match My Music" list
-  const fresh = state.kind==="fresh"&&window.SHACK_FRESH ? SHACK_FRESH.ids() : null;   // "Just announced" list (last 14 days)
+  const fresh = state.kind==="fresh"&&window.SHACK_FRESH ? SHACK_FRESH.ids() : null;   // "Just announced" list (this week)
   evs=evs.filter(e=>!qw||!qw.length||(h=>qw.every(w=>h.includes(w)))(qS(norm([e.title,e.artists,e.venue,e.city,KW[e.kind]||e.kind,(e.genres||[]).join(" "),(e.genres||[]).includes("hiphop")?"hip hop rap rnb":""].join(" ")))))
     .filter(e=>state.venue==="all"||venueKey(e)===state.venue)
     .filter(e=>state.kind==="all"||(String(state.kind).startsWith("g:")?!!(GROUPS[state.kind.slice(2)]&&GROUPS[state.kind.slice(2)].has(e.kind)):state.kind==="starred"?state.stars.has(skey(e)):state.kind==="picks"?e.added:state.kind==="mymusic"?!!(mine&&mine.has(e.id)):state.kind==="fresh"?!!(fresh&&fresh.has(e.id)):state.kind==="rave"?isRave(e):e.kind===state.kind))

@@ -219,8 +219,8 @@ window.addEventListener("popstate",()=>{
   if(pushed){pushed=false;backTo=null;if(screen!=="home"){state.kind="all";state.sub=null;show("home",true);}}});
 $("bBack").onclick=()=>{if(backTo&&screen==="results"){if(subPushed){history.back();return;}restoreBack();return;}goHome();};
 // "Your music" on the Match My Music row: every upcoming show that fits your music (music.js), by date
-// "See all" on the Just announced row: every upcoming show announced in the last 14 days, by date
-window.SHACK_FRESH={ids(){const S=freshMap(),t=new Date();t.setDate(t.getDate()-14);const since=isoDay(t);return new Set(Object.keys(S).filter(k=>S[k]>=since));}};
+// "See all" on the Just announced row: every upcoming show announced this week (same window as the count on the button), by date
+window.SHACK_FRESH={ids(){const S=freshMap(),since=isoDay(new Date(Date.now()-6*864e5));return new Set(Object.keys(S).filter(k=>S[k]>=since));}};
 function openFresh(){backTo=null;openIds.clear();cur="fresh";state.view="list";state.venue="all";state.kind="fresh";state.sub=null;state.genre="all";state.when="any";state.surprise=null;
   flags.hidden=true;$("bFilt").setAttribute("aria-expanded","false");show("results");}
 function openMine(){backTo=null;openIds.clear();cur="mymusic";state.view="list";state.venue="all";state.kind="mymusic";state.sub=null;state.genre="all";state.when="any";state.surprise=null;
@@ -317,7 +317,7 @@ function after(){
     $("bFreshBox").hidden=!fr.length;
     if(FRESH&&fsig!==$("bFresh").dataset.sig){$("bFresh").dataset.sig=fsig;const S=freshMap();   // FRESH (fresh.json) can arrive after the show list
       $("bFresh").innerHTML=fr.map(e=>flipCardHtml(e,`<i style="--vc:#7ee0b8"></i>${freshWord(S[e.id])}`)).join("");
-      const wa=isoDay(new Date(Date.now()-6*864e5)),wk=up.filter(e=>!e.added&&S[e.id]>=wa).length;$("bAllFresh").setAttribute("aria-label",wk?`See all just announced (${wk} this week)`:"See all just announced");}
+      const wa=isoDay(new Date(Date.now()-6*864e5)),wk=up.filter(e=>!e.added&&S[e.id]>=wa).length;$("bAllFresh").textContent=wk?`See all · ${wk}`:"See all";$("bAllFresh").setAttribute("aria-label",wk?`See all just announced (${wk} this week)`:"See all just announced");}
     trust();
     if(window.SPOTS)SPOTS.home();
   }
