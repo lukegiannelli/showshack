@@ -47,7 +47,7 @@ function saveStars(){try{SH.store.put("radar-stars",JSON.stringify([...state.sta
 async function flushStars(){if(!starRef)return; if(starBusy){starAgain=true;return;} starBusy=true; try{await starRef.set({ids:[...state.stars]});}catch(e){if(e&&e.code==="invalid_argument")starRef=null;} starBusy=false; if(starAgain){starAgain=false;flushStars();}}
 function updateStarChip(){const c=document.getElementById("kindRow-starred");if(c)c.textContent="★ Interested"+(starCount>0?" · "+starCount:"");}
 try{const s=JSON.parse(SH.store.raw("radar-prefs")||"{}");Object.assign(state,{kind:s.kind||"all",genre:s.genre||"all",maxDrive:s.maxDrive||180,sort:s.sort||"date",venue:"all",hideTBA:!!s.hideTBA,when:s.when||"any",flags:s.flags||{},car:s.car||1,mpg:+s.mpg>0?+s.mpg:25,gas:+s.gas>0?+s.gas:5.85,food:s.food!=null?+s.food:0,drinks:s.drinks!=null?+s.drinks:0,home:s.home||"drive",budget:+s.budget>0?+s.budget:0,pinV:Array.isArray(s.pinV)?s.pinV:[],poolOn:!!s.poolOn});}catch(e){}
-if(String(state.kind).startsWith("g:"))state.kind="all";
+if(String(state.kind).startsWith("g:")||state.kind==="fresh")state.kind="all";
 function savePrefs(){try{SH.store.put("radar-prefs",JSON.stringify({kind:state.kind,genre:state.genre,maxDrive:state.maxDrive,sort:state.sort,venue:state.venue,hideTBA:!!state.hideTBA,when:state.when,flags:state.flags,car:state.car,mpg:state.mpg,gas:state.gas,food:state.food,drinks:state.drinks,home:state.home,budget:state.budget,pinV:state.pinV,poolOn:!!state.poolOn}));}catch(e){}}
 
 function driveEstimate(lat,lon){
@@ -385,9 +385,10 @@ function render(){
   const qw = state.q ? qS(state.q).split(/\s+/).filter(Boolean) : null;
   const KW={club:"club dj nightlife rave",festival:"festival rave",comedy:"comedy standup stand up",theater:"theater theatre arts musical",openmic:"open mic",dance:"ecstatic dance",contact:"contact improv",sound:"sound bath",drum:"drum circle",social:"dance social salsa swing line",art:"art walk market",volunteer:"volunteer cleanup",concert:"concert live music"};
   const mine = state.kind==="mymusic"&&window.SHACK_MUSIC ? SHACK_MUSIC.ids() : null;   // "Match My Music" list
+  const fresh = state.kind==="fresh"&&window.SHACK_FRESH ? SHACK_FRESH.ids() : null;   // "Just announced" list (this week)
   evs=evs.filter(e=>!qw||!qw.length||(h=>qw.every(w=>h.includes(w)))(qS(norm([e.title,e.artists,e.venue,e.city,KW[e.kind]||e.kind,(e.genres||[]).join(" "),(e.genres||[]).includes("hiphop")?"hip hop rap rnb":""].join(" ")))))
     .filter(e=>state.venue==="all"||venueKey(e)===state.venue)
-    .filter(e=>state.kind==="all"||(String(state.kind).startsWith("g:")?!!(GROUPS[state.kind.slice(2)]&&GROUPS[state.kind.slice(2)].has(e.kind)):state.kind==="starred"?state.stars.has(skey(e)):state.kind==="picks"?e.added:state.kind==="mymusic"?!!(mine&&mine.has(e.id)):state.kind==="rave"?isRave(e):e.kind===state.kind))
+    .filter(e=>state.kind==="all"||(String(state.kind).startsWith("g:")?!!(GROUPS[state.kind.slice(2)]&&GROUPS[state.kind.slice(2)].has(e.kind)):state.kind==="starred"?state.stars.has(skey(e)):state.kind==="picks"?e.added:state.kind==="mymusic"?!!(mine&&mine.has(e.id)):state.kind==="fresh"?!!(fresh&&fresh.has(e.id)):state.kind==="rave"?isRave(e):e.kind===state.kind))
     .filter(e=>!state.sub||(state.sub==="dj"?(e.kind==="club"||(e.genres||[]).includes("electronic")):e.kind===state.sub))
     .filter(e=>state.genre==="all"||(e.genres||[]).includes(state.genre))
     .filter(e=>state.maxDrive>=180||!origin||(e._drive&&e._drive.mins<=state.maxDrive))

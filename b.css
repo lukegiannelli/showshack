@@ -840,3 +840,11 @@ html.b-you .wrap{display:none}
 :root.ui-b[data-theme="dark"] .byou-page .bmus-err,:root.ui-b[data-theme="dark"] .byou-page .bset-acts .bset-clear{color:#FF8AAE}
 .ui-b #bTabs #bYouTab.bdot{position:relative}
 .ui-b #bTabs #bYouTab.bdot::after{content:"";position:absolute;top:7px;left:calc(50% + 9px);width:9px;height:9px;border-radius:50%;background:#FF6FA5;box-shadow:0 0 8px #FF6FA5}
+/* row header buttons ("See all", "Your music"…): a quiet pill so they read as tappable without shouting */
+.ui-b .bpicks-h .blink{min-height:34px;padding:0 12px;border-radius:999px;border:1px solid color-mix(in srgb,var(--accent) 45%,transparent);
+  background:color-mix(in srgb,var(--accent) 10%,transparent);font-size:13.5px;line-height:1;gap:4px;transition:background .15s,border-color .15s,transform .1s}
+.ui-b .bpicks-h .blink:hover{background:color-mix(in srgb,var(--accent) 18%,transparent);border-color:var(--accent)}
+.ui-b .bpicks-h .blink:active{transform:scale(.96)}
+.ui-b .bpicks-h .blink:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.ui-b #bAllWeekend::after,.ui-b #bAllFresh::after,.ui-b .bpicks-h [data-mymusic]::after{content:"›";font-size:17px;line-height:1;margin-top:-2px}
+.ui-b .bpicks-h .blink{position:relative}.ui-b .bpicks-h .blink::before{content:"";position:absolute;inset:-5px -4px}   /* 44px tap area around the smaller pill */
