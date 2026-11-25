@@ -233,5 +233,7 @@ const L=$("list");if(L)new MutationObserver(()=>explainer()).observe(L,{childLis
 document.addEventListener("click",ev=>{
   const v=ev.target.closest("[data-qvenue]");if(v){ev.preventDefault();ev.stopPropagation();const q=$("q");if(q){q.value="";q.dispatchEvent(new Event("input",{bubbles:true}));}state.q="";state.venue=v.dataset.qvenue;state.kind="all";state.when="any";render();return;}
   if(ev.target.closest("[data-qflyer]")){ev.preventDefault();ev.stopPropagation();const y=$("bYou");if(y&&y.open)dlgClose(y);if(window.SHACK_FLYER)SHACK_FLYER.open();return;}
+  const w=ev.target.closest("[data-qwatch]");if(w&&window.SHACK_MUSIC){ev.preventDefault();ev.stopPropagation();const n=w.dataset.qwatch;SHACK_MUSIC.watch(n);w.textContent="🔔 Watching “"+n+"”";w.disabled=true;
+    const ping=!!(remState&&remState.on);if(window.NIGHT&&NIGHT.toast)NIGHT.toast(ping?`You'll get a ping when ${esc(n)} lands at a Shack venue.`:`Watching ${esc(n)}. Turn on reminders to get the phone ping.`,ping?"":"Set up",ping?null:()=>openYou(C.user?"":"signin"));return;}
   const m=ev.target.closest("[data-qmiss]");if(m){ev.preventDefault();ev.stopPropagation();missDraft=m.dataset.qmiss;openYou(C.user?"missing":"signin");}},true);
 })();

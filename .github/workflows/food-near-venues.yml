@@ -16,6 +16,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - run: |
+          set -o pipefail   # a failed OpenStreetMap fetch must turn the run red, not read as "nothing to add"
           git config user.name "show-shack-bot"
           git config user.email "show-shack-bot@users.noreply.github.com"
           for i in 1 2 3 4; do

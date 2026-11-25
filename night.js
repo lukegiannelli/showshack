@@ -348,7 +348,7 @@ function backHtml(p=plan,mode=""){const S=p.s,st=typeof state!=="undefined"?stat
   if(S.some(s=>s.k==="after"&&!(s.no||"").startsWith("Hours")))notes.push("Afters hours aren't always listed. Check before you head over.");
   const B=st.budget||0,pct=B?Math.round(tot/B*100):0;
   DMG={tot,approx};if(mode==="calc")return "";
-  if(view){const i=notes.indexOf("Set a start point below to add driving there and home.");if(i>=0)notes[i]="Set your start point in the Show Shack's Plan tab to add your drive there and home.";
+  if(view){const i=notes.indexOf("Set a start point below to add driving there and home.");if(i>=0)notes[i]="Set your start point in the Show Shack's Saved → Plan a night to add your drive there and home.";
     const j=notes.findIndex(x=>x.startsWith("Prices marked"));if(j>=0)notes[j]="Prices marked \"guess\" are rough typical spends, not real prices.";}
   return `<div class="bn-h"><button type="button" class="bn-flipb" ${view?'data-vflip="1"':'data-flip="1"'}>↻ The ${view?"night":"plan"}</button><h2>The damage</h2><p>${esc(p.t||"Your night")}${p.d?" · "+esc(fmtD(p.d)):""}${span?"<br>"+esc(span):""}</p></div>
     <div class="bn-big"><span>Each</span><b>${approx?"≈ ":""}$${Math.round(tot)}</b>${ppl>1?`<small>gas split ${ppl} ways</small>`:""}${B?`<small>${pct}% of your $${B} monthly fun budget</small>`:""}</div>
@@ -548,10 +548,10 @@ function view(p,preview,liveId){if(!$("nightView"))VOPENER=document.activeElemen
     if(b.classList.contains("nv-x")||b.dataset.vclose||b.dataset.vedit){close();if(b.dataset.vedit)openPlan();return;}
     if(b.dataset.vshare){shareNight(p,b);return;}
     if(b.dataset.vspin){surpriseNight();return;}
-    if(b.dataset.vmine){useNight(newId(),{...p,up:Date.now()});close();openPlan();toast("It's in your Plan tab (and Saved). Tweak it, then send");return;}
+    if(b.dataset.vmine){useNight(newId(),{...p,up:Date.now()});close();openPlan();toast("It's in Saved → Plan a night. Tweak it, then send");return;}
     if(b.dataset.ics){const blob=new Blob([ics(p)],{type:"text/calendar"}),a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=(p.t||"night").replace(/[^\w-]+/g,"-").slice(0,40)+".ics";document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove();},1500);return;}
     if(b.dataset.rout&&liveId){b.disabled=true;rsvpSet(el,liveId,"",false);return;}
-    if(b.dataset.vcopy){useNight(newId(),{...p,up:Date.now()});close();openPlan();toast("Copied into your Plan tab. Your other nights are in Saved");}});
+    if(b.dataset.vcopy){useNight(newId(),{...p,up:Date.now()});close();openPlan();toast("Copied into Plan a night. Your other nights are in Saved");}});
   if(liveId){el.addEventListener("submit",ev=>{const f=ev.target.closest("[data-rform]");if(!f)return;ev.preventDefault();const n=f.n.value.trim();if(!n)return;f.querySelector("button").disabled=true;rsvpSet(el,liveId,n,true);});
     rsvpLoad(el,liveId);}
   el.querySelector(".nv-x").focus({preventScroll:true});}
@@ -632,7 +632,7 @@ function drawSaved(){if(!savedOn)return;let el=$("bNights");const list=$("list")
   const today=todayISO(),past=NIGHTS.filter(x=>x.p.d&&x.p.d<today),up=NIGHTS.filter(x=>!(x.p.d&&x.p.d<today))
     .sort((a,b)=>(a.p.d||"9999").localeCompare(b.p.d||"9999")||(b.p.up||0)-(a.p.up||0));
   el.innerHTML=`<div class="bpicks-h"><h2 class="bsec">${tic("after","sm")} Your nights${NIGHTS.length?` · ${NIGHTS.length}`:""}</h2><button type="button" class="blink" data-nnew="1">＋ New night</button></div>
-    ${up.length?`<h3 class="bnc-h">Coming up · soonest first</h3><div class="bnc-row">${up.map(nightCard).join("")}</div>`:NIGHTS.length?"":`<p class="bnone">Nights you build in the Plan tab land here, so you can work on a few and flip between them.</p>`}
+    ${up.length?`<h3 class="bnc-h">Coming up · soonest first</h3><div class="bnc-row">${up.map(nightCard).join("")}</div>`:NIGHTS.length?"":`<p class="bnone">Nights you build in Plan a night land here, so you can work on a few and flip between them.</p>`}
     ${past.length?`<h3 class="bnc-h">Past nights · their shows are in your Show passport</h3><div class="bnc-row bnc-past">${past.map(nightCard).join("")}</div>`:""}
     <h2 class="bsec bnights-sh">${tic("show","sm")} Saved shows</h2>`;}
 function savedRow(on){savedOn=on;if(on)drawSaved();else{const el=$("bNights");if(el)el.hidden=true;}}
