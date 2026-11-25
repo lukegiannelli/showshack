@@ -138,6 +138,14 @@ function setFlip(fc,on){const inn=fc.querySelector(".bfc-in");
   inn.animate([{transform:"scaleX(1)"},{transform:"scaleX(0.02)"}],half).onfinish=()=>{swapFlip(fc,on);
     const a=inn.animate([{transform:"scaleX(0.02)"},{transform:"scaleX(1)"}],{duration:170,easing:"cubic-bezier(.25,.6,.4,1)",fill:"forwards"});
     a.onfinish=()=>{a.cancel();inn.getAnimations().forEach(x=>x.cancel());fc._busy=false;};};}
+/* flip-card fronts are a fixed height: hide any line in the top part that would be cut off, so nothing shows half-sliced */
+function fitFronts(root){(root||document).querySelectorAll(".bfc-f .face.front>.body").forEach(b=>{
+  const lines=[...[...b.children].filter(x=>!x.matches(".facts")),...b.querySelectorAll(".facts>*")];lines.forEach(x=>x.style.removeProperty("visibility"));
+  const bot=b.getBoundingClientRect().bottom+1;if(!b.getBoundingClientRect().height)return;
+  lines.forEach(x=>{const r=x.getBoundingClientRect();if(r.height&&r.bottom>bot)x.style.visibility="hidden";});});}
+let fitT;const fitSoon=()=>{cancelAnimationFrame(fitT);fitT=requestAnimationFrame(()=>fitFronts());};
+new MutationObserver(ms=>{if(ms.some(m=>[...m.addedNodes].some(n=>n.nodeType===1&&(n.matches(".bfc")||n.querySelector(".bfc")))))fitSoon();}).observe(document.body,{childList:true,subtree:true});
+addEventListener("resize",fitSoon);if(document.fonts)document.fonts.ready.then(fitSoon);fitSoon();
 function swapFlip(fc,on){if(on)askStart();if(on&&!document.documentElement.classList.contains("flipped")){document.documentElement.classList.add("flipped");try{SH.store.put("shack-flipped","1");}catch(e){}}fc.classList.toggle("on",on);fc.querySelector(".bfc-b").setAttribute("aria-hidden",String(!on));fc.querySelector(".bfc-f").setAttribute("aria-hidden",String(on));}
 $("bPicks").addEventListener("click",flipRowClick,true);
 $("bFresh").addEventListener("click",flipRowClick,true);
@@ -345,7 +353,7 @@ const WN_VER="2026-11";
 const WHATSNEW=[["🍜","Space ramen","Pull the disco ball down. Four swipes serve a random food spot and afters.",()=>{goHome();setTimeout(()=>$("disco").scrollIntoView({behavior:"smooth",block:"center"}),250);}],
   ["🆕","New rows on Home","Just announced, Price dropped, Because you're into, and your going-out streak.",()=>{goHome();setMore(true);setTimeout(()=>{const t=[$("bBecBox"),$("bDropBox"),$("bFreshBox")].find(x=>x&&!x.hidden);if(t)t.scrollIntoView({behavior:"smooth",block:"start"});},250);}],
   ["🌙","Your nights, saved","Every plan you build is kept in Saved. Do a past night again with one tap.",()=>{const t=document.querySelector('#bTabs [data-tab="saved"]');if(t)t.click();}],
-  ["⏱","Smarter planning","Drag stops to reorder, Tighten the night, the forecast, and drive vs rideshare home.",()=>{const t=document.querySelector('#bTabs [data-tab="budget"]');if(t)t.click();setTimeout(()=>{const n=$("bNight");if(n)n.scrollIntoView({behavior:"smooth",block:"start"});},200);}],
+  ["⏱","Smarter planning","Drag stops to reorder, the forecast, and drive vs rideshare home.",()=>{const t=document.querySelector('#bTabs [data-tab="budget"]');if(t)t.click();setTimeout(()=>{const n=$("bNight");if(n)n.scrollIntoView({behavior:"smooth",block:"start"});},200);}],
   ["🎟️","Show passport","Your stamps and badges live together on the You tab. Tap a stamp to log past shows, and compare with a friend.",()=>{if(window.SHACK_YOU)SHACK_YOU.open("pass");}],
   ["🔥","Map extras","Tonight heatmap, Now button, route costs and Build a night here.",()=>{MAPV.heat=true;state.when="tonight";const t=document.querySelector('#bTabs [data-tab="map"]');if(t)t.click();}]];
 const dlgOpen=d=>{if(d.showModal)d.showModal();else d.setAttribute("open","");},dlgClose=d=>{d.close?d.close():d.removeAttribute("open");};
@@ -751,15 +759,14 @@ renderVenues=function(){const list=$("list");loadStations();
       <small>${n?`${v.inR.length&&r?"":"Next "}${esc(when)}: ${esc(n.title)}${v.inR.length>1?` +${v.inR.length-1} more`:""}`:"No shows listed"}</small>
       ${tags?`<span class="vtags">${tags}</span>`:""}</button>
       <button type="button" class="vpin bfollow${fol?" on":""}" data-pinv="${esc(v.k)}" aria-pressed="${fol}" aria-label="${fol?"Unfollow":"Follow"} ${esc(v.name)}">${ni("bell")}<span>${fol?"Following":"Follow"}</span></button></div>${more}</div>`;};
-  // the passport itself lives on the You page now (passSection); Venues keeps a one-line way in
+  // the passport lives on the You page (passSection)
   const tot=infos.length;
-  const pass=`<div class="vcard bpass bpass-mini"><button type="button" class="bpass-go" data-ypass><img class="bshack-ic" src="hut.webp?v=2" alt=""><span><b>Show passport &amp; badges</b><small>${BEEN.size} stamped · on the You page</small></span><i aria-hidden="true">→</i></button></div>`;
   crawlCalc(infos);
   const chips=vChips(infos),shown=vfOn()?infos.filter(v=>vMatch(v)):infos;
   const fol=shown.filter(v=>isPinned(v.k)).sort((a,b)=>newCount(b)-newCount(a)||byNext(a,b));
   const seg=`<div class="bseg bven-when">${WHEN.map(([w,l])=>`<button type="button" data-when="${w}" aria-pressed="${state.when===w}">${l}</button>`).join("")}</div>`;
   const search=`<label class="bvsearch">${ni("search")}<input type="search" id="bVq" placeholder="Search ${tot} venues by name or city" value="${esc(VQ)}" autocomplete="off" enterkeyhint="search" aria-label="Search venues"><span id="bVqN" class="bvq-n" aria-live="polite"></span></label>`;
-  let html=`<div class="venues bven${vfOn()?" vfiltering":""}">${seg}${search}${chips}${vfOn()?`<p class="bvf-n">${shown.length} venue${shown.length===1?"":"s"} match</p>`:pass}`;
+  let html=`<div class="venues bven${vfOn()?" vfiltering":""}">${seg}${search}${chips}${vfOn()?`<p class="bvf-n">${shown.length} venue${shown.length===1?"":"s"} match</p>`:""}`;
   if(vfOn()&&!shown.length)html+=`<div class="empty"><strong>No venues match all of those</strong>Turn a chip off, or tap ✕ Clear.</div>`;
   if(fol.length||!vfOn())html+=`<h2 class="month pickh">${ni("bell")} Following</h2>`+(fol.length?fol.map(card).join(""):`<div class="empty"><strong>Follow your spots</strong>Tap Follow on a venue. When it adds a show, you'll see a dot on the Venues tab.</div>`);
   const rest=shown.filter(v=>!isPinned(v.k));
