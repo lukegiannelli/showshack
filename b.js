@@ -78,7 +78,7 @@ const isoDay=d=>d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+S
 const freshMap=()=>!FRESH?{}:FRESH.new||Object.fromEntries(Object.entries(FRESH.seen).filter(([,d])=>d>(FRESH.base||"")));
 function freshWord(d){const t=new Date();t.setHours(0,0,0,0);const [y,m,x]=d.split("-").map(Number),n=Math.round((t-new Date(y,m-1,x))/864e5),w=FRESH&&FRESH.new?"Announced":"Added";
   return n<=0?w+" today":n===1?w+" yesterday":n<7?w+" "+new Date(y,m-1,x).toLocaleDateString("en-US",{weekday:"short"}):w+" "+new Date(y,m-1,x).toLocaleDateString("en-US",{month:"short",day:"numeric"});}
-function bFreshPicks(up,skip){if(!FRESH)return [];const S=freshMap(),t=new Date();t.setDate(t.getDate()-14);const since=isoDay(t);
+function bFreshPicks(up,skip){if(!FRESH)return [];const S=freshMap(),since=isoDay(new Date(Date.now()-6*864e5));   // this week, same window as See all
   const xs=up.filter(e=>!e.added&&S[e.id]&&S[e.id]>=since&&!skip.has(skey(e))&&!priceInfo(e).sold)
     .sort((a,b)=>S[b.id].localeCompare(S[a.id])||(state.stars.has(skey(b))-state.stars.has(skey(a)))||((a._drive?.mins??999)-(b._drive?.mins??999))||a.start.localeCompare(b.start));
   const per={},runs=new Set(),out=[];for(const e of xs){const v=venueKey(e),r=v+"|"+String(e.title||"").toLowerCase();
