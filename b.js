@@ -19,7 +19,7 @@ let screen="home", cur=null, pushed=false;
 
 /* ---- move existing controls into the new layout (their handlers come along) ---- */
 const bar=$("bBar"), tools=$("bTools"), controls=document.querySelector(".controls");
-bar.insertBefore(controls.querySelector(".search"),$("bWhenRes").nextSibling);   // search sits under Tonight / This weekend / Anytime
+bar.insertBefore(controls.querySelector(".search"),$("bWhenRes").nextSibling);if($("qSug"))bar.querySelector(".search").after($("qSug"));   // search sits under Tonight / This weekend / Anytime
 tools.insertBefore($("maxDrive").closest("label"),$("bFilt"));
 tools.insertBefore($("sortBy").closest("label"),$("bFilt"));
 const flags=$("flagRow"); flags.hidden=true; bar.appendChild(flags);
@@ -30,7 +30,10 @@ function placeBall(s){const d=$("disco"),to=s==="budget"?$("bPlanGlobe"):s==="ho
   if(d.parentNode!==to)to.appendChild(d);if(window.DISCO)DISCO.set(s==="budget"?"globe":"disco");}
 document.querySelector(".wrap").insertBefore($("budgetBar"),$("alertBar"));
 const bStart=document.createElement("button");bStart.type="button";bStart.className="chip bstart";bStart.textContent="Set your start point for drive times";tools.appendChild(bStart);
-bStart.onclick=()=>{state.view="list";show("budget");setTimeout(()=>{const b=$("startEdit");if(b)b.click();},80);};
+const goStart=()=>{state.view="list";show("budget");setTimeout(()=>{const b=$("startEdit");if(b)b.click();},80);};
+bStart.onclick=goStart;
+function askStart(){if(origin)return;try{if(SH.store.raw("shack-askstart"))return;SH.store.put("shack-askstart","1");}catch(e){return;}
+  setTimeout(()=>{if(window.NIGHT&&NIGHT.toast)NIGHT.toast("📍 Want drive times on every show? Set where you leave from.","Set it",goStart,9000);},350);}
 $("bFilt").onclick=()=>{flags.hidden=!flags.hidden;$("bFilt").setAttribute("aria-expanded",String(!flags.hidden));};
 
 /* ---- when switch (home + results share it) ---- */
@@ -135,7 +138,7 @@ function setFlip(fc,on){const inn=fc.querySelector(".bfc-in");
   inn.animate([{transform:"scaleX(1)"},{transform:"scaleX(0.02)"}],half).onfinish=()=>{swapFlip(fc,on);
     const a=inn.animate([{transform:"scaleX(0.02)"},{transform:"scaleX(1)"}],{duration:170,easing:"cubic-bezier(.25,.6,.4,1)",fill:"forwards"});
     a.onfinish=()=>{a.cancel();inn.getAnimations().forEach(x=>x.cancel());fc._busy=false;};};}
-function swapFlip(fc,on){fc.classList.toggle("on",on);fc.querySelector(".bfc-b").setAttribute("aria-hidden",String(!on));fc.querySelector(".bfc-f").setAttribute("aria-hidden",String(on));}
+function swapFlip(fc,on){if(on)askStart();if(on&&!document.documentElement.classList.contains("flipped")){document.documentElement.classList.add("flipped");try{SH.store.put("shack-flipped","1");}catch(e){}}fc.classList.toggle("on",on);fc.querySelector(".bfc-b").setAttribute("aria-hidden",String(!on));fc.querySelector(".bfc-f").setAttribute("aria-hidden",String(on));}
 $("bPicks").addEventListener("click",flipRowClick,true);
 $("bFresh").addEventListener("click",flipRowClick,true);
 window.SHACK_FLIP={html:flipCardHtml,click:flipRowClick};   // flyer.js builds its "From flyers" row with these
@@ -163,6 +166,11 @@ function streak(){const wk=new Set([...outDays()].map(weekNo)),now=weekNo(todayS
 function bDrops(up){return up.filter(e=>!e.added&&e.priceWas!=null&&e.priceFrom!=null&&Math.round(e.priceWas)>Math.round(e.priceFrom)&&!priceInfo(e).sold)
   .map(e=>({e,pct:(e.priceWas-e.priceFrom)/e.priceWas})).sort((a,b)=>a.e.start.localeCompare(b.e.start)||b.pct-a.pct).slice(0,8).map(x=>x.e);}
 
+/* ---- Home: the secondary rows live behind "More from the Shack" (remembers if you keep it open) ---- */
+function setMore(on,save){const b=$("bMoreBtn"),inn=$("bMoreIn");if(!b||!inn)return;inn.hidden=!on;b.setAttribute("aria-expanded",String(on));b.classList.toggle("on",on);
+  if(save)try{SH.store.put("shack-more",on?"1":"0");}catch(e){}}
+if($("bMoreBtn")){$("bMoreBtn").onclick=()=>setMore($("bMoreIn").hidden,true);try{if(SH.store.raw("shack-more")==="1")setMore(true);}catch(e){}}
+window.BMORE=setMore;
 /* ---- screens ---- */
 function inWhen(e){const r=dayRange(state.when);return !r||(e.start<=r[1]&&(e.end||e.start)>=r[0]);}
 function openResults(key,noPush){
@@ -173,10 +181,15 @@ function openResults(key,noPush){
   show("results",noPush);
 }
 function show(s,noPush){
+  const vt=document.startViewTransition&&s!==screen&&!matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if(vt){try{document.startViewTransition(()=>showNow(s,noPush));return;}catch(e){}}
+  showNow(s,noPush);}
+function showNow(s,noPush){
   screen=s; const root=document.documentElement;
   ["home","results","map","venues","saved","budget","spots"].forEach(x=>root.classList.toggle("b-"+x,x===s));
   document.body.classList.toggle("nebtiles",s==="home");
-  const tab=s==="home"||s==="results"||s==="spots"?"shows":s;
+  const tab=s==="home"||s==="results"||s==="spots"?"shows":s==="budget"?"saved":s;
+  document.querySelectorAll("#bSavSeg [data-sv]").forEach(b=>b.setAttribute("aria-selected",String(b.dataset.sv===s)));
   document.querySelectorAll("#bTabs [data-tab]").forEach(b=>{if(b.dataset.tab===tab)b.setAttribute("aria-current","page");else b.removeAttribute("aria-current");});
   bar.hidden=!(s==="results"||s==="saved");
   placeBall(s);
@@ -200,8 +213,11 @@ $("bBack").onclick=()=>{if(backTo&&screen==="results"){if(subPushed){history.bac
 function openMine(){backTo=null;openIds.clear();cur="mymusic";state.view="list";state.venue="all";state.kind="mymusic";state.sub=null;state.genre="all";state.when="any";state.surprise=null;
   flags.hidden=true;$("bFilt").setAttribute("aria-expanded","false");show("results");}
 window.BUI={show,goHome,openMine,get screen(){return screen;}};
-function goHome(){backTo=null;state.venue="all";state.kind="all";state.sub=null;state.genre="all";state.view="list";show("home");}
+function goHome(){backTo=null;const q=$("q");if(q&&q.value){q.value="";state.q="";const c=$("qClear");if(c)c.hidden=true;}state.venue="all";state.kind="all";state.sub=null;state.genre="all";state.view="list";show("home");}
+$("bSavSeg").addEventListener("click",ev=>{const b=ev.target.closest("[data-sv]");if(!b||b.dataset.sv===screen)return;
+  const t=document.querySelector(`#bTabs [data-tab="${b.dataset.sv}"]`);if(t)t.click();});
 $("bTabs").addEventListener("click",ev=>{const b=ev.target.closest("[data-tab]");if(!b)return;const t=b.dataset.tab;
+  if(t!=="saved"&&t!=="budget"||screen!=="saved"&&screen!=="budget"){const q=$("q");if(q&&q.value){q.value="";state.q="";const c=$("qClear");if(c)c.hidden=true;}}
   if(t==="shows"){goHome();return;}
   backTo=null;state.sub=null;state.surprise=null;state.venue="all";
   if(t==="map"){state.kind="all";state.view="map";}
@@ -213,7 +229,7 @@ $("bTabs").addEventListener("click",ev=>{const b=ev.target.closest("[data-tab]")
 /* ---- tap a card to open its details (buttons and links inside still work as before) ---- */
 const openIds=new Set();
 function setOpen(card,on){card.classList.toggle("open",on);const m=card.querySelector("[data-bmore]");if(m){m.setAttribute("aria-expanded",String(on));m.textContent=on?"Less":"Details";}}
-function toggleCard(card,on){if(!card)return;on=on??!card.classList.contains("open");setOpen(card,on);if(on)openIds.add(card.id);else openIds.delete(card.id);}
+function toggleCard(card,on){if(!card)return;on=on??!card.classList.contains("open");setOpen(card,on);if(on)askStart();if(on)openIds.add(card.id);else openIds.delete(card.id);}
 // cards are rebuilt on every render and added in batches while scrolling: keep opened ones open
 new MutationObserver(()=>{if(!openIds.size)return;for(const id of openIds){const c=document.getElementById(id);if(c&&!c.classList.contains("open"))setOpen(c,true);}}).observe($("list"),{childList:true,subtree:false});
 $("list").addEventListener("click",ev=>{
@@ -304,7 +320,7 @@ function after(){
     subs.hidden=!items;
     if(items){const val=key==="music"?(state.sub?"k:"+state.sub:state.genre==="all"?"":state.genre):(state.sub||"");
       subs.innerHTML=items.map(([x,l])=>`<button type="button" class="chip" data-sub="${x}" data-key="${key}" aria-pressed="${x===val}">${esc(l)}</button>`).join("");}
-    bStart.hidden=!!origin;
+    bStart.hidden=true;
     $("bWhenRes").hidden=screen==="saved"||cur==="ins";
     tools.hidden=screen==="saved"||cur==="ins";if(cur==="ins")$("bCount").textContent="Only you see this";
   }
@@ -327,7 +343,7 @@ function trust(){const m=window.SHACK_META||{},el=$("bInfo");if(!el||!state.even
 /* ---- What's new: a one-time sheet (again from Settings) with a "Show me" for each thing ---- */
 const WN_VER="2026-11";
 const WHATSNEW=[["🍜","Space ramen","Pull the disco ball down. Four swipes serve a random food spot and afters.",()=>{goHome();setTimeout(()=>$("disco").scrollIntoView({behavior:"smooth",block:"center"}),250);}],
-  ["🆕","New rows on Home","Just announced, Price dropped, Because you're into, and your going-out streak.",()=>{goHome();setTimeout(()=>{const t=[$("bBecBox"),$("bDropBox"),$("bFreshBox")].find(x=>x&&!x.hidden);if(t)t.scrollIntoView({behavior:"smooth",block:"start"});},250);}],
+  ["🆕","New rows on Home","Just announced, Price dropped, Because you're into, and your going-out streak.",()=>{goHome();setMore(true);setTimeout(()=>{const t=[$("bBecBox"),$("bDropBox"),$("bFreshBox")].find(x=>x&&!x.hidden);if(t)t.scrollIntoView({behavior:"smooth",block:"start"});},250);}],
   ["🌙","Your nights, saved","Every plan you build is kept in Saved. Do a past night again with one tap.",()=>{const t=document.querySelector('#bTabs [data-tab="saved"]');if(t)t.click();}],
   ["⏱","Smarter planning","Drag stops to reorder, Tighten the night, the forecast, and drive vs rideshare home.",()=>{const t=document.querySelector('#bTabs [data-tab="budget"]');if(t)t.click();setTimeout(()=>{const n=$("bNight");if(n)n.scrollIntoView({behavior:"smooth",block:"start"});},200);}],
   ["🎟️","Show passport","Your stamps and badges live together on the You tab. Tap a stamp to log past shows, and compare with a friend.",()=>{if(window.SHACK_YOU)SHACK_YOU.open("pass");}],
@@ -971,6 +987,6 @@ const target=(location.hash||"").slice(1);
 if(/^pp=[01][A-Za-z0-9_-]+$/.test(target)){try{history.replaceState(null,"",location.pathname);}catch(e){}setTimeout(()=>compareFrom(target.slice(3)),300);}
 if(target&&/^[ep]-/.test(target)){cur="all";state.when="any";show("results",true);openCard(target);}
 else show("home",true);
-setTimeout(()=>{let seen="";try{seen=SH.store.raw("shack-new")||"";}catch(e){}if(seen!==WN_VER&&screen==="home"&&!document.querySelector("dialog[open],#nightView,#bCmp:not([hidden])"))whatsNew();},1600);
+setTimeout(()=>{let seen="";try{seen=SH.store.raw("shack-new")||"";}catch(e){}if(window.SHACK_FIRST){try{SH.store.put("shack-new",WN_VER);}catch(e){}return;}if(seen!==WN_VER&&screen==="home"&&!document.querySelector("dialog[open],#nightView,#bCmp:not([hidden])"))whatsNew();},1600);
 })();
 
