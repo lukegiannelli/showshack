@@ -43,6 +43,8 @@
 .spc-price .spc-svc{font-family:var(--body);color:var(--muted)}
 :root[data-theme="light"] .spc-price{background:color-mix(in srgb,#7EE0B8 12%,#fff)}
 :root[data-theme="light"] .spc-price b{color:#13805a;text-shadow:none}
+:root[data-theme="light"] .spc-late{color:#5b3aa8}
+@media (prefers-color-scheme:light){:root:not([data-theme="dark"]) .spc-late{color:#5b3aa8}}
 @media (prefers-color-scheme:light){:root:not([data-theme="dark"]) .spc-price{background:color-mix(in srgb,#7EE0B8 12%,#fff)}
   :root:not([data-theme="dark"]) .spc-price b{color:#13805a;text-shadow:none}}
 

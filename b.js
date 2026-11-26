@@ -12,7 +12,7 @@ const VIBES=[
 const SUBS={
   stage:[["","All"],["comedy","Comedy"],["theater","Theater & arts"],["openmic","Open mics"]],
   move:[["","All"],["social","Dance socials"],["dance","Ecstatic dance"],["contact","Contact improv"]],
-  chill:[["","All"],["art","Art walks & markets"],["sound","Sound baths"],["drum","Drum circles"],["volunteer","Volunteer"]]};
+  chill:[["","All"],["market","Markets & street fairs"],["art","Art walks"],["sound","Sound baths"],["drum","Drum circles"],["volunteer","Volunteer"]]};
 const WHEN=[["tonight","Tonight"],["weekend","This weekend"],["any","Anytime"]];
 const WHEN_WORD={tonight:"tonight",weekend:"this weekend",any:"coming up"};
 let screen="home", cur=null, pushed=false;
@@ -723,7 +723,7 @@ function vChips(infos){const n=f=>infos.filter(f).length;
 const VLAST=ld("shack-vlast",{});
 // every venue the Shack knows: ones with shows listed, plus venues.json places that are quiet right now
 // (withBeen: also stamped venues that are in neither, so the passport never loses a stamp)
-function allInfos(withBeen){const keys=[...new Set((state._up||[]).filter(e=>e.kind!=="art"&&e.kind!=="volunteer").map(venueKey))];
+function allInfos(withBeen){const keys=[...new Set((state._up||[]).filter(e=>!PLACEISH.has(e.kind)).map(venueKey))];
   const named=new Set(keys.map(k=>k.split(" · ")[0]));
   const quietK=Object.entries(VOPEN).filter(([n,o])=>o&&o.c&&typeof o.la==="number"&&!named.has(n)).map(([n,o])=>{const k=n+" · "+o.c;QUIET[k]=o;return k;});
   const all=[...keys,...quietK];if(withBeen){const have=new Set(all);BEEN.forEach(k=>{if(!have.has(k))all.push(k);});}
@@ -861,7 +861,7 @@ function shareYear(ps){const n=[...BEEN].length,P=PASS||{};
       if(file){const a=document.createElement("a");a.href=URL.createObjectURL(file);a.download=file.name;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove();},800);ps.textContent="Image saved ✓";}
       if(navigator.clipboard)navigator.clipboard.writeText(t).catch(()=>{});else if(navigator.share)navigator.share({text:t}).catch(()=>{});});}
 // badges right now, for the You page (same rules as the passport card)
-function badgesNow(){const ks=new Set([...(state._up||[]).filter(e=>e.kind!=="art"&&e.kind!=="volunteer").map(venueKey),...BEEN]);return badges([...ks].map(k=>venueInfo(k)));}
+function badgesNow(){const ks=new Set([...(state._up||[]).filter(e=>!PLACEISH.has(e.kind)).map(venueKey),...BEEN]);return badges([...ks].map(k=>venueInfo(k)));}
 window.SHACK_PASS={shareYear:btn=>shareYear(btn),compare:btn=>comparLink(btn),get stamps(){return BEEN.size;},get shows(){return showCount();},
   badgesHtml(){const b=badgesNow(),on=b.filter(x=>x.on);return {earned:on.length,total:b.length,html:[...on,...b.filter(x=>!x.on).sort((p,q)=>q.have/q.need-p.have/p.need)].map(badgeHtml).join("")};},
   passHtml:()=>passSection(),

@@ -8,7 +8,7 @@ const TYPES={meet:["📍","Meet up","#7ee0b8"],eat:["🍜","Eat","#FFC66B"],show
 const AC={kbbq:["🥩","Korean BBQ"],karaoke:["🎤","Karaoke"],arcade:["🕹️","Arcades & barcades"],bowl:["🎳","Bowling"],spa:["♨️","24h Korean spa"],jazz:["🎷","Jazz & listening bars"],roof:["🌃","Rooftops"],stars:["🔭","Stargazing"],beach:["🌊","Beaches"],pool:["🎱","Pool"],
   ramen:["🍜","Ramen"],tacos:["🌮","Tacos & Mexican"],pho:["🍲","Pho & Vietnamese"],korean:["🥘","Korean comfort food"],diner:["🍳","24h diners"],
   boil:["🦀","Seafood boils"],hotpot:["🍲","Hot pot"],hibachi:["🔥","Hibachi"],fine:["🥂","Tasting menus"],
-  hotel:["🛎️","Hotel bars"],
+  hotel:["🛎️","Hotel bars"],speak:["🗝️","Speakeasies"],truck:["🚚","Food trucks"],
   dimsum:["🥟","Dim sum"],thai:["🍛","Thai"],pizza:["🍕","Pizza"],dessert:["🍨","Dessert & boba"],hall:["🏪","Food halls & markets"],
   burger:["🍔","Burgers & late bites"],sushi:["🍣","Sushi & Japanese"]};
 /* food that's an experience, not just a meal: fun = cheap-ish and hands-on, splurge = high-end night out */
@@ -23,6 +23,7 @@ const PRICE={kbbq:[35,50,"sit","All-you-can-eat"],ramen:[17,24,"sit","Bowl and a
   boil:[25,40,"sit","A pound of seafood and sides"],hotpot:[30,50,"sit","Broth, meats and sides"],hibachi:[35,55,"sit","Hibachi dinner"],
   fine:[175,350,"sit","Tasting menu before drinks (varies a lot)"],
   hotel:[20,40,"bar","A drink or two; some nights have a table minimum"],
+  speak:[30,50,"bar","Two craft cocktails"],truck:[10,18,"counter","3 or 4 tacos and a drink"],
   dimsum:[25,40,"sit","Dim sum to share"],thai:[15,25,"sit","A main and a drink"],pizza:[8,15,"counter","A couple of slices"],
   dessert:[7,14,"counter","A treat or a boba"],burger:[12,20,"counter","Burger, fries and a drink"],sushi:[25,45,"sit","A few rolls and a drink"],hall:[15,30,"counter","A plate from one stall"],stars:[0,0,"none","Free"],beach:[0,0,"none","Free, parking may cost"]};
 const TAX=.09,TIP=.2;
@@ -59,13 +60,15 @@ IC.thai=["#7EE0B8",'<path d="M3 12h18a9 8 0 0 1-18 0Z"/><path d="M8 9c1-2 3-2.5 
 IC.pizza=["#FFC66B",'<path d="M3.5 6.5C9 2.5 15 2.5 20.5 6.5L12 21.5Z"/><path d="M5.3 8.6c4.4-2.7 9-2.7 13.4 0"/><circle cx="10" cy="11" r="1.2"/><circle cx="14" cy="13" r="1.1"/><circle cx="12" cy="16.5" r="1"/>'];
 IC.dessert=["#FF8AD8",'<path d="M8 11 12 21.5 16 11"/><path d="M7.5 11a4.5 4.5 0 1 1 9 0Z"/><path d="M10 13.5l4 2M9.5 16l3 1.5" opacity=".7"/>'];
 IC.hall=["#7FD4FF",'<path d="M3 10h18M4 10V20h16V10"/><path d="M3 10l2-5h14l2 5"/><path d="M6 10c0 1.5 3 1.5 3 0 0 1.5 3 1.5 3 0 0 1.5 3 1.5 3 0 0 1.5 3 1.5 3 0"/><path d="M10 20v-5h4v5"/>'];
+IC.speak=["#E8C46A",'<circle cx="8" cy="12" r="4.5"/><circle cx="8" cy="12" r="1.5"/><path d="M12.5 12H22M18.5 12v3.5M21 12v2.5"/>'];
+IC.truck=["#FFD84D",'<path d="M2 6h12v10H2Z"/><path d="M14 9h4.5l3 3.5V16H14Z"/><circle cx="6" cy="17.5" r="2"/><circle cx="17.5" cy="17.5" r="2"/><path d="M5 9.5h6" opacity=".7"/>'];
 IC.fest=["#FF6FA5",'<path d="M2.5 20.5 12 4l9.5 16.5Z"/><path d="M8.5 20.5 12 13l3.5 7.5M12 4V1.5l3 1-3 1"/>'];
 const GO={drive:"🚗",ride:"🚕",walk:"🚶",transit:"🚇",there:"📍"};
 const GOW={drive:"Driving",ride:"Rideshare",walk:"Walk",transit:"Transit",there:"Meet there"};
 let AFTERS=[];
-fetch("afters.json?v=11").then(r=>r.ok?r.json():{}).then(j=>{AFTERS=((j||{}).places||[]).filter(p=>typeof p.lat==="number"&&!p.gone);if(mapOn)drawLayer();document.dispatchEvent(new Event("shack:spots"));}).catch(()=>{});
+fetch("afters.json?v=14").then(r=>r.ok?r.json():{}).then(j=>{AFTERS=((j||{}).places||[]).filter(p=>typeof p.lat==="number"&&!p.gone);if(mapOn)drawLayer();document.dispatchEvent(new Event("shack:spots"));}).catch(()=>{});
 const allAfters=()=>[...AFTERS,...(typeof POOL!=="undefined"?POOL:[]).map(p=>({...p,c:"pool",t:[p.c==="hall"?"Pool hall":"Bar with pool",...(p.t||[])]}))];
-const GRP={burger:"food",sushi:"food",dimsum:"food",thai:"food",pizza:"food",dessert:"food",hall:"food",boil:"food",hotpot:"food",hibachi:"food",fine:"food",kbbq:"food",ramen:"food",tacos:"food",pho:"food",korean:"food",diner:"food",beach:"chill",stars:"chill"},grp=p=>GRP[p.c]||"after";
+const GRP={burger:"food",sushi:"food",dimsum:"food",thai:"food",pizza:"food",dessert:"food",hall:"food",boil:"food",hotpot:"food",hibachi:"food",fine:"food",truck:"food",kbbq:"food",ramen:"food",tacos:"food",pho:"food",korean:"food",diner:"food",beach:"chill",stars:"chill"},grp=p=>GRP[p.c]||"after";
 const icon=c=>c==="pool"&&typeof NEON8==="string"?NEON8:`<span class="nemo">${(AC[c]||TYPES.other)[0]}</span>`;
 // hours label: firm, "usually" (sources disagree / third-party only), or unknown
 const hrs=p=>!p.h?"Hours not listed, check before you go":p.hq?`Usually ${p.h[0].toLowerCase()+p.h.slice(1)}, check before you go`:p.h;

@@ -12,7 +12,7 @@ function span(t){const r=/(\d{1,2})(?::(\d\d))?\s*[–-]\s*(\d{1,2})(?::(\d\d))?
   let s=to24(r[1])*60+(+r[2]||0),e=to24(r[3])*60+(+r[4]||0);if(s>e)s-=720;if(s<SH.LATE*60)s+=1440;if(e<SH.LATE*60)e+=1440;return {m:s,end:e};}
 function picks(){const day=showDay(),now=nowMin();
   // one-night shows only: a run like "every Monday in November" has an end date and would show on the wrong nights
-  return (state._up||[]).filter(e=>e.start===day&&(!e.end||e.end===e.start)&&!["art","volunteer"].includes(e.kind)&&e.status!=="cancelled").map(e=>({e,...span(e.time)}))
+  return (state._up||[]).filter(e=>e.start===day&&(!e.end||e.end===e.start)&&!["art","market","volunteer"].includes(e.kind)&&e.status!=="cancelled").map(e=>({e,...span(e.time)}))
     .filter(x=>x.m!=null&&(x.m>=now-30||(x.end&&x.end>now))).sort((a,b)=>a.m-b.m||((a.e._drive?.mins??999)-(b.e._drive?.mins??999))).slice(0,12);}
 const clock=m=>SH.hhmmOfMin(m).replace(/^(\d\d):(\d\d)$/,(x,h,mm)=>((+h%12)||12)+(mm!=="00"?":"+mm:"")+(+h>=12?" PM":" AM"));
 function when(m){const d=m-nowMin();return d<=0?"Starting now":d<60?`In ${d} min`:d<180?`In ${Math.floor(d/60)} hr${d%60>=10?` ${d%60} min`:""}`:SH.hhmmOfMin(m).replace(/^(\d\d):(\d\d)$/,(x,h,mm)=>((+h%12)||12)+(mm!=="00"?":"+mm:"")+(+h>=12?" PM":" AM"));}
