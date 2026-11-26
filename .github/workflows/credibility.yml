@@ -1,0 +1,24 @@
+name: Credibility audit
+# Once a week: scores Food, Afters, Chill spots, markets and deals on how well their facts are sourced and how
+# recently they were checked, and writes credibility.json (shown to the owner under You -> Owner). No API keys, no cost.
+# Touches only credibility.json.
+on:
+  schedule:
+    - cron: "47 16 * * 1"   # Mondays ~9 AM Pacific, after the coverage check
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: |
+          git config user.name "show-shack-bot"
+          git config user.email "show-shack-bot@users.noreply.github.com"
+          python3 scripts/credibility.py credibility.json
+          git add credibility.json
+          git diff --cached --quiet && { echo "No change."; exit 0; }
+          git commit -q -m "Credibility audit: $(python3 -c "import json;d=json.load(open('credibility.json'));print(' · '.join(f'{k} {v[\"score\"]}' for k,v in d['areas'].items()))")"
+          for i in 1 2 3; do git pull -q --rebase origin main && git push origin HEAD:main && exit 0; sleep 5; done
+          exit 1

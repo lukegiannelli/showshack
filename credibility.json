@@ -1,0 +1,205 @@
+{
+ "note": "Weekly credibility audit (scripts/credibility.py explains the scoring). Scores are /10. 'worst' = spots to fix first.",
+ "checked": "2026-11-26",
+ "areas": {
+  "Food": {
+   "score": 6.7,
+   "n": 128,
+   "sub": {
+    "hours": 6.2,
+    "location": 10.0,
+    "price": 4.2,
+    "fresh": 6.2
+   },
+   "googleHours": 45,
+   "googlePrice": 0,
+   "noHours": 18
+  },
+  "Food trucks": {
+   "score": 3.8,
+   "n": 10,
+   "sub": {
+    "hours": 2.4,
+    "location": 6.4,
+    "price": 4.0,
+    "fresh": 3.0
+   },
+   "googleHours": 0,
+   "googlePrice": 0,
+   "noHours": 4
+  },
+  "Afters": {
+   "score": 7.5,
+   "n": 46,
+   "sub": {
+    "hours": 7.8,
+    "location": 9.8,
+    "price": 4.0,
+    "fresh": 7.6
+   },
+   "googleHours": 59,
+   "googlePrice": 0,
+   "noHours": 1
+  },
+  "Speakeasies": {
+   "score": 5.0,
+   "n": 11,
+   "sub": {
+    "hours": 3.1,
+    "location": 9.9,
+    "price": 4.0,
+    "fresh": 3.0
+   },
+   "googleHours": 0,
+   "googlePrice": 0,
+   "noHours": 4
+  },
+  "Chill spots": {
+   "score": 5.3,
+   "n": 33,
+   "sub": {
+    "hours": 5.5,
+    "location": 6.8,
+    "price": null,
+    "fresh": 3.0
+   },
+   "googlePrice": 0,
+   "noHours": 0
+  },
+  "Markets": {
+   "score": 10.0,
+   "n": 19,
+   "stale": 0
+  },
+  "Deals": {
+   "score": 9.1,
+   "n": 11,
+   "food": 3
+  }
+ },
+ "worst": [
+  {
+   "n": "Alebrije's Grill",
+   "city": "Santa Ana",
+   "area": "Food trucks",
+   "score": 2.7,
+   "why": [
+    "no hours",
+    "rough area",
+    "never checked",
+    "typical price only"
+   ]
+  },
+  {
+   "n": "Leo's Tacos Truck (Long Beach)",
+   "city": "Long Beach",
+   "area": "Food trucks",
+   "score": 3.1,
+   "why": [
+    "no hours",
+    "never checked",
+    "typical price only"
+   ]
+  },
+  {
+   "n": "Leo's Tacos Truck (Sunset)",
+   "city": "Los Angeles",
+   "area": "Food trucks",
+   "score": 3.1,
+   "why": [
+    "no hours",
+    "never checked",
+    "typical price only"
+   ]
+  },
+  {
+   "n": "Tacos Los Güichos",
+   "city": "Los Angeles",
+   "area": "Food trucks",
+   "score": 3.1,
+   "why": [
+    "no hours",
+    "never checked",
+    "typical price only"
+   ]
+  },
+  {
+   "n": "Thirsty Cow Korean BBQ",
+   "city": "Garden Grove",
+   "area": "Food",
+   "score": 3.6,
+   "why": [
+    "no hours",
+    "never checked",
+    "typical price only"
+   ]
+  },
+  {
+   "n": "Good Times at Davey Wayne's",
+   "city": "Los Angeles",
+   "area": "Speakeasies",
+   "score": 3.9,
+   "why": [
+    "no hours",
+    "never checked",
+    "typical price only"
+   ]
+  },
+  {
+   "n": "Hanoi Kitchen",
+   "city": "Claremont",
+   "area": "Food",
+   "score": 3.9,
+   "why": [
+    "no hours",
+    "Google couldn't match it",
+    "typical price only"
+   ]
+  },
+  {
+   "n": "LSXO",
+   "city": "Huntington Beach",
+   "area": "Speakeasies",
+   "score": 3.9,
+   "why": [
+    "no hours",
+    "never checked",
+    "typical price only"
+   ]
+  },
+  {
+   "n": "Lucha Libre Taco Shop",
+   "city": "San Diego",
+   "area": "Food",
+   "score": 3.9,
+   "why": [
+    "no hours",
+    "Google couldn't match it",
+    "typical price only"
+   ]
+  },
+  {
+   "n": "Mi Pueblo Santa Rita 2",
+   "city": "Chino",
+   "area": "Food",
+   "score": 3.9,
+   "why": [
+    "no hours",
+    "never checked",
+    "typical price only"
+   ]
+  }
+ ],
+ "history": [
+  {
+   "date": "2026-11-26",
+   "Food": 6.7,
+   "Food trucks": 3.8,
+   "Afters": 7.5,
+   "Speakeasies": 5.0,
+   "Chill spots": 5.3,
+   "Markets": 10.0,
+   "Deals": 9.1
+  }
+ ]
+}
