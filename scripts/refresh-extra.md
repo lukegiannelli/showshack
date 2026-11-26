@@ -125,3 +125,20 @@ Each run:
    to the same "Daily refresh" commit. Mention the deals in the commit message, for example "2 deals checked, 1 added".
 
 Deals the owner adds on the You page live in Supabase, not in this file. Leave those alone.
+
+## Farmers markets & community series (Mondays only, about 8 tool calls)
+
+`community.json` holds weekly farmers markets and street fairs (shown under Chill & community → "Markets & street
+fairs") and `seasonal` summer series (shown as "Back next summer" until next year's dates are out). Each Monday:
+
+1. Re-check the 4 `events` with the oldest `updatedAt`: WebSearch the market by name and city, then confirm day, hours
+   and location on the market's, city's or tourism board's page. If it still runs as listed, set `updatedAt` to today.
+   If the day, time or spot changed, fix it (coordinates from OpenStreetMap only). If it has closed, delete it.
+2. For each `seasonal` entry: when next year's dates are announced on an official page, move it into `events.json` the
+   usual way (one entry per dated show or a `recurrence`) and drop it from `seasonal`.
+3. Same accuracy rules as shows: official pages first, no guessed times, and say in `note` when sources disagree.
+4. Keep the layout (`json.dumps(data, ensure_ascii=False, indent=1)`). If you changed it, bump `community.json?v=N` in
+   `app.js` and mention it in the "Daily refresh" commit, e.g. "Markets: 4 checked, 1 time fixed".
+
+Food trucks (`c: "truck"`) and speakeasies (`c: "speak"`) live in `afters.json` with the other spots. Only list trucks that
+park at the same address every day; roaming trucks can't be shown honestly on a map.

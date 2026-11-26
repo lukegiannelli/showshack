@@ -15,11 +15,12 @@ function noMatchHtml(q){const n=norm(q),vs=[],ws=n.split(/[^a-z0-9]+/).filter(w=
   return `<div class="empty bnomatch"><strong>No shows match “${esc(q)}”</strong>${dym?`<span class="bdym">Did you mean <button type="button" data-qdym="${esc(dym)}">${esc(dym)}</button>?</span>`:""}Check the spelling, try part of the name, or set the filters above to All.
     ${vs.length?`<span class="bnm-v">Venues with that name:</span><span class="bnm-row">${vs.map(k=>`<button type="button" class="chip" data-qvenue="${esc(k)}">${esc(k.split(" · ")[0])} →</button>`).join("")}</span>`:""}
     <span class="bnm-v">Not on the Shack yet?</span>${q.trim().length>=2&&!dym?`<button type="button" class="bwatch" data-qwatch="${esc(q.trim())}">${window.SHACK_MUSIC&&SHACK_MUSIC.watching&&SHACK_MUSIC.watching(q.trim())?"🔔 Watching “"+esc(q.trim())+"”":"🔔 Alert me when “"+esc(q.trim())+"” plays a Shack venue"}</button>`:""}<span class="bnm-row"><button type="button" class="chip" data-qflyer>📸 Add it from a flyer</button><button type="button" class="chip" data-qmiss="${esc(q)}">Tell us it's missing</button></span></div>`;}
-const KINDS = [["all","All"],["starred","★ Interested"],["rave","Raves & DJs"],["festival","Festivals"],["concert","Concerts"],["comedy","Comedy"],["theater","Theater & arts"],["openmic","Open mics"],["dance","Ecstatic dance"],["contact","Contact improv"],["sound","Sound baths"],["drum","Drum circles"],["social","Dance socials"],["art","Art walks & markets"],["volunteer","Volunteer"]];
+const KINDS = [["all","All"],["starred","★ Interested"],["rave","Raves & DJs"],["festival","Festivals"],["concert","Concerts"],["comedy","Comedy"],["theater","Theater & arts"],["openmic","Open mics"],["dance","Ecstatic dance"],["contact","Contact improv"],["sound","Sound baths"],["drum","Drum circles"],["social","Dance socials"],["art","Art walks"],["market","Markets & street fairs"],["volunteer","Volunteer"]];
 const CONS=new Set(["dance","contact","sound","drum"]);
 // Vibe groups (new home screen): each maps to several kinds.
-const GROUPS={music:new Set(["concert","festival","club"]),stage:new Set(["comedy","theater","openmic"]),move:new Set(["social","dance","contact"]),chill:new Set(["art","sound","drum","volunteer"])};
-const COMM=new Set(["social","art","volunteer"]);
+const GROUPS={music:new Set(["concert","festival","club"]),stage:new Set(["comedy","theater","openmic"]),move:new Set(["social","dance","contact"]),chill:new Set(["art","market","sound","drum","volunteer"])};
+const COMM=new Set(["social","art","market","volunteer"]);
+const PLACEISH=new Set(["art","market","volunteer"]);   // place-like listings: not venues, no ticket counts
 function isRec(e){return e.kind==="openmic"||((CONS.has(e.kind)||COMM.has(e.kind))&&!!e.recurrence);}
 function isRave(e){return e.kind==="club"||(e.genres||[]).includes("electronic");}
 let myUid=null, amOwner=false, dbRef=null;
@@ -125,7 +126,7 @@ function syncBeen(up){const today=new Date().toISOString().slice(0,10);let ch=fa
     if(o.d<today&&state.stars.has(k)&&!BEEN.has(o.v)){BEEN.add(o.v);ch=true;}}
   if(ch)saveBeen();}
 function buildVenues(upcoming){
-  upcoming=upcoming.filter(e=>e.kind!=="art"&&e.kind!=="volunteer");
+  upcoming=upcoming.filter(e=>!PLACEISH.has(e.kind));
   const keys=new Set(upcoming.map(venueKey));
   if(state.venue!=="all"&&!keys.has(state.venue)) state.venue="all";
   vChip.hidden=true; // the venue page header (with ← All venues) replaces this chip
@@ -383,7 +384,7 @@ function render(){
   // search: punctuation-blind (AC/DC = acdc = ac dc), and the show's type and genres count too ("comedy", "jazz", "rave")
   const qS=s=>s.replace(/[^a-z0-9 ]+/g,"");
   const qw = state.q ? qS(state.q).split(/\s+/).filter(Boolean) : null;
-  const KW={club:"club dj nightlife rave",festival:"festival rave",comedy:"comedy standup stand up",theater:"theater theatre arts musical",openmic:"open mic",dance:"ecstatic dance",contact:"contact improv",sound:"sound bath",drum:"drum circle",social:"dance social salsa swing line",art:"art walk market",volunteer:"volunteer cleanup",concert:"concert live music"};
+  const KW={club:"club dj nightlife rave",festival:"festival rave",comedy:"comedy standup stand up",theater:"theater theatre arts musical",openmic:"open mic",dance:"ecstatic dance",contact:"contact improv",sound:"sound bath",drum:"drum circle",social:"dance social salsa swing line",art:"art walk",market:"farmers market street fair flea",volunteer:"volunteer cleanup",concert:"concert live music"};
   const mine = state.kind==="mymusic"&&window.SHACK_MUSIC ? SHACK_MUSIC.ids() : null;   // "Match My Music" list
   const fresh = state.kind==="fresh"&&window.SHACK_FRESH ? SHACK_FRESH.ids() : null;   // "Just announced" list (this week)
   evs=evs.filter(e=>!qw||!qw.length||(h=>qw.every(w=>h.includes(w)))(qS(norm([e.title,e.artists,e.venue,e.city,KW[e.kind]||e.kind,(e.genres||[]).join(" "),(e.genres||[]).includes("hiphop")?"hip hop rap rnb":""].join(" ")))))
@@ -599,7 +600,7 @@ function cardHtml(e){
       <div class="stub"><span class="dow">${dow}</span><span class="day">${d.getDate()}</span><span class="mon">${mon}</span>${thru}${tix?`<a class="tix stubtix" href="${esc(tix)}" target="_blank" rel="noopener">${tixLabel}</a>`:""}</div>
       <div class="body">${logoOf(e)?`<img class="sticker" src="${esc(logoOf(e))}" alt="" loading="lazy" decoding="async" referrerpolicy="no-referrer" onerror="this.remove()">`:""}
         ${isPin?`<span class="who">＋ Luke's pick</span>`:""}
-        <div class="top"><h3>${esc(e.title)}</h3><div class="tr"><div class="trr"><span class="kind ${e.kind==="social"?"social":e.kind==="art"?"art":e.kind==="volunteer"?"vol":CONS.has(e.kind)?"dance":e.kind==="festival"?"fest":mic?"mic":e.kind==="club"?"club":e.kind==="comedy"?"comedy":e.kind==="theater"?"theater":""}">${COMM.has(e.kind)?({social:"Dance social",art:"Art walk",volunteer:"Volunteer"})[e.kind]:CONS.has(e.kind)?({dance:"Dance",contact:"Contact",sound:"Sound",drum:"Drums"})[e.kind]:e.kind==="festival"?"Fest":mic?"Open mic":e.kind==="club"?"Club":e.kind==="comedy"?"Comedy":e.kind==="theater"?"Theater":"Show"}</span><button type="button" class="starbtn" data-star="${esc(skey(e))}" aria-pressed="${state.stars.has(skey(e))}" aria-label="Interested in ${esc(e.title)}">${state.stars.has(skey(e))?"★":"☆"}</button></div>${e.start?`<a class="addcal" href="${esc(calLink(e))}" target="_blank" rel="noopener">＋ Add to calendar</a>`:""}</div></div>
+        <div class="top"><h3>${esc(e.title)}</h3><div class="tr"><div class="trr"><span class="kind ${e.kind==="social"?"social":e.kind==="art"||e.kind==="market"?"art":e.kind==="volunteer"?"vol":CONS.has(e.kind)?"dance":e.kind==="festival"?"fest":mic?"mic":e.kind==="club"?"club":e.kind==="comedy"?"comedy":e.kind==="theater"?"theater":""}">${COMM.has(e.kind)?({social:"Dance social",art:"Art walk",market:"Market",volunteer:"Volunteer"})[e.kind]:CONS.has(e.kind)?({dance:"Dance",contact:"Contact",sound:"Sound",drum:"Drums"})[e.kind]:e.kind==="festival"?"Fest":mic?"Open mic":e.kind==="club"?"Club":e.kind==="comedy"?"Comedy":e.kind==="theater"?"Theater":"Show"}</span><button type="button" class="starbtn" data-star="${esc(skey(e))}" aria-pressed="${state.stars.has(skey(e))}" aria-label="Interested in ${esc(e.title)}">${state.stars.has(skey(e))?"★":"☆"}</button></div>${e.start?`<a class="addcal" href="${esc(calLink(e))}" target="_blank" rel="noopener">＋ Add to calendar</a>`:""}</div></div>
         ${e.artists?`<div class="where">${esc(e.artists)}</div>`:""}
         <div class="where"><button type="button" class="vlink" data-venue="${esc(venueKey(e))}">${esc(e.venue)}</button> · ${esc(e.city)}</div>
         ${al?`<div class="row">${al}</div>`:""}
@@ -1127,6 +1128,14 @@ function logoKey(t){t=String(t||"").replace(/\s*\(.*?\)\s*/g," ").split(/:| & Fr
 function logoOf(e){if(!["concert","festival","club"].includes(e.kind))return null;const u=LOGOS[logoKey(e.title)];return u&&/^https:\/\/[a-z0-9.-]*theaudiodb\.com\//.test(u)?u:null;}
 let POOL=[];fetch("pool.json?v=3").then(r=>r.ok?r.json():{}).then(j=>{POOL=((j||{}).places||[]).filter(p=>typeof p.lat==="number"&&!p.gone);if(state.view==="map"&&state.poolOn)render();}).catch(()=>{});
 let VOPEN={};fetch("venues.json").then(r=>r.ok?r.json():{}).then(j=>{VOPEN=j||{};if(state.view==="venues"||state.venue!=="all")render();}).catch(()=>{});
+/* community.json: weekly farmers markets & street fairs (Chill & community), merged into the show list.
+   Markets the daily refresh files under "art" (flea markets, Smorgasburg, the Mercato) are re-filed as "market" here. */
+const MKT_RE=/farmers'? market|mercato|smorgasburg|flea market|trading post|antique market|night market/i;
+let COMMX=[];
+function withComm(evs){return evs.filter(e=>!e._cx).map(e=>e.kind==="art"&&MKT_RE.test(e.title||"")?{...e,kind:"market"}:e).concat(COMMX.filter(c=>!evs.some(e=>!e._cx&&e.title===c.title)));}
+fetch("community.json?v=1").then(r=>r.ok?r.json():{}).then(j=>{j=j||{};window.SHACK_SEASONAL=Array.isArray(j.seasonal)?j.seasonal:[];
+  COMMX=(j.events||[]).filter(e=>e.title&&e.recurrence&&typeof e.lat==="number").map(e=>({...e,_cx:1}));
+  if(state.loaded&&state.events.length){state.events=withComm(state.events);render();}}).catch(()=>{});
 let fileLoaded=false;
 // repeat visits: paint the last copy the service worker kept (if it's under 3 days old) right away,
 // then swap in the fresh file when the network answers. First visits just wait for the network.
@@ -1134,7 +1143,7 @@ let paintedFrom=null;
 (async()=>{try{if(!("caches" in window))return;const c=await caches.match("events.json",{ignoreSearch:true});if(!c||fileLoaded)return;
   const d=await c.json();if(fileLoaded||!d.lastRun||Date.now()-new Date(d.lastRun)>3*864e5)return;
   const evs=(d.events||[]).filter(e=>e.title&&(e.start||isRec(e)));if(!evs.length||fileLoaded)return;
-  paintedFrom=d.lastRun;state.events=evs;state.loaded=true;window.SHACK_META={lastRun:d.lastRun,tmRun:d.tmRun,tmNote:d.tmNote};render();}catch(e){}})();
+  paintedFrom=d.lastRun;state.events=withComm(evs);state.loaded=true;window.SHACK_META={lastRun:d.lastRun,tmRun:d.tmRun,tmNote:d.tmNote};render();}catch(e){}})();
 (async()=>{
   try{
     const r=await fetch("events.json",{cache:"no-store"});
@@ -1142,7 +1151,7 @@ let paintedFrom=null;
     const d=await r.json();
     const evs=(d.events||[]).filter(e=>e.title&&(e.start||isRec(e)));
     if(!evs.length) throw 0;
-    fileLoaded=true; state.events=evs; state.loaded=true;
+    fileLoaded=true; state.events=withComm(evs); state.loaded=true;
     window.SHACK_META={lastRun:d.lastRun,tmRun:d.tmRun,tmNote:d.tmNote};
     const el=document.getElementById("refreshed");
     if(d.lastRun){const t=new Date(d.lastRun);el.innerHTML="Updated <b>"+esc(t.toLocaleDateString("en-US",{month:"short",day:"numeric"}))+"</b>";}

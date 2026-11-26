@@ -5,9 +5,9 @@
 if(!window.UI_B||!window.NIGHT||!window.BUI)return;
 const $=id=>document.getElementById(id), N=window.NIGHT;
 const KINDS={
-  food:{name:"Food & late eats",c:"#FF8A5C",title:"Food",blurb:"Eat before or after the show: seafood boils, hot pot, dim sum, Korean BBQ, ramen, sushi, Thai, tacos, burgers, pizza, dessert, food halls, 24-hour diners and tasting menus.",
+  food:{name:"Food & late eats",c:"#FF8A5C",title:"Food",blurb:"Eat before or after the show: seafood boils, hot pot, dim sum, Korean BBQ, ramen, sushi, Thai, tacos, burgers, pizza, dessert, food halls, food trucks, 24-hour diners and tasting menus.",
     icon:'<path d="M4 11h16a8 8 0 0 1-16 0Z"/><path d="M8 7c0-1.5 1-1.5 1-3M12 7c0-1.5 1-1.5 1-3M16 7c0-1.5 1-1.5 1-3"/>'},
-  after:{name:"Afters & late night",c:"#B48CFF",title:"Afters",blurb:"Where the night goes after the show, including hotel bars and rooftops anyone can walk into.",
+  after:{name:"Afters & late night",c:"#B48CFF",title:"Afters",blurb:"Where the night goes after the show: speakeasies, karaoke, pool, rooftops and hotel bars anyone can walk into.",
     icon:'<path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5Z"/><path d="M17 3v4M15 5h4"/>'}};
 const CHILL={c:"#8FB4FF",title:"Chill spots",blurb:"Beaches, coves and stargazing. Most close by 10 PM, a few run till midnight."};
 const SCR=k=>KINDS[k]||CHILL, TAGF=["Fire rings","Tide pools","Sunset"];
@@ -32,19 +32,19 @@ const mi2=SH.miles;
 function fromShow(p,e){const m=mi2(e.lat,e.lon,p.lat,p.lon);
   return m<=1.2?{mi:m,txt:`🚶 ~${Math.max(2,Math.round(m*20))} min walk from ${e.venue}`}:{mi:m,txt:`🚗 ~${fmtMins(SH.driveMin(m*1.2))} drive from ${e.venue}`};}
 const pickedShow=()=>F.show?(state._up||[]).find(e=>hid(e)===F.show)||null:null;
-function foodTools(all){const up=(state._up||[]).filter(e=>typeof e.lat==="number"),r=dayRange("tonight");
+function foodTools(all){const aft=cur==="after",up=(state._up||[]).filter(e=>typeof e.lat==="number"),r=dayRange("tonight");
   const starred=up.filter(e=>state.stars.has(skey(e))).slice(0,15),tn=r?up.filter(e=>e.start<=r[1]&&(e.end||e.start)>=r[0]&&!state.stars.has(skey(e))).slice(0,25):[];
   const opt=x=>`<option value="${esc(hid(x))}"${F.show===hid(x)?" selected":""}>${esc(String(x.title).slice(0,38))} · ${esc(x.venue)} · ${esc(dayS(x))}</option>`;
   const e=pickedShow(),se=e&&showEnd(e),diets=[...new Set(all.flatMap(x=>x.p.diet||[]))];
-  return `<label class="bft-show">${ic("fest","sm")}<select data-fshow aria-label="Plan food around a show"><option value="">Plan around a show…</option>
+  return `<label class="bft-show">${ic("fest","sm")}<select data-fshow aria-label="Plan ${aft?"afters":"food"} around a show"><option value="">${aft?"After which show?":"Plan around a show…"}</option>
       ${starred.length?`<optgroup label="Your starred shows">${starred.map(opt).join("")}</optgroup>`:""}${tn.length?`<optgroup label="Tonight">${tn.map(opt).join("")}</optgroup>`:""}</select></label>
     ${e?`<div class="bft-row"><button type="button" class="chip" data-fopen aria-pressed="${F.open}">🌙 Still open after it ends</button><span class="bft-note">Ends around ${clockS(se.end)}${se.guess?" (guess, no start time listed)":""}. Closest to ${esc(e.venue)} first.</span></div>`:""}
-    <div class="bft-row bft-chips">${["1","2","3"].map(v=>`<button type="button" class="chip" data-fprice="${v}" aria-pressed="${F.price===v}">${"$".repeat(+v)}</button>`).join("")}
+    ${aft?"":`<div class="bft-row bft-chips">${["1","2","3"].map(v=>`<button type="button" class="chip" data-fprice="${v}" aria-pressed="${F.price===v}">${"$".repeat(+v)}</button>`).join("")}
       ${(()=>{const n=all.filter(x=>dealOf(x.p)).length;return n||F.deal?`<button type="button" class="chip bdeal-chip" data-fdeal aria-pressed="${F.deal}">🏷 Deals · ${n}</button>`:"";})()}
       <button type="button" class="chip" data-ffav aria-pressed="${F.fav}">♥ Saved${FAV.size?" · "+FAV.size:""}</button>
       ${diets.map(d=>`<button type="button" class="chip" data-fdiet="${esc(d)}" aria-pressed="${F.diet===d}">🌱 ${esc(d)}</button>`).join("")}
       <span class="bft-ppl" role="group" aria-label="Group size for the bill"><button type="button" data-fppl="-1" aria-label="Fewer people">−</button><b>${PPL} ${PPL===1?"person":"people"}</b><button type="button" data-fppl="1" aria-label="More people">＋</button></span>
-      <button type="button" class="chip bft-spin" data-fspin>🎲 Feed me</button></div>`;}
+      <button type="button" class="chip bft-spin" data-fspin>🎲 Feed me</button></div>`}`;}
 /* price block: total per person with ~9% tax and tip folded in, then the breakdown (+ the group bill on Food) */
 function price(p){const c=N.cost?N.cost(p):null;if(!c)return "";
   if(c.free)return `<div class="spc-price free"><b>Free</b><span>${esc(c.what)}</span></div>`;
@@ -88,7 +88,7 @@ function card({p,i,d,fs},vc){const [em,cat]=label(p),q=encodeURIComponent([p.n,p
     ${price(p)}
     ${tags.length?`<div class="spc-tags">${tags.map(t=>`<i>${esc(t)}</i>`).join("")}</div>`:""}
     ${book}
-    <div class="spc-act"><a href="https://www.google.com/maps/dir/?api=1&destination=${q}" target="_blank" rel="noopener">Directions</a>${p.u&&safeUrl(p.u)?`<a href="${esc(safeUrl(p.u))}" target="_blank" rel="noopener">Schedule ↗</a>`:`<a href="https://www.google.com/maps/search/?api=1&query=${q}" target="_blank" rel="noopener">Hours ↗</a>`}<button type="button" class="nadd" data-naft="${i}">＋ Add to my night</button></div>
+    <div class="spc-act"><a href="https://www.google.com/maps/dir/?api=1&destination=${q}" target="_blank" rel="noopener">Directions</a>${p.c==="hotel"&&p.u&&safeUrl(p.u)?`<a href="${esc(safeUrl(p.u))}" target="_blank" rel="noopener">Schedule ↗</a>`:`<a href="https://www.google.com/maps/search/?api=1&query=${q}${p.gid?"&query_place_id="+encodeURIComponent(p.gid):""}" target="_blank" rel="noopener">${p.c==="beach"||p.c==="stars"?"Photos ↗":"Photos & hours ↗"}</a>`}<button type="button" class="nadd" data-naft="${i}">＋ Add to my night</button></div>
   </article>`;}
 const CLOCK='<svg class="nic sm" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>';
 
@@ -125,28 +125,29 @@ function mount(){if($("bSpots"))return;const sec=document.createElement("section
     const pp=ev.target.closest("[data-fppl]");if(pp){PPL=Math.min(12,Math.max(1,PPL+ +pp.dataset.fppl));try{SH.store.put("shack-fppl",PPL);}catch(e){}draw();return;}
     if(ev.target.closest("[data-fspin]")){const pool=LASTX.slice(0,12).filter(x=>fkey(x.p)!==F.spun);if(!pool.length)return;
       F.spun=fkey(pool[Math.floor(Math.random()*pool.length)].p);draw();const c=$("bSpList").querySelector(".spc.spun");if(c)c.scrollIntoView({behavior:"smooth",block:"center"});return;}});
-  sec.addEventListener("change",ev=>{const s=ev.target.closest("[data-fshow]");if(s){F.show=s.value;F.open=false;F.spun="";draw();}});}
-function open(k){cur=k;sub="";late=false;tag="";F.spun="";F.deal=false;mount();BUI.show("spots");}
+  sec.addEventListener("change",ev=>{const s=ev.target.closest("[data-fshow]");if(s){F.show=s.value;F.open=cur==="after"&&!!s.value;F.spun="";draw();}});}
+function open(k){if(k!==cur){F.show="";F.open=false;}cur=k;sub="";late=false;tag="";F.spun="";F.deal=false;mount();BUI.show("spots");}
 function draw(){mount();const K=SCR(cur),all=list(cur);
   $("bSpTitle").textContent=K.title;$("bSpBlurb").textContent=K.blurb;
   $("bSpots").dataset.k=cur;
   // Pool goes right after "All" so it isn't lost off the end of the scrolling chip row
-  const FRONT=["pool","hotel"],fr=c=>{const i=FRONT.indexOf(c);return i<0?99:i;};   // Pool and Hotel first so they aren't lost off the end of the row
+  const FRONT=["speak","truck","pool","hotel"],fr=c=>{const i=FRONT.indexOf(c);return i<0?99:i;};   // Pool and Hotel first so they aren't lost off the end of the row
   const cats=[...new Set(all.map(x=>x.p.c))].sort((a,b)=>fr(a)-fr(b)),nDeals=all.filter(x=>dealOf(x.p)).length;
   // Food: "Fun experiences" and "Splurge" chips first (just filters), then the categories
   const xch=cur==="food"?[["x:fun",ic("boil"),"Fun experiences"],["x:splurge",ic("fine"),"Splurge"]]:[];
   $("bSpSubs").innerHTML=(cats.length>1?[["","","All"],...xch,...cats.map(c=>[c,...label({c})])]:[]).map(([v,i,l])=>`<button type="button" class="chip spchip" data-ssub="${v}" aria-pressed="${v===sub}">${i}${esc(l)}</button>`).join("")
-    +(cur!=="food"?`<button type="button" class="chip" data-slate="1" aria-pressed="${late}">🌙 ${cur==="chill"?"Open till midnight":"Past midnight"}</button>`:"")
+    +`<button type="button" class="chip" data-slate="1" aria-pressed="${late}">🌙 ${cur==="chill"?"Open till midnight":cur==="food"?"Late eats":"Past midnight"}</button>`
     +(cur==="after"&&(nDeals||F.deal)?`<button type="button" class="chip bdeal-chip" data-fdeal aria-pressed="${F.deal}">🏷 Deals · ${nDeals}</button>`:"")
     +(cur==="chill"?TAGF.map(t=>`<button type="button" class="chip" data-stag="${t}" aria-pressed="${tag===t}">${t==="Fire rings"?"🔥":t==="Tide pools"?"🦀":"🌅"} ${t}</button>`).join(""):"");
   const E=N.EXP||{},subOk=p=>!sub||(sub.startsWith("x:")?E[p.c]===sub.slice(2):p.c===sub);
   let xs=sorted(all.filter(x=>subOk(x.p)&&(!late||late24(x.p))&&(!tag||hasTag(x.p,tag))&&(!F.deal||dealOf(x.p))));
-  const e=cur==="food"?pickedShow():null;
-  if(cur==="food"){xs=xs.filter(x=>(!F.price||String(tierOf(x.p))===F.price)&&(!F.fav||FAV.has(fkey(x.p)))&&(!F.diet||(x.p.diet||[]).includes(F.diet)));
+  const tools=cur==="food"||cur==="after",e=tools?pickedShow():null;
+  if(cur==="food")xs=xs.filter(x=>(!F.price||String(tierOf(x.p))===F.price)&&(!F.fav||FAV.has(fkey(x.p)))&&(!F.diet||(x.p.diet||[]).includes(F.diet)));
+  if(tools){
     if(e){xs.forEach(x=>x.fs=fromShow(x.p,e));if(F.open){const end=showEnd(e).end;xs=xs.filter(x=>x.p.til&&x.p.til*60>=end);}xs.sort((a,b)=>a.fs.mi-b.fs.mi);}
     LASTX=xs.slice();
     if(F.spun){const i=xs.findIndex(x=>fkey(x.p)===F.spun);if(i>0)xs.unshift(xs.splice(i,1)[0]);}}
-  $("bSpTools").innerHTML=cur==="food"?foodTools(all):"";$("bSpTools").hidden=cur!=="food";
+  $("bSpTools").innerHTML=tools?foodTools(all):"";$("bSpTools").hidden=!tools;
   $("bSpCount").textContent=xs.length+(xs.length===1?" spot":" spots")+(e?" · closest to the show":origin?" · closest first":"");
   const hint=origin?"":`<button type="button" class="spc-start" data-sstart>${ic("drive")}<span><b>See drive times</b><small>Set where you're starting from</small></span></button>`;
   $("bSpList").innerHTML=hint+(xs.length?xs.map(x=>card(x,K.c)).join(""):'<p class="bnone">Nothing here yet.</p>');}
@@ -159,6 +160,20 @@ function chillRow(on){let el=$("bChillSpots");
   const sig=xs.map(x=>x.i).join(",")+(origin?origin.lat:"");if(el.dataset.sig===sig)return;el.dataset.sig=sig;
   el.innerHTML=`<div class="bpicks-h"><h2 class="bsec">Chill spots · ${xs.length}</h2><button type="button" class="blink" data-sall>See all</button></div><div class="spc-row">${xs.slice(0,8).map(x=>card(x,CHILL.c)).join("")}</div>`;
   el.querySelector("[data-sall]").onclick=()=>open("chill");}
+
+/* ---- Chill & community results: "Back next summer" for seasonal series (community.json "seasonal") ---- */
+function seasonRow(on){let el=$("bSeason");const S=window.SHACK_SEASONAL||[];
+  if(!on||!S.length){if(el)el.hidden=true;return;}
+  if(!el){el=document.createElement("section");el.id="bSeason";el.className="bchill bback-f";$("list").after(el);}
+  el.hidden=false;if(el.dataset.n==S.length)return;el.dataset.n=S.length;
+  el.innerHTML=`<div class="bpicks-h"><h2 class="bsec">Back next summer · ${S.length}</h2></div>
+    <p class="bsp-note">Free summer series that ran in 2026. 2027 dates aren't announced yet.</p>
+    <div class="spc-row">${S.map(f=>`<article class="spc" style="--vc:${CHILL.c};--ic:${CHILL.c}">
+      <div class="spc-top"><span class="spc-badge">${ic("jazz")}</span><span class="spc-cat">${esc(f.g||"Summer series")}</span></div>
+      <h3>${esc(f.n)}</h3><p class="spc-where">${esc([f.venue,f.city].filter(Boolean).join(", "))}</p>
+      <div class="spc-facts"><span class="spc-f">${CLOCK}<span class="spc-hrs">Last: ${esc(f.last)}</span></span></div>
+      <p class="spc-where">Usually: ${esc(f.usual)} · <b>2027 dates TBA</b></p>${f.note?`<p class="spc-where">${esc(f.note)}</p>`:""}
+      <div class="spc-act"><a href="${esc(safeUrl(f.url)||"#")}" target="_blank" rel="noopener">Source ↗</a></div></article>`).join("")}</div>`;}
 
 /* ---- Festival results: "Back next year" row for yearly festivals that already ran and have no new dates yet ---- */
 let BACK=[];fetch("returning.json?v=1").then(r=>r.ok?r.json():{}).then(j=>{BACK=(j&&j.fests)||[];if(BUI.screen==="results")render();}).catch(()=>{});
@@ -209,7 +224,7 @@ function ramenPop(){if(!N.ready())return;const pk=ramenPick();if(!pk)return;let 
   el.querySelector(".rpop-x").focus({preventScroll:true});}
 function closePop(){const el=$("rPop");if(el){el.hidden=true;document.documentElement.classList.remove("rpop-on");if(POPENER&&POPENER.focus)POPENER.focus({preventScroll:true});}}
 
-window.SPOTS={home,ramenPop,after(screen,c){if(screen==="spots")draw();chillRow(screen==="results"&&c==="chill");
+window.SPOTS={home,ramenPop,after(screen,c){if(screen==="spots")draw();chillRow(screen==="results"&&c==="chill"&&!state.sub);seasonRow(screen==="results"&&c==="chill"&&(!state.sub||state.sub==="market"));
   backRow(screen==="results"&&c==="music"&&state.sub==="festival");}};
 document.addEventListener("shack:spots",()=>{home();const s=BUI.screen;if(s==="spots")draw();else if(s==="results")render();});
 tiles();
