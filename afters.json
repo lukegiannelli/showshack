@@ -3980,6 +3980,59 @@
 "til": 26.0,
 "src": "web",
 "hu": "2026-11-26"
+},
+{
+"n": "Graceland",
+"c": "speak",
+"city": "Huntington Beach",
+"zip": "92648",
+"a": "155 5th St, Suite 185",
+"t": [
+"Hidden inside HQ Gastropub",
+"Across from the pier"
+],
+"lat": 33.65829,
+"lon": -118.00235,
+"geo": "place",
+"h": "5–11 PM Tue–Thu, till 11:45 PM Fri–Sat",
+"hq": "~",
+"til": 23.75,
+"src": "web",
+"hu": "2026-11-26"
+},
+{
+"n": "The Guild Club",
+"c": "speak",
+"city": "Costa Mesa",
+"zip": "92626",
+"a": "3321 Hyland Ave (SOCO)",
+"t": [
+"Private door inside ARC",
+"Book on Resy, seats are tight",
+"Used to be members-only"
+],
+"lat": 33.69371,
+"lon": -117.92545,
+"geo": "building",
+"src": "web"
+},
+{
+"n": "YNK",
+"c": "speak",
+"city": "Irvine",
+"zip": "92612",
+"a": "18000 Von Karman Ave (Irvine Marriott)",
+"t": [
+"Hidden bar in the Irvine Marriott",
+"Book on OpenTable"
+],
+"lat": 33.67838,
+"lon": -117.84972,
+"geo": "tourism",
+"h": "5 PM–midnight, Wed–Sat",
+"til": 24.0,
+"src": "web",
+"hu": "2026-11-26"
 }
 ]
 }

@@ -1133,7 +1133,7 @@ let VOPEN={};fetch("venues.json").then(r=>r.ok?r.json():{}).then(j=>{VOPEN=j||{}
 const MKT_RE=/farmers'? market|mercato|smorgasburg|flea market|trading post|antique market|night market/i;
 let COMMX=[];
 function withComm(evs){return evs.filter(e=>!e._cx).map(e=>e.kind==="art"&&MKT_RE.test(e.title||"")?{...e,kind:"market"}:e).concat(COMMX.filter(c=>!evs.some(e=>!e._cx&&e.title===c.title)));}
-fetch("community.json?v=1").then(r=>r.ok?r.json():{}).then(j=>{j=j||{};window.SHACK_SEASONAL=Array.isArray(j.seasonal)?j.seasonal:[];
+fetch("community.json?v=2").then(r=>r.ok?r.json():{}).then(j=>{j=j||{};window.SHACK_SEASONAL=Array.isArray(j.seasonal)?j.seasonal:[];
   COMMX=(j.events||[]).filter(e=>e.title&&e.recurrence&&typeof e.lat==="number").map(e=>({...e,_cx:1}));
   if(state.loaded&&state.events.length){state.events=withComm(state.events);render();}}).catch(()=>{});
 let fileLoaded=false;
