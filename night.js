@@ -66,7 +66,7 @@ IC.fest=["#FF6FA5",'<path d="M2.5 20.5 12 4l9.5 16.5Z"/><path d="M8.5 20.5 12 13
 const GO={drive:"🚗",ride:"🚕",walk:"🚶",transit:"🚇",there:"📍"};
 const GOW={drive:"Driving",ride:"Rideshare",walk:"Walk",transit:"Transit",there:"Meet there"};
 let AFTERS=[];
-fetch("afters.json?v=14").then(r=>r.ok?r.json():{}).then(j=>{AFTERS=((j||{}).places||[]).filter(p=>typeof p.lat==="number"&&!p.gone);if(mapOn)drawLayer();document.dispatchEvent(new Event("shack:spots"));}).catch(()=>{});
+fetch("afters.json?v=15").then(r=>r.ok?r.json():{}).then(j=>{AFTERS=((j||{}).places||[]).filter(p=>typeof p.lat==="number"&&!p.gone);if(mapOn)drawLayer();document.dispatchEvent(new Event("shack:spots"));}).catch(()=>{});
 const allAfters=()=>[...AFTERS,...(typeof POOL!=="undefined"?POOL:[]).map(p=>({...p,c:"pool",t:[p.c==="hall"?"Pool hall":"Bar with pool",...(p.t||[])]}))];
 const GRP={burger:"food",sushi:"food",dimsum:"food",thai:"food",pizza:"food",dessert:"food",hall:"food",boil:"food",hotpot:"food",hibachi:"food",fine:"food",truck:"food",kbbq:"food",ramen:"food",tacos:"food",pho:"food",korean:"food",diner:"food",beach:"chill",stars:"chill"},grp=p=>GRP[p.c]||"after";
 const icon=c=>c==="pool"&&typeof NEON8==="string"?NEON8:`<span class="nemo">${(AC[c]||TYPES.other)[0]}</span>`;
@@ -229,6 +229,8 @@ function drawLayer(){if(!LG||!window.L)return;LG.clearLayers();if(!mapOn&&!foodO
     // Map time slider (b.js sets window.MAPT, minutes after midnight): dim spots known to be closed by then
     const shut=window.MAPT!=null&&p.til&&p.til*60<=window.MAPT;
     const mk=L.marker([p.lat,p.lon],{title:p.n,icon:L.divIcon({className:"naf-w"+(shut?" dim":""),html:`<span class="naf${g==="food"?" naf-food":""}" style="--ic:${icCol(p.c)}">${ic(p.c)}</span>`,iconSize:[30,30],iconAnchor:[15,15]})});
+    // trucks that park "around" a spot: a soft circle shows the rough area instead of pretending to an exact pin
+    if(p.area&&p.area.r)L.circle([p.lat,p.lon],{radius:p.area.r*1609,color:icCol(p.c),weight:1,dashArray:"4 4",fillOpacity:.08,interactive:false}).addTo(LG);
     mk.on("click",ev=>{L.DomEvent.stopPropagation(ev);openAfter(i);});mk.addTo(LG);});}
 function priceLine(p){const c=cost(p);if(!c)return "";return c.free?"Free":`≈ $${c.all[0]}–${c.all[1]} per person ${c.tip[1]?"with tax and tip":"with tax"}`;}
 function openAfter(i){const p=allAfters()[i];if(!p||!sheetFn)return;const d=typeof driveEstimate==="function"?driveEstimate(p.lat,p.lon):null;const q=encodeURIComponent([p.n,p.a,p.city,"CA"].filter(Boolean).join(", "));
