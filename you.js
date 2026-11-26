@@ -148,6 +148,18 @@ async function refreshAdmin(){if(!C.user)return;try{const sb=await C.client();co
   if(admin){const r=await sb.rpc("admin_review");review=r.data||null;const c=await sb.rpc("admin_counts");counts=c.data||[];}
   const s=$("bYou");if(s&&s.open&&(admin||SH.store.raw("shack-owner")==="1")){if(!$("bAdm"))redrawYou();else $("bAdm").innerHTML=admHTML(SH.store.raw("shack-owner")==="1");}}catch(e){}}
 let COV=null;fetch("coverage.json",{cache:"no-cache"}).then(r=>r.ok?r.json():null).then(j=>{COV=j;}).catch(()=>{});
+/* weekly credibility audit (scripts/credibility.py): a score per area, the change since last week, and the spots to fix first */
+let CRED=null;fetch("credibility.json",{cache:"no-cache"}).then(r=>r.ok?r.json():null).then(j=>{CRED=j;}).catch(()=>{});
+function credHTML(){const c=CRED;if(!c||!c.areas)return "";const H=c.history||[],prev=H.length>1?H[H.length-2]:null;
+  const SUB={hours:"hours",location:"pins",price:"prices",fresh:"freshness"};
+  const row=([k,v])=>{const d=prev&&typeof prev[k]==="number"?Math.round((v.score-prev[k])*10)/10:null;
+    const sub=v.sub?Object.entries(v.sub).filter(([,x])=>x!=null).map(([s,x])=>`${SUB[s]} ${x}`).join(" · "):"";
+    const extra=[v.n!=null?v.n+(k==="Deals"?" deals":k==="Markets"?" listings":" spots"):"",v.googleHours!=null?`${v.googleHours}% hours from Google`:"",v.googlePrice?`${v.googlePrice}% Google prices`:"",v.stale?`${v.stale} stale`:""].filter(Boolean).join(" · ");
+    return `<li><div><b>${E(k)}</b><span>${E(extra)}${sub?`<br>${E(sub)}`:""}</span></div><span class="bcnt-n">${v.score}/10${d?` <small>${d>0?"▲":"▼"}${Math.abs(d)}</small>`:""}</span></li>`;};
+  const W=(c.worst||[]).slice(0,10),md=x=>x?new Date(x+"T12:00").toLocaleDateString("en-US",{month:"short",day:"numeric"}):"";
+  return `<h4 class="badm-h">📊 Credibility (weekly audit, ${E(md(c.checked))}${prev?`, change since ${E(md(prev.date))}`:""})</h4>
+    <ul class="badm-list bcnt">${Object.entries(c.areas).map(row).join("")}</ul>
+    ${W.length?`<h4 class="badm-h">Fix these first</h4><ul class="badm-list">${W.map(w=>`<li><div><b>${E(w.n)}</b><span>${E(w.area)} · ${E(w.city)} · ${E(w.why.join(", "))}</span></div><span class="bcnt-n">${w.score}</span></li>`).join("")}</ul>`:""}`;}
 function admHTML(owner){if(!admin)return owner?`<p class="bset-p">You opened owner mode on this phone. Make this account the Shack's admin to review flyer shows and reports. (Only works once, for the first person.)</p><div class="bset-acts"><button type="button" data-adm="claim">Make me the admin</button></div>`:"";
   if(!review)return `<p class="bset-p">Loading…</p>`+dealsHTML();
   const fl=review.flyers||[],ms=review.missing||[],d=s=>new Date(s+"T12:00").toLocaleDateString("en-US",{month:"short",day:"numeric"});
@@ -158,6 +170,7 @@ function admHTML(owner){if(!admin)return owner?`<p class="bset-p">You opened own
     ${ms.length?`<h4 class="badm-h">Missing shows people asked for</h4><ul class="badm-list">${ms.map(x=>`<li><div><b>${E(x.what)}</b><span>${E(new Date(x.created_at).toLocaleDateString("en-US",{month:"short",day:"numeric"}))}${x.link?` · <a href="${E(x.link)}" target="_blank" rel="noopener">link ↗</a>`:""}</span></div><button type="button" class="bpass-share" data-adm="added" data-id="${E(x.id)}">Added</button><button type="button" class="bpass-share" data-adm="skip" data-id="${E(x.id)}">Skip</button></li>`).join("")}</ul>`:""}
     ${counts.length?`<h4 class="badm-h">What people use (devices per feature · last 7 days / 30 days)</h4><ul class="badm-list bcnt">${counts.map(c=>`<li><div><b>${E(FEAT[c.feature]||c.feature)}</b></div><span class="bcnt-n">${c.week||0} / ${c.total}</span></li>`).join("")}</ul>`:`<p class="bset-p">Usage counts show up here once people start using the app (private: counts only, no names).</p>`}
     ${COV&&COV.gaps&&COV.gaps.length?`<h4 class="badm-h">Venues that may be missing shows (weekly check, ${E(COV.checked||"")})</h4><ul class="badm-list">${COV.gaps.slice(0,12).map(g=>`<li><div><b>${E(g.venue)}</b><span>We list ${g.ours} · Ticketmaster has ${g.tm} in the next 60 days</span></div></li>`).join("")}</ul>`:""}
+    ${credHTML()}
     ${dealsHTML()}`;}
 /* ===== owner: food & afters deals (a code a restaurant gave you, a happy hour you saw). Shows on that spot's card for everyone. ===== */
 let DEALS=null,dealMsg="";
