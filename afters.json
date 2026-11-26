@@ -2471,10 +2471,18 @@
 ],
 "lat": 34.07637,
 "lon": -118.37752,
-"h": "Jazz Mon (show 8:30 PM), burlesque Fri (show 7 PM), doors 5 PM",
+"h": "Till 10 PM, 9 PM Sat",
 "u": "https://www.sofitel-los-angeles.com/dining-lounge/our-bar-riviera-31/",
 "geo": "amenity",
-"src": "web"
+"src": "web",
+"gid": "ChIJqV7KJLO-woARRNcWy_xf_j4",
+"til": 22.0,
+"hs": "g",
+"gp": [
+30,
+50
+],
+"hu": "2026-11-26"
 },
 {
 "n": "Bar Lis at Thompson Hollywood",
@@ -2553,10 +2561,18 @@
 ],
 "lat": 32.71388,
 "lon": -117.15881,
-"h": "Live music Thu 5 to 8 PM (through Feb 2027)",
+"h": "Till 11 PM, midnight Fri–Sat",
 "u": "https://www.sandiego.org/events-festivals/live-music-at-the-rooftop/86d050b212a111f1b563",
 "geo": "amenity",
-"src": "web"
+"src": "web",
+"gid": "ChIJP7ZwX1hT2YARjnMXgokaUlw",
+"til": 24.0,
+"hs": "g",
+"gp": [
+100,
+null
+],
+"hu": "2026-11-26"
 },
 {
 "n": "La Lo La Rooftop at AC Hotel",
@@ -2752,11 +2768,17 @@
 ],
 "lat": 34.09772,
 "lon": -118.33588,
-"h": "11 AM to 10 PM",
-"til": 22,
-"hq": "~",
+"h": "Till 9:45 PM",
+"til": 21.8,
 "geo": "amenity",
-"src": "osm"
+"src": "osm",
+"gid": "ChIJice5PyW_woARfsR5aDz03K0",
+"hs": "g",
+"gp": [
+20,
+30
+],
+"hu": "2026-11-26"
 },
 {
 "n": "Pizzanista!",
@@ -3328,11 +3350,17 @@
 ],
 "lat": 32.82637,
 "lon": -117.15517,
-"h": "Sun–Thu 11 AM to 10:30 PM; Fri–Sat 11 AM to 11 PM",
-"til": 23,
-"hq": "~",
+"h": "Till 10:30 PM, 11 PM Fri–Sat",
+"til": 23.0,
 "geo": "amenity",
-"src": "osm"
+"src": "osm",
+"gid": "ChIJ21dTzcD_24ARcbUMRzxBJkY",
+"hs": "g",
+"gp": [
+1,
+10
+],
+"hu": "2026-11-26"
 },
 {
 "n": "Pizza Port",
@@ -3873,14 +3901,20 @@
 "lat": 34.04686,
 "lon": -118.34514,
 "geo": "place",
-"h": "Late, till 2 AM or later",
-"hq": "~",
-"til": 26.0,
+"h": "Till 2 AM, 3:30 AM Fri–Sat",
+"til": 27.5,
 "src": "web",
 "area": {
 "r": 0.1,
 "t": "the gas station at La Brea & Venice"
-}
+},
+"gid": "ChIJvyR2GP64woARi52Ja30IGjc",
+"hs": "g",
+"gp": [
+10,
+20
+],
+"hu": "2026-11-26"
 },
 {
 "n": "Mariscos Jalisco",
@@ -3896,14 +3930,20 @@
 "lat": 34.02111,
 "lon": -118.21283,
 "geo": "amenity",
-"h": "Daytime, till about 5:30–6 PM",
-"hq": "~",
+"h": "Till 5:30 PM",
 "til": 17.5,
 "src": "web",
 "area": {
 "r": 0.1,
 "t": "3040 E Olympic Blvd (Boyle Heights)"
-}
+},
+"gid": "ChIJy14FbLHIwoARySSWUFraG74",
+"hs": "g",
+"gp": [
+10,
+20
+],
+"hu": "2026-11-26"
 },
 {
 "n": "The Blind Rabbit",
@@ -3919,7 +3959,16 @@
 "lat": 33.83151,
 "lon": -117.91194,
 "geo": "amenity",
-"src": "web"
+"src": "web",
+"gid": "ChIJM1LyCjDW3IARmfcsEtdP9n4",
+"h": "Till 11 PM",
+"til": 23.0,
+"hs": "g",
+"gp": [
+20,
+80
+],
+"hu": "2026-11-26"
 },
 {
 "n": "LSXO",
@@ -3935,7 +3984,16 @@
 "lat": 33.65564,
 "lon": -117.99879,
 "geo": "building",
-"src": "web"
+"src": "web",
+"gid": "ChIJr0VQZGoh3YARfVNwf3yDWzI",
+"h": "Till 9:30 PM",
+"til": 21.5,
+"hs": "g",
+"gp": [
+30,
+90
+],
+"hu": "2026-11-26"
 },
 {
 "n": "Good Times at Davey Wayne's",
@@ -3952,7 +4010,16 @@
 "lon": -118.32403,
 "geo": "amenity",
 "src": "web",
-"u": "https://goodtimesatdaveywaynes.com"
+"u": "https://goodtimesatdaveywaynes.com",
+"gid": "ChIJl9fwEzi_woARA9c1iEzQS4s",
+"h": "Till 2 AM",
+"til": 26.0,
+"hs": "g",
+"gp": [
+10,
+50
+],
+"hu": "2026-11-26"
 },
 {
 "n": "Break Room 86",
@@ -3968,9 +4035,16 @@
 "lat": 34.06218,
 "lon": -118.30098,
 "geo": "tourism",
-"h": "9 PM–2 AM, Wed–Sat",
+"h": "Till 2 AM, closed Mon–Wed, Sun",
 "til": 26.0,
-"src": "web"
+"src": "web",
+"gid": "ChIJIaFl64K4woARfY6BevmwIQg",
+"hs": "g",
+"gp": [
+20,
+50
+],
+"hu": "2026-11-26"
 },
 {
 "n": "Noble Experiment",
@@ -3986,10 +4060,16 @@
 "lat": 32.71242,
 "lon": -117.15754,
 "geo": "amenity",
-"h": "6 PM–2 AM, closed Mon",
-"hq": "~",
+"h": "Till 2 AM",
 "til": 26.0,
-"src": "web"
+"src": "web",
+"gid": "ChIJoXwPGVlT2YARjJRN5uLrAsM",
+"hs": "g",
+"gp": [
+20,
+60
+],
+"hu": "2026-11-26"
 },
 {
 "n": "Graceland",
@@ -4004,10 +4084,12 @@
 "lat": 33.65829,
 "lon": -118.00235,
 "geo": "place",
-"h": "5–11 PM Tue–Thu, till 11:45 PM Fri–Sat",
-"hq": "~",
-"til": 23.75,
-"src": "web"
+"h": "Till 10 PM, midnight Thu, 1 AM Fri–Sat",
+"til": 25.0,
+"src": "web",
+"gid": "ChIJkysov0Mh3YARGSpR691UMXo",
+"hs": "g",
+"hu": "2026-11-26"
 },
 {
 "n": "The Guild Club",
@@ -4023,7 +4105,16 @@
 "lat": 33.69371,
 "lon": -117.92545,
 "geo": "building",
-"src": "web"
+"src": "web",
+"gid": "ChIJB8Iccbsn3YARU36KbGKUY8M",
+"h": "Till 11 PM, closed Mon–Tue, Sun",
+"til": 23.0,
+"hs": "g",
+"gp": [
+50,
+100
+],
+"hu": "2026-11-26"
 },
 {
 "n": "YNK",
@@ -4038,9 +4129,16 @@
 "lat": 33.67838,
 "lon": -117.84972,
 "geo": "tourism",
-"h": "5 PM–midnight, Wed–Sat",
+"h": "Till midnight, closed Mon–Tue, Sun",
 "til": 24.0,
-"src": "web"
+"src": "web",
+"gid": "ChIJQ5rVPYze3IARsVDXeBAPbck",
+"hs": "g",
+"gp": [
+30,
+50
+],
+"hu": "2026-11-26"
 },
 {
 "n": "No Vacancy",
@@ -4056,10 +4154,16 @@
 "lat": 34.10223,
 "lon": -118.33245,
 "geo": "amenity",
-"h": "Thu–Sat from 8 PM, till 2 AM",
-"hq": "~",
+"h": "Till 2 AM, closed Mon–Wed, Sun",
 "til": 26.0,
-"src": "web"
+"src": "web",
+"gid": "ChIJlU0Ogzy_woARU50hhruvVYs",
+"hs": "g",
+"gp": [
+40,
+50
+],
+"hu": "2026-11-26"
 },
 {
 "n": "Black Rabbit Rose",
@@ -4075,10 +4179,12 @@
 "lat": 34.10178,
 "lon": -118.33218,
 "geo": "amenity",
-"h": "Tue–Sat nights, till 1–2 AM",
-"hq": "~",
+"h": "Till 2 AM, closed Sun",
 "til": 26.0,
-"src": "web"
+"src": "web",
+"gid": "ChIJV3xsfDu_woARPqRFfDwevKQ",
+"hs": "g",
+"hu": "2026-11-26"
 },
 {
 "n": "Prohibition",
@@ -4094,10 +4200,16 @@
 "lat": 32.71112,
 "lon": -117.16029,
 "geo": "amenity",
-"h": "8 PM–1:30 AM",
-"hq": "~",
+"h": "Till 1:30 AM",
 "til": 25.5,
-"src": "web"
+"src": "web",
+"gid": "ChIJjR6flllT2YARo5sHpyBXy4A",
+"hs": "g",
+"gp": [
+10,
+60
+],
+"hu": "2026-11-26"
 },
 {
 "n": "El Chato Taco Truck",
@@ -4118,9 +4230,15 @@
 "t": "Olympic & La Brea"
 },
 "src": "web",
-"h": "Late nights from 9 PM, till about 1:30 AM (3:30 AM Fri–Sat)",
-"hq": "~",
-"til": 25.5
+"h": "Till 1:30 AM, 3:30 AM Fri–Sat, closed Mon, Sun",
+"til": 27.5,
+"gid": "ChIJrcnO9x25woARHOJabBuweyE",
+"hs": "g",
+"gp": [
+1,
+10
+],
+"hu": "2026-11-26"
 },
 {
 "n": "Leo's Tacos Truck (Sunset)",
@@ -4139,7 +4257,16 @@
 "r": 0.1,
 "t": "5525 Sunset Blvd (East Hollywood)"
 },
-"src": "web"
+"src": "web",
+"gid": "ChIJZ5L0klG_woARF8aAL__C2e4",
+"h": "Till 2 AM, 3:30 AM Fri–Sat",
+"til": 27.5,
+"hs": "g",
+"gp": [
+10,
+20
+],
+"hu": "2026-11-26"
 },
 {
 "n": "Leo's Tacos Truck (Long Beach)",
@@ -4158,7 +4285,16 @@
 "r": 0.15,
 "t": "the SW corner of Wardlow Rd & Palo Verde Ave"
 },
-"src": "web"
+"src": "web",
+"gid": "ChIJDWwnPg0t3YAR6vnX91pp0fs",
+"h": "Till 1 AM",
+"til": 25.0,
+"hs": "g",
+"gp": [
+10,
+20
+],
+"hu": "2026-11-26"
 },
 {
 "n": "Tacos Los Güichos",
@@ -4177,7 +4313,16 @@
 "r": 0.1,
 "t": "320 W Slauson Ave (South LA)"
 },
-"src": "web"
+"src": "web",
+"gid": "ChIJl_0WtTnIwoARfTN7PQMjGEM",
+"h": "Till 11:20 PM, 12:30 AM Fri–Sat",
+"til": 24.5,
+"hs": "g",
+"gp": [
+10,
+20
+],
+"hu": "2026-11-26"
 },
 {
 "n": "Taqueria Ayutla Oaxaca",
@@ -4197,9 +4342,15 @@
 "t": "S Main St just north of Dyer Rd"
 },
 "src": "web",
-"h": "Nights, 7 PM–2 AM (3 AM Fri–Sat)",
-"hq": "~",
-"til": 26.0
+"h": "Till 2 AM, 3 AM Fri–Sat",
+"til": 27.0,
+"gid": "ChIJdwlhNi3Z3IARah_7Lh7MCMM",
+"hs": "g",
+"gp": [
+10,
+20
+],
+"hu": "2026-11-26"
 },
 {
 "n": "Alebrije's Grill",
@@ -4218,7 +4369,16 @@
 "r": 0.2,
 "t": "Cubbon St between Main & Sycamore (outside Northgate)"
 },
-"src": "web"
+"src": "web",
+"gid": "ChIJk0NpTxrZ3IARxKVE8PnbvWc",
+"h": "Till 10 PM",
+"til": 22.0,
+"hs": "g",
+"gp": [
+10,
+20
+],
+"hu": "2026-11-26"
 },
 {
 "n": "Tacos y Mulitas (Ruben's)",
@@ -4240,7 +4400,9 @@
 "src": "web",
 "h": "Daytime, about 9 AM–3 PM",
 "hq": "~",
-"til": 15.0
+"til": 15.0,
+"hu": "2026-11-26",
+"gmiss": 1
 },
 {
 "n": "The San Diego Taco Truck",
@@ -4259,9 +4421,15 @@
 "t": "6959 Linda Vista Rd"
 },
 "src": "web",
-"h": "5–11:30 PM, closed Mon",
-"hq": "~",
-"til": 23.5
+"h": "Till midnight, closed Mon",
+"til": 24.0,
+"gid": "ChIJS4sTIU1V2YARdMFkCOOw1Ys",
+"hs": "g",
+"gp": [
+10,
+20
+],
+"hu": "2026-11-26"
 }
 ]
 }
