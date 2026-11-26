@@ -28,11 +28,16 @@ const REGIONS = ["Orange County","Los Angeles","Inland Empire","San Diego","Dese
 function region(e){const la=e.lat,lo=e.lon;if(typeof la!=="number"||typeof lo!=="number")return "Other";if(lo>-116.75)return "Desert";if(la<33.38)return "San Diego";if(lo<-118.65)return "Ventura";if(la<=33.95&&lo>=-118.12&&lo<=-117.41)return "Orange County";if(lo<=-117.65)return "Los Angeles";return "Inland Empire";}
 function ymd(d){return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");}
 function tixWord(e,pi){pi=pi||priceInfo(e);if(e.kind==="volunteer")return "Sign up";if(e.kind==="openmic"||COMM.has(e.kind)||CONS.has(e.kind)||pi.free||pi.donation)return "Info";return "Tickets";}
-function nextOccurrence(r){
-  if(r&&Array.isArray(r.nths)&&r.nths.length){const o=r.nths.map(n=>nextOccurrence({...r,nths:null,nth:n})).filter(Boolean).sort();return o[0]||null;}
-  if(r&&Array.isArray(r.weekdays)&&r.weekdays.length){const o=r.weekdays.map(w=>nextOccurrence({...r,weekdays:null,weekday:w})).filter(Boolean).sort();return o[0]||null;}
+// r.season {from:"MM-DD",to:"MM-DD"} limits a series to part of the year (it may wrap New Year, e.g. Oct–May)
+const inSeason=(s,ds)=>{const md=ds.slice(5);return s.from<=s.to?md>=s.from&&md<=s.to:md>=s.from||md<=s.to;};
+function nextOccurrence(r,from){
+  if(r&&r.season&&r.season.from&&r.season.to){let t=from?new Date(from):new Date();t.setHours(0,0,0,0);
+    for(let i=0;i<60;i++){const o=nextOccurrence({...r,season:null},t);if(!o)return null;if(inSeason(r.season,o))return o;t=new Date(o+"T00:00:00");t.setDate(t.getDate()+1);}
+    return null;}
+  if(r&&Array.isArray(r.nths)&&r.nths.length){const o=r.nths.map(n=>nextOccurrence({...r,nths:null,nth:n},from)).filter(Boolean).sort();return o[0]||null;}
+  if(r&&Array.isArray(r.weekdays)&&r.weekdays.length){const o=r.weekdays.map(w=>nextOccurrence({...r,weekdays:null,weekday:w},from)).filter(Boolean).sort();return o[0]||null;}
   if(!r||typeof r.weekday!=="number")return null;
-  const t=new Date();t.setHours(0,0,0,0);
+  const t=from?new Date(from):new Date();t.setHours(0,0,0,0);
   if(r.freq==="monthly"&&r.nth){
     for(let i=0;i<3;i++){const m=new Date(t.getFullYear(),t.getMonth()+i,1);let d=1+((r.weekday-m.getDay()+7)%7)+7*(r.nth-1);const c=new Date(m.getFullYear(),m.getMonth(),d);if(c.getMonth()===m.getMonth()&&c>=t)return ymd(c);}
     return null;
@@ -1138,7 +1143,7 @@ let VOPEN={};fetch("venues.json").then(r=>r.ok?r.json():{}).then(j=>{VOPEN=j||{}
 const MKT_RE=/farmers'? market|mercato|smorgasburg|flea market|trading post|antique market|night market/i;
 let COMMX=[];
 function withComm(evs){return evs.filter(e=>!e._cx).map(e=>e.kind==="art"&&MKT_RE.test(e.title||"")?{...e,kind:"market"}:e).concat(COMMX.filter(c=>!evs.some(e=>!e._cx&&e.title===c.title)));}
-fetch("community.json?v=3").then(r=>r.ok?r.json():{}).then(j=>{j=j||{};window.SHACK_SEASONAL=Array.isArray(j.seasonal)?j.seasonal:[];
+fetch("community.json?v=4").then(r=>r.ok?r.json():{}).then(j=>{j=j||{};window.SHACK_SEASONAL=Array.isArray(j.seasonal)?j.seasonal:[];
   COMMX=(j.events||[]).filter(e=>e.title&&e.recurrence&&typeof e.lat==="number").map(e=>({...e,_cx:1}));
   if(state.loaded&&state.events.length){state.events=withComm(state.events);render();}}).catch(()=>{});
 let fileLoaded=false;

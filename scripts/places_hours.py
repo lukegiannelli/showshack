@@ -107,7 +107,9 @@ def summarize(roh):
 def main():
     data = {f: json.load(open(f)) for f in FILES}
     todo = [(f, p) for f in FILES for p in data[f]["places"] if p.get("c") not in SKIP_C and not p.get("gone") and isinstance(p.get("lat"), (int, float)) and p.get("gmiss", 0) < 2]   # 2 misses = stop paying to look
-    todo.sort(key=lambda fp: (fp[1].get("hu") or "0000", fp[1]["n"]))   # never-checked first, then oldest
+    # hand-added spots (src "web", hours typed from listings that may disagree) that Google hasn't checked yet go first,
+    # then never-checked, then oldest
+    todo.sort(key=lambda fp: (0 if fp[1].get("src") == "web" and not fp[1].get("hu") else 1, fp[1].get("hu") or "0000", fp[1]["n"]))
     if not KEY:
         print(f"No GOOGLE_PLACES_KEY: would check up to {RUN_CAP} of {len(todo)} places. Nothing sent."); return
     b = load_budget(); save_budget(b)

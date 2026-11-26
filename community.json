@@ -1,5 +1,5 @@
 {
- "note": "Weekly community events (farmers markets, street fairs) and seasonal series for Chill & community. Weekly entries use the same fields as events.json with a recurrence; the app shows the next date. 'seasonal' = summer series whose next dates aren't announced yet (shown as 'Back next summer'). Checked 2026-11-26; always check before you go.",
+ "note": "Weekly community events (farmers markets, street fairs) and seasonal series for Chill & community. Weekly entries use the same fields as events.json with a recurrence; the app shows the next date. recurrence.season {from,to} as MM-DD limits a series to part of the year (Oct–May wraps New Year). 'seasonal' = summer series whose next dates aren't announced yet (shown as 'Back next summer'). Checked 2026-11-26; always check before you go.",
  "checked": "2026-11-26",
  "events": [
   {
@@ -188,7 +188,7 @@
    "status": "on sale",
    "genres": [],
    "artists": "Certified farmers market",
-   "note": "Bonita Canyon and Turtle Ridge. Two 2026 guides agree on Saturdays 8–noon; check before you go.",
+   "note": "Run by the OC Farm Bureau. Lot at Bonita Canyon Dr & Turtle Ridge. Rain or shine, year-round.",
    "priceFrom": 0,
    "priceTo": null,
    "priceAvg": null,
@@ -196,7 +196,7 @@
    "priceNote": null,
    "priceAsOf": null,
    "priceSrc": null,
-   "url": "https://patch.com/california/orange-county/orange-county-farmers-market-guide-2026-where-go-what-know",
+   "url": "https://app.farmersmarketsocal.com/irvine-farmers-market",
    "updatedAt": "2026-11-26",
    "geo": "osm"
   },
@@ -287,7 +287,7 @@
    "status": "on sale",
    "genres": [],
    "artists": "Evening market, 100+ vendors, hot food",
-   "note": "No pets or backpacks inside. Listings are older; check before you go.",
+   "note": "Rain or shine. San Diego Tourism says it ends at 7 PM October–March; the market's own page says 8. No pets or backpacks inside.",
    "priceFrom": 0,
    "priceTo": null,
    "priceAvg": null,
@@ -295,7 +295,7 @@
    "priceNote": null,
    "priceAsOf": null,
    "priceSrc": null,
-   "url": "https://www.sandiegoreader.com/events/ongoing/ocean-beach-farmers-market/",
+   "url": "https://oceanbeachsandiego.com/attractions/annual-events/farmers-market-wednesdays",
    "updatedAt": "2026-11-26",
    "geo": "osm"
   },
@@ -452,7 +452,7 @@
    "status": "on sale",
    "genres": [],
    "artists": "About 27 farmers: produce, flowers, fish, bread",
-   "note": "Rain or shine. Listings are from 2023; check before you go.",
+   "note": "Rain or shine, running since 1996. Small lot and limited street parking.",
    "priceFrom": 0,
    "priceTo": null,
    "priceAvg": null,
@@ -460,7 +460,7 @@
    "priceNote": null,
    "priceAsOf": null,
    "priceSrc": null,
-   "url": "https://visitnewportbeach.com/events/corona-del-mar-certified-farmers-market-2023-09-16",
+   "url": "https://southocbeaches.com/2026/11/21/corona-del-mar-farmers-market-saturday-november-21-2026/",
    "updatedAt": "2026-11-26",
    "geo": "osm"
   },
@@ -542,7 +542,11 @@
    "recurrence": {
     "freq": "weekly",
     "weekday": 6,
-    "text": "Every Saturday"
+    "text": "Saturdays, Oct–May",
+    "season": {
+     "from": "10-01",
+     "to": "05-31"
+    }
    },
    "time": "8:00 AM–1:00 PM",
    "start": null,
@@ -551,7 +555,7 @@
    "status": "on sale",
    "genres": [],
    "artists": "The desert's original farmers market",
-   "note": "Outdoors here October–May. June–September it moves indoors to the Pavilion, 401 S Pavilion Way.",
+   "note": "Outdoors here October–May. June–September it moves indoors to the Pavilion.",
    "priceFrom": 0,
    "priceTo": null,
    "priceAvg": null,
@@ -560,6 +564,80 @@
    "priceAsOf": null,
    "priceSrc": null,
    "url": "https://visitpalmsprings.com/palm-springs-certified-farmers-markets/",
+   "updatedAt": "2026-11-26",
+   "geo": "osm"
+  },
+  {
+   "id": "mkt-palm-springs-summer",
+   "title": "Palm Springs Certified Farmers Market (summer, indoors)",
+   "kind": "market",
+   "venue": "Palm Springs Pavilion",
+   "addr": "401 S Pavilion Way",
+   "city": "Palm Springs",
+   "lat": 33.81703,
+   "lon": -116.52524,
+   "recurrence": {
+    "freq": "weekly",
+    "weekday": 6,
+    "text": "Saturdays, Jun–Sep",
+    "season": {
+     "from": "06-01",
+     "to": "09-30"
+    }
+   },
+   "time": "8:00 AM–1:00 PM",
+   "start": null,
+   "end": null,
+   "ages": "all",
+   "status": "on sale",
+   "genres": [],
+   "artists": "The desert's original farmers market",
+   "note": "Indoors, air-conditioned. October–May it's outdoors at the Cultural Center.",
+   "priceFrom": 0,
+   "priceTo": null,
+   "priceAvg": null,
+   "priceEst": false,
+   "priceNote": null,
+   "priceAsOf": null,
+   "priceSrc": null,
+   "url": "https://visitpalmsprings.com/palm-springs-certified-farmers-markets/",
+   "updatedAt": "2026-11-26",
+   "geo": "osm"
+  },
+  {
+   "id": "mkt-la-quinta",
+   "title": "La Quinta Certified Farmers Market",
+   "kind": "market",
+   "venue": "Old Town La Quinta",
+   "addr": "78100 Main St",
+   "city": "La Quinta",
+   "lat": 33.67778,
+   "lon": -116.30229,
+   "recurrence": {
+    "freq": "weekly",
+    "weekday": 0,
+    "text": "Sundays, Oct–May",
+    "season": {
+     "from": "10-01",
+     "to": "05-31"
+    }
+   },
+   "time": "8:00 AM–1:00 PM",
+   "start": null,
+   "end": null,
+   "ages": "all",
+   "status": "on sale",
+   "genres": [],
+   "artists": "Farmers, makers and hot food in Old Town",
+   "note": "This season runs Oct 4, 2026 to May 30, 2027. One directory says 8:30 AM–1:30 PM.",
+   "priceFrom": 0,
+   "priceTo": null,
+   "priceAvg": null,
+   "priceEst": false,
+   "priceNote": null,
+   "priceAsOf": null,
+   "priceSrc": null,
+   "url": "https://www.visitgreaterpalmsprings.com/event/la-quinta-certified-farmers-market/13026/amp/",
    "updatedAt": "2026-11-26",
    "geo": "osm"
   }

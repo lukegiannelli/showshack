@@ -3870,8 +3870,7 @@
 "h": "Late, till 2 AM or later",
 "hq": "~",
 "til": 26.0,
-"src": "web",
-"hu": "2026-11-26"
+"src": "web"
 },
 {
 "n": "Mariscos Jalisco",
@@ -3890,8 +3889,7 @@
 "h": "Daytime, till about 5:30–6 PM",
 "hq": "~",
 "til": 17.5,
-"src": "web",
-"hu": "2026-11-26"
+"src": "web"
 },
 {
 "n": "The Blind Rabbit",
@@ -3958,8 +3956,7 @@
 "geo": "tourism",
 "h": "9 PM–2 AM, Wed–Sat",
 "til": 26.0,
-"src": "web",
-"hu": "2026-11-26"
+"src": "web"
 },
 {
 "n": "Noble Experiment",
@@ -3978,8 +3975,7 @@
 "h": "6 PM–2 AM, closed Mon",
 "hq": "~",
 "til": 26.0,
-"src": "web",
-"hu": "2026-11-26"
+"src": "web"
 },
 {
 "n": "Graceland",
@@ -3997,8 +3993,7 @@
 "h": "5–11 PM Tue–Thu, till 11:45 PM Fri–Sat",
 "hq": "~",
 "til": 23.75,
-"src": "web",
-"hu": "2026-11-26"
+"src": "web"
 },
 {
 "n": "The Guild Club",
@@ -4031,8 +4026,7 @@
 "geo": "tourism",
 "h": "5 PM–midnight, Wed–Sat",
 "til": 24.0,
-"src": "web",
-"hu": "2026-11-26"
+"src": "web"
 },
 {
 "n": "No Vacancy",
@@ -4051,8 +4045,7 @@
 "h": "Thu–Sat from 8 PM, till 2 AM",
 "hq": "~",
 "til": 26.0,
-"src": "web",
-"hu": "2026-11-26"
+"src": "web"
 },
 {
 "n": "Black Rabbit Rose",
@@ -4071,8 +4064,7 @@
 "h": "Tue–Sat nights, till 1–2 AM",
 "hq": "~",
 "til": 26.0,
-"src": "web",
-"hu": "2026-11-26"
+"src": "web"
 },
 {
 "n": "Prohibition",
@@ -4091,8 +4083,7 @@
 "h": "8 PM–1:30 AM",
 "hq": "~",
 "til": 25.5,
-"src": "web",
-"hu": "2026-11-26"
+"src": "web"
 }
 ]
 }

@@ -134,6 +134,8 @@ fairs") and `seasonal` summer series (shown as "Back next summer" until next yea
 1. Re-check the 4 `events` with the oldest `updatedAt`: WebSearch the market by name and city, then confirm day, hours
    and location on the market's, city's or tourism board's page. If it still runs as listed, set `updatedAt` to today.
    If the day, time or spot changed, fix it (coordinates from OpenStreetMap only). If it has closed, delete it.
+   A market that only runs part of the year gets `recurrence.season` = `{"from": "10-01", "to": "05-31"}` (MM-DD, may wrap
+   New Year); one that moves for the summer is two entries with opposite seasons (see Palm Springs).
 2. For each `seasonal` entry: when next year's dates are announced on an official page, move it into `events.json` the
    usual way (one entry per dated show or a `recurrence`) and drop it from `seasonal`.
 3. Same accuracy rules as shows: official pages first, no guessed times, and say in `note` when sources disagree.
