@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Refresh opening hours for afters.json + pool.json from Google Places API (New). Runs daily in GitHub Actions.
+"""Refresh opening hours (and Google's per-person price range, "gp", same SKU) for afters.json + pool.json from Google Places API (New). Runs daily in GitHub Actions.
 
 MONEY RULES (the whole point of this file):
   * Hours live in Google's "Place Details Enterprise" SKU: 1,000 free calls a month, then billed.
@@ -64,7 +64,15 @@ def find_id(b, p):
 
 def details(b, gid):
     spend(b, "details")
-    return call(f"https://places.googleapis.com/v1/places/{gid}", None, "id,displayName,location,businessStatus,regularOpeningHours")
+    return call(f"https://places.googleapis.com/v1/places/{gid}", None, "id,displayName,location,businessStatus,regularOpeningHours,priceRange")   # priceRange bills in the same Enterprise SKU as the hours: no extra cost
+
+# ---- Google's "price per person" (from diner reports): [low, high] in whole dollars; high is None for "$100+" ----
+def price_of(d):
+    pr = (d or {}).get("priceRange") or {}
+    lo, hi = pr.get("startPrice") or {}, pr.get("endPrice") or {}
+    if (lo.get("currencyCode") or "USD") != "USD" or lo.get("units") is None: return None
+    a = int(lo["units"]); z = int(hi["units"]) if hi.get("units") is not None else None
+    return [a, z] if a >= 0 and (z is None or z >= a) else None
 
 # ---- turn Google's weekly periods into "Till 11 PM, 1 AM Fri–Sat" + til (latest Fri/Sat close, 24h clock, 26 = 2 AM) ----
 DAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
@@ -132,6 +140,9 @@ def main():
             else:
                 h, til = summarize(d.get("regularOpeningHours"))
                 if h: p.update(h=h, til=til); p.pop("hq", None); p["hs"] = "g"
+                gp = price_of(d)
+                if gp: p["gp"] = gp
+                else: p.pop("gp", None)   # Google dropped it: go back to the typical-price estimate
             p["hu"] = TODAY.isoformat(); done += 1
     except Spent as e:
         print("Stopped:", e)

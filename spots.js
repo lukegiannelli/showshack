@@ -47,11 +47,13 @@ function foodTools(all){const aft=cur==="after",up=(state._up||[]).filter(e=>typ
       <button type="button" class="chip bft-spin" data-fspin>🎲 Feed me</button></div>`}`;}
 /* price block: total per person with ~9% tax and tip folded in, then the breakdown (+ the group bill on Food) */
 function price(p){const c=N.cost?N.cost(p):null;if(!c)return "";
+  const $r2=(a,b)=>c.plus?`$${a}+`:$r(a,b);
   if(c.free)return `<div class="spc-price free"><b>Free</b><span>${esc(c.what)}</span></div>`;
-  const parts=[`${esc(c.what)} ${$r(c.lo,c.hi)}`,`tax ~${$r(c.tax[0],c.tax[1])}`];if(c.tip[1])parts.push(`tip ~${$r(c.tip[0],c.tip[1])}`);
-  const grp=cur==="food"&&PPL>1?`<small class="spc-grp">For ${PPL}: ≈ ${$r(c.all[0]*PPL,c.all[1]*PPL)} total, about ${$r(c.all[0],c.all[1])} each to split</small>`:"";
-  return `<div class="spc-price"><b>≈ ${$r(c.all[0],c.all[1])}</b><span>per person, ${c.tip[1]?"with tax and tip":"with tax"}</span>
-    <small>${parts.join(" · ")}</small>${grp}<small class="spc-svc">${SVC[c.svc]||""} · typical price, not from the place</small></div>`;}
+  const parts=[`${esc(c.what)} ${$r2(c.lo,c.hi)}`,`tax ~${$r2(c.tax[0],c.tax[1])}`];if(c.tip[1])parts.push(`tip ~${$r2(c.tip[0],c.tip[1])}`);
+  const grp=cur==="food"&&PPL>1?`<small class="spc-grp">For ${PPL}: ≈ ${$r2(c.all[0]*PPL,c.all[1]*PPL)} total, about ${$r2(c.all[0],c.all[1])} each to split</small>`:"";
+  const from=c.src==="google"?"Google diners' price per person":c.src==="pp"?"estimate for this place, not a quote":"typical price, not from the place";
+  return `<div class="spc-price${c.src==="google"?" g":""}"><b>≈ ${$r2(c.all[0],c.all[1])}</b><span>per person, ${c.tip[1]?"with tax and tip":"with tax"}</span>
+    <small>${parts.join(" · ")}</small>${grp}<small class="spc-svc">${SVC[c.svc]||""} · ${from}</small></div>`;}
 const late24=p=>p.til>=24;
 /* ---- deals: ones the daily refresh found on the place's own site (afters.json "deal"), plus ones the owner adds on the
    You page (Supabase food_deals). A deal shows until its end date; ones without an end date need a check in the last 120 days. ---- */
@@ -95,7 +97,7 @@ function sorted(xs){return xs.map(x=>({...x,d:driveEstimate(x.p.lat,x.p.lon)}))
 function card({p,i,d,fs},vc){const [em,cat]=label(p),q=encodeURIComponent([p.n,p.a,p.city,"CA"].filter(Boolean).join(", "));
   const sub=p.bt||(p.c==="pool"?(p.t||[])[0]:"");
   const tags=[...(p.diet||[]).map(x=>"🌱 "+x),...(p.t||[]).filter(t=>t!==sub)].slice(0,4);
-  const hrs=!p.h?`<span class="spc-hrs none">Hours not listed</span>`:`<span class="spc-hrs${p.hq?" est":""}">${esc(p.h)}${p.hq?" <em>usually</em>":""}</span>`;
+  const hrs=(!p.h?`<span class="spc-hrs none">Hours not listed</span>`:`<span class="spc-hrs${p.hq?" est":""}">${esc(p.h)}${p.hq?" <em>usually</em>":""}</span>`)+checkedTag(p);
   const icc=(IC[p.c]||["#E6DCFF"])[0],food=cur==="food",k=fkey(p),fav=FAV.has(k),spun=food&&F.spun===k,c=N.cost?N.cost(p):null;
   const book=food&&c&&c.svc==="sit"?`<p class="spc-book">Reserve: <a href="https://www.opentable.com/s?term=${encodeURIComponent(p.n+" "+p.city)}" target="_blank" rel="noopener">OpenTable ↗</a> · <a href="https://www.yelp.com/search?find_desc=${encodeURIComponent(p.n)}&find_loc=${encodeURIComponent((p.city||"")+", CA")}" target="_blank" rel="noopener">Yelp waitlist ↗</a></p>`:"";
   return `<article class="spc${spun?" spun":""}" style="--vc:${vc};--ic:${icc}">
@@ -111,6 +113,11 @@ function card({p,i,d,fs},vc){const [em,cat]=label(p),q=encodeURIComponent([p.n,p
     ${book}
     <div class="spc-act"><a href="https://www.google.com/maps/dir/?api=1&destination=${q}" target="_blank" rel="noopener">${p.area?"Directions to the area":"Directions"}</a>${p.c==="hotel"&&p.u&&safeUrl(p.u)?`<a href="${esc(safeUrl(p.u))}" target="_blank" rel="noopener">Schedule ↗</a>`:`<a href="https://www.google.com/maps/search/?api=1&query=${q}${p.gid?"&query_place_id="+encodeURIComponent(p.gid):""}" target="_blank" rel="noopener">${p.c==="beach"||p.c==="stars"?"Photos ↗":"Photos & hours ↗"}</a>`}<button type="button" class="nadd" data-naft="${i}">＋ Add to my night</button></div>
   </article>`;}
+// when the hours were checked: Google-checked hours say so with the date; anything not re-checked in 30 days gets an amber line
+function checkedTag(p){if(p.c==="beach"||p.c==="stars"||!p.hu)return "";
+  const d=parseDay(p.hu),days=Math.floor((Date.now()-d)/864e5),when=d.toLocaleDateString("en-US",{month:"short",day:"numeric"});
+  if(days>30)return `<small class="spc-chk old">Not re-checked since ${esc(when)}</small>`;
+  return p.hs==="g"&&p.h?`<small class="spc-chk">✓ Google · ${esc(when)}</small>`:"";}
 const CLOCK='<svg class="nic sm" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>';
 
 /* ---- home tiles (after the four vibes, same look) ---- */
