@@ -4033,6 +4033,66 @@
 "til": 24.0,
 "src": "web",
 "hu": "2026-11-26"
+},
+{
+"n": "No Vacancy",
+"c": "speak",
+"city": "Los Angeles",
+"zip": "90028",
+"a": "1727 N Hudson Ave",
+"t": [
+"Hidden entrance into a 1902 Victorian house",
+"Hollywood",
+"Dress up a little"
+],
+"lat": 34.10223,
+"lon": -118.33245,
+"geo": "amenity",
+"h": "Thu–Sat from 8 PM, till 2 AM",
+"hq": "~",
+"til": 26.0,
+"src": "web",
+"hu": "2026-11-26"
+},
+{
+"n": "Black Rabbit Rose",
+"c": "speak",
+"city": "Los Angeles",
+"zip": "90028",
+"a": "1719 N Hudson Ave",
+"t": [
+"Look for the rabbit sign at Hollywood & Hudson",
+"Magic shows (ticketed, separate room)",
+"Thai-Chinese food next door"
+],
+"lat": 34.10178,
+"lon": -118.33218,
+"geo": "amenity",
+"h": "Tue–Sat nights, till 1–2 AM",
+"hq": "~",
+"til": 26.0,
+"src": "web",
+"hu": "2026-11-26"
+},
+{
+"n": "Prohibition",
+"c": "speak",
+"city": "San Diego",
+"zip": "92101",
+"a": "548 5th Ave",
+"t": [
+"Look for the 'Law Office' door next to Havana 1920",
+"Live jazz; cover some weekends",
+"No reservations"
+],
+"lat": 32.71112,
+"lon": -117.16029,
+"geo": "amenity",
+"h": "8 PM–1:30 AM",
+"hq": "~",
+"til": 25.5,
+"src": "web",
+"hu": "2026-11-26"
 }
 ]
 }
