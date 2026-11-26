@@ -170,3 +170,9 @@ html.rpop-on,html.rpop-on body{overflow:hidden}
 @media (prefers-color-scheme:light){:root:not([data-theme="dark"]) .spc-deal{color:var(--ink);background:rgba(126,224,184,.16);border-color:#3fb98a}:root:not([data-theme="dark"]) .spc-deal b{color:#0f7a52}:root:not([data-theme="dark"]) .spc-deal a{color:#1f62a8}:root:not([data-theme="dark"]) .spc-dnow{color:#5b5670}:root:not([data-theme="dark"]) .spc-deal.on .spc-dnow{color:#0f7a52}}
 .spc-deal a{color:#bfeaff}
 .bdeal-chip[aria-pressed="true"]{border-color:#7ee0b8;box-shadow:0 0 10px -3px #7ee0b8}
+
+/* when the hours were checked (✓ Google · Nov 25) / stale after 30 days */
+.spc-chk{display:block;font:500 11px var(--mono);color:var(--muted);margin-top:2px}
+.spc-chk.old{color:#b5650d}
+:root[data-theme="light"] .spc-chk.old{color:#9a5206}
+@media (prefers-color-scheme:light){:root:not([data-theme="dark"]) .spc-chk.old{color:#9a5206}}

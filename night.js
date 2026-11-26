@@ -27,9 +27,12 @@ const PRICE={kbbq:[35,50,"sit","All-you-can-eat"],ramen:[17,24,"sit","Bowl and a
   dimsum:[25,40,"sit","Dim sum to share"],thai:[15,25,"sit","A main and a drink"],pizza:[8,15,"counter","A couple of slices"],
   dessert:[7,14,"counter","A treat or a boba"],burger:[12,20,"counter","Burger, fries and a drink"],sushi:[25,45,"sit","A few rolls and a drink"],hall:[15,30,"counter","A plate from one stall"],stars:[0,0,"none","Free"],beach:[0,0,"none","Free, parking may cost"]};
 const TAX=.09,TIP=.2;
-function cost(p){const r=PRICE[p.c];if(!r&&!p.pp)return null;const [lo,hi]=p.pp||r,svc=p.svc||(r?r[2]:"sit"),what=r&&!p.pp?r[3]:"Food";
+// Price source order: Google's diner-reported "per person" range (gp, from the daily hours job) -> a price typed for the place
+// (pp) -> the category's typical SoCal price. gp [lo, null] = "$lo+".
+function cost(p){const r=PRICE[p.c],g=Array.isArray(p.gp)&&typeof p.gp[0]==="number"?p.gp:null;if(!r&&!p.pp&&!g)return null;
+  const [lo,hi]=g?[g[0],g[1]!=null?g[1]:g[0]]:(p.pp||r),svc=p.svc||(r?r[2]:"sit"),what=g?"Per person":r&&!p.pp?r[3]:"Food",src=g?"google":p.pp?"pp":"typical",plus=!!g&&g[1]==null;
   const tip=svc==="sit"||svc==="bar"?TIP:0,f=x=>Math.round(x);
-  return {lo,hi,svc,what,tax:[f(lo*TAX),f(hi*TAX)],tip:[f(lo*tip),f(hi*tip)],all:[f(lo*(1+TAX+tip)),f(hi*(1+TAX+tip))],free:!hi};}
+  return {lo,hi,svc,what,src,plus,tax:[f(lo*TAX),f(hi*TAX)],tip:[f(lo*tip),f(hi*tip)],all:[f(lo*(1+TAX+tip)),f(hi*(1+TAX+tip))],free:!hi};}
 /* neon line icons, one per category: [color, svg paths] (drawn with currentColor; spots.css adds the glow) */
 const IC={
   kbbq:["#FF6B6B",'<circle cx="12" cy="13" r="7"/><path d="M5.5 11h13M5.2 14.2h13.6M8 6.5 7 3.5M12 6V3M16 6.5l1-3"/>'],
@@ -66,7 +69,7 @@ IC.fest=["#FF6FA5",'<path d="M2.5 20.5 12 4l9.5 16.5Z"/><path d="M8.5 20.5 12 13
 const GO={drive:"🚗",ride:"🚕",walk:"🚶",transit:"🚇",there:"📍"};
 const GOW={drive:"Driving",ride:"Rideshare",walk:"Walk",transit:"Transit",there:"Meet there"};
 let AFTERS=[];
-fetch("afters.json?v=16").then(r=>r.ok?r.json():{}).then(j=>{AFTERS=((j||{}).places||[]).filter(p=>typeof p.lat==="number"&&!p.gone);if(mapOn)drawLayer();document.dispatchEvent(new Event("shack:spots"));}).catch(()=>{});
+fetch("afters.json?v=17").then(r=>r.ok?r.json():{}).then(j=>{AFTERS=((j||{}).places||[]).filter(p=>typeof p.lat==="number"&&!p.gone);if(mapOn)drawLayer();document.dispatchEvent(new Event("shack:spots"));}).catch(()=>{});
 const allAfters=()=>[...AFTERS,...(typeof POOL!=="undefined"?POOL:[]).map(p=>({...p,c:"pool",t:[p.c==="hall"?"Pool hall":"Bar with pool",...(p.t||[])]}))];
 const GRP={burger:"food",sushi:"food",dimsum:"food",thai:"food",pizza:"food",dessert:"food",hall:"food",boil:"food",hotpot:"food",hibachi:"food",fine:"food",truck:"food",kbbq:"food",ramen:"food",tacos:"food",pho:"food",korean:"food",diner:"food",beach:"chill",stars:"chill"},grp=p=>GRP[p.c]||"after";
 const icon=c=>c==="pool"&&typeof NEON8==="string"?NEON8:`<span class="nemo">${(AC[c]||TYPES.other)[0]}</span>`;
