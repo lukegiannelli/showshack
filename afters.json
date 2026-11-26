@@ -2267,7 +2267,13 @@
 "h": "Till 10 PM, 11 PM Fri–Sat",
 "til": 23.0,
 "hs": "g",
-"hu": "2026-11-21"
+"hu": "2026-11-21",
+"deal": {
+"t": "Happy hour: $3, $6 and $9 sushi, bites and cocktails",
+"d": "Mon–Fri 3–6 PM, sushi bar & lounge, not on holidays",
+"u": "https://www.benihana.com/locations/carlsbad/",
+"chk": "2026-11-26"
+}
 },
 {
 "n": "Ten-Raku",
