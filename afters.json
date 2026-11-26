@@ -1,5 +1,5 @@
 {
-"note": "Afters spots for the Night Card. h = hours text; til = usual latest close on the 24h clock, past midnight keeps counting (26 = 2 AM); hq '~' = sources disagree or only third-party listings. No h = hours unknown. Food spots marked src 'osm' were matched on OpenStreetMap (name, address, hours). pp = estimated per-person food price before tax and tip (not quoted by the place); svc 'sit' or 'counter' overrides the category default. c 'hotel' = hotel bars and rooftops with music nights open to non-guests; h is the music schedule, u is where it came from. diet = dietary options tagged on OpenStreetMap. deal = a deal posted by the place itself {t what, d when, until end date, u where it's posted, chk last checked}; deals without an end date hide 120 days after chk. Checked Nov 2026; always check before you go. c 'truck' = food trucks that park at the same spot every day (not roaming trucks). c 'speak' = speakeasies (hidden-entrance bars); hours left blank when listings disagree, for the Google hours job to fill.",
+"note": "Afters spots for the Night Card. h = hours text; til = usual latest close on the 24h clock, past midnight keeps counting (26 = 2 AM); hq '~' = sources disagree or only third-party listings. No h = hours unknown. Food spots marked src 'osm' were matched on OpenStreetMap (name, address, hours). pp = estimated per-person food price before tax and tip (not quoted by the place); svc 'sit' or 'counter' overrides the category default. c 'hotel' = hotel bars and rooftops with music nights open to non-guests; h is the music schedule, u is where it came from. diet = dietary options tagged on OpenStreetMap. deal = a deal posted by the place itself {t what, d when, until end date, u where it's posted, chk last checked}; deals without an end date hide 120 days after chk. Checked Nov 2026; always check before you go. c 'truck' = food trucks with a usual spot; area {r miles, t text} = where they park, shown as a rough area (r) rather than an exact pin. c 'speak' = speakeasies (hidden-entrance bars); hours left blank when listings disagree, for the Google hours job to fill.",
 "places": [
 {
 "n": "Baekjeong Irvine",
@@ -2267,7 +2267,13 @@
 "h": "Till 10 PM, 11 PM Fri–Sat",
 "til": 23.0,
 "hs": "g",
-"hu": "2026-11-21"
+"hu": "2026-11-21",
+"deal": {
+"t": "Happy hour: $3, $6 and $9 sushi, bites and cocktails",
+"d": "Mon–Fri 3–6 PM, sushi bar & lounge, not on holidays",
+"u": "https://www.benihana.com/locations/carlsbad/",
+"chk": "2026-11-26"
+}
 },
 {
 "n": "Ten-Raku",
@@ -3870,7 +3876,11 @@
 "h": "Late, till 2 AM or later",
 "hq": "~",
 "til": 26.0,
-"src": "web"
+"src": "web",
+"area": {
+"r": 0.1,
+"t": "the gas station at La Brea & Venice"
+}
 },
 {
 "n": "Mariscos Jalisco",
@@ -3889,7 +3899,11 @@
 "h": "Daytime, till about 5:30–6 PM",
 "hq": "~",
 "til": 17.5,
-"src": "web"
+"src": "web",
+"area": {
+"r": 0.1,
+"t": "3040 E Olympic Blvd (Boyle Heights)"
+}
 },
 {
 "n": "The Blind Rabbit",
@@ -4084,6 +4098,170 @@
 "hq": "~",
 "til": 25.5,
 "src": "web"
+},
+{
+"n": "El Chato Taco Truck",
+"c": "truck",
+"city": "Los Angeles",
+"zip": "90036",
+"a": "5300 W Olympic Blvd",
+"t": [
+"At this corner since 1972",
+"Late-night al pastor",
+"Cash only (reported)"
+],
+"lat": 34.05698,
+"lon": -118.34622,
+"geo": "osm",
+"area": {
+"r": 0.1,
+"t": "Olympic & La Brea"
+},
+"src": "web",
+"h": "Late nights from 9 PM, till about 1:30 AM (3:30 AM Fri–Sat)",
+"hq": "~",
+"til": 25.5
+},
+{
+"n": "Leo's Tacos Truck (Sunset)",
+"c": "truck",
+"city": "Los Angeles",
+"zip": "90028",
+"a": "5525 Sunset Blvd",
+"t": [
+"One of Leo's permanent trucks",
+"Al pastor off the trompo"
+],
+"lat": 34.09859,
+"lon": -118.3098,
+"geo": "osm",
+"area": {
+"r": 0.1,
+"t": "5525 Sunset Blvd (East Hollywood)"
+},
+"src": "web"
+},
+{
+"n": "Leo's Tacos Truck (Long Beach)",
+"c": "truck",
+"city": "Long Beach",
+"zip": "90808",
+"a": "Wardlow Rd & Palo Verde Ave",
+"t": [
+"Spot reported March 2025",
+"Al pastor off the trompo"
+],
+"lat": 33.8186,
+"lon": -118.1082,
+"geo": "osm",
+"area": {
+"r": 0.15,
+"t": "the SW corner of Wardlow Rd & Palo Verde Ave"
+},
+"src": "web"
+},
+{
+"n": "Tacos Los Güichos",
+"c": "truck",
+"city": "Los Angeles",
+"zip": "90003",
+"a": "320 W Slauson Ave",
+"t": [
+"Al pastor and weekend carnitas",
+"Sells out"
+],
+"lat": 33.98908,
+"lon": -118.27859,
+"geo": "osm",
+"area": {
+"r": 0.1,
+"t": "320 W Slauson Ave (South LA)"
+},
+"src": "web"
+},
+{
+"n": "Taqueria Ayutla Oaxaca",
+"c": "truck",
+"city": "Santa Ana",
+"zip": "92707",
+"a": "2631 S Main St",
+"t": [
+"Long late-night lines",
+"Cash only (reported)"
+],
+"lat": 33.7102,
+"lon": -117.86738,
+"geo": "osm",
+"area": {
+"r": 0.2,
+"t": "S Main St just north of Dyer Rd"
+},
+"src": "web",
+"h": "Nights, 7 PM–2 AM (3 AM Fri–Sat)",
+"hq": "~",
+"til": 26.0
+},
+{
+"n": "Alebrije's Grill",
+"c": "truck",
+"city": "Santa Ana",
+"zip": "92701",
+"a": "W Cubbon St near Main St",
+"t": [
+"The battleship taco",
+"Cash only (reported)"
+],
+"lat": 33.73575,
+"lon": -117.86787,
+"geo": "osm",
+"area": {
+"r": 0.2,
+"t": "Cubbon St between Main & Sycamore (outside Northgate)"
+},
+"src": "web"
+},
+{
+"n": "Tacos y Mulitas (Ruben's)",
+"c": "truck",
+"city": "Santa Ana",
+"zip": "92707",
+"a": "Main St & Bishop St",
+"t": [
+"Mulitas",
+"Daytime truck"
+],
+"lat": 33.73996,
+"lon": -117.86758,
+"geo": "osm",
+"area": {
+"r": 0.25,
+"t": "Main & Bishop, in front of Las Mulitas"
+},
+"src": "web",
+"h": "Daytime, about 9 AM–3 PM",
+"hq": "~",
+"til": 15.0
+},
+{
+"n": "The San Diego Taco Truck",
+"c": "truck",
+"city": "San Diego",
+"zip": "92111",
+"a": "6959 Linda Vista Rd",
+"t": [
+"Open late for SD"
+],
+"lat": 32.78679,
+"lon": -117.16967,
+"geo": "osm",
+"area": {
+"r": 0.1,
+"t": "6959 Linda Vista Rd"
+},
+"src": "web",
+"h": "5–11:30 PM, closed Mon",
+"hq": "~",
+"til": 23.5
 }
 ]
 }

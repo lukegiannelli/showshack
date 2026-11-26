@@ -142,5 +142,6 @@ fairs") and `seasonal` summer series (shown as "Back next summer" until next yea
 4. Keep the layout (`json.dumps(data, ensure_ascii=False, indent=1)`). If you changed it, bump `community.json?v=N` in
    `app.js` and mention it in the "Daily refresh" commit, e.g. "Markets: 4 checked, 1 time fixed".
 
-Food trucks (`c: "truck"`) and speakeasies (`c: "speak"`) live in `afters.json` with the other spots. Only list trucks that
-park at the same address every day; roaming trucks can't be shown honestly on a map.
+Food trucks (`c: "truck"`) and speakeasies (`c: "speak"`) live in `afters.json` with the other spots. Trucks carry `area` = `{"r": miles, "t": "where they usually park"}`:
+the app shows a rough area, not an exact pin. Only add a truck when a source names its usual corner; never one that
+roams a whole city. Put the year of the newest source in its tags when it's older than this year.
