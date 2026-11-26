@@ -39,6 +39,11 @@ function nextOccurrence(r){
   }
   const c=new Date(t);c.setDate(t.getDate()+((r.weekday-t.getDay()+7)%7));return ymd(c);
 }
+// Big US holidays: weekly/monthly listings can't know they're skipped, so their cards say "may be closed" that day.
+function holidayOn(ds){if(!ds)return null;const [y,m,d]=ds.split("-").map(Number),dt=new Date(y,m-1,d),wd=dt.getDay(),md=m*100+d;
+  const nth=(n,w)=>wd===w&&Math.ceil(d/7)===n,last=w=>wd===w&&d+7>new Date(y,m,0).getDate();
+  if(md===101)return "New Year's Day";if(m===5&&last(1))return "Memorial Day";if(md===704)return "July 4th";if(m===9&&nth(1,1))return "Labor Day";
+  if(m===11&&nth(4,4))return "Thanksgiving";if(md===1224)return "Christmas Eve";if(md===1225)return "Christmas";if(md===1231)return "New Year's Eve";return null;}
 const GENRES = [["all","All"],["electronic","Electronic / house"],["hiphop","Hip-hop / R&B"],["indie","Indie / rock"],["reggae","Reggae / island"],["latin","Latin"],["pop","Pop / other"]];
 const state = {flipped:new Set(), kind:"all", genre:"all", venue:"all", maxDrive:180, sort:"date", events:[], picks:[], stars:new Set(), loaded:false};
 try{(JSON.parse(SH.store.raw("radar-stars")||"[]")).forEach(k=>state.stars.add(String(k)));}catch(e){}
@@ -575,7 +580,7 @@ function cardHtml(e){
     const apx=approxPin(e), mi=e._drive&&e._drive.miles<1?"<1":e._drive&&e._drive.miles;
     const drv = e._drive ? `<span class="drive">${e._drive.real&&!apx?"":"~"}${fmtMins(e._drive.mins)} · ${apx&&mi!=="<1"?"~":""}${mi} mi</span>${apx?`<span class="pn">to ${esc(e.city)} center · exact spot not listed</span>`:""}` :(origin ? '<span class="na">n/a</span>' : '');
     const su=mic?signupOf(e):null, micTime=String(e.time||"").replace(/\s*\(?sign[- ]?up[^)]*\)?/i,"").trim();
-    const time = mic ? `<span>${esc(e.recurrence?.text||"")}${micTime?" · "+esc(micTime):""}</span>${su!=null?`<span class="signup">${ni("mic")} Sign-up ${fmtClock(su)}</span>`:e.kind==="openmic"?`<span class="signup none">${ni("mic")} Sign-up: arrive early</span>`:""}` : e.time ? `<span>${esc(e.time)}</span>` : '<span class="na">Time TBA</span>';
+    const time = mic ? `<span>${esc(e.recurrence?.text||"")}${micTime?" · "+esc(micTime):""}</span>${su!=null?`<span class="signup">${ni("mic")} Sign-up ${fmtClock(su)}</span>`:e.kind==="openmic"?`<span class="signup none">${ni("mic")} Sign-up: arrive early</span>`:""}${holidayOn(e.start)?`<span class="signup hol">${esc(holidayOn(e.start))}: may be closed, check first</span>`:""}` : e.time ? `<span>${esc(e.time)}</span>` : '<span class="na">Time TBA</span>';
     const tix=safeUrl(e.url)||(mic?null:safeUrl("https://www.google.com/search?q="+encodeURIComponent([e.title,e.venue,e.city,"tickets"].filter(Boolean).join(" "))));
     const tixLabel = tix ? tixWord(e,pi) : "";
     const dest = encodeURIComponent((e.venue||"")+", "+(e.city||""));
