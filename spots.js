@@ -101,7 +101,7 @@ function tiles(){const t=$("bTiles");if(!t||t.querySelector("[data-spots]"))retu
   const all=t.querySelectorAll(".btile");all.forEach(b=>b.classList.add("bt-sync"));void t.offsetWidth;all.forEach(b=>b.classList.remove("bt-sync"));}
 function home(){tiles();if(!N.ready())return;
   for(const k in KINDS){const xs=list(k),el=document.querySelector(`[data-scount="${k}"]`);if(!el)continue;
-    const l=xs.filter(x=>late24(x.p)).length,dn=xs.filter(x=>dealOf(x.p)).length;el.textContent=xs.length+" spots"+(k==="after"&&l?` · ${l} past midnight`:"")+(dn?` · ${dn} deal${dn===1?"":"s"}`:"");}}
+    el.textContent=xs.length+" spots";}}
 
 /* ---- the spots screen ---- */
 function mount(){if($("bSpots"))return;const sec=document.createElement("section");sec.id="bSpots";sec.className="bspots";sec.setAttribute("aria-label","Spots");
