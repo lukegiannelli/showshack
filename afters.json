@@ -2471,13 +2471,11 @@
 ],
 "lat": 34.07637,
 "lon": -118.37752,
-"h": "Till 10 PM, 9 PM Sat",
+"h": "Jazz Mon (show 8:30 PM), burlesque Fri (show 7 PM), doors 5 PM",
 "u": "https://www.sofitel-los-angeles.com/dining-lounge/our-bar-riviera-31/",
 "geo": "amenity",
 "src": "web",
 "gid": "ChIJqV7KJLO-woARRNcWy_xf_j4",
-"til": 22.0,
-"hs": "g",
 "gp": [
 30,
 50
@@ -2561,13 +2559,11 @@
 ],
 "lat": 32.71388,
 "lon": -117.15881,
-"h": "Till 11 PM, midnight Fri–Sat",
+"h": "Live music Thu 5 to 8 PM (through Feb 2027)",
 "u": "https://www.sandiego.org/events-festivals/live-music-at-the-rooftop/86d050b212a111f1b563",
 "geo": "amenity",
 "src": "web",
 "gid": "ChIJP7ZwX1hT2YARjnMXgokaUlw",
-"til": 24.0,
-"hs": "g",
 "gp": [
 100,
 null

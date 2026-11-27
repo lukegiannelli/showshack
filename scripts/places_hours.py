@@ -20,6 +20,7 @@ RUN_CAP = 25        # per run, for each kind of call
 BUDGET = "scripts/places_budget.json"
 FILES = ["afters.json", "pool.json"]
 SKIP_C = {"beach", "stars"}
+KEEP_H = {"hotel"}   # still checked for closures and price, but their h (music schedule) is never replaced
 KEY = os.environ.get("GOOGLE_PLACES_KEY", "").strip()
 TODAY = datetime.date.today()
 MONTH = TODAY.strftime("%Y-%m")
@@ -139,6 +140,7 @@ def main():
             elif st == "CLOSED_TEMPORARILY": p.update(h="Temporarily closed", til=0); p.pop("hq", None)
             else:
                 h, til = summarize(d.get("regularOpeningHours"))
+                if p.get("c") in KEEP_H and p.get("h") and p.get("hs") != "g": h = None   # hotel bars: h is the music-night schedule, not opening hours
                 if h: p.update(h=h, til=til); p.pop("hq", None); p["hs"] = "g"
                 gp = price_of(d)
                 if gp: p["gp"] = gp
