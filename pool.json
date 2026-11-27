@@ -324,7 +324,16 @@
 "lat": 33.43277,
 "lon": -117.62353,
 "geo": "amenity",
-"a": "1401 Calle Valle"
+"a": "1401 Calle Valle",
+"gid": "ChIJf1zYvwv03IARz-F4OfRIswo",
+"h": "Till 2 AM",
+"til": 26.0,
+"hs": "g",
+"gp": [
+10,
+30
+],
+"hu": "2026-11-27"
 },
 {
 "n": "Baddeley's Pourhouse",
@@ -404,7 +413,12 @@
 ],
 "lat": 33.83928,
 "lon": -118.35351,
-"geo": "place"
+"geo": "place",
+"gid": "ChIJL-oElNO0woARaQsYNWrx3Mg",
+"h": "Till 1 AM, 2 AM Fri–Sat",
+"til": 26.0,
+"hs": "g",
+"hu": "2026-11-27"
 },
 {
 "n": "Crown City Billiards & Lounge",
@@ -550,7 +564,9 @@
 "t": [],
 "lat": 32.77879,
 "lon": -117.01762,
-"geo": "club"
+"geo": "club",
+"hu": "2026-11-27",
+"gmiss": 1
 },
 {
 "n": "California Billiards",
@@ -592,7 +608,12 @@
 ],
 "lat": 32.80822,
 "lon": -116.97871,
-"geo": "place"
+"geo": "place",
+"gid": "ChIJl4M-SC9Y2YARYwN5hN7prx4",
+"h": "Till 11:30 PM, midnight Fri–Sat",
+"til": 24.0,
+"hs": "g",
+"hu": "2026-11-27"
 },
 {
 "n": "Nice Rack",
@@ -603,7 +624,12 @@
 "t": [],
 "lat": 32.795,
 "lon": -116.93856,
-"geo": "place"
+"geo": "place",
+"gid": "ChIJ5VJTnadZ2YARwQgXP5SP0xA",
+"h": "Till 5 PM, closed Sat–Sun",
+"til": 17.0,
+"hs": "g",
+"hu": "2026-11-27"
 },
 {
 "n": "Shooters Sports & Grill",
@@ -693,7 +719,16 @@
 ],
 "lat": 34.1564,
 "lon": -116.49305,
-"geo": "amenity"
+"geo": "amenity",
+"gid": "ChIJxVsZ5dgo24ARE7mzYIDGIco",
+"h": "Till 11 PM",
+"til": 23.0,
+"hs": "g",
+"gp": [
+20,
+30
+],
+"hu": "2026-11-27"
 },
 {
 "n": "Bigshot's Billiards Bar & Grill",
@@ -776,7 +811,16 @@
 "a": "2645 Harbor Blvd",
 "lat": 33.66914,
 "lon": -117.91977,
-"geo": "building"
+"geo": "building",
+"gid": "ChIJBbpF72Pf3IARRwrsGURau_M",
+"h": "Till 2 AM",
+"til": 26.0,
+"hs": "g",
+"gp": [
+10,
+20
+],
+"hu": "2026-11-27"
 },
 {
 "n": "Our Bar and Kitchen",
@@ -790,7 +834,16 @@
 "a": "2000 Newport Blvd",
 "lat": 33.64633,
 "lon": -117.91308,
-"geo": "building"
+"geo": "building",
+"gid": "ChIJAX_ascLf3IARr7mzNtJ64EY",
+"h": "Till 1:30 AM",
+"til": 25.5,
+"hs": "g",
+"gp": [
+20,
+30
+],
+"hu": "2026-11-27"
 },
 {
 "n": "Goat Hill Tavern",

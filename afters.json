@@ -77,9 +77,15 @@
 "lat": 34.054,
 "lon": -118.29204,
 "geo": "amenity",
-"h": "Till ~10–11 PM",
-"til": 23,
-"hq": "~"
+"h": "Till 10 PM",
+"til": 22.0,
+"gid": "ChIJj6arSYLHwoAROfRRqiOfX2s",
+"hs": "g",
+"gp": [
+30,
+90
+],
+"hu": "2026-11-27"
 },
 {
 "n": "Karaoke Nice",
@@ -716,7 +722,16 @@
 ],
 "lat": 33.74811,
 "lon": -117.86525,
-"geo": "amenity"
+"geo": "amenity",
+"gid": "ChIJAe_xWt7Y3IARIc-VXCbTU9k",
+"h": "Till midnight, 10 PM Sun, 2 AM Fri–Sat",
+"til": 26.0,
+"hs": "g",
+"gp": [
+20,
+30
+],
+"hu": "2026-11-27"
 },
 {
 "n": "High Rooftop Lounge",
@@ -1462,9 +1477,15 @@
 "lon": -118.4304,
 "h": "Open 24 hours",
 "til": 30,
-"hq": "~",
 "geo": "amenity",
-"src": "osm"
+"src": "osm",
+"gid": "ChIJBWAFgCiWwoARH_pQm3RIKeg",
+"hs": "g",
+"gp": [
+10,
+20
+],
+"hu": "2026-11-27"
 },
 {
 "n": "Norms",
@@ -1479,9 +1500,15 @@
 "lon": -118.13849,
 "h": "Open 24 hours",
 "til": 30,
-"hq": "~",
 "geo": "amenity",
-"src": "osm"
+"src": "osm",
+"gid": "ChIJnTeesr3NwoARhAcvVxYTJr8",
+"hs": "g",
+"gp": [
+10,
+20
+],
+"hu": "2026-11-27"
 },
 {
 "n": "Sonoratown",
@@ -1673,14 +1700,20 @@
 "lon": -118.47578,
 "h": "Open 24 hours",
 "til": 30,
-"hq": "~",
 "svc": "counter",
 "pp": [
 10,
 16
 ],
 "geo": "amenity",
-"src": "osm"
+"src": "osm",
+"gid": "ChIJsxrtNq6QwoARkYndh4KwkOo",
+"hs": "g",
+"gp": [
+10,
+20
+],
+"hu": "2026-11-27"
 },
 {
 "n": "Original Tommy's",
@@ -1694,16 +1727,22 @@
 ],
 "lat": 34.18973,
 "lon": -118.32044,
-"h": "8 AM to midnight",
-"til": 24,
-"hq": "~",
+"h": "Till midnight",
+"til": 24.0,
 "svc": "counter",
 "pp": [
 10,
 16
 ],
 "geo": "amenity",
-"src": "osm"
+"src": "osm",
+"gid": "ChIJjfgSB-OVwoARfHeQ-Unha8o",
+"hs": "g",
+"gp": [
+10,
+20
+],
+"hu": "2026-11-27"
 },
 {
 "n": "Du-par's",
@@ -1756,11 +1795,17 @@
 ],
 "lat": 34.09297,
 "lon": -118.37897,
-"h": "Open 24 hours",
-"til": 30,
-"hq": "~",
+"h": "Till 10 PM, midnight Wed, 3 AM Thu, midnight Fri, closed Sat–Sun",
+"til": 72.0,
 "geo": "amenity",
-"src": "osm"
+"src": "osm",
+"gid": "ChIJjSI44ry-woARO_YgMJQ6JXg",
+"hs": "g",
+"gp": [
+20,
+30
+],
+"hu": "2026-11-27"
 },
 {
 "n": "Mel's Drive-In",
@@ -1773,11 +1818,17 @@
 ],
 "lat": 34.15205,
 "lon": -118.4568,
-"h": "6 AM to 1 AM (3 AM Thu to Sat)",
-"til": 27,
-"hq": "~",
+"h": "Till 11 PM, midnight Fri–Sat",
+"til": 24.0,
 "geo": "amenity",
-"src": "osm"
+"src": "osm",
+"gid": "ChIJ_Yf0BcSXwoARodVof4trDt4",
+"hs": "g",
+"gp": [
+20,
+30
+],
+"hu": "2026-11-27"
 },
 {
 "n": "Shin Sen Gumi Hakata Ramen",
@@ -2378,7 +2429,16 @@
 "lat": 34.04843,
 "lon": -118.24792,
 "geo": "amenity",
-"src": "osm"
+"src": "osm",
+"gid": "ChIJh9W-NkrGwoARmn2KQbXkdhg",
+"h": "Till 10 PM, 10:30 PM Thu, closed Mon, Sun",
+"til": 22.0,
+"hs": "g",
+"gp": [
+100,
+null
+],
+"hu": "2026-11-27"
 },
 {
 "n": "Bestia",
@@ -2436,7 +2496,16 @@
 "lat": 34.02452,
 "lon": -118.49137,
 "geo": "amenity",
-"src": "osm"
+"src": "osm",
+"gid": "ChIJ7fOMUsSkwoARIOVuE_23I1Q",
+"h": "Till 9 PM, closed Mon–Tue, Sun",
+"til": 21.0,
+"hs": "g",
+"gp": [
+100,
+null
+],
+"hu": "2026-11-27"
 },
 {
 "n": "Bar & Lounge at Hotel Bel-Air",
@@ -2719,11 +2788,17 @@ null
 ],
 "lat": 34.08692,
 "lon": -118.27584,
-"h": "5 to 10 PM, closed Wed and Thu",
-"til": 22,
-"hq": "~",
+"h": "Till 10 PM, closed Wed",
+"til": 22.0,
 "geo": "amenity",
-"src": "osm"
+"src": "osm",
+"gid": "ChIJVbhVnzjHwoARJGTXUlQTZLU",
+"hs": "g",
+"gp": [
+20,
+60
+],
+"hu": "2026-11-27"
 },
 {
 "n": "Sapp Coffee Shop",
@@ -3046,11 +3121,17 @@ null
 ],
 "lat": 32.74663,
 "lon": -117.12989,
-"h": "Sun–Thu 11 AM to 11 PM; Fri–Sat 11 AM to 2 AM",
-"til": 26,
-"hq": "~",
+"h": "Till 11 PM, 2 AM Fri–Sat",
+"til": 26.0,
 "geo": "amenity",
-"src": "osm"
+"src": "osm",
+"gid": "ChIJOST5SfRU2YARxf4H_-PMlak",
+"hs": "g",
+"gp": [
+10,
+20
+],
+"hu": "2026-11-27"
 },
 {
 "n": "Gelati & Peccati",
@@ -3294,11 +3375,17 @@ null
 ],
 "lat": 32.82436,
 "lon": -117.15586,
-"h": "Mon–Thu, Sun 5 PM to 2 AM; Fri–Sat 5 PM to 3 AM",
-"til": 27,
-"hq": "~",
+"h": "Till 2 AM",
+"til": 26.0,
 "geo": "amenity",
-"src": "osm"
+"src": "osm",
+"gid": "ChIJ138BdZT_24ARptfid1oONzg",
+"hs": "g",
+"gp": [
+20,
+30
+],
+"hu": "2026-11-27"
 },
 {
 "n": "Bei Yuan Tea & Boba",
@@ -3448,11 +3535,17 @@ null
 ],
 "lat": 33.98226,
 "lon": -117.37452,
-"h": "Sun–Mon 11 AM to 9 PM; Tue 11 AM to 10 PM; Wed–Thu 5 PM to 10 PM; Fri–Sat 11 AM to 1 AM",
-"til": 25,
-"hq": "~",
+"h": "Till 10 PM, 9 PM Mon, Sun, midnight Fri–Sat",
+"til": 24.0,
 "geo": "amenity",
-"src": "osm"
+"src": "osm",
+"gid": "ChIJgSt-HvCx3IARbVP1I-CXZAA",
+"hs": "g",
+"gp": [
+20,
+30
+],
+"hu": "2026-11-27"
 },
 {
 "n": "Bricks and Birch Pizza",
@@ -3618,7 +3711,16 @@ null
 "lat": 34.12161,
 "lon": -117.20959,
 "geo": "amenity",
-"src": "osm"
+"src": "osm",
+"gid": "ChIJ7R8iPS5Vw4AR99Y4HsMYVmk",
+"h": "Till 8 PM, 9 PM Fri–Sat, closed Mon",
+"til": 21.0,
+"hs": "g",
+"gp": [
+20,
+30
+],
+"hu": "2026-11-27"
 },
 {
 "n": "Ramenkoko",
@@ -3668,7 +3770,16 @@ null
 "lat": 34.0339,
 "lon": -117.71521,
 "geo": "amenity",
-"src": "osm"
+"src": "osm",
+"gid": "ChIJfTFroYoyw4AR35s0vT7tbNQ",
+"h": "Till 11:30 PM, 12:30 AM Fri–Sun",
+"til": 24.5,
+"hs": "g",
+"gp": [
+10,
+20
+],
+"hu": "2026-11-27"
 },
 {
 "n": "Hanoi Kitchen",
@@ -3865,7 +3976,16 @@ null
 "lat": 33.71641,
 "lon": -116.23203,
 "geo": "amenity",
-"src": "osm"
+"src": "osm",
+"gid": "ChIJf8qkICr42oARrbADuQ8Yme8",
+"h": "Till 8:30 PM",
+"til": 20.5,
+"hs": "g",
+"gp": [
+10,
+20
+],
+"hu": "2026-11-27"
 },
 {
 "n": "Coachella Pizza Co.",
