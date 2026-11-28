@@ -257,3 +257,6 @@ button.nv-sum span{font:600 12px var(--body);color:#cfc6ea;text-decoration:under
 .bnc-went:not(.ask) button[aria-pressed="false"]{opacity:.55}
 .bnc-went button[aria-pressed="true"]{background:rgba(126,224,184,.18);border-color:#7ee0b8;color:#fff}
 .bnc-went button[data-g="0"][aria-pressed="true"]{background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.35)}
+/* "Coming up" / "Past nights" labels: the pale lilac vanished on the light page; use the page's muted ink (dark mode keeps lilac) */
+.ui-b .bnc-h{color:var(--muted,#5b5470)}
+@media (prefers-color-scheme:dark){:root.ui-b:not([data-theme="light"]) .bnc-h{color:#cfc6ea}}

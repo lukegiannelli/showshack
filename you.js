@@ -109,14 +109,15 @@ async function swReg(){if(!("serviceWorker" in navigator))return null;return Pro
 async function refreshRem(){if(!C.user){remState=null;drawRem();return;}
   try{const reg=await swReg();const sub=reg&&await reg.pushManager.getSubscription();let row=null;
     if(sub){const sb=await C.client();const {data}=await sb.from("push_subscriptions").select("*").eq("endpoint",sub.endpoint).maybeSingle();row=data;}
-    remState={on:!!(sub&&row),tmrw:row?row.remind_day_before:true,drop:row?row.price_drops:true,newv:row&&row.new_shows!=null?row.new_shows:true,reg:!!reg};}catch(e){remState={on:false,tmrw:true,drop:true,newv:true,reg:false};}
+    remState={on:!!(sub&&row),tmrw:row?row.remind_day_before:true,drop:row?row.price_drops:true,newv:row&&row.new_shows!=null?row.new_shows:true,wknd:row&&row.weekend_picks!=null?row.weekend_picks:true,reg:!!reg};}catch(e){remState={on:false,tmrw:true,drop:true,newv:true,wknd:true,reg:false};}
   drawRem();}
 function remHTML(){if(!C.user)return `<p class="bset-p">Sign in above, then turn on a ping the day before shows you're interested in (★) and when their price drops.</p>`;
   if(isIOS&&!standalone)return `<p class="bset-p">On iPhone, reminders work from the Home Screen app: tap <b>Share → Add to Home Screen</b>, open the Shack from there, then turn this on.</p>`;
-  const s=remState||{on:false,tmrw:true,drop:true,newv:true,reg:true};
+  const s=remState||{on:false,tmrw:true,drop:true,newv:true,wknd:true,reg:true};
   return `<label class="bso-t"><input type="checkbox" data-rem="tmrw"${s.tmrw?" checked":""}> The day before a show I'm interested in</label>
     <label class="bso-t"><input type="checkbox" data-rem="drop"${s.drop?" checked":""}> When a show I'm interested in drops in price</label>
     <label class="bso-t"><input type="checkbox" data-rem="newv"${s.newv!==false?" checked":""}> When an artist I listen to or a venue I follow announces a show</label>
+    <label class="bso-t"><input type="checkbox" data-rem="wknd"${s.wknd!==false?" checked":""}> Thursdays: my weekend picks, and what friends are into</label>
     <div class="bset-acts">${s.on?`<button type="button" data-rem="test">Send me a test</button><button type="button" data-rem="off">Turn reminders off on this device</button>`:`<button type="button" data-rem="on">Turn on reminders</button>`}</div>
     ${remMsg?`<p class="bset-msg">${E(remMsg)}</p>`:""}${s.on?`<p class="bset-p">On for this device · sent around 9 AM.</p>`:""}`;}
 function drawRem(){const el=$("bRem");if(el)el.innerHTML=remHTML();}
@@ -125,17 +126,18 @@ async function remOn(){remMsg="";const reg=await swReg();if(!reg){remMsg="Open t
   const sub=(await reg.pushManager.getSubscription())||await reg.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:b64(VAPID)});
   const j=sub.toJSON(),sb=await C.client(),box=$("bRem");
   const tm=box?box.querySelector('[data-rem="tmrw"]').checked:true,dr=box?box.querySelector('[data-rem="drop"]').checked:true,nv=remNew(box);
-  const {error}=await remWrite(row=>sb.from("push_subscriptions").upsert(row),{endpoint:j.endpoint,user_id:C.user.id,p256dh:j.keys.p256dh,auth_key:j.keys.auth,remind_day_before:tm,price_drops:dr,new_shows:nv});
+  const {error}=await remWrite(row=>sb.from("push_subscriptions").upsert(row),{endpoint:j.endpoint,user_id:C.user.id,p256dh:j.keys.p256dh,auth_key:j.keys.auth,remind_day_before:tm,price_drops:dr,new_shows:nv,weekend_picks:remWk(box)});
   if(error){remMsg=/cap/.test(error.message)?"Reminders are already on for 6 devices. Turn one off first.":"Couldn't save that. Try again.";drawRem();return;}
   remMsg="Reminders are on ✓";await refreshRem();}
 async function remOff(){const reg=await swReg();const sub=reg&&await reg.pushManager.getSubscription();
   if(sub){try{const sb=await C.client();await sb.from("push_subscriptions").delete().eq("endpoint",sub.endpoint);}catch(e){}try{await sub.unsubscribe();}catch(e){}}
   remMsg="Reminders are off on this device.";await refreshRem();}
 async function remSave(){const reg=await swReg();const sub=reg&&await reg.pushManager.getSubscription();if(!sub)return;const box=$("bRem");
-  const sb=await C.client();await remWrite(row=>sb.from("push_subscriptions").update(row).eq("endpoint",sub.endpoint),{remind_day_before:box.querySelector('[data-rem="tmrw"]').checked,price_drops:box.querySelector('[data-rem="drop"]').checked,new_shows:remNew(box)});remMsg="Saved ✓";drawRem();}
+  const sb=await C.client();await remWrite(row=>sb.from("push_subscriptions").update(row).eq("endpoint",sub.endpoint),{remind_day_before:box.querySelector('[data-rem="tmrw"]').checked,price_drops:box.querySelector('[data-rem="drop"]').checked,new_shows:remNew(box),weekend_picks:remWk(box)});remMsg="Saved ✓";drawRem();}
+const remWk=box=>{const x=box&&box.querySelector('[data-rem="wknd"]');return x?x.checked:true;};
 const remNew=box=>{const x=box&&box.querySelector('[data-rem="newv"]');return x?x.checked:true;};
 // write a reminders row; if the database doesn't have the "new_shows" switch yet, save the other two and carry on
-async function remWrite(go,row){let r=await go(row);if(r.error&&/new_shows/.test(r.error.message||"")){const {new_shows,...rest}=row;r=await go(rest);}return r;}
+async function remWrite(go,row){let r=await go(row);if(r.error&&/new_shows|weekend_picks/.test(r.error.message||"")){const {new_shows,weekend_picks,...rest}=row;r=await go(rest);}return r;}
 async function remTest(){try{const sb=await C.client();const {data}=await sb.auth.getSession();const r=await fetch(SH.sb.url+"/functions/v1/reminders",{method:"POST",headers:{"Content-Type":"application/json",apikey:SH.sb.key,Authorization:"Bearer "+data.session.access_token},body:JSON.stringify({test:true})});
   const j=await r.json();remMsg=j.sent?"Test sent ✓ It should pop up in a few seconds.":"Couldn't reach this device. Turn reminders off and on again.";}catch(e){remMsg="Couldn't send the test. Try again.";}drawRem();}
 document.addEventListener("click",ev=>{const b=ev.target.closest("button[data-rem]");if(!b)return;ev.preventDefault();const a=b.dataset.rem;b.disabled=true;
@@ -166,10 +168,42 @@ function insHTML(){if(typeof state==="undefined"||!(state.events||[]).length)ret
 document.addEventListener("click",ev=>{if(!ev.target.closest("[data-yins]"))return;ev.preventDefault();ev.stopPropagation();const y=$("bYou");if(y)dlgClose(y);
   const b=document.querySelector("#bSet [data-sins]");if(b)b.click();},true);
 
+/* ===== "Something wrong with this listing?" on an opened show card: pick what, add a note, send. Lands in Owner → Review
+   (missing_reports, kind 'wrong'). Needs sign-in, like missing-show reports (10 a day each). ===== */
+const WRONG=[["time","Wrong time or date"],["cancel","Cancelled or postponed"],["price","Wrong price or link"],["place","Wrong venue"],["other","Something else"]];
+function wrongEv(b){const id=b.dataset.wrong,e=[...(state.events||[]),...(state.picks||[])].find(x=>hid(x)===id);return e?{...e,start:b.dataset.nd||e.start}:null;}
+document.addEventListener("click",async ev=>{
+  const b=ev.target.closest("[data-wrong]");
+  if(b){ev.preventDefault();ev.stopPropagation();
+    if(!C.user){say("Sign in on the You tab to send a fix (it's free, just your email)","Sign in",()=>openYou("signin"));return;}
+    const box=document.createElement("form");box.className="wrongf";box.dataset.wrongForm=b.dataset.wrong;box.dataset.nd=b.dataset.nd||"";
+    box.innerHTML=`<p>What's wrong?</p><div class="wrong-ch">${WRONG.map(([k,t],i)=>`<label><input type="radio" name="r" value="${k}"${i?"":" checked"}> ${t}</label>`).join("")}</div>
+      <input name="n" maxlength="160" placeholder="What's right, if you know (optional)" aria-label="What's right" autocomplete="off">
+      <div class="bset-acts"><button type="submit">Send</button><button type="button" data-wrongx>Cancel</button></div>`;
+    b.replaceWith(box);box.querySelector("input[name=n]").focus({preventScroll:true});return;}
+  const x=ev.target.closest("[data-wrongx]");if(x){ev.preventDefault();ev.stopPropagation();const f=x.closest("form");
+    f.outerHTML=`<button type="button" class="wrongbtn" data-wrong="${E(f.dataset.wrongForm)}" data-nd="${E(f.dataset.nd)}">Something wrong with this listing?</button>`;}},true);
+document.addEventListener("submit",async ev=>{const f=ev.target.closest("[data-wrong-form]");if(!f)return;ev.preventDefault();ev.stopPropagation();
+  const e=wrongEv({dataset:{wrong:f.dataset.wrongForm,nd:f.dataset.nd}});if(!e){say("Couldn't find that show");return;}
+  const r=(f.querySelector("input[name=r]:checked")||{}).value||"other",why=(WRONG.find(w=>w[0]===r)||WRONG[4])[1],note=f.n.value.trim();
+  const what=`[${why}] ${e.title} · ${[e.venue,e.city].filter(Boolean).join(", ")}${e.start?" · "+e.start:""}${note?" — "+note:""}`.slice(0,300);
+  const btn=f.querySelector("button[type=submit]");btn.disabled=true;
+  try{const sb=await C.client();const {error}=await sb.from("missing_reports").insert({user_id:C.user.id,what,link:(typeof safeUrl==="function"&&safeUrl(e.url))||null,kind:"wrong",show_id:String(e.id).slice(0,120)});
+    if(error)throw error;f.outerHTML=`<p class="wrongf-ok">Thanks, sent ✓ We'll check it.</p>`;}
+  catch(err){btn.disabled=false;say(/cap/.test(String(err&&err.message))?"That's 10 reports today. Thanks! Try again tomorrow.":"Couldn't send that. Try again.");}},true);
+
 /* ===== owner review: flyer shows, missing-show reports, coverage gaps ===== */
 async function refreshAdmin(){if(!C.user)return;try{const sb=await C.client();const {data}=await sb.rpc("is_admin");admin=!!data;
-  if(admin){const r=await sb.rpc("admin_review");review=r.data||null;const c=await sb.rpc("admin_counts");counts=c.data||[];}
+  if(admin){const r=await sb.rpc("admin_review");review=r.data||null;const c=await sb.rpc("admin_counts");counts=c.data||[];
+    try{const er=await sb.rpc("admin_errors");ERRS=er.error?null:(er.data||[]);}catch(e){ERRS=null;}}
   const s=$("bYou");if(s&&s.open&&(admin||SH.store.raw("shack-owner")==="1")){if(!$("bAdm"))redrawYou();else $("bAdm").innerHTML=admHTML(SH.store.raw("shack-owner")==="1");}}catch(e){}}
+// errors on people's phones, last 7 days (core.js sends them; supabase/feedback.sql)
+let ERRS=null;
+function errsHTML(){if(!ERRS)return "";
+  if(!ERRS.length)return `<h4 class="badm-h">Errors on people's phones (7 days)</h4><p class="bset-p">None ✓</p>`;
+  const ago=t=>{const m=Math.round((Date.now()-new Date(t))/6e4);return m<60?m+" min ago":m<1440?Math.round(m/60)+" h ago":Math.round(m/1440)+" d ago";};
+  const br=u=>/iPhone|iPad/.test(u)?"iPhone":/Android/.test(u)?"Android":/Mac/.test(u)?"Mac":/Windows/.test(u)?"Windows":"other";
+  return `<h4 class="badm-h">Errors on people's phones (7 days)</h4><ul class="badm-list">${ERRS.map(x=>`<li><div><b>${E(x.msg)}</b><span>${x.n}× · ${E(ago(x.last))}${x.src?` · ${E(x.src)}${x.line?":"+x.line:""}`:""}${x.page?` · ${E(x.page)} tab`:""} · ${E(br(x.ua||""))}${x.browsers>1?` +${x.browsers-1} more browser${x.browsers>2?"s":""}`:""}${x.ver?` · ${E(x.ver)}`:""}</span></div></li>`).join("")}</ul>`;}
 let COV=null;fetch("coverage.json",{cache:"no-cache"}).then(r=>r.ok?r.json():null).then(j=>{COV=j;}).catch(()=>{});
 /* weekly credibility audit (scripts/credibility.py): a score per area, the change since last week, and the spots to fix first */
 let CRED=null;fetch("credibility.json",{cache:"no-cache"}).then(r=>r.ok?r.json():null).then(j=>{CRED=j;}).catch(()=>{});
@@ -185,14 +219,16 @@ function credHTML(){const c=CRED;if(!c||!c.areas)return "";const H=c.history||[]
     ${W.length?`<h4 class="badm-h">Fix these first</h4><ul class="badm-list">${W.map(w=>`<li><div><b>${E(w.n)}</b><span>${E(w.area)} · ${E(w.city)} · ${E(w.why.join(", "))}</span></div><span class="bcnt-n">${w.score}</span></li>`).join("")}</ul>`:""}`;}
 function admHTML(owner){if(!admin)return owner?`<p class="bset-p">You opened owner mode on this phone. Make this account the Shack's admin to review flyer shows and reports. (Only works once, for the first person.)</p><div class="bset-acts"><button type="button" data-adm="claim">Make me the admin</button></div>`:"";
   if(!review)return `<p class="bset-p">Loading…</p>`+dealsHTML();
-  const fl=review.flyers||[],ms=review.missing||[],d=s=>new Date(s+"T12:00").toLocaleDateString("en-US",{month:"short",day:"numeric"});
+  const fl=review.flyers||[],all=review.missing||[],ms=all.filter(x=>x.kind!=="wrong"),wr=all.filter(x=>x.kind==="wrong"),d=s=>new Date(s+"T12:00").toLocaleDateString("en-US",{month:"short",day:"numeric"});
   const listed=new Set((state.events||[]).filter(e=>!e.community).map(e=>e.start+"|"+String(e.venue).toLowerCase()));
-  return `<p class="bset-p"><b>${fl.length}</b> flyer show${fl.length===1?"":"s"} · <b>${ms.length}</b> missing-show report${ms.length===1?"":"s"}</p>
+  return `<p class="bset-p"><b>${fl.length}</b> flyer show${fl.length===1?"":"s"} · <b>${ms.length}</b> missing-show report${ms.length===1?"":"s"} · <b>${wr.length}</b> wrong-listing report${wr.length===1?"":"s"}</p>
+    ${wr.length?`<h4 class="badm-h">Listings people say are wrong</h4><ul class="badm-list">${wr.map(x=>`<li><div><b>${E(x.what)}</b><span>${E(new Date(x.created_at).toLocaleDateString("en-US",{month:"short",day:"numeric"}))}${x.link?` · <a href="${E(x.link)}" target="_blank" rel="noopener">listing ↗</a>`:""}</span></div><button type="button" class="bpass-share" data-adm="added" data-id="${E(x.id)}">Fixed</button><button type="button" class="bpass-share" data-adm="skip" data-id="${E(x.id)}">Skip</button></li>`).join("")}</ul>`:""}
     ${fl.length?`<ul class="badm-list">${fl.map(x=>`<li class="${x.status==="hidden"?"off":""}"><div><b>${E(x.title)}</b><span>${E(d(x.start))} · ${E(x.venue)}, ${E(x.city)}${x.reports?` · ⚠ ${x.reports} report${x.reports>1?"s":""}`:""}${listed.has(x.start+"|"+String(x.venue).toLowerCase())?" · now on the official list":""}</span></div>
       ${x.flyer_path?`<a class="bpass-share" href="${E(SH.sb.url+"/storage/v1/object/public/flyers/"+x.flyer_path)}" target="_blank" rel="noopener">Flyer</a>`:""}<button type="button" class="bpass-share" data-adm="${x.status==="hidden"?"show":"hide"}" data-id="${E(x.id)}">${x.status==="hidden"?"Restore":"Hide"}</button></li>`).join("")}</ul>`:""}
     ${ms.length?`<h4 class="badm-h">Missing shows people asked for</h4><ul class="badm-list">${ms.map(x=>`<li><div><b>${E(x.what)}</b><span>${E(new Date(x.created_at).toLocaleDateString("en-US",{month:"short",day:"numeric"}))}${x.link?` · <a href="${E(x.link)}" target="_blank" rel="noopener">link ↗</a>`:""}</span></div><button type="button" class="bpass-share" data-adm="added" data-id="${E(x.id)}">Added</button><button type="button" class="bpass-share" data-adm="skip" data-id="${E(x.id)}">Skip</button></li>`).join("")}</ul>`:""}
     ${counts.length?`<h4 class="badm-h">What people use (devices per feature · last 7 days / 30 days)</h4><ul class="badm-list bcnt">${counts.map(c=>`<li><div><b>${E(FEAT[c.feature]||c.feature)}</b></div><span class="bcnt-n">${c.week||0} / ${c.total}</span></li>`).join("")}</ul>`:`<p class="bset-p">Usage counts show up here once people start using the app (private: counts only, no names).</p>`}
     ${COV&&COV.gaps&&COV.gaps.length?`<h4 class="badm-h">Venues that may be missing shows (weekly check, ${E(COV.checked||"")})</h4><ul class="badm-list">${COV.gaps.slice(0,12).map(g=>`<li><div><b>${E(g.venue)}</b><span>We list ${g.ours} · Ticketmaster has ${g.tm} in the next 60 days</span></div></li>`).join("")}</ul>`:""}
+    ${errsHTML()}
     ${credHTML()}
     ${dealsHTML()}`;}
 /* ===== owner: food & afters deals (a code a restaurant gave you, a happy hour you saw). Shows on that spot's card for everyone. ===== */
@@ -233,7 +269,7 @@ document.addEventListener("click",async ev=>{const b=ev.target.closest("[data-ad
 /* ===== the Share sheet ===== */
 function shareHTML(){const nights=window.NIGHT&&NIGHT.allNights?NIGHT.allNights().filter(x=>x.p.s.length).slice(0,4):[],stamps=window.SHACK_PASS?SHACK_PASS.stamps:0;
   const row=(k,ic,t,p)=>`<button type="button" class="bshr" data-shr="${k}"><i aria-hidden="true">${ic}</i><span><b>${t}</b><small>${p}</small></span></button>`;
-  return `<button type="button" class="binfo-x" data-close aria-label="Close">✕</button><p class="binfo-kick"><img class="bshack-ic" src="hut.webp?v=2" alt="">share</p><h2 id="bShareH">What do you want to share?</h2>
+  return `<button type="button" class="binfo-x" data-close aria-label="Close">✕</button><p class="binfo-kick"><img class="bshack-ic" src="hut.webp?v=3" alt="">share</p><h2 id="bShareH">What do you want to share?</h2>
     <div class="bshr-list">
       ${nights.length?`<p class="bshr-h">A night plan ${C.user?"(the link keeps updating as you edit)":"(sign in on You and the link keeps updating)"}</p>${nights.map(x=>`<button type="button" class="bshr" data-shr="night" data-id="${E(x.id)}"><i aria-hidden="true">🌙</i><span><b>${E(x.p.t||"Our night")}</b><small>${E([x.p.d?new Date(x.p.d+"T12:00").toLocaleDateString("en-US",{weekday:"short",month:"short",day:"numeric"}):"",x.p.s.length+" stop"+(x.p.s.length>1?"s":"")].filter(Boolean).join(" · "))}</small></span></button>`).join("")}`:""}
       <p class="bshr-h">Your passport</p>
