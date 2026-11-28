@@ -1,0 +1,21 @@
+name: Keep the database awake
+# Supabase pauses free-plan projects after about a week of low activity (supabase.com/docs/guides/platform/free-project-pausing).
+# Once a day this makes one small public read (the venue ratings summary, the same call the app makes for anyone) so a quiet
+# week can't pause the sign-in, sync and reminders backend. Uses only the public key that's already in core.js; no secrets,
+# no writes, no commits.
+on:
+  schedule:
+    - cron: "41 19 * * *"   # once a day, ~11-12 AM Pacific
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: One public read
+        run: |
+          code=$(curl -s -o /dev/null -w "%{http_code}" -X POST "https://tdahsfxcfsgalfqhsnal.supabase.co/rest/v1/rpc/venue_scores" \
+            -H "apikey: sb_publishable_ybHSIncwmDBn5nuUByG9vg_D194O2qo" -H "Content-Type: application/json" -d '{}')
+          echo "Supabase answered $code"
+          [ "$code" = "200" ] || { echo "::warning::Supabase didn't answer 200 (it may be paused: restore it in the dashboard)"; exit 1; }

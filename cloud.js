@@ -64,7 +64,7 @@ addEventListener("shack:store",ev=>{const k=ev.detail&&ev.detail.key;if(applying
 /* ---- the sign-in box (on the Show passport card) ---- */
 const esc2=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 window.shackCloudHTML=()=>{let body;
-  if(user)body=`<span class="bcloud-t">Synced to <b>${esc2(user.email||"your account")}</b>: passport, saved nights and settings.</span><span class="bcloud-s" aria-live="polite">${esc2(status)}</span><button type="button" class="bpass-share" data-cl="out">Sign out</button>`;
+  if(user)body=`<span class="bcloud-t">Synced to <b>${esc2(user.email||"your account")}</b>: passport, saved nights and settings.</span><span class="bcloud-s" aria-live="polite">${esc2(status)}</span><button type="button" class="bpass-share" data-cl="out">Sign out</button><button type="button" class="bcloud-del" data-cl="del">Delete my account</button>`;
   // plain text boxes (not type=email / pattern) so a stray space can't block the button; spaces are stripped as you type
   else if(ui==="email")body=`<span class="bcloud-t">We'll email you an 8-digit code to type in here.</span><form class="bcloud-f" data-cl-form="email" novalidate><input type="text" inputmode="email" name="e" autocomplete="email" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="you@email.com" value="${esc2(email||get(K_EMAIL)||"")}" aria-label="Your email" data-cl-strip="email"><button class="bpass-share">Email me a code</button><button type="button" class="bpass-share" data-cl="x">Cancel</button></form><span class="bcloud-s" aria-live="polite">${esc2(status)}</span>`;
   else if(ui==="code"){const wait=resendWait();
@@ -81,6 +81,20 @@ document.addEventListener("click",async ev=>{const b=ev.target.closest("[data-cl
   if(a==="in"){ui="email";status="";redraw();return;}
   if(a==="x"){ui="idle";status="";redraw();return;}
   if(a==="resend"){ui="email";status="";redraw();return;}
+  // delete the account: two taps, then photos (storage doesn't cascade), then the account and every row tied to it
+  // (database function delete_my_account). What's on this phone stays until they clear it in Settings.
+  if(a==="del"&&user){if(!b.classList.contains("sure")){b.classList.add("sure");b.textContent="Tap again: deletes your account, synced copy, friends and photos";status="This can't be undone. Your phone keeps its own copy until you clear it in Settings.";
+      const el=document.getElementById("bCloud");if(el){const st=el.querySelector(".bcloud-s");if(st){st.textContent=status;st.classList.add("warn");}}return;}
+    b.disabled=true;b.textContent="Deleting…";
+    try{const c=await client(),uid=user.id;
+      for(const bucket of ["stamps","flyers"]){for(let i=0;i<20;i++){const {data}=await c.storage.from(bucket).list(uid,{limit:100});if(!data||!data.length)break;
+        const {error}=await c.storage.from(bucket).remove(data.map(f=>uid+"/"+f.name));if(error)break;}}
+      try{const reg=navigator.serviceWorker&&await navigator.serviceWorker.getRegistration();const sub=reg&&await reg.pushManager.getSubscription();if(sub)await sub.unsubscribe();}catch(e){}
+      const {error}=await c.rpc("delete_my_account");if(error)throw error;
+      try{await c.auth.signOut({scope:"local"});}catch(e){}
+      user=null;put(K_AT,null);ui="idle";status="Account deleted ✓ What's on this phone stays until you clear it (Settings & your data).";redraw();subs.forEach(f=>{try{f(null);}catch(e){}});}
+    catch(e){status="Couldn't delete it. Check your connection and try again.";redraw();}
+    return;}
   if(a==="out"){try{await sb.auth.signOut();}catch(e){}user=null;put(K_AT,null);ui="idle";status="Signed out. Everything stays on this device.";redraw();subs.forEach(f=>{try{f(null);}catch(e){}});}},true);
 document.addEventListener("submit",async ev=>{const f=ev.target.closest("[data-cl-form]");if(!f)return;ev.preventDefault();ev.stopPropagation();
   const btn=f.querySelector("button:not([type=button])");btn.disabled=true;
