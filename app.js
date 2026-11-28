@@ -276,8 +276,16 @@ function signupOf(e){const m=String(e.time||"").match(/sign[- ]?up\s*(\d{1,2})(?
 // posted sign-up time (the list fills before the start, so "arrive early" has to mean something).
 function leaveBy(e){const su=signupOf(e),st=su??parseTime(e.time);if(st==null||!e._drive)return null;const buf=su!=null?10:e.kind==="openmic"?35:15;return fmtClock(Math.floor((st-e._drive.mins-buf)/5)*5);}
 // a show → the shared calendar event (SH.cal in core.js). About 3 hours; all day (or the festival's days) when no time is listed.
-window.shackCalEv=function(e){if(!e||!e.start)return null;const lb=leaveBy(e),u=safeUrl(e.url)||"";
-  return {uid:"show-"+hid(e),title:e.title,date:e.start,min:parseTime(e.time),dur:180,endDate:e.kind==="festival"&&e.end?e.end:"",
+// how long it runs, from the listing's own end times ("…–11 PM", "to 2 AM", "–midnight"): the LATEST one counts
+// ("Classes 7–9 PM, dance 9–11 PM" → 11 PM; "6:30 PM–2 AM, lessons 7–9 PM" → 2 AM). Anything unclear, or under
+// 30 min / over 14 h, stays the 3-hour default.
+function calDur(t,st){if(st==null)return 180;let best=null,m;const rx=/(?:[–—-]|\bto)\s*(?:(\d{1,2})(?::(\d\d))?\s*([ap])\.?\s?m\b|(midnight))/gi;
+  while((m=rx.exec(String(t||"")))){const end=m[4]?1440:(+m[1]%12+(/p/i.test(m[3])?12:0))*60+(+m[2]||0);let d=end-st;if(d<=0)d+=1440;if(best==null||d>best)best=d;}
+  return best!=null&&best>=30&&best<=14*60?best:180;}
+// "Afternoon–10 PM": the start isn't a clock time, so the event goes in as all day rather than starting at 10 PM
+const calStart=t=>/^\s*(afternoon|morning|evening|noon-?ish|all day)/i.test(String(t||""))?null:parseTime(t);
+window.shackCalEv=function(e){if(!e||!e.start)return null;const lb=leaveBy(e),u=safeUrl(e.url)||"",st=calStart(e.time);
+  return {uid:"show-"+hid(e),title:e.title,date:e.start,min:st,dur:calDur(e.time,st),endDate:e.kind==="festival"&&e.end?e.end:"",
     location:[e.venue,e.city].filter(Boolean).join(", "),url:u,
     desc:[e.artists,e.time?"Time: "+e.time:"Time TBA",lb?"Leave by "+lb+" (no-traffic estimate)":"",u?tixWord(e)+": "+u:"","Check the seller's page before you go. From The Show Shack"].filter(Boolean).join("\n")};};
 function recent(s,days){if(!s)return false;const d=parseDay(String(s).slice(0,10));return d&&(Date.now()-d.getTime())<days*86400000;}

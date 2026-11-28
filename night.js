@@ -89,7 +89,10 @@ function cleanStop(s){s=s||{};const k=TYPES[s.k]?s.k:"other";
   if(typeof s.cl==="number"&&s.cl>=12&&s.cl<=36)o.cl=s.cl;
   if(k!=="house"&&typeof s.la==="number"&&typeof s.lo==="number"&&Math.abs(s.la)<=90&&Math.abs(s.lo)<=180){o.la=Math.round(s.la*1e5)/1e5;o.lo=Math.round(s.lo*1e5)/1e5;}
   Object.keys(o).forEach(x=>{if(o[x]===""||o[x]==null)delete o[x];});o.k=k;return o;}
-function cleanPlan(p){p=p||{};return {v:1,t:S(p.t,70),d:/^\d{4}-\d\d-\d\d$/.test(p.d||"")?p.d:"",h:S(p.h,30),ph:S(p.ph,20).replace(/[^0-9+]/g,""),up:typeof p.up==="number"?p.up:0,s:(Array.isArray(p.s)?p.s:[]).slice(0,MAXS).map(cleanStop)};}
+function cleanPlan(p){p=p||{};return {v:1,t:S(p.t,70),d:/^\d{4}-\d\d-\d\d$/.test(p.d||"")?p.d:"",h:S(p.h,30),ph:S(p.ph,20).replace(/[^0-9+]/g,""),up:typeof p.up==="number"?p.up:0,s:(Array.isArray(p.s)?p.s:[]).slice(0,MAXS).map(cleanStop),
+  r:(Array.isArray(p.r)?p.r:[]).slice(0,6).map(x=>({n:S(x&&x.n,30),s:Math.min(7,Math.max(1,Math.round(+(x&&x.s))||3)),f:S(x&&x.f,40)})),
+  b:(Array.isArray(p.b)?p.b:[]).slice(0,15).map(x=>({n:S(x&&x.n,30),a:num(x&&x.a),w:S(x&&x.w,40)})),
+  np:Math.min(30,Math.max(0,Math.round(+p.np)||0))};}
 function load(){try{return cleanPlan(JSON.parse(SH.store.raw(KEY)||"null")||{});}catch(e){return cleanPlan({});}}
 let plan=load();
 /* ---------- saved nights: every plan you build is kept (this device only) so you can flip between several ---------- */
@@ -424,6 +427,7 @@ function drawBuilder(){const el=$("bNight");if(!el)return;const n=plan.s.length,
     <details class="bn-host"${plan.h||plan.ph?" open":""}><summary>Who's hosting (for "I'm in" texts)</summary>
       <div class="bn-two"><label class="bn-f"><span>Your name</span><input data-m="h" value="${esc(plan.h)}" maxlength="30"></label><label class="bn-f"><span>Phone (optional)</span><input data-m="ph" type="tel" value="${esc(plan.ph)}" maxlength="20"></label></div>
       <p class="bn-hint">Your number only goes inside the link you send, so friends' "I'm in" texts reach you. Leave it blank and they'll pick who to text.</p></details>
+    ${n?ridesBox()+settleBox():""}
     ${n?`<div class="bn-sum">${n} stop${n>1?"s":""}${tot?` · ${D.approx?"≈ ":""}$${Math.round(tot)} each`:""}<button type="button" class="bn-sumlink" data-flip="1">See the damage ↻</button></div>`:""}
     <div class="bn-go"><button type="button" class="bn-send" data-send="1"${n?"":" disabled"}>Send the link</button><button type="button" data-prev="1"${n?"":" disabled"}>Preview</button>${n?'<button type="button" class="bn-clr" data-nnew="1">Save my night</button>':""}</div>
     ${NIGHTS.length?`<p class="bn-fine">Every night you build is kept in <button type="button" class="bn-lnk" data-gosaved="1">Saved → Your nights</button>.</p>`:""}
@@ -470,12 +474,22 @@ function sortStops(){let last=-1;const k=plan.s.map((x,i)=>{if(x.tm)last=SH.minO
 // meet-up always leads the night, whatever gets dragged or moved
 function meetFirst(){const m=plan.s.filter(x=>x.k==="meet");if(!m.length)return;const open=plan.s[openI];plan.s=[...m,...plan.s.filter(x=>x.k!=="meet")];if(open)openI=plan.s.indexOf(open);}
 function onInput(ev){const t=ev.target;
+  if(t.dataset.rf){const row=t.closest("[data-ri]"),r=row&&plan.r&&plan.r[+row.dataset.ri];if(!r)return;r[t.dataset.rf]=t.dataset.rf==="s"?+t.value:t.value;plan.up=Date.now();save();
+    const sm=t.closest("details").querySelector("summary");if(sm)sm.textContent=ridesSummary(plan);return;}
+  if(t.dataset.bf){const row=t.closest("[data-bi]"),b=row&&plan.b&&plan.b[+row.dataset.bi];if(!b)return;b[t.dataset.bf]=t.value;plan.up=Date.now();save();
+    const o=$("bnSettle");if(o)o.innerHTML=settleHTML(plan);const np=t.closest("details").querySelector(".bn-np b");if(np)np.textContent=npOf(plan)+" people";return;}
   if(t.dataset.m){plan[t.dataset.m]=t.value;plan.up=Date.now();save();if(t.dataset.m==="d")t.parentNode.classList.toggle("empty",!t.value);return;}
   const li=t.closest("[data-i]");if(!li||!t.dataset.f)return;const s=plan.s[+li.dataset.i];s[t.dataset.f]=t.value;
   if(t.dataset.f==="a"||t.dataset.f==="p"){delete s.la;delete s.lo;}
   plan.s[+li.dataset.i]=cleanStop(s);plan.up=Date.now();save();
   if(ev.type==="change"&&(t.dataset.f==="w"||t.dataset.f==="tm")){if(t.dataset.f==="tm")sortStops();save();drawBuilder();}}
 async function onClick(ev){const b=ev.target.closest("button");if(!b)return;const d=b.dataset;
+  const focusLast=sel=>{const x=$("bNight").querySelectorAll(sel);if(x.length)x[x.length-1].focus();};
+  if(d.radd){plan.r=plan.r||[];if(plan.r.length<6)plan.r.push({n:plan.r.length?"":plan.h||"",s:3,f:""});plan.up=Date.now();save();drawBuilder();focusLast("[data-ri] [data-rf=n]");return;}
+  if(d.rdel!=null&&plan.r){plan.r.splice(+d.rdel,1);plan.up=Date.now();save();drawBuilder();return;}
+  if(d.badd){plan.b=plan.b||[];if(plan.b.length<15)plan.b.push({n:"",a:"",w:""});plan.up=Date.now();save();drawBuilder();focusLast("[data-bi] [data-bf=n]");return;}
+  if(d.bdel!=null&&plan.b){plan.b.splice(+d.bdel,1);plan.up=Date.now();save();drawBuilder();return;}
+  if(d.bnp){const named=new Set((plan.b||[]).filter(x=>x.n).map(x=>x.n.trim())).size;plan.np=Math.min(30,Math.max(Math.max(named,2),npOf(plan)+ +d.bnp));plan.up=Date.now();save();drawBuilder();return;}
   if(d.flip){flipTo(!flipped);return;}
   if(d.tight){const before=plan.s.map(x=>x.tm),ch=tighten();
     if(!ch){toast("Already tight. Nothing to change");return;}save();drawBuilder();
@@ -505,7 +519,44 @@ async function onClick(ev){const b=ev.target.closest("button");if(!b)return;cons
   if(d.prev){view(cleanPlan({...plan,up:plan.up||Date.now()}),true);return;}
   if(d.send){if(!plan.up)plan.up=Date.now();save();shareNight(plan,b,planId);return;}}
 function focusFirst(){setTimeout(()=>{const i=document.querySelector("#bNight .bn-stop.open input");if(i)i.focus({preventScroll:false});},30);}
-const sumText=p=>[`🌙 ${p.t||"Our night"}${p.d?" · "+fmtD(p.d):""}`,...p.s.map(s=>`${s.tm?fmtT(s.tm)+" ":""}${TYPES[s.k][0]} ${s.n||TYPES[s.k][1]}${s.p?" @ "+s.p:""}`)].join("\n");
+/* ---------- rides + settle up (night-level; both travel in the link and show on the Night Card) ---------- */
+const ridesOf=p=>(p.r||[]).filter(x=>x.n);
+const ridesText=p=>ridesOf(p).map(x=>`${x.n} (${x.s} seat${x.s>1?"s":""}${x.f?", from "+x.f:""})`).join(" · ");
+// even split of what people actually paid: everyone's share, who's owed, and who sends whom
+function settle(p){const B=(p.b||[]).filter(x=>x.n&&+x.a>0);if(!B.length)return null;const paid={};
+  B.forEach(x=>{const k=x.n.trim();paid[k]=(paid[k]||0)+(+x.a);});const names=Object.keys(paid),tot=names.reduce((t,k)=>t+paid[k],0);
+  const np=Math.max(p.np||0,names.length,2),share=tot/np,others=np-names.length,r2=v=>Math.round(v*100)/100;
+  const cred=names.map(k=>({k,v:paid[k]-share})).filter(x=>x.v>0.004).sort((a,b)=>b.v-a.v),debt=names.map(k=>({k,v:share-paid[k]})).filter(x=>x.v>0.004);
+  const lines=[];
+  for(const d of debt){for(const c of cred){if(d.v<=0.004)break;if(c.v<=0.004)continue;const m=Math.min(d.v,c.v);lines.push(`${d.k} → ${c.k} $${r2(m).toFixed(2)}`);d.v-=m;c.v-=m;}}
+  if(others>0){const left=cred.filter(c=>c.v>0.004);if(left.length)lines.unshift(`Everyone else (${others}): $${r2(share).toFixed(2)} each → ${left.map(c=>`${c.k}${left.length>1?" $"+r2(c.v/others).toFixed(2):""}`).join(", ")}`);}
+  return {tot:r2(tot),share:r2(share),np,lines};}
+const settleHTML=p=>{const st=settle(p);if(!st)return "";
+  return `<div class="bn-settled"><b>$${st.tot.toFixed(2)} total · $${st.share.toFixed(2)} each (${st.np} people)</b>${st.lines.length?`<ul>${st.lines.map(l=>`<li>${esc(l)}</li>`).join("")}</ul>`:"<p>All square ✓</p>"}</div>`;};
+// nearest rail station to the show (stations.json, loaded the first time Rides shows) + its last-train note
+let STN=null,stnLoad=null;
+function loadStn(){if(STN||stnLoad)return;stnLoad=fetch("stations.json?v=1").then(r=>r.ok?r.json():{}).then(j=>{STN=(j&&j.stations)||[];const el=$("bnTrain");if(el)el.innerHTML=trainLine();}).catch(()=>{stnLoad=null;});}
+function trainLine(){const s=plan.s.find(x=>x.k==="show"&&typeof x.la==="number")||plan.s.find(x=>typeof x.la==="number");if(!s)return "";
+  if(!STN){loadStn();return "";}let best=null;for(const t of STN){const m=SH.miles(s.la,s.lo,t.lat,t.lon);if(m<=1.5&&(!best||m<best.m))best={t,m};}
+  const where=esc((s.p||s.n||"the show").split(",")[0]);
+  if(!best)return `🚆 No train station within 1.5 miles of ${where}. Carpool or rideshare.`;
+  const last=LASTTRAIN[best.t.s]||"";return `🚆 <b>${esc(best.t.n)}</b> (${esc(best.t.s)}) is ${best.m<0.3?"a short walk":best.m.toFixed(1)+" mi"} from ${where}.${last?" "+esc(last)+".":""}`;}
+function ridesSummary(p){const R=ridesOf(p),seats=R.reduce((t,x)=>t+x.s,0);return `🚗 Rides${R.length?` · ${R.length} car${R.length>1?"s":""}, ${seats} seat${seats===1?"":"s"}`:""}`;}
+function ridesBox(){const R=plan.r||[];
+  return `<details class="bn-host bn-rides"${R.length?" open":""}><summary>${ridesSummary(plan)}</summary>
+    ${R.map((x,i)=>`<div class="bn-ride" data-ri="${i}"><input data-rf="n" value="${esc(x.n)}" placeholder="Who's driving" maxlength="30" aria-label="Driver"><select data-rf="s" aria-label="Open seats">${[1,2,3,4,5,6,7].map(v=>`<option value="${v}"${+x.s===v?" selected":""}>${v} seat${v>1?"s":""}</option>`).join("")}</select><input data-rf="f" value="${esc(x.f)}" placeholder="Leaving from (optional)" maxlength="40" aria-label="Leaving from"><button type="button" class="bn-x" data-rdel="${i}" aria-label="Remove this car">✕</button></div>`).join("")}
+    <button type="button" class="chip" data-radd="1"${R.length>=6?" disabled":""}>＋ Add a car</button>
+    <p class="bn-hint" id="bnTrain">${trainLine()}</p>
+    <p class="bn-hint">Seats are open seats for riders. Friends see this on the Night Card, so they know who to ride with.</p></details>`;}
+const npOf=p=>Math.max(p.np||0,new Set((p.b||[]).filter(x=>x.n).map(x=>x.n.trim())).size,2);
+function settleBox(){const B=plan.b||[],st=settle(plan);
+  return `<details class="bn-host bn-settle"${B.length?" open":""}><summary>💸 Settle up${st?` · $${st.tot.toFixed(0)} spent`:""}</summary>
+    <p class="bn-hint">After the night: who paid for what. It splits everything evenly and says who sends whom.</p>
+    ${B.map((x,i)=>`<div class="bn-paid" data-bi="${i}"><input data-bf="n" value="${esc(x.n)}" placeholder="Who paid" maxlength="30" aria-label="Who paid"><input data-bf="a" value="${esc(x.a)}" type="number" inputmode="decimal" min="0" step="0.01" placeholder="$" aria-label="Amount"><input data-bf="w" value="${esc(x.w)}" placeholder="For (optional)" maxlength="40" aria-label="What for"><button type="button" class="bn-x" data-bdel="${i}" aria-label="Remove">✕</button></div>`).join("")}
+    <button type="button" class="chip" data-badd="1"${B.length>=15?" disabled":""}>＋ Add what someone paid</button>
+    <div class="bn-np" role="group" aria-label="People splitting"><span>Split between</span><button type="button" data-bnp="-1" aria-label="Fewer people">−</button><b>${npOf(plan)} people</b><button type="button" data-bnp="1" aria-label="More people">＋</button></div>
+    <div id="bnSettle">${settleHTML(plan)}</div></details>`;}
+const sumText=p=>[`🌙 ${p.t||"Our night"}${p.d?" · "+fmtD(p.d):""}`,...p.s.map(s=>`${s.tm?fmtT(s.tm)+" ":""}${TYPES[s.k][0]} ${s.n||TYPES[s.k][1]}${s.p?" @ "+s.p:""}`),...(ridesOf(p).length?["🚗 Rides: "+ridesText(p)]:[])].join("\n");
 // signed in (social.js): a live link that keeps showing your latest changes; otherwise a snapshot link with the plan inside it
 async function shareNight(p,btn,id){let url=null;if(id&&window.SHACK_LIVE)try{url=await SHACK_LIVE.link(id,cleanPlan(p));}catch(e){url=null;}
   if(!url){url=await linkFor(p);if(id&&window.SHACK_LIVE&&!SHACK_LIVE.on())toast("Tip: sign in on the You tab and your links update by themselves","Sign in",()=>{if(window.SHACK_YOU)SHACK_YOU.open("signin");});}
@@ -554,6 +605,8 @@ function view(p,preview,liveId){if(!$("nightView"))VOPENER=document.activeElemen
     <h1 class="nv-title">${esc(p.t||"Our night")}</h1><p class="nv-date">${esc(fmtD(p.d)||"Date TBD")}${p.h?` · planned by ${esc(p.h)}`:""}</p>
     ${p.up?`<p class="nv-up">Updated ${esc(fmtUp(p.up))}</p>`:""}
     <ol class="nv-line">${rows||'<li><div class="nv-b"><b>No stops yet</b></div></li>'}</ol>
+    ${ridesOf(p).length?`<div class="nv-extra"><b>🚗 Rides</b><span>${esc(ridesText(p))}</span></div>`:""}
+    ${settle(p)?`<div class="nv-extra"><b>💸 Settle up</b>${settleHTML(p)}</div>`:""}
     ${tot?`<button type="button" class="nv-sum" data-vflip="1">${D.approx?"≈ ":""}$${Math.round(tot)} each for the whole night <span>See the damage ↻</span></button>`:""}
     ${liveId?`<div class="nv-rsvp" id="nvRsvp">${rsvpHTML(liveId,[])}</div>`:""}
     <div class="nv-main">${auto?'<button type="button" class="nv-in" data-vmine="1">✏️ Make it mine</button><button type="button" data-vspin="1">🌍 Spin again</button><button type="button" data-vshare="1">↗ Share</button>':`${preview?"":liveId?(p.h||p.ph?`<a href="${esc(sms)}">💬 Text ${esc(p.h||"the planner")}</a>`:""):`<a class="nv-in" href="${esc(sms)}">🙌 I'm in${p.h?" (text "+esc(p.h)+")":""}</a>`}${p.d?'<button type="button" data-ics="1">📅 Add to calendar</button>':""}<button type="button" data-vshare="1">↗ Share</button>${preview?'<button type="button" data-vedit="1">✏️ Keep editing</button>':'<button type="button" data-vcopy="1">✏️ Make my own copy</button>'}`}</div>
