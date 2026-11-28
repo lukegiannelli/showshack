@@ -1,6 +1,6 @@
 {
  "about": "Every venue the Show Shack covers, in one place. The daily refresh routine sweeps the venues checked longest ago (null = never) and writes back lastChecked, calendar and how. Add a venue here and the refresh picks it up.",
- "updated": "2026-11-27",
+ "updated": "2026-11-28",
  "venues": [
   {
    "name": "Acrisure Arena",
@@ -38,10 +38,10 @@
     "art"
    ],
    "calendar": "https://visitpalmsprings.com/?p=43698",
-   "how": "fetch blocked 11/22; WebSearch only (WebFetch blocked). Visit Palm Springs + gaydesertguide list 1st Wed 5-7 PM year-round, free; district's FB/IG @backstreetartdistrict is the live source.",
+   "how": "visitpalmsprings listing shows First Wednesday Art Walk (Dec 2) active; no time on page",
    "listed": 1,
    "recurring": 1,
-   "lastChecked": "2026-11-12"
+   "lastChecked": "2026-11-28"
   },
   {
    "name": "Dave & Buster's",
@@ -64,10 +64,10 @@
     "art"
    ],
    "calendar": "https://discoverpalmdesert.com/el-paseo-art-walk/",
-   "how": "discoverpalmdesert page only has 2025-26 season",
+   "how": "page: first Friday of every month through April, 4-7 PM (Cruise Night 2-4 PM before); no season year stated",
    "listed": 1,
    "recurring": 1,
-   "lastChecked": "2026-11-24"
+   "lastChecked": "2026-11-28"
   },
   {
    "name": "Empire Polo Club",
@@ -104,10 +104,10 @@
     "volunteer"
    ],
    "calendar": "https://findfoodbank.org/volunteer-opportunities",
-   "how": "shifts only on VolunteerHub calendar",
+   "how": "official page fetched; shifts only on VolunteerHub calendar; warehouse 17+; no days/times stated",
    "listed": 1,
    "recurring": 1,
-   "lastChecked": "2026-11-24"
+   "lastChecked": "2026-11-28"
   },
   {
    "name": "Palm Canyon Dr (Baristo–Amado)",
@@ -117,10 +117,10 @@
     "art"
    ],
    "calendar": "https://gaydesertguide.com/events/thursday-night-villagefest-2/var/ri-10.l-L1",
-   "how": "villagefest.org via search: Thu 6–10 PM Oct–May",
+   "how": "gaydesertguide page: Thursdays Palm Canyon between Baristo and Amado, free, 6-10 PM Oct-May, dates through Mar 2027",
    "listed": 1,
    "recurring": 1,
-   "lastChecked": "2026-11-24"
+   "lastChecked": "2026-11-28"
   },
   {
    "name": "Pappy & Harriet's",
@@ -142,11 +142,11 @@
    "kinds": [
     "art"
    ],
-   "calendar": "https://www.discovercathedralcity.com/organizer/the-perez-art-district/",
-   "how": "Fourth Fridays page shows only old 2023 date",
+   "calendar": "https://www.discovercathedralcity.com/event/the-perez-art-districts-fourth-fridays/",
+   "how": "discovercathedralcity page shows only the 2023 launch; an NBC Palm Springs piece dated 2026-10-19 covers the district but series status not confirmed",
    "listed": 1,
    "recurring": 1,
-   "lastChecked": "2026-11-24"
+   "lastChecked": "2026-11-28"
   },
   {
    "name": "Spotlight 29 Casino",
@@ -170,10 +170,10 @@
     "social"
    ],
    "calendar": "https://www.aureavista.com",
-   "how": "fetch blocked 11/22; Only countrydancingtonight.com mentions Boots & Dukes Wednesdays (instructor Annemarie Dunn); no dated listing found. Low confidence, recheck via venue IG/FB.",
+   "how": "countrydancingtonight.com (via search) confirms Boots & Dukes Wed 6:30pm-2am, lessons 7-9pm, 21+, cover $8 6:30-7, $10 7-9, free after 9; no official page",
    "listed": 1,
    "recurring": 1,
-   "lastChecked": "2026-11-12"
+   "lastChecked": "2026-11-28"
   },
   {
    "name": "Feeding America Riverside | San Bernardino",
@@ -210,10 +210,10 @@
     "concert"
    ],
    "calendar": "https://www.livenation.com/venue/KovZpZAEA6eA/glen-helen-amphitheater-events",
-   "how": "livenation venue page via search",
+   "how": "livenation venue page fetched: Iron Maiden 4/24/27 5PM; Ozzfest 9/11/27 (beyond window, skipped); no prices shown",
    "listed": 1,
    "recurring": 0,
-   "lastChecked": "2026-11-24"
+   "lastChecked": "2026-11-28"
   },
   {
    "name": "Miramonte Winery",
@@ -222,11 +222,11 @@
    "kinds": [
     "social"
    ],
-   "calendar": "https://www.temeculawines.org/events/winery-events/",
-   "how": "temeculawines.org calendar: live music only, salsa moved to Fazeli Cellars",
+   "calendar": "https://www.temeculawines.org/events/winery-event-calendar.php",
+   "how": "temeculawines.org calendar: Miramonte has only live music (Sat 7-10 PM, Sun 3-6 PM); no Friday salsa; salsa is Sundays at Fazeli Cellars (Dec 13, Jan 10, Feb 28)",
    "listed": 1,
    "recurring": 1,
-   "lastChecked": "2026-11-24"
+   "lastChecked": "2026-11-28"
   },
   {
    "name": "Morongo Casino Resort",
@@ -318,11 +318,11 @@
    "kinds": [
     "art"
    ],
-   "calendar": "https://artsconnectionnetwork.org/dtsb-art-walk",
-   "how": "artsconnectionnetwork page stale (Mar 2026)",
+   "calendar": "https://www.artsconnectionnetwork.org/calendar",
+   "how": "artsconnectionnetwork calendar only lists DTSB Art Walk Mar 27 2026; Dec 10 not confirmed",
    "listed": 1,
    "recurring": 0,
-   "lastChecked": "2026-11-24"
+   "lastChecked": "2026-11-28"
   },
   {
    "name": "Temecula Stampede",
@@ -400,10 +400,10 @@
     "concert"
    ],
    "calendar": "https://gametime.co/yaamava-theater-tickets/venues/yaamava_theater",
-   "how": "yaamava.com blocked (permission); gametime venue page listed full calendar; prices only added for next 60 days",
-   "listed": 46,
+   "how": "gametime venue page fetched OK via search; full calendar; Dec 12 Big Boy's not listed there",
+   "listed": 49,
    "recurring": 0,
-   "lastChecked": "2026-11-18"
+   "lastChecked": "2026-11-28"
   },
   {
    "name": "Academy LA",
@@ -491,11 +491,11 @@
    "kinds": [
     "concert"
    ],
-   "calendar": "https://www.songkick.com/venues/3859524-bmo-stadium",
+   "calendar": "https://songkick.com/venues/3859524-bmo-stadium",
    "how": "songkick venue page via search; same 2 shows",
    "listed": 2,
    "recurring": 0,
-   "lastChecked": "2026-11-24"
+   "lastChecked": "2026-11-28"
   },
   {
    "name": "Catalina Jazz Club",
@@ -518,11 +518,11 @@
    "kinds": [
     "art"
    ],
-   "calendar": "https://www.pvaa.net/new-art-walk-page",
-   "how": "pvaa.net art walk page via search: 1st Sat 5–8 PM free",
+   "calendar": "https://pvaa.net/claremont-art-walk",
+   "how": "pvaa.net: first Saturday monthly, 6-9 PM, free; claremontchamber lists June 6 2026 walk",
    "listed": 1,
    "recurring": 1,
-   "lastChecked": "2026-11-24"
+   "lastChecked": "2026-11-28"
   },
   {
    "name": "Contact Improv LA jam (Santa Monica)",
@@ -639,11 +639,11 @@
    "kinds": [
     "art"
    ],
-   "calendar": "https://melrosetradingpost.org/",
-   "how": "melrosetradingpost.org via search; Merry Melrose Sundays Nov 29–Dec 27 $6",
+   "calendar": "https://melrosetradingpost.org/merrymelrose/",
+   "how": "official Merry Melrose page: Sundays Nov 29, Dec 6, 13, 20, 27, music 11 AM, DJ 12-3; ticket price not shown on page",
    "listed": 1,
    "recurring": 1,
-   "lastChecked": "2026-11-24"
+   "lastChecked": "2026-11-28"
   },
   {
    "name": "Fox Theater Pomona",
@@ -667,10 +667,10 @@
     "art"
    ],
    "calendar": "https://www.timeout.com/los-angeles/things-to-do/downtown-los-angeles-art-walk",
-   "how": "no official 2026-27 schedule found",
+   "how": "search found no current official 2026-27 art walk schedule",
    "listed": 1,
    "recurring": 1,
-   "lastChecked": "2026-11-24"
+   "lastChecked": "2026-11-28"
   },
   {
    "name": "Geffen Playhouse",
@@ -693,10 +693,10 @@
     "concert"
    ],
    "calendar": "https://grandparkla.org/nyela",
-   "how": "grandparkla.org/nyela via search",
+   "how": "grandparkla.org/nyela confirms NYE 8 PM-1 AM, free, no ticket needed (RSVP optional); Deorro Dec 5 not on that page (unverified)",
    "listed": 2,
    "recurring": 0,
-   "lastChecked": "2026-11-24"
+   "lastChecked": "2026-11-28"
   },
   {
    "name": "Gold-Diggers",
@@ -880,10 +880,10 @@
     "social"
    ],
    "calendar": "https://www.google.com/search?q=Little+Light+Venue+Studio+City",
-   "how": "fetch blocked 11/23; not researched (budget)",
+   "how": "search only: salsavida/somo.social list Mama Juana Nights; no current date confirmed",
    "listed": 1,
    "recurring": 1,
-   "lastChecked": "2026-11-19"
+   "lastChecked": "2026-11-28"
   },
   {
    "name": "Lodge Room",
@@ -919,10 +919,10 @@
     "social"
    ],
    "calendar": null,
-   "how": "fetch blocked 11/22; Not verified; salsavida.com/somo.social list Latin Wednesdays",
+   "how": "somo.social listing says Club Louie's, 32001 Agoura Rd, Westlake Village (not LA); Wednesdays, classes 6:30 PM, social 9:00 PM-1 AM, $15 classes / $12 social after 8:45; listing dates unreliable",
    "listed": 1,
    "recurring": 1,
-   "lastChecked": "2026-11-13"
+   "lastChecked": "2026-11-28"
   },
   {
    "name": "Mark Taper Forum",
@@ -998,11 +998,11 @@
    "kinds": [
     "social"
    ],
-   "calendar": "https://pbda.dance",
-   "how": "swingdance.la/pbda via search: Sat lesson 7:30, dance 8–11:30, ~$25",
+   "calendar": "https://www.swingdance.la/events/pbda-2026-10-10/",
+   "how": "swingdance.la lists PBDA Saturday Oct 2026: lesson 7:30, dance 8-11 PM, $25",
    "listed": 1,
    "recurring": 1,
-   "lastChecked": "2026-11-24"
+   "lastChecked": "2026-11-28"
   },
   {
    "name": "Pasadena Masonic Hall",
@@ -1011,11 +1011,11 @@
    "kinds": [
     "social"
    ],
-   "calendar": "https://lindygroove.la",
-   "how": "swingdance.la/lindygroove via search; Nov 26 dark",
+   "calendar": "https://swingdance.la/lindygroove",
+   "how": "swingdance.la/lindygroove: every Thu incl. Dec 3,10,17,24,31 and Jan 7; $15; classes 8:10/9:10pm",
    "listed": 1,
    "recurring": 1,
-   "lastChecked": "2026-11-24"
+   "lastChecked": "2026-11-28"
   },
   {
    "name": "Pasadena Playhouse",
@@ -1104,10 +1104,10 @@
     "art"
    ],
    "calendar": "https://la.smorgasburg.com/info",
-   "how": "la.smorgasburg.com/info via search: Sundays 10–4",
+   "how": "la.smorgasburg.com/info fetched OK via search: Sundays 10 AM-4 PM, 777 Alameda St",
    "listed": 1,
    "recurring": 1,
-   "lastChecked": "2026-11-24"
+   "lastChecked": "2026-11-28"
   },
   {
    "name": "Royce Hall",
@@ -1117,10 +1117,10 @@
     "theater"
    ],
    "calendar": "https://cap.ucla.edu/calendar",
-   "how": "cap.ucla.edu season page via search",
+   "how": "cap.ucla.edu pages fetched are JS/blog only, no event list; songkick not fetched; no new shows",
    "listed": 1,
    "recurring": 0,
-   "lastChecked": "2026-11-24"
+   "lastChecked": "2026-11-28"
   },
   {
    "name": "Sepulveda Basin Wildlife Reserve",
@@ -1222,10 +1222,10 @@
     "club"
    ],
    "calendar": "https://www.vividseats.com/city-market-of-los-angeles-tickets/venue/28316",
-   "how": "vividseats venue page: no upcoming",
+   "how": "vividseats: no upcoming events (last Eli Brown 11/14)",
    "listed": 0,
    "recurring": 0,
-   "lastChecked": "2026-11-24"
+   "lastChecked": "2026-11-28"
   },
   {
    "name": "The Comedy Store",
@@ -1299,11 +1299,11 @@
    "kinds": [
     "social"
    ],
-   "calendar": null,
-   "how": "salsavida/somo.social list the Friday/Saturday salsa and bachata night; nothing new.",
+   "calendar": "https://www.salsavida.com/?p=21860",
+   "how": "salsavida: every Fri & Sat 7:30 PM-3 AM, $15 cash cover, 18+, next event Nov 28 2026.",
    "listed": 1,
    "recurring": 1,
-   "lastChecked": "2026-11-13"
+   "lastChecked": "2026-11-28"
   },
   {
    "name": "The Groundlings Theatre",
@@ -1408,10 +1408,10 @@
     "social"
    ],
    "calendar": "https://www.eventbrite.com/e/1431019791719",
-   "how": "Eventbrite only showed an ended May 2026 instance; no future weeks",
+   "how": "Eventbrite/salsavida search results are old; no future weeks confirmed",
    "listed": 1,
    "recurring": 1,
-   "lastChecked": "2026-11-24"
+   "lastChecked": "2026-11-28"
   },
   {
    "name": "The Viper Room",
@@ -1485,11 +1485,11 @@
    "kinds": [
     "volunteer"
    ],
-   "calendar": "https://ventura.surfrider.org",
-   "how": "ventura.surfrider.org page via search: Dec 12 last 2026 date",
+   "calendar": "https://ventura.surfrider.org/programs/ventura-promenade-beach-cleanups",
+   "how": "surfrider page fetched OK via search: C Street cleanup 9-11 AM, listed dates Nov 14 and Dec 12 2026 (page calls them Saturdays; Dec 12 is the 2nd Saturday, not 4th); no 2027 dates",
    "listed": 1,
    "recurring": 1,
-   "lastChecked": "2026-11-24"
+   "lastChecked": "2026-11-28"
   },
   {
    "name": "Walt Disney Concert Hall",
@@ -1551,10 +1551,10 @@
     "openmic"
    ],
    "calendar": null,
-   "how": "No dated info found",
+   "how": "no current listing found for Coollab open mic",
    "listed": 1,
    "recurring": 1,
-   "lastChecked": "2026-11-19"
+   "lastChecked": "2026-11-28"
   },
   {
    "name": "Alex's Bar",
@@ -1577,10 +1577,10 @@
     "drum"
    ],
    "calendar": null,
-   "how": "no official calendar found in search; nothing checked",
+   "how": "search found nothing current; unverified",
    "listed": 8,
    "recurring": 0,
-   "lastChecked": "2026-11-19"
+   "lastChecked": "2026-11-28"
   },
   {
    "name": "Art studio near Fairview & Baker (address on RSVP)",
@@ -1590,10 +1590,10 @@
     "sound"
    ],
    "calendar": null,
-   "how": "so far found via soundbathsandyoga.com",
+   "how": "search found no matching listing; humanitix result was OH Yoga 2022; unverified",
    "listed": 0,
    "recurring": 0,
-   "lastChecked": "2026-11-19"
+   "lastChecked": "2026-11-28"
   },
   {
    "name": "ATOMIC Ballroom",
@@ -1615,11 +1615,11 @@
    "kinds": [
     "openmic"
    ],
-   "calendar": null,
-   "how": "so far found via openmikes.org",
+   "calendar": "https://openmikes.org/near/90802",
+   "how": "openmikes.org Nov 2026 calendar lists Mondays (Nov 2-30); no time shown",
    "listed": 1,
    "recurring": 1,
-   "lastChecked": "2026-11-19"
+   "lastChecked": "2026-11-28"
   },
   {
    "name": "Behind the Lids Healing Collective",
@@ -1683,10 +1683,10 @@
     "openmic"
    ],
    "calendar": null,
-   "how": "Not checked",
+   "how": "search found no current listing; unconfirmed",
    "listed": 1,
    "recurring": 1,
-   "lastChecked": "2026-11-19"
+   "lastChecked": "2026-11-28"
   },
   {
    "name": "Comedy & Magic Club",
@@ -1722,10 +1722,10 @@
     "social"
    ],
    "calendar": null,
-   "how": "so far found via google.com",
+   "how": "search returned only listicles (timeout, cbsnews); not fetched; unconfirmed",
    "listed": 1,
    "recurring": 1,
-   "lastChecked": "2026-11-19"
+   "lastChecked": "2026-11-28"
   },
   {
    "name": "Downtown Fullerton",
@@ -1748,10 +1748,10 @@
     "art"
    ],
    "calendar": null,
-   "how": "search: newsantaana.com posts 2026 art walks; series running",
+   "how": "search results show newsantaana.com art walk posts and first-Saturday listings (active Jan-Apr 2026); no Nov/Dec 2026 confirmation",
    "listed": 1,
    "recurring": 1,
-   "lastChecked": "2026-11-16"
+   "lastChecked": "2026-11-28"
   },
   {
    "name": "Durty Nelly's",
@@ -1774,10 +1774,10 @@
     "art"
    ],
    "calendar": null,
-   "how": "so far found via google.com",
+   "how": "search only found stale downtownlongbeach.org pages (past Feb 2026 event); no current confirmation of 2nd Saturday Art Walk",
    "listed": 1,
    "recurring": 1,
-   "lastChecked": "2026-11-19"
+   "lastChecked": "2026-11-28"
   },
   {
    "name": "Fingerprints",
@@ -1813,10 +1813,10 @@
     "openmic"
    ],
    "calendar": null,
-   "how": "so far found via openmikes.org",
+   "how": "search returned nothing current for Art Through Song",
    "listed": 1,
    "recurring": 1,
-   "lastChecked": "2026-11-19"
+   "lastChecked": "2026-11-28"
   },
   {
    "name": "HeartSpace OC",
@@ -1826,10 +1826,10 @@
     "dance"
    ],
    "calendar": "https://ecstaticdance.org",
-   "how": "fetch blocked 11/22; ecstaticdance.org has Ecstatic Dance OC pages but no dated listing fetched",
+   "how": "ecstaticdance.org Ecstatic Dance OC page shows weekly Sundays 4-6 PM $22 in Laguna Beach (sand), not HeartSpace 4th Saturday; HeartSpace listing unconfirmed",
    "listed": 1,
    "recurring": 1,
-   "lastChecked": "2026-11-15"
+   "lastChecked": "2026-11-28"
   },
   {
    "name": "Honda Center",
@@ -1866,10 +1866,10 @@
     "volunteer"
    ],
    "calendar": "https://www.coastkeeper.org/ccd",
-   "how": "coastkeeper.org/ccd via search",
+   "how": "coastkeeper.org/ccd lists Huntington Beach Dec 12, 9-11am; no 2027 dates yet",
    "listed": 1,
    "recurring": 0,
-   "lastChecked": "2026-11-24"
+   "lastChecked": "2026-11-28"
   },
   {
    "name": "Huntington City Beach",
@@ -1998,11 +1998,11 @@
     "concert",
     "theater"
    ],
-   "calendar": "https://muscocenter.org/Online/default.asp",
-   "how": "Chapman box office list | 11-19: Season article fetch redirected/blocked; no new data",
-   "listed": 7,
+   "calendar": "https://25livepub.collegenet.com/events-calendar/pacific-time/musco-center-event-calendar",
+   "how": "Chapman 25live calendar fetched OK via search but only lists through Jan 29; Dec 4, Feb 18, Feb 27 not on it (not confirmed gone); chapman news article fetch redirect-loops",
+   "listed": 8,
    "recurring": 0,
-   "lastChecked": "2026-11-19"
+   "lastChecked": "2026-11-28"
   },
   {
    "name": "Mystic Water Kava Bar",
@@ -2012,10 +2012,10 @@
     "openmic"
    ],
    "calendar": "https://openmikes.org/listings/mysticwaterkavabarhuntingtonbeach",
-   "how": "fetch blocked 11/22; openmikes.org listing: Tuesdays 8:30 PM, 7561 Center Ave #6, Huntington Beach; listing says last updated over a year ago, confirm with venue (657-227-7928). No ticket/event pages.",
+   "how": "search found no current listing; unconfirmed",
    "listed": 1,
    "recurring": 1,
-   "lastChecked": "2026-11-14"
+   "lastChecked": "2026-11-28"
   },
   {
    "name": "Newport Beach lifeguard towers",
@@ -2025,10 +2025,10 @@
     "volunteer"
    ],
    "calendar": null,
-   "how": "so far found via google.com",
+   "how": "search: happeningnext 'Beach Cleanup [4th Saturdays]' listing and Eventbrite Coastal Corridor Alliance events exist; not fetched",
    "listed": 1,
    "recurring": 1,
-   "lastChecked": "2026-11-19"
+   "lastChecked": "2026-11-28"
   },
   {
    "name": "Newport Pier",
@@ -2038,10 +2038,10 @@
     "volunteer"
    ],
    "calendar": null,
-   "how": "No one-off dated event found",
+   "how": "visitnewportbeach Surfrider listing is Saturday 8am at The Wedge (Mar 16 date), not 3rd Sunday at the pier; unconfirmed",
    "listed": 1,
    "recurring": 1,
-   "lastChecked": "2026-11-19"
+   "lastChecked": "2026-11-28"
   },
   {
    "name": "North Paseo",
@@ -2050,11 +2050,11 @@
    "kinds": [
     "art"
    ],
-   "calendar": "https://envisionmv.com/mvevents/list",
-   "how": "fetch blocked 11/22; envisionmv.com events list fetched OK. Lists the Saturday Farmers Market and Crafts plus occasional events. Scout Gift Wrapping Fundraiser dates (Dec 4-13) skipped as not a show.",
+   "calendar": "https://envisionmv.com/mvevents/2026-09-19",
+   "how": "envisionmv.com day pages fetched OK via search; Sep 19 2026 showed Farmers Market 9am-1pm every Saturday and Night Market 5-9pm (Oktoberfest theme); Dec 2026 not confirmed",
    "listed": 2,
    "recurring": 2,
-   "lastChecked": "2026-11-14"
+   "lastChecked": "2026-11-28"
   },
   {
    "name": "OC Dancing Ballroom Dance Studio",
@@ -2064,10 +2064,10 @@
     "dance"
    ],
    "calendar": null,
-   "how": "so far found via eventbrite.com",
+   "how": "Eventbrite shows Shimmer Waves Sun Sep 27 2026 11-12:30 at the studio (ended); 5rhythms.com says 3rd Sunday monthly except Aug/Dec, so 'Sundays' is probably monthly",
    "listed": 1,
    "recurring": 1,
-   "lastChecked": "2026-11-19"
+   "lastChecked": "2026-11-28"
   },
   {
    "name": "OC Salsa Dance Studio",
@@ -2076,11 +2076,11 @@
    "kinds": [
     "social"
    ],
-   "calendar": "https://www.meetup.com/oc-salsa-meetup/",
-   "how": "Meetup page showed 0 events",
+   "calendar": "https://www.meetup.com/oc-salsa-meetup",
+   "how": "meetup shows Mon/Tue classes (Cumbia, Salsa On 2, Bachata) at 16131 Harbor Blvd; no Wednesday event in next 4 listed",
    "listed": 1,
    "recurring": 1,
-   "lastChecked": "2026-11-24"
+   "lastChecked": "2026-11-28"
   },
   {
    "name": "Queen Mary Waterfront",
@@ -2089,11 +2089,11 @@
    "kinds": [
     "festival"
    ],
-   "calendar": "https://www.tickpick.com/buy-dreamstate-socal-2-day-pass-tickets-queen-mary-waterfront-11-20-26-8pm/7958487/",
-   "how": "no upcoming after Dreamstate 11/20",
+   "calendar": "https://www.songkick.com/venues/4461151-queen-mary-waterfront",
+   "how": "songkick: 0 upcoming",
    "listed": 0,
    "recurring": 0,
-   "lastChecked": "2026-11-24"
+   "lastChecked": "2026-11-28"
   },
   {
    "name": "Rosie's Dog Beach",
@@ -2103,10 +2103,10 @@
     "volunteer"
    ],
    "calendar": null,
-   "how": "so far found via justinrudd.com",
+   "how": "search only; no 3rd-Saturday cleanup listing confirmed; unverified",
    "listed": 1,
    "recurring": 1,
-   "lastChecked": "2026-11-19"
+   "lastChecked": "2026-11-28"
   },
   {
    "name": "Seaside Lagoon",
@@ -2116,10 +2116,10 @@
     "festival"
    ],
    "calendar": "https://www.beachlifefestival.com",
-   "how": "fetch blocked 11/22; Gametime 3-day pass page confirms BeachLife Apr 30–May 2 2027",
+   "how": "beachlifefest.frontgatetickets page fetched showed only 2026 edition; 2027 not confirmed there (gametime 3-day pass page seen in search for Apr 30-May 2 2027, not fetched)",
    "listed": 1,
    "recurring": 0,
-   "lastChecked": "2026-11-15"
+   "lastChecked": "2026-11-28"
   },
   {
    "name": "Second Harvest Distribution Center",
@@ -2129,10 +2129,10 @@
     "volunteer"
    ],
    "calendar": null,
-   "how": "search only; feedoc.org pages, no dated shifts",
+   "how": "search only; UCLA alumni and feedoc.org pages, no dated shifts fetched",
    "listed": 1,
    "recurring": 1,
-   "lastChecked": "2026-11-17"
+   "lastChecked": "2026-11-28"
   },
   {
    "name": "Segerstrom Concert Hall",
@@ -2143,10 +2143,10 @@
     "theater"
    ],
    "calendar": "https://www.pacificsymphony.org/calendar-with-series",
-   "how": "Pacific Symphony calendar (also scfta.org for other presenters) | 11-19: Calendar fetch blocked; used Pacific Symphony press releases + tickpick URLs; no prices. Jazz series events are in Samueli Theatre (not listed); ABT Nutcracker Dec 10-24 and Sleeping Beauty Apr 22-25 venue unconfirmed (skipped)",
-   "listed": 94,
+   "how": "pacificsymphony.org not searchable; tickpick URLs in search results give title/date/time in slug but tickpick fetch failed (client_error), so no prices. Songkick shows Mariachi Herencia de Mexico 2027",
+   "listed": 98,
    "recurring": 0,
-   "lastChecked": "2026-11-19"
+   "lastChecked": "2026-11-28"
   },
   {
    "name": "Segerstrom Hall",
@@ -2182,10 +2182,10 @@
     "concert"
    ],
    "calendar": "https://www.performingarts.soka.edu/tickets-events/calendar-events",
-   "how": "official calendar WebFetch works (no prices on calendar)",
+   "how": "official soka.edu calendar fetch returned only a stale 2025 event; seatgeek venue page showed only Wynton Marsalis. No new shows confirmed",
    "listed": 18,
    "recurring": 0,
-   "lastChecked": "2026-11-17"
+   "lastChecked": "2026-11-28"
   },
   {
    "name": "South Coast Repertory",
@@ -2221,10 +2221,10 @@
     "sound"
    ],
    "calendar": null,
-   "how": "so far found via theartofsoundhealing.com",
+   "how": "search found no Steez sound healing listings (only unrelated Tustin sound baths)",
    "listed": 0,
    "recurring": 0,
-   "lastChecked": "2026-11-19"
+   "lastChecked": "2026-11-28"
   },
   {
    "name": "Stillmind Wellness Center",
@@ -2247,10 +2247,10 @@
     "dance"
    ],
    "calendar": null,
-   "how": "search found no dated listing",
+   "how": "search found no dated listing for this venue",
    "listed": 0,
    "recurring": 0,
-   "lastChecked": "2026-11-17"
+   "lastChecked": "2026-11-28"
   },
   {
    "name": "Terrace Theater",
@@ -2327,10 +2327,10 @@
     "openmic"
    ],
    "calendar": null,
-   "how": "travelcostamesa.com lists Wed open mic (Jan 2026); not confirmed since",
+   "how": "travelcostamesa shows only a Wed Jan 7 2026 open mic with Chris Cruz; no current confirmation",
    "listed": 1,
    "recurring": 1,
-   "lastChecked": "2026-11-16"
+   "lastChecked": "2026-11-28"
   },
   {
    "name": "TIME Nightclub",
@@ -2366,10 +2366,10 @@
     "social"
    ],
    "calendar": "https://www.travelcostamesa.com/events/westwood-coast-21-line-dancing-lessons/",
-   "how": "travelcostamesa listing: line dance lessons 8–10 PM 21+ through Dec 31",
+   "how": "travelcostamesa page fetched but no line dancing info; not re-confirmed",
    "listed": 2,
    "recurring": 2,
-   "lastChecked": "2026-11-24"
+   "lastChecked": "2026-11-28"
   },
   {
    "name": "Yee Lim Photography",
@@ -2379,10 +2379,10 @@
     "sound"
    ],
    "calendar": null,
-   "how": "so far found via eventbrite.com | 11-19: Eventbrite HB sound bath search did not surface this organizer; nothing found",
+   "how": "humanitix/eventbrite HB sound bath searches did not surface this organizer; nothing found",
    "listed": 0,
    "recurring": 0,
-   "lastChecked": "2026-11-19"
+   "lastChecked": "2026-11-28"
   },
   {
    "name": "Yogalution Movement & Wellness",
@@ -2458,10 +2458,10 @@
     "social"
    ],
    "calendar": null,
-   "how": "so far found via google.com",
+   "how": "sites.google.com/view/san-diego-swing-dance-venues (updated Aug 2026): Champion Ballroom Thursdays are Firehouse Swing Dance, classes 7-9pm, dance 9-11pm, DJ; our 8:00 PM/Lindy title may need relabel",
    "listed": 1,
    "recurring": 1,
-   "lastChecked": "2026-11-19"
+   "lastChecked": "2026-11-28"
   },
   {
    "name": "Dance Headquarters",
@@ -2470,11 +2470,11 @@
    "kinds": [
     "social"
    ],
-   "calendar": null,
-   "how": "so far found via google.com",
+   "calendar": "https://www.danceus.org/events/swing/san-diego-ca-swing-calendar",
+   "how": "danceus.org SD swing calendar via search: Sunday WCS lessons 1:30 PM $15 (Nov 29 only listed); also 12 PM Fundamentals $12",
    "listed": 1,
    "recurring": 1,
-   "lastChecked": "2026-11-19"
+   "lastChecked": "2026-11-28"
   },
   {
    "name": "Downtown Grand Ave",
@@ -2484,10 +2484,10 @@
     "art"
    ],
    "calendar": null,
-   "how": "so far found via visitescondido.com",
+   "how": "search only returned 2021-2022 listings; unconfirmed",
    "listed": 1,
    "recurring": 1,
-   "lastChecked": "2026-11-19"
+   "lastChecked": "2026-11-28"
   },
   {
    "name": "Feeding San Diego",
@@ -2496,11 +2496,11 @@
    "kinds": [
     "volunteer"
    ],
-   "calendar": null,
-   "how": "so far found via feedingsandiego.org",
+   "calendar": "https://feedingsandiego.org/get-involved/volunteer/",
+   "how": "volunteer page active; shifts posted one month ahead on volunteer.feedingsandiego.org (Golden); days/times not on page",
    "listed": 1,
    "recurring": 1,
-   "lastChecked": "2026-11-19"
+   "lastChecked": "2026-11-28"
   },
   {
    "name": "Harrah's Resort SoCal Events Center",
@@ -2510,11 +2510,11 @@
     "comedy",
     "concert"
    ],
-   "calendar": "https://www.harrahssocal.com/play/the-events-center/",
-   "how": "venue page fetched; all 8 listed shows confirmed; no new Events Center shows; time/price not shown",
+   "calendar": "https://www.harrahssocal.com/play/the-events-center",
+   "how": "official page fetched; all 8 shows still listed, no new Events Center shows, no times/prices (Ticketmaster)",
    "listed": 8,
    "recurring": 0,
-   "lastChecked": "2026-11-19"
+   "lastChecked": "2026-11-28"
   },
   {
    "name": "House of Blues San Diego",
@@ -2551,10 +2551,10 @@
     "social"
    ],
    "calendar": null,
-   "how": "Not checked",
+   "how": "search returned nothing relevant; unverified",
    "listed": 1,
    "recurring": 1,
-   "lastChecked": "2026-11-19"
+   "lastChecked": "2026-11-28"
   },
   {
    "name": "Infinity Dance Sport Center",
@@ -2564,10 +2564,10 @@
     "social"
    ],
    "calendar": null,
-   "how": "so far found via google.com",
+   "how": "same swing venues page (Aug 2026): First Saturday Swing classes 8-9pm, dance 9pm-midnight; meetup Mar 2026 showed doors 7:30, $12 incl. classes (we list $15; not changed, old)",
    "listed": 1,
    "recurring": 1,
-   "lastChecked": "2026-11-19"
+   "lastChecked": "2026-11-28"
   },
   {
    "name": "Jamul Casino",
@@ -2590,11 +2590,11 @@
    "kinds": [
     "art"
    ],
-   "calendar": null,
-   "how": "so far found via mcasd.org",
+   "calendar": "https://www.kpbs.org/events/2026/05/01/may-first-friday-art-walk",
+   "how": "kpbs/MCASD list monthly First Friday Art Walk, 4-7 PM, free, all ages (through 2026)",
    "listed": 1,
    "recurring": 1,
-   "lastChecked": "2026-11-19"
+   "lastChecked": "2026-11-28"
   },
   {
    "name": "Little Italy",
@@ -2603,11 +2603,11 @@
    "kinds": [
     "art"
    ],
-   "calendar": null,
-   "how": "so far found via google.com",
+   "calendar": "https://www.sandiego.gov/event/little-italy-mercato-saturday",
+   "how": "sandiego.gov page says every Saturday year-round 8am-2pm",
    "listed": 1,
    "recurring": 1,
-   "lastChecked": "2026-11-19"
+   "lastChecked": "2026-11-28"
   },
   {
    "name": "Melómano",
@@ -2616,11 +2616,11 @@
    "kinds": [
     "social"
    ],
-   "calendar": null,
-   "how": "so far found via google.com",
+   "calendar": "https://www.salsavida.com/event/san-diego/melomano-free-salsa-bachata-social-practice/",
+   "how": "salsavida lists free Monday 8 PM practice, next Nov 23 2026; times subject to change (melomano.com/schedule)",
    "listed": 1,
    "recurring": 1,
-   "lastChecked": "2026-11-19"
+   "lastChecked": "2026-11-28"
   },
   {
    "name": "Music Box",
@@ -2643,10 +2643,10 @@
     "concert"
    ],
    "calendar": "https://www.livenation.com/venue/KovZ917AxAB/the-observatory-north-park-events?page=1",
-   "how": "livenation venue page (?page=1) lists all shows with times, no prices",
-   "listed": 31,
+   "how": "livenation venue page fetch works; all 32 events listed, no prices, no sold-out flags",
+   "listed": 30,
    "recurring": 0,
-   "lastChecked": "2026-11-16"
+   "lastChecked": "2026-11-28"
   },
   {
    "name": "Pala Casino Events Center",
@@ -2657,10 +2657,10 @@
     "concert"
    ],
    "calendar": "https://americanarenas.com/venue/events-center-at-pala-casino-spa-and-resort/",
-   "how": "venue page (JS) → etix.com links with prices | 11-19: palacasino.com fetch blocked; americanarenas.com (resale) lists same 4 events; songkick shows Nov 27 only",
-   "listed": 3,
+   "how": "americanarenas (resale) lists only Jan 2 and Jan 30 (resale prices $102/$116, not used); no new shows.",
+   "listed": 2,
    "recurring": 0,
-   "lastChecked": "2026-11-19"
+   "lastChecked": "2026-11-28"
   },
   {
    "name": "Pechanga Arena",
@@ -2683,10 +2683,10 @@
     "social"
    ],
    "calendar": "https://queenbeessd.eventbrite.com",
-   "how": "fetch blocked 11/23; Eventbrite organizer page exists; no dated one-offs verified",
+   "how": "Eventbrite organizer URL redirected to a non-search URL, not fetched; searches only found old salsavida/danceus listings; unconfirmed",
    "listed": 2,
    "recurring": 2,
-   "lastChecked": "2026-11-19"
+   "lastChecked": "2026-11-28"
   },
   {
    "name": "Rotating SD beaches",
@@ -2722,11 +2722,11 @@
     "comedy",
     "theater"
    ],
-   "calendar": "https://songkick.com/venues/1158-san-diego-civic-theatre/calendar",
-   "how": "songkick venue page showed 12 upcoming, only 5 listed in fetch; times/prices unknown; Broadway San Diego season not itemized",
-   "listed": 35,
+   "calendar": "https://gametime.co/san-diego-civic-theatre-tickets/venues/san_diego_civic_theatre",
+   "how": "gametime venue page lists all shows Dec 2026-Aug 2027 with times and lowest prices; ticketmaster venue page cached stale (Feb 2026). Not on gametime: Mark Morris 3/20, Alonzo King 5/15. Later (not add",
+   "listed": 48,
    "recurring": 0,
-   "lastChecked": "2026-11-18"
+   "lastChecked": "2026-11-28"
   },
   {
    "name": "San Diego Woman's Club",
@@ -2843,10 +2843,10 @@
     "concert"
    ],
    "calendar": "https://www.vividseats.com/the-casbah-san-diego-tickets/venue/291",
-   "how": "casbahsd.com blocked; vividseats venue page WebFetch lists ~25 shows with from-prices",
-   "listed": 35,
+   "how": "vividseats venue page WebFetch page 1 lists 25 shows to Jan 18 2027 with from-prices; page 2 not fetched (no search-result URL); casbahsd.com not tried",
+   "listed": 40,
    "recurring": 0,
-   "lastChecked": "2026-11-17"
+   "lastChecked": "2026-11-28"
   },
   {
    "name": "The Old Globe",
@@ -2856,10 +2856,10 @@
     "theater"
    ],
    "calendar": "https://www.theoldglobe.org/whats-on/",
-   "how": "official site blocked; KPBS listing + tickpick search results worked",
+   "how": "broadwayworld Old Globe page lists only past shows through 11/21; tickpick shows Holy Moses 5/26. No new dated shows found; Grinch/Scrooge dates unconfirmed.",
    "listed": 3,
    "recurring": 0,
-   "lastChecked": "2026-11-17"
+   "lastChecked": "2026-11-28"
   },
   {
    "name": "The Rady Shell",
@@ -2964,10 +2964,10 @@
     "sound"
    ],
    "calendar": null,
-   "how": "search found no Enjoy Yoga sound bath listing",
+   "how": "search found no Enjoy Yoga-specific sound bath listing; only other Costa Mesa humanitix events",
    "listed": 0,
    "recurring": 0,
-   "lastChecked": "2026-11-17"
+   "lastChecked": "2026-11-28"
   },
   {
    "name": "Flappers",
@@ -3100,10 +3100,10 @@
    "region": "",
    "kinds": [],
    "calendar": "https://songkick.com/venues/31944-continental-room",
-   "how": "fetch blocked 11/23; Songkick and Vivid Seats show 0 upcoming events for Continental Room; Programme found no calendar via search",
+   "how": "Songkick shows 0 upcoming for Continental Room (last show May 1 2026); Bandsintown for Programme lists only stale May/Jun dates, no usable titles",
    "listed": 0,
    "recurring": 0,
-   "lastChecked": "2026-11-19"
+   "lastChecked": "2026-11-28"
   },
   {
    "name": "TIME Costa Mesa",
