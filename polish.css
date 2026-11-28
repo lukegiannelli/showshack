@@ -235,3 +235,10 @@ html.ui-b .bvsearch input:focus-visible,html.ui-b .bvsearch input:focus{outline:
   html.ui-b .tag.vscore{color:#8a5a00;border-color:rgba(176,120,0,.5)}
   html.ui-b .tag.bwant,html.ui-b .vwant.on{color:#b3218f;border-color:#d94bbd}
 }
+/* light mode contrast (axe, WCAG AA 4.5:1): section headings, spot category labels, card corner tags. Dark mode already passes. */
+@media (prefers-color-scheme:light){
+  :root:not([data-theme="dark"]){--lbl:#9A4612}
+  html.ui-b .spc-top .spc-cat,html.ui-b .spc-cat{color:color-mix(in srgb,var(--ic,var(--vc)) 45%,var(--ink))}
+  html.ui-b .bfc-tag{background:#EA6A40}
+}
+@media (prefers-color-scheme:light){html.ui-b .bpicks-h .blink{color:#A8380F}}
