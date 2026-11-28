@@ -121,7 +121,7 @@ function backSide(e){const pi=priceInfo(e),d=parseDay(e.start);
       ${window.SHACK_PV(e)}${lq?`<button type="button" class="bfb-listen" aria-expanded="false"><span class="lt">Listen on…</span></button>`:""}<button type="button" data-share="${esc(skey(e))}">Share</button></div>
     <p class="bpv-note" hidden></p>
     ${lq?`<div class="bfb-lm" hidden>${LISTEN(lq)}</div>`:""}
-    <div class="bfb-foot"><button type="button" class="bfb-full" data-full="${esc(hid(e))}">Full card</button><button type="button" class="bfb-hint">Flip back ↻</button></div>`;}
+    <div class="bfb-foot"><button type="button" class="bfb-full" data-full="${esc(hid(e))}" data-nd="${esc(e.start||"")}">Full card</button><button type="button" class="bfb-hint">Flip back ↻</button></div>`;}
 function flipCardHtml(e,tag){const front=cardHtml(e).replace(/^\s*<article id="[^"]*"/,'<article').replace(/class="card( flipped)?"/,'class="card"');
   const free=priceInfo(e).free;
   return `<div class="bfc" data-k="${esc(skey(e))}"><div class="bfc-in"><div class="bfc-f"><button type="button" class="bfc-sr sr-only">Flip ${esc(e.title)} for details</button>${tag?`<span class="bfc-tag">${tag}</span>`:""}${free?`<span class="bfc-free">FREE</span>`:""}${front}</div><div class="bfc-b" aria-hidden="true">${backSide(e)}</div></div></div>`;}
@@ -574,7 +574,7 @@ function openSheet(g){const e0=g.evs[0],name=g.k.split(" · ")[0],city=g.k.split
     const pr=pi.sold?"Sold out":pi.free?"Free":pi.donation?"Donation":pi.none?"":pi.est?"≈$"+Math.round(pi.lo):"From $"+Math.round(pi.lo);
     return `<div class="bms-row"><span class="bms-d">${esc(d.toLocaleDateString("en-US",{weekday:"short",month:"short",day:"numeric"}))}${e.time?" · "+esc(String(e.time).replace(/\s*\(.*\)/,"")):""}</span>
       <b>${esc(e.title)}</b><span class="bms-p">${esc(pr)}</span>
-      <span class="bms-a">${tix?`<a href="${esc(tix)}" target="_blank" rel="noopener">${tixWord(e,pi)} ↗</a>`:""}<button type="button" data-card="${esc(hid(e))}">Full card</button></span></div>`;}).join("");
+      <span class="bms-a">${tix?`<a href="${esc(tix)}" target="_blank" rel="noopener">${tixWord(e,pi)} ↗</a>`:""}<button type="button" data-card="${esc(hid(e))}" data-nd="${esc(e.start||"")}">Full card</button></span></div>`;}).join("");
   const more=g.evs.length>6?`<p class="bms-more">+${g.evs.length-6} more here</p>`:"";
   const pools=POOL.map(p=>({p,mi:miles(g.lat,g.lon,p.lat,p.lon)})).filter(x=>x.mi<=8).sort((a,b)=>a.mi-b.mi).slice(0,2);
   const near=(q,label,ic)=>`<a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(q+" near "+name+", "+city)}" target="_blank" rel="noopener">${ic} ${label}</a>`;
@@ -651,7 +651,7 @@ function badges(infos){const bv=infos.filter(v=>BEEN.has(v.k)),n=BEEN.size,rg=ne
   // or when a show of that kind you starred there has happened. One festival on an arena's calendar doesn't make it a festival.
   const td=todayStr(),spot=kd=>v=>{const m=v.evs.filter(e=>e.kind===kd).length;return (m>0&&m*2>=v.evs.length)||Object.values(starVen).some(o=>o&&o.v===v.k&&o.kd===kd&&o.d<td);};
   // each badge: [icon, name, how to earn, how far you are, how far you need]. Locked ones show faded and fill up as you go.
-  const st=streak().best,rep=Math.max(0,...[...BEEN].map(k=>pastShows(k).length)),nights=window.NIGHT&&NIGHT.allNights?NIGHT.allNights().filter(x=>x.p.d&&x.p.d<todayStr()).length:0;
+  const st=streak().best,rep=Math.max(0,...[...BEEN].map(k=>pastShows(k).length)),nights=window.NIGHT&&NIGHT.nlog?Object.values(NIGHT.nlog()).filter(x=>x&&x.d<todayStr()&&x.g!==0).length:0;   // past dated nights, minus ones you said didn't happen (night log in night.js)
   return [[ni("ticket"),"First stamp","Stamp 1 venue",n,1],[ni("chart"),"Regular","Stamp 10 venues",n,10],[ni("map"),"Region hopper","Stamps in 3 regions",rg.size,3],
     [ni("palm"),"All of SoCal","Stamps in all 6 regions",rg.size,6],[ni("sun"),"Desert trip","Stamp a desert venue",+rg.has("Desert"),1],
     [ni("home"),"Small & local","Stamp 5 small venues",cnt(v=>v.evs.some(isSmall)),5],[ni("venue"),"Big room","Stamp an arena or stadium",cnt(v=>(+v.cap||0)>6000||/arena|stadium|forum|bowl|dome/i.test(v.name)),1],
@@ -796,19 +796,19 @@ function passSection(){const infos=allInfos(true),tot=infos.length,beenV=infos.f
       <form class="bplog-f" data-pform="${esc(selV.k)}"><input name="t" maxlength="100" required placeholder="Artist or show, e.g. Khruangbin" aria-label="Show you saw" autocomplete="off"><input name="d" type="date" required max="${todayStr()}" aria-label="Date you went"><button type="submit">＋ Add to passport</button></form>
     </div>`;})():"";
   const bdg=badges(infos);PASS={bdg,regs,n:BEEN.size};
-  setTimeout(()=>markBadgesSeen(bdg),2500);   // after the fill-in animation has played
+  if(beenV.length)setTimeout(()=>markBadgesSeen(bdg),2500);   // after the fill-in animation has played
   const on=bdg.filter(b=>b.on),order=[...on,...bdg.filter(b=>!b.on).sort((p,q)=>q.have/q.need-p.have/p.need)],sc=showCount();
   return `<section class="byou-sec byou-pass" id="bYouPass" aria-label="Show passport and badges"><div class="bpass-in">
     <div class="bpass-h"><span class="bpass-k"><img class="bshack-ic" src="hut.webp?v=2" alt="">Show passport</span><b>${beenV.length} <small>of ${tot} venues${sc?` · ${sc} show${sc===1?"":"s"}`:""}</small></b></div>
     ${beenV.length?`<p class="bpass-tip">Tap a stamp to log shows you've seen there.</p><div class="bstamps">${stamps}</div>${plogPanel}<div class="bpass-regs">${regs.filter(x=>x[1]).map(([rg,a,b])=>`<span style="--pp:${Math.round(a/b*100)}%">${esc(rg)} <b>${a}</b>/${b}</span>`).join("")}</div>`
-      :`<p>Tap <b>I've been here</b> on any venue you've been to (Venues tab). Shows you star stamp themselves the day after.</p>`}
-    <div class="bpass-bdg">
+      :`<p>Tap <b>I've been here</b> on any venue you've been to (Venues tab). Shows you star stamp themselves the day after.</p><p class="bpass-tip">Your first stamp unlocks ${bdg.length} badges to chase.</p>`}
+    ${beenV.length?`<div class="bpass-bdg">
       <div class="bpass-bh"><span class="bpass-k">🏆 Badges</span><span class="byou-n">${on.length} of ${bdg.length}</span></div>
       <div class="byou-bar" role="img" aria-label="${on.length} of ${bdg.length} badges earned"><i style="width:${Math.round(on.length/bdg.length*100)}%"></i></div>
       <div class="bbadges${PBALL?"":" clip"}">${order.map(badgeHtml).join("")}</div>
     </div>
-    <div class="bpass-acts">${beenV.length?`<button type="button" class="bpass-share" data-yshare="passport">${ni("share")} Share</button><button type="button" class="bpass-share" data-ppmap="1">${ni("map")} Passport map</button>`:""}
-      <button type="button" class="bpass-share" data-pball aria-expanded="${PBALL}">${PBALL?"Fewer badges":`All ${bdg.length} badges`}</button></div>
+    <div class="bpass-acts"><button type="button" class="bpass-share" data-yshare="passport">${ni("share")} Share</button><button type="button" class="bpass-share" data-ppmap="1">${ni("map")} Passport map</button>
+      <button type="button" class="bpass-share" data-pball aria-expanded="${PBALL}">${PBALL?"Fewer badges":`All ${bdg.length} badges`}</button></div>`:""}
   </div></section>`;}
 // redraw the passport where it's showing (You page), keeping the scroll spot; the Venues list re-renders too
 function prender(){const el=document.getElementById("bYouPass");

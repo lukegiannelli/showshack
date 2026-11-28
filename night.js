@@ -98,7 +98,19 @@ const newId=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,6);
 let NIGHTS=(()=>{try{const a=JSON.parse(SH.store.raw(NKEY)||"[]");return Array.isArray(a)?a.filter(x=>x&&typeof x.id==="string").map(x=>({id:x.id.slice(0,20),p:cleanPlan(x.p)})).slice(0,MAXN):[];}catch(e){return [];}})();
 let planId=(()=>{try{return SH.store.raw(IDKEY)||"";}catch(e){return "";}})()||newId();
 const keep=p=>p.s.length>0||!!p.t;   // an empty, unnamed night isn't worth a slot
-function putNights(){try{SH.store.put(NKEY,JSON.stringify(NIGHTS));SH.store.put(IDKEY,planId);}catch(e){}}
+function putNights(){try{SH.store.put(NKEY,JSON.stringify(NIGHTS));SH.store.put(IDKEY,planId);}catch(e){}logNights();}
+/* ---------- night log ("shack-nlog", synced): {nightId: {d:"YYYY-MM-DD", g:1 we went | 0 didn't happen}}.
+   A night counts as PLANNED once it has a date and at least one stop. It counts as PLAYED (a night out that happened) only
+   when you say so after the date. The log outlives the 24-night list, so counts don't drop when old nights roll off.
+   Deleting a night takes it out of the count unless you'd already said you went. Feeds the You page and the leaderboard. ---------- */
+const LKEY="shack-nlog";
+const nlog=()=>{const L=SH.store.get(LKEY,{});return L&&typeof L==="object"&&!Array.isArray(L)?L:{};};
+function logNights(){const L=nlog();let ch=false;
+  NIGHTS.forEach(x=>{if(!x.p.d||!x.p.s.length)return;const o=L[x.id];if(o&&o.d===x.p.d)return;L[x.id]={d:x.p.d};ch=true;});   // new date: ask again
+  const ks=Object.keys(L);if(ks.length>400){ks.sort((a,b)=>String(L[a].d).localeCompare(String(L[b].d))).slice(0,ks.length-400).forEach(k=>delete L[k]);ch=true;}
+  if(ch)SH.store.set(LKEY,L);}
+function unlogNight(id){const L=nlog();if(L[id]&&L[id].g!==1){delete L[id];SH.store.set(LKEY,L);}}
+function answerNight(id,g){const L=nlog();if(!L[id])return;L[id].g=g?1:0;SH.store.set(LKEY,L);}
 function upsertNight(){const i=NIGHTS.findIndex(x=>x.id===planId);
   if(keep(plan)){const rec={id:planId,p:cleanPlan(plan)};if(i>=0)NIGHTS[i]=rec;else NIGHTS.unshift(rec);NIGHTS.sort((a,b)=>(b.p.up||0)-(a.p.up||0));if(NIGHTS.length>MAXN)NIGHTS.length=MAXN;}
   else if(i>=0)NIGHTS.splice(i,1);
@@ -189,7 +201,8 @@ function afterStop(p){return {cl:typeof p.til==="number"?p.til:undefined,k:grp(p
 const todayISO=()=>{const d=new Date();return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");};
 // capture phase so the flip cards / card toggles never see these taps
 document.addEventListener("click",ev=>{const b=ev.target.closest("[data-nadd],[data-naft]");if(!b)return;ev.stopPropagation();ev.preventDefault();
-  if(b.dataset.nadd){const e=evById(b.dataset.nadd);if(!e){toast("Couldn't find that show");return;}
+  if(b.dataset.nadd){let e=evById(b.dataset.nadd);if(!e){toast("Couldn't find that show");return;}
+    if(b.dataset.nd&&e.start!==b.dataset.nd)e={...e,start:b.dataset.nd};   // repeating events: the date on the card you tapped
     const st=showStop(e);
     if(plan.s.some(x=>x.k==="show"&&x.n===st.n&&x.p===st.p)){toast("Already in your night","Open",openPlan);return;}
     // the night already has a show on a different date: keep that one saved and start a fresh night with this show
@@ -201,24 +214,17 @@ document.addEventListener("click",ev=>{const b=ev.target.closest("[data-nadd],[d
       toast("Last night saved ✓ Started a new night","Undo",()=>{const i=NIGHTS.findIndex(x=>x.id===newIdNow);if(i>=0)NIGHTS.splice(i,1);putNights();useNight(prevId,prev);addStop(st,true);toast("Added to your earlier night instead","Open",openPlan);},6000);return;}
     if(addStop(st)){b.classList.add("done");b.textContent="✓ In your night";}}
   else{const p=allAfters()[+b.dataset.naft];if(p&&addStop(afterStop(p))){b.classList.add("done");b.textContent="✓ Added";}}},true);
-const addBtn=h=>`<button type="button" class="nadd" data-nadd="${esc(h)}">＋ My night</button><button type="button" class="ncal" data-ncal="${esc(h)}" aria-label="Add to calendar">📅</button>`;
-// one show → a calendar file (start time from the listing, about 3 hours long; all-day when no time is listed)
-function evIcs(e){const pad=n=>String(n).padStart(2,"0"),[y,m,d]=String(e.start).split("-").map(Number),tm=parseTime(e.time);
-  const f=x=>x.getFullYear()+pad(x.getMonth()+1)+pad(x.getDate())+"T"+pad(x.getHours())+pad(x.getMinutes())+"00",escI=v=>String(v).replace(/\\/g,"\\\\").replace(/[,;]/g,c=>"\\"+c).replace(/\n/g,"\\n");
-  let a,b;if(tm){const [h,mi]=tm.split(":").map(Number);const st=new Date(y,m-1,d,h,mi);a="DTSTART:"+f(st);b="DTEND:"+f(new Date(st.getTime()+3*3600e3));}
-  else{const nx=new Date(y,m-1,d+1);a="DTSTART;VALUE=DATE:"+y+pad(m)+pad(d);b="DTEND;VALUE=DATE:"+nx.getFullYear()+pad(nx.getMonth()+1)+pad(nx.getDate());}
-  const u=e.url&&typeof safeUrl==="function"?safeUrl(e.url):"";
-  return ["BEGIN:VCALENDAR","VERSION:2.0","PRODID:-//The Show Shack//Show//EN","BEGIN:VEVENT","UID:"+hid(e)+"@showshack","DTSTAMP:"+new Date().toISOString().replace(/[-:]/g,"").replace(/\.\d+/,""),a,b,
-    "SUMMARY:"+escI(e.title),"LOCATION:"+escI([e.venue,e.city].filter(Boolean).join(", ")),"DESCRIPTION:"+escI((e.time?e.time+"\n":"")+(u?"Tickets: "+u+"\n":"")+"Check the seller's page before you go."),...(u?["URL:"+u]:[]),"END:VEVENT","END:VCALENDAR"].join("\r\n");}
-function saveIcs(text,name){const blob=new Blob([text],{type:"text/calendar"}),a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=name.replace(/[^\w-]+/g,"-").slice(0,40)+".ics";document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove();},1500);}
-document.addEventListener("click",ev=>{const b=ev.target.closest("[data-ncal]");if(!b)return;ev.stopPropagation();ev.preventDefault();const e=evById(b.dataset.ncal);
-  if(!e||!e.start){toast("No date for that show yet");return;}saveIcs(evIcs(e),e.title||"show");toast("Calendar file ready. Open it to add the show");},true);
+const addBtn=(h,noCal,nd)=>`<button type="button" class="nadd" data-nadd="${esc(h)}"${nd?` data-nd="${esc(nd)}"`:""}>＋ My night</button>${noCal?"":`<button type="button" class="ncal" data-ncal="${esc(h)}"${nd?` data-nd="${esc(nd)}"`:""} aria-label="Add to calendar">📅</button>`}`;
+// 📅 / "+ Add to calendar" on any show: the shared calendar (SH.cal in core.js, event built by shackCalEv in app.js)
+document.addEventListener("click",ev=>{const b=ev.target.closest("[data-ncal]");if(!b)return;ev.stopPropagation();ev.preventDefault();let e=evById(b.dataset.ncal);
+  if(e&&b.dataset.nd&&e.start!==b.dataset.nd)e={...e,start:b.dataset.nd};   // repeating events: the date on the card you tapped
+  SH.cal.add(e&&window.shackCalEv?shackCalEv(e):null);},true);
 // inject "+ My night" into flip-card backs, full cards, and map-sheet rows as they appear
 function inject(root){
-  root.querySelectorAll(".bfb-foot:not([data-nx])").forEach(f=>{f.dataset.nx=1;const full=f.querySelector("[data-full]");if(full)full.insertAdjacentHTML("afterend",addBtn(full.dataset.full));});
-  root.querySelectorAll("article.card[id] .links.wide:not([data-nx])").forEach(l=>{l.dataset.nx=1;const c=l.closest("article.card");if(!/^[ep]-/.test(c.id))return;l.insertAdjacentHTML("beforeend",addBtn(c.id));
+  root.querySelectorAll(".bfb-foot:not([data-nx])").forEach(f=>{f.dataset.nx=1;const full=f.querySelector("[data-full]");if(full)full.insertAdjacentHTML("afterend",addBtn(full.dataset.full,false,full.dataset.nd));});
+  root.querySelectorAll("article.card[id] .links.wide:not([data-nx])").forEach(l=>{l.dataset.nx=1;const c=l.closest("article.card");if(!/^[ep]-/.test(c.id))return;const ac=c.querySelector(".addcal[data-nd]");l.insertAdjacentHTML("beforeend",addBtn(c.id,true,ac&&ac.dataset.nd));
     const e=evById(c.id),pv=e&&window.SHACK_PV?window.SHACK_PV(e):"";if(pv)l.insertAdjacentHTML("beforeend",pv+'<p class="bpv-note" hidden></p>');});
-  root.querySelectorAll(".bms-a:not([data-nx])").forEach(a=>{a.dataset.nx=1;const c=a.querySelector("[data-card]");if(c)a.insertAdjacentHTML("beforeend",addBtn(c.dataset.card));});}
+  root.querySelectorAll(".bms-a:not([data-nx])").forEach(a=>{a.dataset.nx=1;const c=a.querySelector("[data-card]");if(c)a.insertAdjacentHTML("beforeend",addBtn(c.dataset.card,false,c.dataset.nd));});}
 let iq=0;new MutationObserver(()=>{if(iq)return;iq=1;queueMicrotask(()=>{iq=0;inject(document.body);});}).observe(document.body,{childList:true,subtree:true});
 
 /* ---------- map hooks (called from b.js only when this file is loaded) ---------- */
@@ -379,8 +385,10 @@ function parkFor(s){try{const e=allEv().find(x=>x.title===s.n&&s.p&&s.p.startsWi
 const near0=()=>{const s=plan.s.find(x=>x.k==="show"&&x.p);return s?s.p:"";};
 function anchor(){const s=[...plan.s].reverse().find(x=>typeof x.la==="number");if(s)return [s.la,s.lo];if(typeof origin!=="undefined"&&origin&&typeof origin.lat==="number")return [origin.lat,origin.lon];return null;}
 function picker(){if(pickK==="show"){
-    const now=todayISO(),sv=allEv().filter(e=>typeof state!=="undefined"&&state.stars.has(skey(e))&&(e.end||e.start)>=now).sort((a,b)=>a.start.localeCompare(b.start)).slice(0,8);
-    return `<div class="bn-pick"><p class="bn-pt">Pick a saved show, or tap <b>＋ My night</b> on any card.</p>${sv.map(e=>`<button type="button" class="bn-pi" data-nadd="${esc(hid(e))}"><b>${esc(e.title)}</b><small>${esc(fmtD(e.start))} · ${esc(e.venue||"")}</small></button>`).join("")||'<p class="bn-pt">No saved shows yet.</p>'}
+    const now=todayISO(),sv=allEv().filter(e=>typeof state!=="undefined"&&state.stars.has(skey(e)))
+      .map(e=>!e.start&&e.recurrence&&typeof nextOccurrence==="function"?{...e,start:nextOccurrence(e.recurrence)}:e)   // repeating events: their next date
+      .filter(e=>e.start&&(e.end||e.start)>=now).sort((a,b)=>a.start.localeCompare(b.start)).slice(0,8);
+    return `<div class="bn-pick"><p class="bn-pt">Pick a saved show, or tap <b>＋ My night</b> on any card.</p>${sv.map(e=>`<button type="button" class="bn-pi" data-nadd="${esc(hid(e))}" data-nd="${esc(e.start)}"><b>${esc(e.title)}</b><small>${esc(fmtD(e.start))} · ${esc(e.venue||"")}</small></button>`).join("")||'<p class="bn-pt">No saved shows yet.</p>'}
       <div class="bn-row"><button type="button" data-blank="show">Type one in</button><button type="button" data-find="1">Browse shows</button><button type="button" data-pick="">Close</button></div></div>`;}
   // Eat / Afters: recommended around the show in the plan (closest to its venue first); afters that close
   // before the show ends drop to the bottom. Picks are slotted before / after the show automatically.
@@ -503,14 +511,12 @@ async function shareNight(p,btn,id){let url=null;if(id&&window.SHACK_LIVE)try{ur
   if(typeof copyOut==="function")copyOut(text+"\n"+url,btn);else{try{await navigator.clipboard.writeText(text+"\n"+url);toast("Link copied");}catch(e){prompt("Copy this link",url);}}}
 
 /* ---------- viewer: opens from a #n= link ---------- */
-function ics(p){const pad=n=>String(n).padStart(2,"0"),stamp=new Date().toISOString().replace(/[-:]/g,"").replace(/\.\d+/,"");
-  const tms=p.s.map(s=>s.tm).filter(Boolean).sort(),[y,m,d]=p.d.split("-").map(Number);
-  const st=tms[0]||"19:00",[h1,m1]=st.split(":").map(Number);let lastH,lastM;if(tms.length>1){[lastH,lastM]=tms[tms.length-1].split(":").map(Number);}
-  const startD=new Date(y,m-1,d,h1,m1),endD=lastH!=null?new Date(y,m-1,d+(lastH<h1?1:0),lastH+2,lastM):new Date(startD.getTime()+4*3600e3);
-  const f=x=>x.getFullYear()+pad(x.getMonth()+1)+pad(x.getDate())+"T"+pad(x.getHours())+pad(x.getMinutes())+"00";
-  const escI=s=>String(s).replace(/\\/g,"\\\\").replace(/[,;]/g,c=>"\\"+c).replace(/\n/g,"\\n");
-  const desc=sumText(p)+"\n\n"+location.href;
-  return ["BEGIN:VCALENDAR","VERSION:2.0","PRODID:-//The Show Shack//Night Card//EN","BEGIN:VEVENT","UID:night-"+Date.now()+"@showshack",`DTSTAMP:${stamp}`,`DTSTART:${f(startD)}`,`DTEND:${f(endD)}`,`SUMMARY:${escI("🌙 "+(p.t||"Our night"))}`,`DESCRIPTION:${escI(desc)}`,"END:VEVENT","END:VCALENDAR"].join("\r\n");}
+// a whole night → the shared calendar: first stop's time to 2 hours after the last (4 hours if one stop; 7 PM if no times)
+function nightCal(p){const tms=p.s.map(s=>s.tm).filter(Boolean).sort((a,b)=>SH.minOfHHMM(a)-SH.minOfHHMM(b));
+  const st=tms.length?SH.minOfHHMM(tms[0]):19*60,en=tms.length>1?SH.minOfHHMM(tms[tms.length-1])+120:st+240;
+  const first=p.s.find(s=>s.p);
+  return {uid:"night-"+(p.id||String(p.t||"").replace(/\W+/g,"").slice(0,20)+p.d),title:"🌙 "+(p.t||"Our night"),date:p.d,min:st%1440,dur:en-st,
+    location:first?first.p:"",desc:sumText(p)+"\n\n"+location.href};}
 let VOPENER=null;
 /* ---- going together on live links: "I'm in" with just a first name, no sign-in. A random token on this phone lets you
    change your mind; the names show to everyone who has the link (and to the planner on their Saved card). ---- */
@@ -557,7 +563,7 @@ function view(p,preview,liveId){if(!$("nightView"))VOPENER=document.activeElemen
     if(b.dataset.vshare){shareNight(p,b);return;}
     if(b.dataset.vspin){surpriseNight();return;}
     if(b.dataset.vmine){useNight(newId(),{...p,up:Date.now()});close();openPlan();toast("It's in Saved → Plan a night. Tweak it, then send");return;}
-    if(b.dataset.ics){const blob=new Blob([ics(p)],{type:"text/calendar"}),a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=(p.t||"night").replace(/[^\w-]+/g,"-").slice(0,40)+".ics";document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove();},1500);return;}
+    if(b.dataset.ics){SH.cal.add(p.d?nightCal(p):null);return;}
     if(b.dataset.rout&&liveId){b.disabled=true;rsvpSet(el,liveId,"",false);return;}
     if(b.dataset.vcopy){useNight(newId(),{...p,up:Date.now()});close();openPlan();toast("Copied into Plan a night. Your other nights are in Saved");}});
   if(liveId){el.addEventListener("submit",ev=>{const f=ev.target.closest("[data-rform]");if(!f)return;ev.preventDefault();const n=f.n.value.trim();if(!n)return;f.querySelector("button").disabled=true;rsvpSet(el,liveId,n,true);});
@@ -634,7 +640,7 @@ function drawSaved(){if(!savedOn)return;let el=$("bNights");const list=$("list")
         openPlan();toast("Copied for next "+t.toLocaleDateString("en-US",{weekday:"long"})+". Pick the show");return;}
       if(d.nshare){shareNight(x.p,b,x.id);return;}
       if(d.ndel){if(!b.classList.contains("sure")){b.classList.add("sure");b.setAttribute("aria-label","Tap again to delete");const c=b.closest(".bnc");c.classList.add("sure");setTimeout(()=>{b.classList.remove("sure");c.classList.remove("sure");},2500);return;}
-        NIGHTS=NIGHTS.filter(n=>n.id!==x.id);if(x.id===planId){plan=cleanPlan({});planId=newId();try{SH.store.put(KEY,JSON.stringify(plan));}catch(e){}drawBuilder();}
+        NIGHTS=NIGHTS.filter(n=>n.id!==x.id);unlogNight(x.id);if(x.id===planId){plan=cleanPlan({});planId=newId();try{SH.store.put(KEY,JSON.stringify(plan));}catch(e){}drawBuilder();}
         putNights();drawSaved();toast(`Deleted ${esc(nName(x.p))}`,"Undo",()=>{NIGHTS.push(x);NIGHTS.sort((a,b)=>(b.p.up||0)-(a.p.up||0));putNights();drawSaved();drawBuilder();});}});}
   el.hidden=false;
   const today=todayISO(),past=NIGHTS.filter(x=>x.p.d&&x.p.d<today),up=NIGHTS.filter(x=>!(x.p.d&&x.p.d<today))
@@ -649,7 +655,8 @@ function savedRow(on){savedOn=on;if(on)drawSaved();else{const el=$("bNights");if
 const allNights=()=>NIGHTS.map(x=>({id:x.id,p:cleanPlan(x.p)}));
 function mergeNights(arr){if(!Array.isArray(arr))return 0;let n=0;arr.slice(0,MAXN).forEach(x=>{if(!x||typeof x.id!=="string"||NIGHTS.some(y=>y.id===x.id))return;NIGHTS.push({id:x.id.slice(0,20),p:cleanPlan(x.p)});n++;});
   NIGHTS.sort((a,b)=>(b.p.up||0)-(a.p.up||0));if(NIGHTS.length>MAXN)NIGHTS.length=MAXN;putNights();drawSaved();drawBuilder();return n;}
-window.NIGHT={shareNight,rideFare,LASTTRAIN,spots:allAfters,savedRow,stopFor:afterStop,toast,nightAt,allNights,mergeNights,pack,unpack,AC,IC,ic,EXP,cost,hrs,grp,ready:()=>AFTERS.length>0,surpriseNight,chip,map,sheet,encode,decode,cleanPlan,addStop,view,get plan(){return plan;},get id(){return planId;}};
+logNights();   // nights planned before the log existed count too
+window.NIGHT={nlog,answerNight,shareNight,rideFare,LASTTRAIN,spots:allAfters,savedRow,stopFor:afterStop,toast,nightAt,allNights,mergeNights,pack,unpack,AC,IC,ic,EXP,cost,hrs,grp,ready:()=>AFTERS.length>0,surpriseNight,chip,map,sheet,encode,decode,cleanPlan,addStop,view,get plan(){return plan;},get id(){return planId;}};
 if(keep(plan)&&!NIGHTS.some(x=>x.id===planId))upsertNight();else putNights();
 const go=()=>{mount();inject(document.body);fromHash(window.NIGHT_HASH||location.hash);};
 if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",go);else go();
