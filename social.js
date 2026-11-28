@@ -42,8 +42,9 @@ window.shackSocialHTML=()=>{const u=C.user;let h="";
   if(u&&!prof)h+=`<form class="bcloud-f" data-so-form="name"><input name="n" maxlength="30" required placeholder="Your name for friends" aria-label="Your name for friends" autocomplete="nickname"><button class="bpass-share">Save</button></form>
     <span class="bcloud-t">Pick a name to add friends, see who's going to the same shows and join the leaderboard.</span>`;
   if(u&&prof){const mine=myBeen();
-    h+=`<span class="bcloud-t">👥 Your friend code: <b class="bso-code">${E(pretty(prof.friend_code))}</b> (you're <b>${E(prof.name)}</b>)</span>
+    h+=`<span class="bcloud-t">👥 Your friend code: <b class="bso-code">${E(pretty(prof.friend_code))}</b></span>
       <div class="bso-acts"><button type="button" class="bpass-share" data-so="invite">Invite a friend</button><button type="button" class="bpass-share" data-so="reroll">🎲 New code</button></div>
+      <form class="bcloud-f" data-so-form="rename"><input name="n" maxlength="30" required value="${E(prof.name||"")}" aria-label="Your leaderboard name" placeholder="Your leaderboard name" autocomplete="nickname"><button class="bpass-share">Change name</button></form>
       <form class="bcloud-f" data-so-form="add"><input name="c" maxlength="40" required placeholder="Friend's code, e.g. grumpy raccoon" aria-label="Friend's code" autocapitalize="off" autocomplete="off" spellcheck="false"><button class="bpass-share">Add friend</button></form>`;
     if(friends&&friends.length)h+=`<ul class="bso-list">${friends.map(f=>{const b=Array.isArray(f.been)?f.been:[],common=b.filter(k=>mine.has(k)).length,only=b.length-common;
       return `<li><b>${E(f.name)}</b><span>${b.length} venue${b.length===1?"":"s"} · ${common} in common${only?` · ${only} you haven't hit`:""}</span><button type="button" class="bso-x" data-so="rm" data-id="${E(f.friend_id)}" aria-label="Remove ${E(f.name)}">✕</button></li>`;}).join("")}</ul>`;
@@ -104,6 +105,9 @@ document.addEventListener("click",async ev=>{const b=ev.target.closest("[data-so
 document.addEventListener("submit",async ev=>{const f=ev.target.closest("[data-so-form]");if(!f)return;ev.preventDefault();ev.stopPropagation();if(busy)return;busy=true;
   try{const sb=await C.client(),k=f.dataset.soForm;
     if(k==="name"){const name=f.n.value.trim();const {error}=await sb.from("profiles").insert({user_id:C.user.id,name});if(error)throw error;msg="Saved ✓";await loadSocial();takePending();}
+    if(k==="rename"){const name=f.n.value.trim();if(!name||name===prof.name){msg=name?"That's already your name.":"Names need 1 to 30 characters.";redraw();busy=false;return;}
+      const {error}=await sb.from("profiles").update({name}).eq("user_id",C.user.id);if(error)throw error;prof.name=name;if(board)board=await SH.rpc("leaderboard",{});msg="Name changed ✓";redraw();
+      const h=document.getElementById("bYouName");if(h)h.textContent=name;}
     if(k==="add")await addFriend(f.c.value.trim());
   }catch(e){msg=errMsg(e);redraw();}busy=false;},true);
 document.addEventListener("change",async ev=>{const t=ev.target.closest("[data-so-t]");if(!t||!prof)return;ev.stopPropagation();const col=t.dataset.soT,on=t.checked;

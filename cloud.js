@@ -66,9 +66,9 @@ const esc2=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;
 window.shackCloudHTML=()=>{let body;
   if(user)body=`<span class="bcloud-t">Synced to <b>${esc2(user.email||"your account")}</b>: passport, saved nights and settings.</span><span class="bcloud-s" aria-live="polite">${esc2(status)}</span><button type="button" class="bpass-share" data-cl="out">Sign out</button>`;
   // plain text boxes (not type=email / pattern) so a stray space can't block the button; spaces are stripped as you type
-  else if(ui==="email")body=`<span class="bcloud-t">We'll email you a 6-digit code to type in here.</span><form class="bcloud-f" data-cl-form="email" novalidate><input type="text" inputmode="email" name="e" autocomplete="email" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="you@email.com" value="${esc2(email||get(K_EMAIL)||"")}" aria-label="Your email" data-cl-strip="email"><button class="bpass-share">Email me a code</button><button type="button" class="bpass-share" data-cl="have">I already have a code</button><button type="button" class="bpass-share" data-cl="x">Cancel</button></form><span class="bcloud-s" aria-live="polite">${esc2(status)}</span>`;
+  else if(ui==="email")body=`<span class="bcloud-t">We'll email you an 8-digit code to type in here.</span><form class="bcloud-f" data-cl-form="email" novalidate><input type="text" inputmode="email" name="e" autocomplete="email" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="you@email.com" value="${esc2(email||get(K_EMAIL)||"")}" aria-label="Your email" data-cl-strip="email"><button class="bpass-share">Email me a code</button><button type="button" class="bpass-share" data-cl="x">Cancel</button></form><span class="bcloud-s" aria-live="polite">${esc2(status)}</span>`;
   else if(ui==="code"){const wait=resendWait();
-    body=`<span class="bcloud-t">Type the code from the email we sent to <b>${esc2(email)}</b>. <b>Don't tap the link in the email</b>: it opens your browser, not this app. Check spam if it's not there in a minute.</span><form class="bcloud-f" data-cl-form="code" novalidate><input name="c" type="text" inputmode="numeric" autocomplete="one-time-code" placeholder="6-digit code" aria-label="Code from the email" maxlength="12" data-cl-strip="code"><button class="bpass-share">Sign in</button><button type="button" class="bpass-share" data-cl="resend"${wait?" disabled":""}>${wait?`New code in ${wait}`:"Send a new code"}</button><button type="button" class="bpass-share" data-cl="x">Cancel</button></form><span class="bcloud-s" aria-live="polite">${esc2(status)}</span>`;}
+    body=`<span class="bcloud-t">Type the code from the email we sent to <b>${esc2(email)}</b>. <b>Don't tap the link in the email</b>: it opens your browser, not this app. Check spam if it's not there in a minute.</span><form class="bcloud-f" data-cl-form="code" novalidate><input name="c" type="text" inputmode="numeric" autocomplete="one-time-code" placeholder="8-digit code" aria-label="Code from the email" maxlength="12" data-cl-strip="code"><button class="bpass-share">Sign in</button><button type="button" class="bpass-share" data-cl="resend"${wait?" disabled":""}>${wait?`New code in ${wait}`:"Send a new code"}</button><button type="button" class="bpass-share" data-cl="x">Cancel</button></form><span class="bcloud-s" aria-live="polite">${esc2(status)}</span>`;}
   else body=`<span class="bcloud-t">Sign in with your email to keep your passport, nights and settings on all your devices, share live night links, and see friends. Free.</span><button type="button" class="bpass-share" data-cl="in">Sign in with email</button><span class="bcloud-s" aria-live="polite">${esc2(status)}</span>`;
   return `<div class="bcloud" id="bCloud">${body}</div>`;};
 function redraw(){const el=document.getElementById("bCloud");if(!el)return;el.outerHTML=window.shackCloudHTML();
@@ -81,9 +81,6 @@ document.addEventListener("click",async ev=>{const b=ev.target.closest("[data-cl
   if(a==="in"){ui="email";status="";redraw();return;}
   if(a==="x"){ui="idle";status="";redraw();return;}
   if(a==="resend"){ui="email";status="";redraw();return;}
-  if(a==="have"){const i=document.querySelector('#bCloud [name="e"]'),v=(i?i.value:"").replace(/\s+/g,"").toLowerCase();
-    if(!/^[^@]+@[^@]+\.[a-z]{2,}$/i.test(v)){status="Type your email first, then tap I already have a code.";redraw();return;}
-    email=v;put(K_EMAIL,v);ui="code";status="";redraw();return;}
   if(a==="out"){try{await sb.auth.signOut();}catch(e){}user=null;put(K_AT,null);ui="idle";status="Signed out. Everything stays on this device.";redraw();subs.forEach(f=>{try{f(null);}catch(e){}});}},true);
 document.addEventListener("submit",async ev=>{const f=ev.target.closest("[data-cl-form]");if(!f)return;ev.preventDefault();ev.stopPropagation();
   const btn=f.querySelector("button:not([type=button])");btn.disabled=true;
@@ -99,7 +96,7 @@ document.addEventListener("submit",async ev=>{const f=ev.target.closest("[data-c
       if(error){if(/rate|too many|seconds/i.test(String(error.message))){ui="code";status="The free plan sends 2 sign-in emails an hour, and that's used up. Type the code from your newest email, or wait an hour for a new one.";redraw();return;}throw error;}
       put(K_SENT,JSON.stringify({e:email,t:Date.now()}));ui="code";status="";redraw();tick();}
     else{const token=f.c.value.replace(/\D+/g,"");
-      if(token.length<6){status="Type the whole code from the email (6 or more numbers).";redraw();return;}
+      if(token.length<6){status="Type the whole code from the email (all 8 numbers).";redraw();return;}
       status="Checking…";redraw();
       const {error}=await sb.auth.verifyOtp({email,token,type:"email"});
       if(error)throw error;}

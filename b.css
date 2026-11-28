@@ -798,6 +798,9 @@ html.b-you .wrap{display:none}
 /* section labels: the "YOUR NIGHTS" / "SAVED SHOWS" voice */
 .ui-b .byou-page .byou-sec>h3{margin:0 0 8px;font-family:var(--display);font-weight:800;font-size:19px;letter-spacing:.05em;text-transform:uppercase;color:var(--lbl,#C2410C)}
 .ui-b .byou-page .bset-p{color:var(--muted)}
+/* the You page cards are light in the light theme: the old white-on-dark text (your email, friend code, name, checkbox labels) disappeared */
+.ui-b .byou-page .byou-sec .bcloud-t b,.ui-b .byou-page .byou-sec .bso-t{color:var(--ink)}
+.ui-b .byou-page .byou-sec .bso-code{color:var(--lbl,#C2410C);text-shadow:none}
 .ui-b .byou-page .bset-p b,.ui-b .byou-page .bset-p strong{color:var(--ink)}
 .ui-b .byou-page .bset-msg{color:var(--drive)}
 .ui-b .byou-page .bset-acts>button,.ui-b .byou-page .bset-acts>label,.ui-b .byou-page .bpass-share{background:var(--chip);border:1px solid var(--line);color:var(--ink)}
