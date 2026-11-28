@@ -878,6 +878,8 @@ function badgesNow(){const ks=new Set([...(state._up||[]).filter(e=>!PLACEISH.ha
 window.SHACK_PASS={shareYear:btn=>shareYear(btn),compare:btn=>comparLink(btn),get stamps(){return BEEN.size;},get shows(){return showCount();},
   badgesHtml(){const b=badgesNow(),on=b.filter(x=>x.on);return {earned:on.length,total:b.length,html:[...on,...b.filter(x=>!x.on).sort((p,q)=>q.have/q.need-p.have/p.need)].map(badgeHtml).join("")};},
   passHtml:()=>passSection(),
+  // every show in the passport whose date starts with ym ("2026-11"): [{k: venue key, d, t}]
+  showsIn(ym){const out=[];new Set([...BEEN,...Object.keys(PSHOWS)]).forEach(k=>pastShows(k).forEach(x=>{if(String(x.d).startsWith(ym))out.push({k,d:x.d,t:x.t});}));return out;},
   // night.js calls this when you answer "Did it happen?": went → stamp its shows, didn't → take them back out
   nightAnswered(nid,went){try{if(went)importNights();else unimportNight(nid);prender();}catch(e){}},
   open(){if(window.SHACK_YOU)SHACK_YOU.open("pass");}};

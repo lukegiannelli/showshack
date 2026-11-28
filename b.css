@@ -885,3 +885,8 @@ html.b-you .wrap{display:none}
 /* friends interested in a show: readable on light cards */
 .ui-b .fgo{color:#16795a;font-weight:700}
 @media (prefers-color-scheme:dark){:root.ui-b:not([data-theme="light"]) .fgo{color:#7ee0b8}}
+/* You page: monthly recap */
+.ui-b .byou-page .byou-rc{display:flex;flex-wrap:wrap;gap:8px;margin:4px 0 8px}
+.ui-b .byou-page .byou-rc span{display:flex;flex-direction:column;min-width:72px;padding:8px 12px;border-radius:14px;border:1px solid var(--line);font-size:12.5px;color:var(--muted)}
+.ui-b .byou-page .byou-rc b{font:800 22px var(--body);color:var(--ink);line-height:1.1}
+.ui-b .byou-page .byou-priv{text-align:center;margin-top:6px}

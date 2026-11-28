@@ -30,6 +30,7 @@ function youHTML(){const u=C.user,owner=SH.store.raw("shack-owner")==="1";
   return `<div class="btitle byou-title"><h1 id="bYouH">You</h1><p class="byou-hi">${u?`Hey, <span id="bYouName">${E((window.SHACK_ME&&SHACK_ME()||{}).full||"there")}</span>`:"Make the Shack yours"}</p></div>
     ${u?"":`<p class="bset-p byou-lede">Everything works without an account. Sign in (just your email, free) to sync across devices, get reminders and see friends.</p>`}
     ${nightsSec()}
+    ${recapSec()}
     ${passSec()}
     ${window.SHACK_TIX?SHACK_TIX.sectionHTML():""}
     <section class="byou-sec"><h3>☁ Account &amp; sync</h3>${window.shackCloudHTML?shackCloudHTML():""}</section>
@@ -41,11 +42,25 @@ function youHTML(){const u=C.user,owner=SH.store.raw("shack-owner")==="1";
     <section class="byou-sec"><h3>🏷 Missing a show?</h3><div id="bMiss">${missHTML()}</div></section>
     </details>
     ${u&&(admin||owner)?`<section class="byou-sec byou-adm"><h3>📊 Owner: Hivemind808 &amp; review</h3>${insHTML()}<div id="bAdm">${admHTML(owner)}</div></section>`:""}
-    <div class="bset-acts byou-foot"><button type="button" data-yset>⚙ Settings &amp; your data</button></div>`;}
+    <div class="bset-acts byou-foot"><button type="button" data-yset>⚙ Settings &amp; your data</button></div><p class="bset-p byou-priv"><a href="privacy.html">Privacy</a></p>`;}
 // Nights out: "5 planned · 3 played", plus ONE question about your latest past night you haven't answered (last 2 weeks)
 const isoDay=d=>d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
 function nightStats(){const L=window.NIGHT&&NIGHT.nlog?NIGHT.nlog():{},xs=Object.values(L),m=isoDay(new Date()).slice(0,7);
   return {L,planned:xs.length,played:xs.filter(x=>x.g===1).length,mPlayed:xs.filter(x=>x.g===1&&String(x.d).startsWith(m)).length};}
+// monthly recap: this month so far, or last month during the first week of a new one. Shown once there's something.
+function recapData(){const now=new Date(),early=now.getDate()<=7,d=early?new Date(now.getFullYear(),now.getMonth()-1,1):now;
+  const ym=isoDay(d).slice(0,7),name=d.toLocaleDateString("en-US",{month:"long"});
+  const L=window.NIGHT&&NIGHT.nlog?Object.values(NIGHT.nlog()):[],out=L.filter(x=>x.g===1&&String(x.d).startsWith(ym)).length,plan=L.filter(x=>String(x.d).startsWith(ym)).length;
+  const sh=window.SHACK_PASS&&SHACK_PASS.showsIn?SHACK_PASS.showsIn(ym):[],ven=new Set(sh.map(x=>x.k)).size;
+  return {ym,name,done:early,out,plan,shows:sh.length,ven};}
+function recapSec(){const r=recapData();if(!r.out&&!r.shows)return "";
+  const bits=[[r.out,"night"+(r.out===1?"":"s")+" out"],[r.shows,"show"+(r.shows===1?"":"s")],[r.ven,"venue"+(r.ven===1?"":"s")],[r.plan,"planned"]].filter(x=>x[0]);
+  return `<section class="byou-sec byou-recap"><h3>${r.done?"Your "+E(r.name):E(r.name)+" so far"}</h3><div class="byou-rc">${bits.map(([n,l])=>`<span><b>${n}</b>${E(l)}</span>`).join("")}</div>
+    <div class="bset-acts"><button type="button" data-recap>↗ Share my ${E(r.name)}</button></div></section>`;}
+document.addEventListener("click",async ev=>{const b=ev.target.closest("[data-recap]");if(!b)return;ev.preventDefault();ev.stopPropagation();const r=recapData();
+  const txt=`My ${r.name}${r.done?"":" so far"} on The Show Shack 🛖 ${[r.out&&`${r.out} night${r.out===1?"":"s"} out`,r.shows&&`${r.shows} show${r.shows===1?"":"s"}`,r.ven&&`${r.ven} venue${r.ven===1?"":"s"}`].filter(Boolean).join(" · ")}`,url=location.origin+location.pathname;
+  if(navigator.share){try{await navigator.share({text:txt,url});return;}catch(e){if(e&&e.name==="AbortError")return;}}
+  try{await navigator.clipboard.writeText(txt+"\n"+url);say("Copied. Paste it anywhere");}catch(e){prompt("Copy this",txt+"\n"+url);}},true);
 function nightsSec(){const st=nightStats();if(!st.planned)return "";
   const t=isoDay(new Date()),from=isoDay(new Date(Date.now()-14*864e5)),all=NIGHT.allNights?NIGHT.allNights():[];
   const ask=all.filter(x=>{const o=st.L[x.id];return o&&o.g==null&&o.d<t&&o.d>=from;}).sort((a,b)=>b.p.d.localeCompare(a.p.d))[0];
@@ -206,6 +221,11 @@ function errsHTML(){if(!ERRS)return "";
   return `<h4 class="badm-h">Errors on people's phones (7 days)</h4><ul class="badm-list">${ERRS.map(x=>`<li><div><b>${E(x.msg)}</b><span>${x.n}× · ${E(ago(x.last))}${x.src?` · ${E(x.src)}${x.line?":"+x.line:""}`:""}${x.page?` · ${E(x.page)} tab`:""} · ${E(br(x.ua||""))}${x.browsers>1?` +${x.browsers-1} more browser${x.browsers>2?"s":""}`:""}${x.ver?` · ${E(x.ver)}`:""}</span></div></li>`).join("")}</ul>`;}
 let COV=null;fetch("coverage.json",{cache:"no-cache"}).then(r=>r.ok?r.json():null).then(j=>{COV=j;}).catch(()=>{});
 /* weekly credibility audit (scripts/credibility.py): a score per area, the change since last week, and the spots to fix first */
+// weekly data quality check (scripts/quality.py via the Coverage workflow): listings that look wrong
+let QUAL=null;fetch("quality.json",{cache:"no-cache"}).then(r=>r.ok?r.json():null).then(j=>{QUAL=j;}).catch(()=>{});
+const QLBL={time:"Time looks off",duplicate:"Listed twice",place:"Location outside SoCal",price:"Odd price",link:"Bad ticket link",date:"No usable date",far:"Over 14 months away"};
+function qualHTML(){const q=QUAL;if(!q||!q.counts)return "";const n=Object.values(q.counts).reduce((a,b)=>a+b,0);
+  return `<h4 class="badm-h">Data check (weekly, ${E(q.checked||"")}): ${n?`${n} listing${n===1?"":"s"} to look at`:`all ${q.events} listings look fine ✓`}</h4>${n?`<ul class="badm-list">${(q.items||[]).slice(0,12).map(x=>`<li><div><b>${E(x.title)}</b><span>${E(QLBL[x.type]||x.type)} · ${E(x.why)} · ${E(x.venue||"")} ${E(x.start||"")}</span></div></li>`).join("")}</ul>`:""}`;}
 let CRED=null;fetch("credibility.json",{cache:"no-cache"}).then(r=>r.ok?r.json():null).then(j=>{CRED=j;}).catch(()=>{});
 function credHTML(){const c=CRED;if(!c||!c.areas)return "";const H=c.history||[],prev=H.length>1?H[H.length-2]:null;
   const SUB={hours:"hours",location:"pins",price:"prices",fresh:"freshness"};
@@ -229,6 +249,7 @@ function admHTML(owner){if(!admin)return owner?`<p class="bset-p">You opened own
     ${counts.length?`<h4 class="badm-h">What people use (devices per feature · last 7 days / 30 days)</h4><ul class="badm-list bcnt">${counts.map(c=>`<li><div><b>${E(FEAT[c.feature]||c.feature)}</b></div><span class="bcnt-n">${c.week||0} / ${c.total}</span></li>`).join("")}</ul>`:`<p class="bset-p">Usage counts show up here once people start using the app (private: counts only, no names).</p>`}
     ${COV&&COV.gaps&&COV.gaps.length?`<h4 class="badm-h">Venues that may be missing shows (weekly check, ${E(COV.checked||"")})</h4><ul class="badm-list">${COV.gaps.slice(0,12).map(g=>`<li><div><b>${E(g.venue)}</b><span>We list ${g.ours} · Ticketmaster has ${g.tm} in the next 60 days</span></div></li>`).join("")}</ul>`:""}
     ${errsHTML()}
+    ${qualHTML()}
     ${credHTML()}
     ${dealsHTML()}`;}
 /* ===== owner: food & afters deals (a code a restaurant gave you, a happy hour you saw). Shows on that spot's card for everyone. ===== */

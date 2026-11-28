@@ -1,6 +1,8 @@
 name: Coverage check
 # Once a week: compares how many shows we list at the top 50 venues with Ticketmaster's count, and writes coverage.json
-# (shown to the owner under You -> Owner: review). Needs the repo secret TM_API_KEY. Touches only coverage.json.
+# (shown to the owner under You -> Owner: review). Needs the repo secret TM_API_KEY. Also runs the data quality check
+# (scripts/quality.py -> quality.json: duplicates, AM/PM mix-ups, unreadable times, odd prices/places/links; no key needed).
+# Touches only coverage.json and quality.json.
 on:
   schedule:
     - cron: "23 16 * * 1"   # Mondays ~8-9 AM Pacific
@@ -17,10 +19,10 @@ jobs:
       - run: |
           git config user.name "show-shack-bot"
           git config user.email "show-shack-bot@users.noreply.github.com"
-          python3 scripts/coverage.py events.json coverage.json
-          [ -f coverage.json ] || exit 0
-          git add coverage.json
+          python3 scripts/quality.py events.json quality.json || true
+          python3 scripts/coverage.py events.json coverage.json || true
+          git add coverage.json quality.json 2>/dev/null || true
           git diff --cached --quiet && { echo "No change."; exit 0; }
-          git commit -q -m "Coverage check: $(python3 -c "import json;d=json.load(open('coverage.json'));print(len(d['gaps']),'venues look short')")"
+          git commit -q -m "Weekly checks: $(python3 -c "import json,os;c=json.load(open('coverage.json'))['gaps'] if os.path.exists('coverage.json') else [];q=json.load(open('quality.json'))['counts'] if os.path.exists('quality.json') else {};print(len(c),'venues look short,',sum(q.values()),'listings flagged')")"
           for i in 1 2 3; do git pull -q --rebase origin main && git push origin HEAD:main && exit 0; sleep 5; done
           exit 1
