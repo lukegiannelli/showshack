@@ -110,7 +110,8 @@ function logNights(){const L=nlog();let ch=false;
   const ks=Object.keys(L);if(ks.length>400){ks.sort((a,b)=>String(L[a].d).localeCompare(String(L[b].d))).slice(0,ks.length-400).forEach(k=>delete L[k]);ch=true;}
   if(ch)SH.store.set(LKEY,L);}
 function unlogNight(id){const L=nlog();if(L[id]&&L[id].g!==1){delete L[id];SH.store.set(LKEY,L);}}
-function answerNight(id,g){const L=nlog();if(!L[id])return;L[id].g=g?1:0;SH.store.set(LKEY,L);}
+function answerNight(id,g){const L=nlog();if(!L[id])return;L[id].g=g?1:0;SH.store.set(LKEY,L);
+  if(window.SHACK_PASS&&SHACK_PASS.nightAnswered)SHACK_PASS.nightAnswered(id,!!g);drawSaved();}
 function upsertNight(){const i=NIGHTS.findIndex(x=>x.id===planId);
   if(keep(plan)){const rec={id:planId,p:cleanPlan(plan)};if(i>=0)NIGHTS[i]=rec;else NIGHTS.unshift(rec);NIGHTS.sort((a,b)=>(b.p.up||0)-(a.p.up||0));if(NIGHTS.length>MAXN)NIGHTS.length=MAXN;}
   else if(i>=0)NIGHTS.splice(i,1);
@@ -621,11 +622,15 @@ function surpriseNight(){const now=todayISO(),hasO=typeof origin!=="undefined"&&
 function nName(p){return p.t||(p.s.find(x=>x.k==="show")||{}).n||(p.d?"Night of "+fmtD(p.d):"Untitled night");}
 const goSaved=()=>{const t=document.querySelector('#bTabs [data-tab="saved"]');if(t)t.click();setTimeout(()=>{const n=$("bNights");if(n)n.scrollIntoView({behavior:"smooth",block:"start"});},120);};
 let savedOn=false;
+// past dated nights: "Did it happen?" (counts it as a night out, or takes its shows out of the passport). Tap the other one to change it.
+function wentRow(x){const o=nlog()[x.id];if(!o||!x.p.d||x.p.d>=todayISO())return "";
+  return `<div class="bnc-went${o.g==null?" ask":""}">${o.g==null?"<span>Did it happen?</span>":""}<button type="button" data-ngo="${esc(x.id)}" data-g="1" aria-pressed="${o.g===1}">🙌 We went</button><button type="button" data-ngo="${esc(x.id)}" data-g="0" aria-pressed="${o.g===0}">Didn't happen</button></div>`;}
 function nightCard(x){const p=x.p,cur=x.id===planId,tot=p.s.length?dmg(p).tot:0,sh=p.s.find(s=>s.k==="show");
   return `<article class="bnc${cur?" cur":""}" style="--sc:${sh?TYPES.show[2]:TYPES[(p.s[0]||{}).k||"other"][2]}">
     <div class="bnc-top">${cur?'<span class="bnc-tag">Editing now</span>':""}<b>${esc(nName(p))}</b><span>${esc(p.d?fmtD(p.d):"Date TBD")} · ${p.s.length} stop${p.s.length===1?"":"s"}${tot?` · ≈ $${Math.round(tot)} each`:""}</span></div>
     <ol class="bnc-stops">${p.s.slice(0,4).map(s=>`<li>${tic(s.k,"sm")}<span>${s.tm?`<em>${esc(fmtT(s.tm))}</em> `:""}${esc(s.n||TYPES[s.k][1])}</span></li>`).join("")}${p.s.length>4?`<li class="more">+${p.s.length-4} more</li>`:""}</ol>
     ${p.up?`<small class="bnc-up">Updated ${esc(fmtUp(p.up))}</small>`:""}
+    ${wentRow(x)}
     <div class="bnc-act">${p.d&&p.d<todayISO()?`<button type="button" class="bnc-open" data-nagain="${esc(x.id)}">🔁 Do it again</button>`:`<button type="button" class="bnc-open" data-nopen="${esc(x.id)}">${cur?"Keep building":"Open in Plan"}</button>`}<button type="button" data-nshare="${esc(x.id)}">Share</button><button type="button" class="bn-trash bnc-del" data-ndel="${esc(x.id)}" aria-label="Delete ${esc(nName(p))}">${tic("trash")}</button></div></article>`;}
 function drawSaved(){if(!savedOn)return;let el=$("bNights");const list=$("list");if(!list)return;
   if(!el){el=document.createElement("section");el.id="bNights";el.className="bnights";el.setAttribute("aria-label","Your nights");list.before(el);
@@ -647,7 +652,7 @@ function drawSaved(){if(!savedOn)return;let el=$("bNights");const list=$("list")
     .sort((a,b)=>(a.p.d||"9999").localeCompare(b.p.d||"9999")||(b.p.up||0)-(a.p.up||0));
   el.innerHTML=`<div class="bpicks-h"><h2 class="bsec">${tic("after","sm")} Your nights${NIGHTS.length?` · ${NIGHTS.length}`:""}</h2><button type="button" class="blink" data-nnew="1">＋ New night</button></div>
     ${up.length?`<h3 class="bnc-h">Coming up · soonest first</h3><div class="bnc-row">${up.map(nightCard).join("")}</div>`:NIGHTS.length?"":`<p class="bnone">Nights you build in Plan a night land here, so you can work on a few and flip between them.</p>`}
-    ${past.length?`<h3 class="bnc-h">Past nights · their shows are in your Show passport</h3><div class="bnc-row bnc-past">${past.map(nightCard).join("")}</div>`:""}
+    ${past.length?`<h3 class="bnc-h">Past nights · say which ones happened</h3><div class="bnc-row bnc-past">${past.map(nightCard).join("")}</div>`:""}
     <h2 class="bsec bnights-sh">${tic("show","sm")} Saved shows</h2>`;}
 function savedRow(on){savedOn=on;if(on)drawSaved();else{const el=$("bNights");if(el)el.hidden=true;}}
 

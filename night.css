@@ -250,3 +250,10 @@ button.nv-sum span{font:600 12px var(--body);color:#cfc6ea;text-decoration:under
 .bfeed li em{font-style:normal;font-size:12px;color:#7FD4FF}
 .bfeed .starbtn{flex:none;margin:0}
 .bfeed-go{flex:none;font:600 12px var(--body);color:#FFC66B;text-decoration:none;padding:8px 4px}
+/* past night cards: "Did it happen?" */
+.bnc-went{display:flex;flex-wrap:wrap;align-items:center;gap:6px}
+.bnc-went span{flex:1 1 100%;font-size:13px;font-weight:700;color:#FFC66B}
+.bnc-went button{flex:1;min-height:36px;padding:0 10px;border-radius:999px;border:1px solid rgba(255,255,255,.18);background:transparent;color:#d9d2f0;font:600 12.5px var(--body);cursor:pointer}
+.bnc-went:not(.ask) button[aria-pressed="false"]{opacity:.55}
+.bnc-went button[aria-pressed="true"]{background:rgba(126,224,184,.18);border-color:#7ee0b8;color:#fff}
+.bnc-went button[data-g="0"][aria-pressed="true"]{background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.35)}
