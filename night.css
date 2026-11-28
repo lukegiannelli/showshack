@@ -260,3 +260,10 @@ button.nv-sum span{font:600 12px var(--body);color:#cfc6ea;text-decoration:under
 /* "Coming up" / "Past nights" labels: the pale lilac vanished on the light page; use the page's muted ink (dark mode keeps lilac) */
 .ui-b .bnc-h{color:var(--muted,#5b5470)}
 @media (prefers-color-scheme:dark){:root.ui-b:not([data-theme="light"]) .bnc-h{color:#cfc6ea}}
+/* light mode: "+ My night" and "30s preview" were pale lilac / pink text made for dark cards, so on light cards they
+   looked switched off. Same colors, deeper shades. Dark mode unchanged. */
+@media (prefers-color-scheme:light){
+  .ui-b .nadd:not(.done){color:#5b3aa6;border-color:rgba(110,70,210,.5);background:rgba(150,110,255,.12)}
+  .ui-b .nadd.done{color:#16795a;border-color:#2f9e74}
+  .ui-b .bpv:not(.on){color:#a81f86;border-color:#d94bbd;background:rgba(255,111,224,.12)}
+}

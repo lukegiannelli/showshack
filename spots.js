@@ -19,6 +19,9 @@ const SVC={sit:"Sit-down, 20% tip",bar:"20% tip on drinks",counter:"Counter serv
 const $r=(a,b)=>a===b?"$"+a:`$${a}–${b}`;
 /* ---- Food extras: plan around a show (near it / still open after), $–$$$, saved, dietary, group bill, booking, Feed me ---- */
 const F={show:"",open:false,price:"",diet:"",fav:false,spun:"",deal:false};let LASTX=[];
+// Afters search: name, address, city, area/vibe tags, kind of place. Accents and punctuation don't matter.
+let AQ="";const qn=t=>String(t||"").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^a-z0-9]+/g," ").trim();
+const aMatch=p=>{const q=qn(AQ);if(!q)return true;const hay=qn([p.n,p.a,p.city,(p.t||[]).join(" "),label(p)[1]].join(" "));return q.split(" ").every(w=>hay.includes(w));};
 let PPL=1;try{PPL=Math.min(12,Math.max(1,+SH.store.raw("shack-fppl")||1));}catch(e){}
 const FAV=new Set((()=>{try{return JSON.parse(SH.store.raw("shack-favfood")||"[]");}catch(e){return [];}})());
 const saveFav=()=>{try{SH.store.put("shack-favfood",JSON.stringify([...FAV]));}catch(e){}};
@@ -36,6 +39,7 @@ function foodTools(all){const aft=cur==="after",up=(state._up||[]).filter(e=>typ
   const starred=up.filter(e=>state.stars.has(skey(e))).slice(0,15),tn=r?up.filter(e=>e.start<=r[1]&&(e.end||e.start)>=r[0]&&!state.stars.has(skey(e))).slice(0,25):[];
   const opt=x=>`<option value="${esc(hid(x))}"${F.show===hid(x)?" selected":""}>${esc(String(x.title).slice(0,38))} · ${esc(x.venue)} · ${esc(dayS(x))}</option>`;
   const e=pickedShow(),se=e&&showEnd(e),diets=[...new Set(all.flatMap(x=>x.p.diet||[]))];
+  if(aft)return `<label class="bvsearch bsp-q">${ni("search")}<input type="search" data-aq placeholder="Search ${all.length} spots: name, area or vibe" value="${esc(AQ)}" autocomplete="off" enterkeyhint="search" aria-label="Search afters"></label>`;
   return `<label class="bft-show">${ic("fest","sm")}<select data-fshow aria-label="Plan ${aft?"afters":"food"} around a show"><option value="">${aft?"After which show?":"Plan around a show…"}</option>
       ${starred.length?`<optgroup label="Your starred shows">${starred.map(opt).join("")}</optgroup>`:""}${tn.length?`<optgroup label="Tonight">${tn.map(opt).join("")}</optgroup>`:""}</select></label>
     ${e?`<div class="bft-row"><button type="button" class="chip" data-fopen aria-pressed="${F.open}">🌙 Still open after it ends</button><span class="bft-note">Ends around ${clockS(se.end)}${se.guess?" (guess, no start time listed)":""}. Closest to ${esc(e.venue)} first.</span></div>`:""}
@@ -153,8 +157,10 @@ function mount(){if($("bSpots"))return;const sec=document.createElement("section
     const pp=ev.target.closest("[data-fppl]");if(pp){PPL=Math.min(12,Math.max(1,PPL+ +pp.dataset.fppl));try{SH.store.put("shack-fppl",PPL);}catch(e){}draw();return;}
     if(ev.target.closest("[data-fspin]")){const pool=LASTX.slice(0,12).filter(x=>fkey(x.p)!==F.spun);if(!pool.length)return;
       F.spun=fkey(pool[Math.floor(Math.random()*pool.length)].p);draw();const c=$("bSpList").querySelector(".spc.spun");if(c)c.scrollIntoView({behavior:"smooth",block:"center"});return;}});
+  sec.addEventListener("input",ev=>{const q=ev.target.closest("[data-aq]");if(q){AQ=q.value;F.spun="";draw();}});
+  sec.addEventListener("click",ev=>{if(ev.target.closest("[data-aqx]")){AQ="";const q=sec.querySelector("[data-aq]");if(q){q.value="";q.focus();}draw();}});
   sec.addEventListener("change",ev=>{const s=ev.target.closest("[data-fshow]");if(s){F.show=s.value;F.open=cur==="after"&&!!s.value;F.spun="";draw();}});}
-function open(k){if(k!==cur){F.show="";F.open=false;}cur=k;sub="";late=false;tag="";F.spun="";F.deal=false;mount();BUI.show("spots");}
+function open(k){if(k!==cur){F.show="";F.open=false;AQ="";}cur=k;sub="";late=false;tag="";F.spun="";F.deal=false;mount();BUI.show("spots");}
 function draw(){mount();const K=SCR(cur),all=list(cur);
   $("bSpTitle").textContent=K.title;$("bSpBlurb").textContent=K.blurb;
   $("bSpots").dataset.k=cur;
@@ -168,7 +174,7 @@ function draw(){mount();const K=SCR(cur),all=list(cur);
     +(cur==="after"&&(nDeals||F.deal)?`<button type="button" class="chip bdeal-chip" data-fdeal aria-pressed="${F.deal}">🏷 Deals</button>`:"")
     +(cur==="chill"?TAGF.map(t=>`<button type="button" class="chip" data-stag="${t}" aria-pressed="${tag===t}">${t==="Fire rings"?"🔥":t==="Tide pools"?"🦀":"🌅"} ${t}</button>`).join(""):"");
   const E=N.EXP||{},subOk=p=>!sub||(sub.startsWith("x:")?E[p.c]===sub.slice(2):p.c===sub);
-  let xs=sorted(all.filter(x=>subOk(x.p)&&(!late||late24(x.p))&&(!tag||hasTag(x.p,tag))&&(!F.deal||dealOf(x.p))));
+  let xs=sorted(all.filter(x=>subOk(x.p)&&(!late||late24(x.p))&&(!tag||hasTag(x.p,tag))&&(!F.deal||dealOf(x.p))&&(cur!=="after"||aMatch(x.p))));
   if(F.deal&&(cur==="food"||cur==="after"))xs=xs.map((x,j)=>({x,j,k:dealNow(dealOf(x.p)).k})).sort((a,b)=>a.k-b.k||a.j-b.j).map(o=>o.x);
   const tools=cur==="food"||cur==="after",e=tools?pickedShow():null;
   if(cur==="food")xs=xs.filter(x=>(!F.price||String(tierOf(x.p))===F.price)&&(!F.fav||FAV.has(fkey(x.p)))&&(!F.diet||(x.p.diet||[]).includes(F.diet)));
@@ -176,10 +182,10 @@ function draw(){mount();const K=SCR(cur),all=list(cur);
     if(e){xs.forEach(x=>x.fs=fromShow(x.p,e));if(F.open){const end=showEnd(e).end;xs=xs.filter(x=>x.p.til&&x.p.til*60>=end);}xs.sort((a,b)=>a.fs.mi-b.fs.mi);}
     LASTX=xs.slice();
     if(F.spun){const i=xs.findIndex(x=>fkey(x.p)===F.spun);if(i>0)xs.unshift(xs.splice(i,1)[0]);}}
-  $("bSpTools").innerHTML=tools?foodTools(all):"";$("bSpTools").hidden=!tools;
+  const tb=$("bSpTools");const qi=tb.querySelector("[data-aq]");if(!(cur==="after"&&tb.dataset.k==="after"&&qi&&qi===document.activeElement)){tb.innerHTML=tools?foodTools(all):"";tb.dataset.k=cur;}tb.hidden=!tools;
   $("bSpCount").textContent=xs.length+(xs.length===1?" spot":" spots")+(e?" · closest to the show":origin?" · closest first":"");
   const hint=origin?"":`<button type="button" class="spc-start" data-sstart>${ic("drive")}<span><b>See drive times</b><small>Set where you're starting from</small></span></button>`;
-  $("bSpList").innerHTML=hint+(xs.length?xs.map(x=>card(x,K.c)).join(""):'<p class="bnone">Nothing here yet.</p>');}
+  $("bSpList").innerHTML=hint+(xs.length?xs.map(x=>card(x,K.c)).join(""):cur==="after"&&AQ?`<p class="bnone">No afters match “${esc(AQ)}”. <button type="button" class="blink" data-aqx>Clear search</button></p>`:'<p class="bnone">Nothing here yet.</p>');}
 
 /* ---- Chill & community results: a row of chill spots (beaches, stargazing) above the events ---- */
 function chillRow(on){let el=$("bChillSpots");

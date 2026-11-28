@@ -176,3 +176,5 @@ html.rpop-on,html.rpop-on body{overflow:hidden}
 .spc-chk.old{color:#b5650d}
 :root[data-theme="light"] .spc-chk.old{color:#9a5206}
 @media (prefers-color-scheme:light){:root:not([data-theme="dark"]) .spc-chk.old{color:#9a5206}}
+/* Afters search: same box as Venues search, not sticky here (the chips sit right above it) */
+.ui-b .bsp-q{position:static;margin:0}
