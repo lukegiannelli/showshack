@@ -890,3 +890,9 @@ html.b-you .wrap{display:none}
 .ui-b .byou-page .byou-rc span{display:flex;flex-direction:column;min-width:72px;padding:8px 12px;border-radius:14px;border:1px solid var(--line);font-size:12.5px;color:var(--muted)}
 .ui-b .byou-page .byou-rc b{font:800 22px var(--body);color:var(--ink);line-height:1.1}
 .ui-b .byou-page .byou-priv{text-align:center;margin-top:6px}
+/* You -> Account: delete my account (quiet until tapped, red once it's the "tap again" step) */
+.bcloud-del{flex:1 1 100%;margin-top:4px;padding:8px 0;background:none;border:0;color:var(--muted);font:600 13px var(--body);text-decoration:underline;text-underline-offset:3px;text-align:left;cursor:pointer}
+.bcloud-del.sure{color:#C2272D;text-decoration:none;font-weight:700}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .bcloud-del.sure{color:#FF8A8A}}
+.bcloud-s.warn{color:#C2272D}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .bcloud-s.warn{color:#FF8A8A}}
