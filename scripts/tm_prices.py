@@ -267,7 +267,7 @@ def main():
     today = datetime.now(timezone.utc).astimezone().date()
     today_s = today.isoformat()
     fresh_cut = (today - timedelta(days=FRESH_DAYS)).isoformat()
-    matched = priced = changed = cancelled = dated = 0
+    matched = priced = changed = cancelled = dated = timed = 0
     for ev in data.get("events", []):
         if ev.get("url"):
             ev["url"] = clean_url(ev["url"])
@@ -280,6 +280,14 @@ def main():
         if not cands:
             continue
         matched += 1
+        # missing show time: fill it from Ticketmaster's official start time, only when every match agrees on one time
+        # (early + late sets with different times are skipped) and it isn't a midnight placeholder. Never overwrites a time.
+        if not str(ev.get("time") or "").strip():
+            ts = {str(t.get("time"))[:5] for t in cands if t.get("time")}
+            if len(ts) == 1 and next(iter(ts)) != "00:00":
+                c = clock(next(iter(ts)))
+                if c:
+                    ev["time"], ev["timeSrc"] = c, "ticketmaster"; timed += 1
         sale0 = min((t["sale0"] for t in cands if t.get("sale0")), default=None)
         if sale0 and (not ev.get("announcedAt") or sale0 < ev["announcedAt"]):
             ev["announcedAt"] = sale0   # powers "Just announced" (scripts/firstseen.py)
@@ -330,7 +338,7 @@ def main():
             ev.pop("presaleAt")
     added = add_missing(data, tm, today)
     note = (f"Ticketmaster: {len(tm)} listings checked, {matched} matched, {priced} priced, {changed} price moves, "
-            f"{cancelled} cancelled, {dated} on-sale dates fixed, {added} added.")
+            f"{cancelled} cancelled, {dated} on-sale dates fixed, {timed} missing times filled, {added} added.")
     data["tmNote"], data["tmRun"] = note, datetime.now(timezone.utc).isoformat(timespec="seconds")
     n_before = len(data.get("events", []))
     s = json.dumps(data, ensure_ascii=False, separators=(",", ":"))
