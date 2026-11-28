@@ -42,5 +42,55 @@
       "form_factor": "narrow",
       "label": "Shows with prices, drive times and night cost"
     }
+  ],
+  "shortcuts": [
+    {
+      "name": "What's on tonight",
+      "short_name": "Tonight",
+      "url": "./?go=tonight",
+      "icons": [
+        {
+          "src": "icon-192.png?v=2",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "Saved shows and nights",
+      "short_name": "Saved",
+      "url": "./?go=saved",
+      "icons": [
+        {
+          "src": "icon-192.png?v=2",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "Plan a night",
+      "short_name": "Plan a night",
+      "url": "./?go=plan",
+      "icons": [
+        {
+          "src": "icon-192.png?v=2",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "Afters and late night",
+      "short_name": "Afters",
+      "url": "./?go=afters",
+      "icons": [
+        {
+          "src": "icon-192.png?v=2",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    }
   ]
 }

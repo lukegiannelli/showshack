@@ -32,8 +32,12 @@ document.querySelector(".wrap").insertBefore($("budgetBar"),$("alertBar"));
 const bStart=document.createElement("button");bStart.type="button";bStart.className="chip bstart";bStart.textContent="Set your start point for drive times";tools.appendChild(bStart);
 const goStart=()=>{state.view="list";show("budget");setTimeout(()=>{const b=$("startEdit");if(b)b.click();},80);};
 bStart.onclick=goStart;
-function askStart(){if(origin)return;try{if(SH.store.raw("shack-askstart"))return;SH.store.put("shack-askstart","1");}catch(e){return;}
-  setTimeout(()=>{if(window.NIGHT&&NIGHT.toast)NIGHT.toast("📍 Want drive times on every show? Set where you leave from.","Set it",goStart,9000);},350);}
+// asked once; waits while you're typing in a box or have a form open, so it never sits on top of what you're doing
+function askStart(){if(origin)return;try{if(SH.store.raw("shack-askstart"))return;}catch(e){return;}let n=0;
+  const busy=()=>{const a=document.activeElement;return (a&&a.matches&&a.matches("input,textarea,select"))||!!document.querySelector(".wrongf,dialog[open]:modal");};
+  const go=()=>{if(origin)return;if(busy()){if(n++<20)setTimeout(go,3000);return;}try{SH.store.put("shack-askstart","1");}catch(e){}
+    if(window.NIGHT&&NIGHT.toast)NIGHT.toast("📍 Want drive times on every show? Set where you leave from.","Set it",goStart,9000);};
+  setTimeout(go,350);}
 $("bFilt").onclick=()=>{flags.hidden=!flags.hidden;$("bFilt").setAttribute("aria-expanded",String(!flags.hidden));};
 
 /* ---- when switch (home + results share it) ---- */
@@ -1008,6 +1012,12 @@ const target=(location.hash||"").slice(1);
 if(/^pp=[01][A-Za-z0-9_-]+$/.test(target)){try{history.replaceState(null,"",location.pathname);}catch(e){}setTimeout(()=>compareFrom(target.slice(3)),300);}
 if(target&&/^[ep]-/.test(target)){cur="all";state.when="any";show("results",true);openCard(target);}
 else show("home",true);
+// home-screen shortcuts (manifest "shortcuts", Android / desktop): ?go=tonight | saved | plan | afters
+(()=>{const g=new URLSearchParams(location.search).get("go");if(!g)return;
+  try{const u=new URL(location.href);u.searchParams.delete("go");history.replaceState(null,"",u.pathname+u.search+u.hash);}catch(e){}
+  const tap=sel=>{let n=0;const t=()=>{const b=document.querySelector(sel);if(b)b.click();else if(n++<40)setTimeout(t,150);};t();};
+  setTimeout(()=>{if(g==="tonight"){state.when="tonight";openResults("all");}else if(g==="saved")tap('#bTabs [data-tab="saved"]');
+    else if(g==="plan")tap('#bTabs [data-tab="budget"]');else if(g==="afters")tap('[data-spots="after"]');},250);})();
 setTimeout(()=>{let seen="";try{seen=SH.store.raw("shack-new")||"";}catch(e){}if(window.SHACK_FIRST){try{SH.store.put("shack-new",WN_VER);}catch(e){}return;}if(seen!==WN_VER&&screen==="home"&&!document.querySelector("dialog[open],#nightView,#bCmp:not([hidden])"))whatsNew();},1600);
 })();
 

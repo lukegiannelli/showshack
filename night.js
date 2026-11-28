@@ -155,6 +155,8 @@ function goLine(s){if(!s.w)return "";const w=s.w==="drive"&&s.dr?`${esc(s.dr)} i
 let tt=0;function toast(msg,act,fn,ms){let el=$("nToast");if(!el){el=document.createElement("div");el.id="nToast";el.className="ntoast";el.setAttribute("role","status");document.body.appendChild(el);}
   el.innerHTML=`<span>${msg}</span>${act?`<button type="button">${act}</button>`:""}`;if(act)el.querySelector("button").onclick=()=>{el.classList.remove("on");fn();};
   el.classList.add("on");clearTimeout(tt);tt=setTimeout(()=>el.classList.remove("on"),ms||3800);}
+// tapping into a text box (search, a note, a form): the toast slides away so it never covers the keyboard or a Send button
+document.addEventListener("focusin",ev=>{const t=ev.target;if(t&&t.matches&&t.matches("input:not([type=checkbox]):not([type=radio]),textarea,select")){const el=$("nToast");if(el)el.classList.remove("on");}});
 const openPlan=()=>{const b=document.querySelector('#bTabs [data-tab="budget"]');if(b)b.click();setTimeout(()=>{const n=$("bNight");if(n)n.scrollIntoView({behavior:"smooth",block:"start"});},120);};
 
 /* ---------- adding stops from anywhere ---------- */
