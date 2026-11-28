@@ -101,5 +101,25 @@ SH.cal={
   say(m){if(window.NIGHT&&NIGHT.toast)NIGHT.toast(m);}
 };
 
+/* ---- error reports: when something breaks on someone's phone, a short note goes to the Shack's database (client_errors,
+   see supabase/feedback.sql): the message, which file and line, which tab, the browser, the app version. No account, no
+   personal data, nothing read back. At most 5 per visit, each error once; skipped offline and on test copies. ---- */
+(()=>{const sent=new Set();let n=0;
+  const live=()=>/github\.io$|showshack/i.test(location.hostname)&&!/^(localhost|127\.|shack\.test)/.test(location.hostname);
+  const ver=()=>{const m=[...document.scripts].map(s=>/\/app\.js\?v=(\d+)/.exec(s.src)).find(Boolean);return m?"app"+m[1]:"";};
+  const page=()=>{if(document.documentElement.classList.contains("b-you"))return "you";const t=document.querySelector("#bTabs [data-tab][aria-current]");return t?t.dataset.tab:"";};
+  const short=(u)=>String(u||"").replace(location.origin+location.pathname.replace(/[^/]*$/,""),"").replace(/\?.*$/,"").slice(0,200);
+  function report(msg,src,line){msg=String(msg||"").trim().slice(0,300);
+    if(!msg||n>=5||!navigator.onLine||!live())return;
+    if(/^Script error\.?$|ResizeObserver loop|extension:\/\/|^Load failed$|^Failed to fetch$|NetworkError|AbortError/i.test(msg+" "+(src||"")))return;   // noise we can't act on
+    if(src&&!/^https?:/.test(src)&&!/\.js/.test(src))return;
+    const k=msg+"|"+src+"|"+line;if(sent.has(k))return;sent.add(k);n++;
+    try{fetch(SH.sb.url+"/rest/v1/client_errors",{method:"POST",keepalive:true,headers:{apikey:SH.sb.key,"Content-Type":"application/json",Prefer:"return=minimal"},
+      body:JSON.stringify({msg,src:short(src),line:line|0,page:page().slice(0,60),ua:navigator.userAgent.slice(0,160),ver:ver().slice(0,20)})}).catch(()=>{});}catch(e){}}
+  addEventListener("error",ev=>{if(ev.target&&ev.target!==window)return;report(ev.message,ev.filename,ev.lineno);});   // script errors only, not broken images
+  addEventListener("unhandledrejection",ev=>{const r=ev.reason;const st=String(r&&r.stack||"");const m=/(https?:\/\/[^\s)]+?\.js[^\s):]*):(\d+)/.exec(st);
+    report(r&&r.message?r.message:String(r),m?m[1]:"",m?+m[2]:0);});
+  SH.report=report;})();
+
 window.SH=SH;
 })();

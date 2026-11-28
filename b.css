@@ -22,10 +22,10 @@
 
 /* home header: the shack, shorter, so the vibes are on the first screen */
 .ui-b header{aspect-ratio:auto;height:clamp(230px,62vw,330px);background:#1a0f33}
-.ui-b header::after{content:"";position:absolute;inset:-24px;z-index:-2;background:url(header.jpg?v=5) center 35%/cover no-repeat;filter:blur(9px) brightness(.62) saturate(1.1)}
+.ui-b header::after{content:"";position:absolute;inset:-24px;z-index:-2;background:url(header.jpg?v=6) center 35%/cover no-repeat;filter:blur(9px) brightness(.62) saturate(1.1)}
 .ui-b header{border-radius:22px;clip-path:inset(0 round 22px);-webkit-clip-path:inset(0 round 22px);transform:translateZ(0)}
 .ui-b header::after{display:none}
-.ui-b .hutart::before,.ui-b .hutart::after{content:"";position:absolute;top:0;bottom:0;width:100%;background:url(header.jpg?v=5) center/100% 100% no-repeat;transform:scaleX(-1);pointer-events:none}
+.ui-b .hutart::before,.ui-b .hutart::after{content:"";position:absolute;top:0;bottom:0;width:100%;background:url(header.jpg?v=6) center/100% 100% no-repeat;transform:scaleX(-1);pointer-events:none}
 .ui-b .hutart::before{right:calc(100% - 1px)}.ui-b .hutart::after{left:calc(100% - 1px)}
 .ui-b header .shack-share{background:linear-gradient(180deg,#FBE3A8 0%,#EFC27A 55%,#D99A4E 100%)}
 .ui-b header h1.shack-title{font-size:clamp(26px,8vw,46px)}
@@ -199,7 +199,7 @@
 .binfo-in{position:relative;isolation:isolate;max-height:calc(100dvh - 32px);overflow-y:auto;padding:22px 18px 18px;border-radius:22px;border:2px solid transparent;
   background:linear-gradient(180deg,rgba(18,9,40,.86),rgba(14,7,30,.96)) padding-box,linear-gradient(100deg,#ff8fb1,#ffc58a,#ffe97a,#8ff0b0,#7fd6ff,#a99bff,#ff9be0,#ff8fb1) border-box;
   background-size:100% 100%,300% 100%;animation:ledborder 8s linear infinite;box-shadow:0 0 28px -4px rgba(190,160,255,.55),0 18px 40px rgba(0,0,0,.5)}
-.binfo-in::before{content:"";position:absolute;inset:0;z-index:-1;border-radius:20px;background:url(header.jpg?v=5) center 30%/cover no-repeat;opacity:.16}
+.binfo-in::before{content:"";position:absolute;inset:0;z-index:-1;border-radius:20px;background:url(header.jpg?v=6) center 30%/cover no-repeat;opacity:.16}
 .binfo-x{position:absolute;top:10px;right:10px;width:34px;height:34px;border-radius:50%;border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.06);color:#fff;font-size:15px;cursor:pointer}
 .binfo-kick{margin:0;font:600 12px var(--mono);letter-spacing:.6px;text-transform:uppercase;color:#bfeaff}
 .binfo h2{margin:4px 0 12px;font-family:var(--display);font-weight:900;font-size:34px;line-height:1;text-transform:uppercase;letter-spacing:.5px;
@@ -871,3 +871,17 @@ html.b-you .wrap{display:none}
 .bso-per{flex:1 1 100%;display:flex;gap:6px}
 .bso-per button{flex:1;min-height:40px;border-radius:999px;border:1px solid var(--line,rgba(255,255,255,.15));background:transparent;color:inherit;font:700 13px var(--body);cursor:pointer}
 .bso-per button[aria-pressed="true"]{background:var(--ink,#fff);color:var(--surface,#111);border-color:transparent}
+/* "Something wrong with this listing?": opened cards only */
+.wrongbtn,.wrongf,.wrongf-ok{grid-column:1/-1;flex:1 1 100%;width:100%;box-sizing:border-box}
+.wrongbtn{display:block;margin:10px 0 0;text-align:left;padding:6px 0;background:none;border:0;color:var(--muted);font:600 12.5px var(--body);text-decoration:underline;text-underline-offset:3px;cursor:pointer}
+.ui-b #list article.card:not(.open) .wrongbtn,.ui-b .bfc-f .wrongbtn,.ui-b .bfc .wrongbtn{display:none!important}
+.wrongf{margin:10px 0 0;padding:12px;border-radius:14px;border:1px solid var(--line);background:color-mix(in srgb,var(--surface) 85%,transparent);color:var(--ink)}
+.wrongf p{margin:0 0 6px;font:700 13.5px var(--body)}
+.wrong-ch{display:grid;gap:2px;margin-bottom:8px}
+.wrong-ch label{display:flex;align-items:center;gap:8px;min-height:36px;font-size:13.5px;cursor:pointer}
+.wrong-ch input{width:18px;height:18px;accent-color:#ff7ab8}
+.wrongf input[name=n]{width:100%;box-sizing:border-box;min-height:42px;padding:8px 12px;border-radius:12px;border:1px solid var(--line);background:var(--surface);color:var(--ink);font:14px var(--body)}
+.wrongf-ok{margin:10px 0 0;font:600 13px var(--body);color:#2f9e74}
+/* friends interested in a show: readable on light cards */
+.ui-b .fgo{color:#16795a;font-weight:700}
+@media (prefers-color-scheme:dark){:root.ui-b:not([data-theme="light"]) .fgo{color:#7ee0b8}}

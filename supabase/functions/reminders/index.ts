@@ -5,6 +5,9 @@
 // music, plus names you typed) or at a venue you follow (radar-prefs pinV), one bundled ping for the day.
 // Also "On sale today": a show you starred whose presale or public on-sale opens today (presaleAt / onSaleAt), unless you
 // already marked it "Got tickets" (shack-tix). The daily run is 9 AM Pacific, an hour before most on-sales open.
+// Also "Your weekend" (Thursdays): up to 3 picks for Fri–Sun — shows you starred, shows your friends starred, then new
+// matches for artists you listen to / venues you follow — plus who among your friends is into what. Sent only when there's
+// something to say; switch: push_subscriptions.weekend_picks. A dry run with {dry:true, weekend:true} previews it any day.
 // Also: a signed-in person can call it with {test:true} to get a test notification on their own devices.
 // Each reminder is sent once (push_log). Dead subscriptions (the phone unsubscribed) are cleaned up.
 import { createClient } from "npm:@supabase/supabase-js@2.45.4";
@@ -15,11 +18,11 @@ const json = (o: unknown, status = 200) => new Response(JSON.stringify(o), { sta
 const hid = (id: string) => "e-" + String(id).toLowerCase().replace(/[^a-z0-9-]/g, "-").slice(0, 80);
 const laDay = (d: Date) => new Intl.DateTimeFormat("en-CA", { timeZone: "America/Los_Angeles" }).format(d);
 
-type Sub = { endpoint: string; user_id: string; p256dh: string; auth_key: string; remind_day_before: boolean; price_drops: boolean; new_shows?: boolean };
+type Sub = { endpoint: string; user_id: string; p256dh: string; auth_key: string; remind_day_before: boolean; price_drops: boolean; new_shows?: boolean; weekend_picks?: boolean };
 type Msg = { title: string; body: string; url: string };
 
 // the same whole-act matching as music.js: "Drake" matches "Drake: Tour" or a lineup listing Drake, not "Drake Milligan"
-const N = (s: string) => String(s || "").toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/&/g, " and ").replace(/\+/g, " and ").replace(/[^a-z0-9]+/g, " ").trim();
+const N = (s: string) => String(s || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/&/g, " and ").replace(/\+/g, " and ").replace(/[^a-z0-9]+/g, " ").trim();
 const acts = (e: any) => {
   const parts = String(e.title || "").toLowerCase().split(/\s*(?::|\s[-–—]\s|,|&|\+|\/|\(|\bw\/|\bwith\b|\bfeat\.?|\bft\.?|\band\b|\bx\b|\bpresents\b)\s*/);
   return [...parts, ...String(e.artists || "").toLowerCase().split(/\s*(?:,|;|\/|&|\band\b|·)\s*/)].map(N).filter(Boolean);
@@ -145,8 +148,60 @@ Deno.serve(async (req) => {
     }
   } catch (_) { /* fresh.json or follow_artists not there yet: skip just-announced today */ }
 
+  // "Your weekend": Thursdays at the daily run. Starred first, then what friends starred, then music / followed-venue matches.
+  const dow = new Intl.DateTimeFormat("en-US", { timeZone: "America/Los_Angeles", weekday: "short" }).format(new Date());
+  if (dow === "Thu" || (dry && body.weekend)) {
+    try {
+      const toFri = (5 - ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].indexOf(dow) + 7) % 7;   // Thursday → 1 (tomorrow)
+      const days = [0, 1, 2].map((i) => laDay(new Date(Date.now() + (toFri + i) * 864e5)));
+      const wkEvs = evs.filter((e) => e.start && days.includes(e.start) && e.status !== "cancelled");
+      if (wkEvs.length) {
+        const wkByKey = new Map(wkEvs.map((e) => ["e:" + e.id, e]));
+        const { data: fr } = await db.from("friends").select("user_id,friend_id").in("user_id", users);
+        const fids = [...new Set((fr || []).map((r: any) => r.friend_id))];
+        const { data: fpp } = fids.length ? await db.from("passports").select("user_id,data").in("user_id", fids) : { data: [] };
+        const { data: fprof } = fids.length ? await db.from("profiles").select("user_id,name").in("user_id", fids) : { data: [] };
+        const nameOf = new Map((fprof || []).map((r: any) => [r.user_id, String(r.name || "").trim().split(/\s+/)[0]]));
+        const starsOf = new Map((fpp || []).map((r: any) => [r.user_id, (r.data?.k?.["radar-stars"]?.v || []) as string[]]));
+        const { data: fa } = await db.from("follow_artists").select("user_id,names").in("user_id", users);
+        const artistsOf = new Map((fa || []).map((r: any) => [r.user_id, r.names || []]));
+        const short = (s: string) => fmtDay(s).split(",")[0];   // "Fri"
+        for (const p of pp || []) {
+          const to = subs.filter((s) => s.user_id === p.user_id && s.weekend_picks !== false);
+          if (!to.length) continue;
+          const mineStars: string[] = p.data?.k?.["radar-stars"]?.v || [];
+          const friendIds = (fr || []).filter((r: any) => r.user_id === p.user_id).map((r: any) => r.friend_id);
+          const fWho = new Map<string, string[]>();
+          for (const f of friendIds) for (const k of starsOf.get(f) || []) if (wkByKey.has(k) && nameOf.get(f)) fWho.set(k, [...(fWho.get(k) || []), nameOf.get(f)!]);
+          const picks: { e: any; who?: string[] }[] = [], seenK = new Set<string>();
+          const add = (k: string, who?: string[]) => { const e = wkByKey.get(k); if (!e || seenK.has(k) || picks.length >= 3) return; seenK.add(k); picks.push({ e, who }); };
+          for (const k of mineStars) add(k, fWho.get(k));
+          for (const [k, who] of [...fWho.entries()].sort((a, b) => b[1].length - a[1].length)) add(k, who);
+          if (picks.length < 3) {
+            const typed: string[] = p.data?.k?.["shack-music"]?.v?.typed || [];
+            const mute = new Set((p.data?.k?.["shack-music"]?.v?.mute || []).map(N));
+            const names = [...typed, ...(artistsOf.get(p.user_id) || [])].filter((n) => !mute.has(N(n)));
+            const pins = new Set<string>(p.data?.k?.["radar-prefs"]?.v?.pinV || []);
+            const hit = names.length ? matcher(names) : () => null;
+            for (const e of wkEvs) if (hit(e) || pins.has((e.venue || "") + " · " + (e.city || ""))) add("e:" + e.id);
+          }
+          if (!picks.length) continue;   // nothing to say: no ping
+          picks.sort((a, b) => a.e.start.localeCompare(b.e.start));
+          const crew = picks.find((x) => x.who && x.who.length);
+          const line = picks.map((x) => `${short(x.e.start)}: ${x.e.title}`).join(" · ");
+          const msg = picks.length === 1
+            ? { title: "This weekend: " + picks[0].e.title, body: [short(picks[0].e.start), picks[0].e.time, [picks[0].e.venue, picks[0].e.city].filter(Boolean).join(", "), crew ? `👥 ${crew.who!.slice(0, 2).join(" & ")} starred it` : ""].filter(Boolean).join(" · "), url: APP + "#" + hid(picks[0].e.id) }
+            : { title: `Your weekend: ${picks.length} picks`, body: line + (crew ? ` · 👥 ${crew.who!.slice(0, 2).join(" & ")} into ${crew.e.title}` : ""), url: APP };
+          plan.push({ user: p.user_id, key: `wknd:${days[0]}`, subs: to, msg });
+          // a Friday show in this ping already covers its "Tomorrow" reminder: one ping that morning, not two
+          for (const x of picks) { const i = plan.findIndex((y) => y.user === p.user_id && y.key === `tmrw:e:${x.e.id}:${x.e.start}`); if (i >= 0) plan.splice(i, 1); }
+        }
+      }
+    } catch (_) { /* friends / follow tables missing: skip the weekend ping this week */ }
+  }
+
   const todo = plan.filter((x) => !done.has(x.user + "|" + x.key));
-  if (dry) return json({ users: users.length, planned: todo.length, announced: bundles.length, sample: [...todo, ...bundles].slice(0, 4).map((x) => x.msg) });
+  if (dry) { const wk = todo.filter((x) => x.key.startsWith("wknd:")); return json({ users: users.length, planned: todo.length, weekend: wk.length, announced: bundles.length, sample: (body.weekend ? wk : [...todo, ...bundles]).slice(0, 4).map((x) => x.msg) }); }
   let sent = 0;
   for (const x of todo) { const n = await sendAll(db, x.subs, x.msg); if (n) { sent += n; await db.from("push_log").insert({ user_id: x.user, key: x.key }); } }
   for (const b of bundles) { const n = await sendAll(db, b.subs, b.msg); if (n) { sent += n; await db.from("push_log").insert(b.keys.map((key) => ({ user_id: b.user, key }))); } }

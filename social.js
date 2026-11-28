@@ -194,9 +194,11 @@ async function doDecorate(){const list=document.body;decorateNights().catch(()=>
     let tags=c.querySelector(".vtags");if(!tags){const o=c.querySelector(".vopen");if(!o)return;o.insertAdjacentHTML("beforeend",'<span class="vtags"></span>');tags=c.querySelector(".vtags");}
     tags.insertAdjacentHTML("afterbegin",`<span class="tag vscore" data-t="${E(txt)}">${E(txt)}</span>`);});}
   // friends who starred the same show
-  const who={};(friends||[]).forEach(f=>(Array.isArray(f.stars)?f.stars:[]).forEach(k=>{(who[k]=who[k]||[]).push(f.name);}));
+  // first names, "Sam is interested" / "Sam & Ana are interested" / "Sam, Ana & Jo +2 are interested"
+  const who={};(friends||[]).forEach(f=>(Array.isArray(f.stars)?f.stars:[]).forEach(k=>{(who[k]=who[k]||[]).push(String(f.name||"").trim().split(/\s+/)[0]);}));
+  const names=ns=>ns.length===1?ns[0]:ns.length===2?ns.join(" & "):`${ns.slice(0,2).join(", ")} & ${ns.length-2===1?ns[2]:ns.length-2+" more"}`;
   list.querySelectorAll("button[data-star]").forEach(b=>{const face=b.closest(".body")||b.closest(".ev")||b.parentNode,old=face.querySelector(".fgo"),ns=who[b.dataset.star];
-    if(!ns){if(old)old.remove();return;}const txt=`👥 ${ns.slice(0,3).join(", ")}${ns.length>3?` +${ns.length-3}`:""} starred this too`;
+    if(!ns){if(old)old.remove();return;}const txt=`👥 ${names(ns)} ${ns.length===1?"is":"are"} interested`;
     if(old){setText(old,txt);return;}face.insertAdjacentHTML("beforeend",`<p class="fgo" data-t="${E(txt)}">${E(txt)}</p>`);});}
 // cards show up in several places (Shows, home picks, Saved, Venues), so watch the whole page for new ones
 new MutationObserver(ms=>{if(ms.some(m=>[...m.addedNodes].some(n=>n.nodeType===1&&!(n.matches&&n.matches(".fgo,.vscore,.vtags,.bphoto,.bnc-in,#bSocial")))))decorate();}).observe(document.body,{childList:true,subtree:true});

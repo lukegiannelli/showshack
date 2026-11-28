@@ -808,7 +808,7 @@ function passSection(){const infos=allInfos(true),tot=infos.length,beenV=infos.f
   if(beenV.length)setTimeout(()=>markBadgesSeen(bdg),2500);   // after the fill-in animation has played
   const on=bdg.filter(b=>b.on),order=[...on,...bdg.filter(b=>!b.on).sort((p,q)=>q.have/q.need-p.have/p.need)],sc=showCount();
   return `<section class="byou-sec byou-pass" id="bYouPass" aria-label="Show passport and badges"><div class="bpass-in">
-    <div class="bpass-h"><span class="bpass-k"><img class="bshack-ic" src="hut.webp?v=2" alt="">Show passport</span><b>${beenV.length} <small>of ${tot} venues${sc?` · ${sc} show${sc===1?"":"s"}`:""}</small></b></div>
+    <div class="bpass-h"><span class="bpass-k"><img class="bshack-ic" src="hut.webp?v=3" alt="">Show passport</span><b>${beenV.length} <small>of ${tot} venues${sc?` · ${sc} show${sc===1?"":"s"}`:""}</small></b></div>
     ${beenV.length?`<p class="bpass-tip">Tap a stamp to log shows you've seen there.</p><div class="bstamps">${stamps}</div>${plogPanel}<div class="bpass-regs">${regs.filter(x=>x[1]).map(([rg,a,b])=>`<span style="--pp:${Math.round(a/b*100)}%">${esc(rg)} <b>${a}</b>/${b}</span>`).join("")}</div>`
       :`<p>Tap <b>I've been here</b> on any venue you've been to (Venues tab). Shows you star stamp themselves the day after.</p><p class="bpass-tip">Your first stamp unlocks ${bdg.length} badges to chase.</p>`}
     ${beenV.length?`<div class="bpass-bdg">

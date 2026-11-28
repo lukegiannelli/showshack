@@ -622,7 +622,7 @@ function cardHtml(e){
         ${volHtml(e)}
         <button type="button" class="bmore" data-bmore="1" aria-expanded="false">Details</button>
       </div>
-      <div class="links wide"><a href="${maps}" target="_blank" rel="noopener">Directions</a><a href="${maps.replace("travelmode=driving","travelmode=transit")}" target="_blank" rel="noopener">${ni("train")} Transit</a><a href="${esc(eatLink(e))}" target="_blank" rel="noopener">Eat nearby</a><button type="button" class="share" data-share="${esc(skey(e))}">Share</button>${listen}${canRm?`<button type="button" class="rm" data-rm="${esc(e.id)}">Remove</button>`:""}</div>${listenMenu}
+      <div class="links wide"><a href="${maps}" target="_blank" rel="noopener">Directions</a><a href="${maps.replace("travelmode=driving","travelmode=transit")}" target="_blank" rel="noopener">${ni("train")} Transit</a><a href="${esc(eatLink(e))}" target="_blank" rel="noopener">Eat nearby</a><button type="button" class="share" data-share="${esc(skey(e))}">Share</button>${listen}${canRm?`<button type="button" class="rm" data-rm="${esc(e.id)}">Remove</button>`:""}</div>${listenMenu}${e.community?"":`<button type="button" class="wrongbtn" data-wrong="${esc(hid(e))}" data-nd="${esc(e.start||"")}">Something wrong with this listing?</button>`}
       <div class="sides"><div class="side l"><span class="sl">Price</span>${priceHtml}</div>${drv?`<div class="side r"><span class="sl">Drive</span>${drv}</div>`:""}</div>${nightHtml}</div>
       ${backHtml(e,nc,fl)}</div></article>`;}
 function backHtml(e,nc,fl){
@@ -1130,7 +1130,10 @@ document.getElementById("shareApp").addEventListener("click",ev=>{
 // Owner mode: open the site once with #owner to show the Add button on this device.
 try{if(location.hash==="#owner"){SH.store.put("shack-owner","1");history.replaceState(null,"",location.pathname);}
   if(SH.store.raw("shack-owner")==="1")document.getElementById("addOpen").hidden=false;}catch(e){}
-if("serviceWorker" in navigator&&location.protocol==="https:")navigator.serviceWorker.register("sw.js").catch(()=>{});
+// the service worker pre-caches ~40 files for offline use: register it after the page (and the show list) has loaded,
+// so a first visit spends its bandwidth on what's on, not on background copies
+if("serviceWorker" in navigator&&location.protocol==="https:"){const reg=()=>setTimeout(()=>navigator.serviceWorker.register("sw.js").catch(()=>{}),1500);
+  if(document.readyState==="complete")reg();else addEventListener("load",reg,{once:true});}
 // Shows come from events.json (works for everyone, no login). The database is only a fallback.
 const NEON8='<svg class="neon8" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" class="n8o"/><circle cx="12" cy="10.6" r="4.6" class="n8i"/><text x="12" y="13.4" text-anchor="middle" class="n8t">8</text></svg>';
 let LOGOS={};fetch("logos.json",{cache:"no-cache"}).then(r=>r.ok?r.json():{}).then(j=>{LOGOS=(j&&j.logos)||{};if(Object.keys(LOGOS).length)render();}).catch(()=>{});
@@ -1156,7 +1159,8 @@ let paintedFrom=null;
   paintedFrom=d.lastRun;state.events=withComm(evs);state.loaded=true;window.SHACK_META={lastRun:d.lastRun,tmRun:d.tmRun,tmNote:d.tmNote};render();}catch(e){}})();
 (async()=>{
   try{
-    const r=await fetch("events.json",{cache:"no-store"});
+    const early=window.SHACK_EV;window.SHACK_EV=null;   // started in <head> (index.html) so it downloads alongside the scripts
+    const r=(early&&await early)||await fetch("events.json",{cache:"no-store"});
     if(!r.ok) throw 0;
     const d=await r.json();
     const evs=(d.events||[]).filter(e=>e.title&&(e.start||isRec(e)));
