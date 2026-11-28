@@ -124,15 +124,16 @@ async function swReg(){if(!("serviceWorker" in navigator))return null;return Pro
 async function refreshRem(){if(!C.user){remState=null;drawRem();return;}
   try{const reg=await swReg();const sub=reg&&await reg.pushManager.getSubscription();let row=null;
     if(sub){const sb=await C.client();const {data}=await sb.from("push_subscriptions").select("*").eq("endpoint",sub.endpoint).maybeSingle();row=data;}
-    remState={on:!!(sub&&row),tmrw:row?row.remind_day_before:true,drop:row?row.price_drops:true,newv:row&&row.new_shows!=null?row.new_shows:true,wknd:row&&row.weekend_picks!=null?row.weekend_picks:true,reg:!!reg};}catch(e){remState={on:false,tmrw:true,drop:true,newv:true,wknd:true,reg:false};}
+    remState={on:!!(sub&&row),tmrw:row?row.remind_day_before:true,drop:row?row.price_drops:true,newv:row&&row.new_shows!=null?row.new_shows:true,wknd:row&&row.weekend_picks!=null?row.weekend_picks:true,leave:row&&row.leave_now!=null?row.leave_now:true,reg:!!reg};}catch(e){remState={on:false,tmrw:true,drop:true,newv:true,wknd:true,leave:true,reg:false};}
   drawRem();}
 function remHTML(){if(!C.user)return `<p class="bset-p">Sign in above, then turn on a ping the day before shows you're interested in (★) and when their price drops.</p>`;
   if(isIOS&&!standalone)return `<p class="bset-p">On iPhone, reminders work from the Home Screen app: tap <b>Share → Add to Home Screen</b>, open the Shack from there, then turn this on.</p>`;
-  const s=remState||{on:false,tmrw:true,drop:true,newv:true,wknd:true,reg:true};
+  const s=remState||{on:false,tmrw:true,drop:true,newv:true,wknd:true,leave:true,reg:true};
   return `<label class="bso-t"><input type="checkbox" data-rem="tmrw"${s.tmrw?" checked":""}> The day before a show I'm interested in</label>
     <label class="bso-t"><input type="checkbox" data-rem="drop"${s.drop?" checked":""}> When a show I'm interested in drops in price</label>
     <label class="bso-t"><input type="checkbox" data-rem="newv"${s.newv!==false?" checked":""}> When an artist I listen to or a venue I follow announces a show</label>
     <label class="bso-t"><input type="checkbox" data-rem="wknd"${s.wknd!==false?" checked":""}> Thursdays: my weekend picks, and what friends are into</label>
+    <label class="bso-t"><input type="checkbox" data-rem="leave"${s.leave!==false?" checked":""}> On show day: when to leave for shows I'm interested in${typeof origin!=="undefined"&&origin?"":" (set your start point for drive times)"}</label>
     <div class="bset-acts">${s.on?`<button type="button" data-rem="test">Send me a test</button><button type="button" data-rem="off">Turn reminders off on this device</button>`:`<button type="button" data-rem="on">Turn on reminders</button>`}</div>
     ${remMsg?`<p class="bset-msg">${E(remMsg)}</p>`:""}${s.on?`<p class="bset-p">On for this device · sent around 9 AM.</p>`:""}`;}
 function drawRem(){const el=$("bRem");if(el)el.innerHTML=remHTML();}
@@ -141,18 +142,19 @@ async function remOn(){remMsg="";const reg=await swReg();if(!reg){remMsg="Open t
   const sub=(await reg.pushManager.getSubscription())||await reg.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:b64(VAPID)});
   const j=sub.toJSON(),sb=await C.client(),box=$("bRem");
   const tm=box?box.querySelector('[data-rem="tmrw"]').checked:true,dr=box?box.querySelector('[data-rem="drop"]').checked:true,nv=remNew(box);
-  const {error}=await remWrite(row=>sb.from("push_subscriptions").upsert(row),{endpoint:j.endpoint,user_id:C.user.id,p256dh:j.keys.p256dh,auth_key:j.keys.auth,remind_day_before:tm,price_drops:dr,new_shows:nv,weekend_picks:remWk(box)});
+  const {error}=await remWrite(row=>sb.from("push_subscriptions").upsert(row),{endpoint:j.endpoint,user_id:C.user.id,p256dh:j.keys.p256dh,auth_key:j.keys.auth,remind_day_before:tm,price_drops:dr,new_shows:nv,weekend_picks:remWk(box),leave_now:remLv(box)});
   if(error){remMsg=/cap/.test(error.message)?"Reminders are already on for 6 devices. Turn one off first.":"Couldn't save that. Try again.";drawRem();return;}
   remMsg="Reminders are on ✓";await refreshRem();}
 async function remOff(){const reg=await swReg();const sub=reg&&await reg.pushManager.getSubscription();
   if(sub){try{const sb=await C.client();await sb.from("push_subscriptions").delete().eq("endpoint",sub.endpoint);}catch(e){}try{await sub.unsubscribe();}catch(e){}}
   remMsg="Reminders are off on this device.";await refreshRem();}
 async function remSave(){const reg=await swReg();const sub=reg&&await reg.pushManager.getSubscription();if(!sub)return;const box=$("bRem");
-  const sb=await C.client();await remWrite(row=>sb.from("push_subscriptions").update(row).eq("endpoint",sub.endpoint),{remind_day_before:box.querySelector('[data-rem="tmrw"]').checked,price_drops:box.querySelector('[data-rem="drop"]').checked,new_shows:remNew(box),weekend_picks:remWk(box)});remMsg="Saved ✓";drawRem();}
+  const sb=await C.client();await remWrite(row=>sb.from("push_subscriptions").update(row).eq("endpoint",sub.endpoint),{remind_day_before:box.querySelector('[data-rem="tmrw"]').checked,price_drops:box.querySelector('[data-rem="drop"]').checked,new_shows:remNew(box),weekend_picks:remWk(box),leave_now:remLv(box)});remMsg="Saved ✓";drawRem();}
+const remLv=box=>{const x=box&&box.querySelector('[data-rem="leave"]');return x?x.checked:true;};
 const remWk=box=>{const x=box&&box.querySelector('[data-rem="wknd"]');return x?x.checked:true;};
 const remNew=box=>{const x=box&&box.querySelector('[data-rem="newv"]');return x?x.checked:true;};
 // write a reminders row; if the database doesn't have the "new_shows" switch yet, save the other two and carry on
-async function remWrite(go,row){let r=await go(row);if(r.error&&/new_shows|weekend_picks/.test(r.error.message||"")){const {new_shows,weekend_picks,...rest}=row;r=await go(rest);}return r;}
+async function remWrite(go,row){let r=await go(row);if(r.error&&/new_shows|weekend_picks|leave_now/.test(r.error.message||"")){const {new_shows,weekend_picks,leave_now,...rest}=row;r=await go(rest);}return r;}
 async function remTest(){try{const sb=await C.client();const {data}=await sb.auth.getSession();const r=await fetch(SH.sb.url+"/functions/v1/reminders",{method:"POST",headers:{"Content-Type":"application/json",apikey:SH.sb.key,Authorization:"Bearer "+data.session.access_token},body:JSON.stringify({test:true})});
   const j=await r.json();remMsg=j.sent?"Test sent ✓ It should pop up in a few seconds.":"Couldn't reach this device. Turn reminders off and on again.";}catch(e){remMsg="Couldn't send the test. Try again.";}drawRem();}
 document.addEventListener("click",ev=>{const b=ev.target.closest("button[data-rem]");if(!b)return;ev.preventDefault();const a=b.dataset.rem;b.disabled=true;
