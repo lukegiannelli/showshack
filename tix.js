@@ -57,9 +57,10 @@ function rowHTML(it){const p=it.price,fee=it.e&&it.e.priceSrc==="ticketmaster";
     :it.st==="soon"?`<button type="button" class="tx-cal" data-tixcal="${esc(it.key)}">⏰ Remind me</button>`+buyBtn(it.key,it.url,"Ticket page")
     :it.st==="sold"?buyBtn(it.key,it.url,"Check for resale")+gotBtn(it.key,false)
     :it.st==="got"?gotBtn(it.key,true):"";
+  const calB=it.st==="cancel"?"":`<button type="button" class="tx-cal" data-tixshow="${esc(it.key)}" aria-label="Add ${esc(it.title)} to your calendar">📅 Calendar</button>`;
   return `<li class="tx-row tx-s-${it.st}"><div class="tx-d"><b>${esc(fmtDay(it.date).split(", ")[1]||"")}</b><small>${esc(fmtDay(it.date).split(", ")[0])}</small></div>
     <div class="tx-b"><div class="tx-top">${when}${pr?`<span class="tx-pr">${pr}</span>`:""}${it.src==="night"?`<span class="tx-src">🌙 in a night</span>`:""}</div>
-    <b class="tx-t">${esc(it.title)}</b><span class="tx-w">${esc(it.where)}</span>${acts?`<div class="tx-acts">${acts}</div>`:""}</div></li>`;}
+    <b class="tx-t">${esc(it.title)}</b><span class="tx-w">${esc(it.where)}</span>${acts||calB?`<div class="tx-acts">${acts}${calB}</div>`:""}</div></li>`;}
 
 function sectionHTML(){const xs=items(),need=xs.filter(x=>x.st==="buy"),soon=xs.filter(x=>x.st==="soon"),got=xs.filter(x=>x.st==="got"),rest=xs.filter(x=>x.st==="sold"||x.st==="cancel");
   const lede=!xs.length?`<p class="bset-p">Star a show (☆) or add it to a night, and it lands here with a buy button the moment tickets are on sale.</p>`
@@ -80,15 +81,14 @@ function stopHTML(s,d){const k=stopKey(s,d),e=evOfStop(s),on=has(k),st=e?need(e)
   const lead=st==="soon"?`<span class="tx-pill soon">On sale ${esc(fmtDay(e.onSaleAt))}</span>`:st==="sold"?`<span class="tx-pill sold">Sold out</span>`:st==="cancel"?`<span class="tx-pill sold">Cancelled</span>`:`<span class="tx-pill buy">Need tickets</span>`;
   return `<div class="bn-tix${on?" got":""}">${lead}${u?buyBtn(k,u,st==="soon"?"Ticket page":st==="sold"?"Resale":"Buy"):""}${st==="soon"?`<button type="button" class="tx-cal" data-tixcal="${esc(k)}">⏰ Remind me</button>`:""}${gotBtn(k,on)}</div>`;}
 
-// "on sale" reminder: an .ics at 9:50 AM (most on-sales start at 10) with the ticket link
-function cal(k){const e=allEv().find(x=>skey(x)===k);if(!e||!e.onSaleAt)return;const [y,m,d]=e.onSaleAt.split("-").map(Number),p=n=>String(n).padStart(2,"0");
-  const st=`${y}${p(m)}${p(d)}T095000`,en=`${y}${p(m)}${p(d)}T101500`,u=safeUrl(e.url)||"",x=s=>String(s).replace(/[\\;,]/g,c=>"\\"+c).replace(/\n/g,"\\n");
-  const ics=["BEGIN:VCALENDAR","VERSION:2.0","PRODID:-//The Show Shack//EN","BEGIN:VEVENT","UID:onsale-"+String(e.id).slice(0,60)+"@showshack","DTSTAMP:"+new Date().toISOString().replace(/[-:]/g,"").slice(0,15)+"Z",
-    "DTSTART:"+st,"DTEND:"+en,"SUMMARY:"+x("🎟 Tickets on sale: "+e.title),"LOCATION:"+x([e.venue,e.city].filter(Boolean).join(", ")),
-    "DESCRIPTION:"+x(`${e.title} at ${e.venue} on ${fmtDay(e.start)}.\nOn-sale time isn't listed; 10 AM is most common, so check the page.${u?"\n"+u:""}`),...(u?["URL:"+u]:[]),
-    "BEGIN:VALARM","TRIGGER:-PT10M","ACTION:DISPLAY","DESCRIPTION:Tickets on sale soon","END:VALARM","END:VEVENT","END:VCALENDAR"].join("\r\n");
-  const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([ics],{type:"text/calendar"}));a.download="on-sale-"+String(e.id).slice(0,40)+".ics";document.body.appendChild(a);a.click();
-  setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove();},1500);if(window.NIGHT&&NIGHT.toast)NIGHT.toast("Added to your calendar: on sale "+esc(fmtDay(e.onSaleAt)));}
+// "on sale" reminder: 9:50 AM on the on-sale day (most on-sales start at 10), with the ticket link. Shared calendar (SH.cal in core.js).
+function cal(k){const e=allEv().find(x=>skey(x)===k);if(!e||!e.onSaleAt)return;const u=safeUrl(e.url)||"";
+  SH.cal.add({uid:"onsale-"+e.id,title:"🎟 Tickets on sale: "+e.title,date:e.onSaleAt,min:9*60+50,dur:25,alarm:10,location:[e.venue,e.city].filter(Boolean).join(", "),url:u,
+    desc:`${e.title} at ${e.venue} on ${fmtDay(e.start)}.\nOn-sale time isn't listed; 10 AM is most common, so check the page.`});}
+// the show itself → your calendar (Your tickets rows)
+function showCal(k){const it=items().find(x=>x.key===k);if(!it)return;
+  if(it.e&&window.shackCalEv){SH.cal.add(shackCalEv(it.e));return;}
+  SH.cal.add({uid:"tix-"+k,title:it.title,date:it.date,min:null,location:it.where.replace(" · ",", "),url:it.url||"",desc:"Time TBA. Check the seller's page before you go. From The Show Shack"});}
 
 // tapped a ticket link, then came back: ask once
 let pending=null;
@@ -99,6 +99,7 @@ function care(k){if(typeof state==="undefined")return false;if(state.stars.has(k
 document.addEventListener("click",ev=>{
   const g=ev.target.closest("[data-tixgot]");if(g){ev.preventDefault();ev.stopPropagation();const k=g.dataset.tixgot,on=!has(k);set(k,on);
     if(on&&window.NIGHT&&NIGHT.toast)NIGHT.toast("Nice. Marked as got tickets 🎟","Undo",()=>set(k,false));return;}
+  const sc=ev.target.closest("[data-tixshow]");if(sc){ev.preventDefault();ev.stopPropagation();showCal(sc.dataset.tixshow);return;}
   const c=ev.target.closest("[data-tixcal]");if(c){ev.preventDefault();ev.stopPropagation();cal(c.dataset.tixcal);return;}
   const b=ev.target.closest("[data-tixbuy]");
   const a=b||ev.target.closest("a.tix,a.bfb-main");if(!a)return;

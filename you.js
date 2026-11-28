@@ -29,16 +29,39 @@ addEventListener("submit",ev=>{if(navigator.onLine)return;if(!ev.target.closest(
 function youHTML(){const u=C.user,owner=SH.store.raw("shack-owner")==="1";
   return `<div class="btitle byou-title"><h1 id="bYouH">You</h1><p class="byou-hi">${u?`Hey, <span id="bYouName">${E((window.SHACK_ME&&SHACK_ME()||{}).full||"there")}</span>`:"Make the Shack yours"}</p></div>
     ${u?"":`<p class="bset-p byou-lede">Everything works without an account. Sign in (just your email, free) to sync across devices, get reminders and see friends.</p>`}
+    ${nightsSec()}
     ${passSec()}
     ${window.SHACK_TIX?SHACK_TIX.sectionHTML():""}
     <section class="byou-sec"><h3>☁ Account &amp; sync</h3>${window.shackCloudHTML?shackCloudHTML():""}</section>
-    ${window.SHACK_MUSIC?SHACK_MUSIC.sectionHTML():""}
-    <section class="byou-sec"><h3>🔔 Reminders</h3><div id="bRem">${remHTML()}</div></section>
     <section class="byou-sec"><h3>👥 Friends &amp; leaderboard</h3>${window.shackSocialHTML?shackSocialHTML():""}</section>
+    <details class="byou-more" data-ymore${moreOpen()?" open":""}><summary><span>More</span><small>${E(moreList())}</small></summary>
+    ${window.SHACK_MUSIC?SHACK_MUSIC.sectionHTML():""}
+    ${remShown()?`<section class="byou-sec"><h3>🔔 Reminders</h3><div id="bRem">${remHTML()}</div></section>`:""}
     <section class="byou-sec"><h3>↗ Share</h3><p class="bset-p">Your year, your passport, a night plan, or the Shack itself.</p><div class="bset-acts"><button type="button" data-yshare="all">Open the Share sheet</button></div></section>
     <section class="byou-sec"><h3>🏷 Missing a show?</h3><div id="bMiss">${missHTML()}</div></section>
+    </details>
     ${u&&(admin||owner)?`<section class="byou-sec byou-adm"><h3>📊 Owner: Hivemind808 &amp; review</h3>${insHTML()}<div id="bAdm">${admHTML(owner)}</div></section>`:""}
     <div class="bset-acts byou-foot"><button type="button" data-yset>⚙ Settings &amp; your data</button></div>`;}
+// Nights out: "5 planned · 3 played", plus ONE question about your latest past night you haven't answered (last 2 weeks)
+const isoDay=d=>d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
+function nightStats(){const L=window.NIGHT&&NIGHT.nlog?NIGHT.nlog():{},xs=Object.values(L),m=isoDay(new Date()).slice(0,7);
+  return {L,planned:xs.length,played:xs.filter(x=>x.g===1).length,mPlayed:xs.filter(x=>x.g===1&&String(x.d).startsWith(m)).length};}
+function nightsSec(){const st=nightStats();if(!st.planned)return "";
+  const t=isoDay(new Date()),from=isoDay(new Date(Date.now()-14*864e5)),all=NIGHT.allNights?NIGHT.allNights():[];
+  const ask=all.filter(x=>{const o=st.L[x.id];return o&&o.g==null&&o.d<t&&o.d>=from;}).sort((a,b)=>b.p.d.localeCompare(a.p.d))[0];
+  const when=ask?new Date(ask.p.d+"T12:00").toLocaleDateString("en-US",{weekday:"long",month:"short",day:"numeric"}):"";
+  return `<div class="byou-nights" id="bYouNights"><p class="byou-nstat">🌙 <b>${st.planned}</b> night${st.planned===1?"":"s"} planned · <b>${st.played}</b> played${st.mPlayed?` · ${st.mPlayed} this month`:""}</p>
+    ${ask?`<div class="byou-ask"><p>Did <b>${E(ask.p.t||(ask.p.s.find(x=>x.k==="show")||{}).n||"your night")}</b> happen? <span>${E(when)}</span></p><div class="bset-acts"><button type="button" data-ngo="${E(ask.id)}" data-g="1">🙌 We went</button><button type="button" data-ngo="${E(ask.id)}" data-g="0">Didn't happen</button></div></div>`:""}</div>`;}
+document.addEventListener("click",ev=>{const b=ev.target.closest("[data-ngo]");if(!b||!window.NIGHT)return;ev.preventDefault();ev.stopPropagation();
+  const g=b.dataset.g==="1";NIGHT.answerNight(b.dataset.ngo,g);const el=$("bYouNights");if(el)el.outerHTML=nightsSec();
+  if(g)say(`🙌 Logged. That's ${nightStats().played} night${nightStats().played===1?"":"s"} out`);},true);
+// "More": the rarely-used sections fold away (remembered on this device)
+const MOREK="shack-you-more";
+const moreOpen=()=>{try{return localStorage.getItem(MOREK)==="1";}catch(e){return false;}};
+const moreList=()=>[window.SHACK_MUSIC?"music":"",remShown()?"reminders":"","share","missing a show"].filter(Boolean).join(" · ");
+document.addEventListener("toggle",ev=>{const d=ev.target;if(!d.matches||!d.matches("[data-ymore]"))return;try{localStorage.setItem(MOREK,d.open?"1":"0");}catch(e){}},true);
+// Reminders only show where they can work (or where one step makes them work: iPhone → Home Screen app)
+const remShown=()=>canPush()||(isIOS&&!standalone);
 // Show passport + badges in one card (built by b.js: stamps, show log, regions, badges)
 function passSec(){const P=window.SHACK_PASS;if(!P||!P.passHtml)return "";try{return P.passHtml();}catch(e){return "";}}
 function ensureDialog(id,label){let d=$(id);if(!d){d=document.createElement("dialog");d.id=id;d.className="binfo bset byou";d.setAttribute("aria-labelledby",label);d.innerHTML=`<div class="binfo-in"></div>`;document.body.appendChild(d);
@@ -59,7 +82,7 @@ function openYou(focus){const d=youPage();d.querySelector(".binfo-in").innerHTML
   if(C.user)refreshAdmin();refreshRem();
   if(focus==="signin"){const b=d.querySelector('[data-cl="in"]');if(b)b.click();}
   if(focus==="pass"){const p=$("bYouPass");if(p)setTimeout(()=>p.scrollIntoView({block:"start"}),30);}
-  if(focus==="missing"){const i=d.querySelector("[data-miss-form] textarea");if(i){i.scrollIntoView({block:"center"});i.focus();}}}
+  if(focus==="missing"){const m=d.querySelector("[data-ymore]");if(m)m.open=true;const i=d.querySelector("[data-miss-form] textarea");if(i){i.scrollIntoView({block:"center"});i.focus();}}}
 function redrawYou(){const d=$("bYou");if(d&&d.open){const y=window.scrollY;d.querySelector(".binfo-in").innerHTML=youHTML();window.scrollTo(0,y);}}
 // leaving You: another tab, the phone's back gesture, or Esc
 document.addEventListener("click",ev=>{const t=ev.target.closest("#bTabs [data-tab]");const d=$("bYou");if(t&&d&&d.open){d._prev="";d._y=0;d.close();}},true);
@@ -88,7 +111,6 @@ async function refreshRem(){if(!C.user){remState=null;drawRem();return;}
     remState={on:!!(sub&&row),tmrw:row?row.remind_day_before:true,drop:row?row.price_drops:true,newv:row&&row.new_shows!=null?row.new_shows:true,reg:!!reg};}catch(e){remState={on:false,tmrw:true,drop:true,newv:true,reg:false};}
   drawRem();}
 function remHTML(){if(!C.user)return `<p class="bset-p">Sign in above, then turn on a ping the day before shows you're interested in (★) and when their price drops.</p>`;
-  if(!canPush())return `<p class="bset-p">This browser can't show notifications. Try Chrome or Safari, or add the Shack to your Home Screen.</p>`;
   if(isIOS&&!standalone)return `<p class="bset-p">On iPhone, reminders work from the Home Screen app: tap <b>Share → Add to Home Screen</b>, open the Shack from there, then turn this on.</p>`;
   const s=remState||{on:false,tmrw:true,drop:true,newv:true,reg:true};
   return `<label class="bso-t"><input type="checkbox" data-rem="tmrw"${s.tmrw?" checked":""}> The day before a show I'm interested in</label>

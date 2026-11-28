@@ -62,5 +62,44 @@ SH.music={lastfm:""};
 SH.rpc=async(fn,args)=>{const r=await fetch(SH.sb.url+"/rest/v1/rpc/"+fn,{method:"POST",headers:{apikey:SH.sb.key,"Content-Type":"application/json"},body:JSON.stringify(args||{})});
   if(!r.ok)throw new Error("rpc "+r.status);return r.json();};
 
+/* ---- add to calendar: ONE way for every button in the app (shows, Your tickets, night plans, on-sale reminders).
+   iPhone / iPad / Mac: a calendar file (opens Apple Calendar's "Add" sheet). Everything else: Google Calendar in a new tab
+   (Android's Google Calendar can't open calendar files). Times are LA wall-clock times sent as UTC, so they land right
+   even on a phone set to another time zone. Shows before 6 AM belong to the night before (same rule as SH.clock).
+   ev = {uid, title, date:"YYYY-MM-DD", min: minutes after midnight or null (all day), dur: minutes (default 180),
+         endDate:"YYYY-MM-DD" (all-day spans), location, desc, url, alarm: minutes before (files only)} ---- */
+const pad2=n=>String(n).padStart(2,"0");
+function laUTC(y,mo,d,min){const want=Date.UTC(y,mo-1,d,0,min);let t=want;   // LA wall time → real instant (handles DST)
+  const fmt=new Intl.DateTimeFormat("en-US",{timeZone:"America/Los_Angeles",hourCycle:"h23",year:"numeric",month:"numeric",day:"numeric",hour:"numeric",minute:"numeric"});
+  for(let i=0;i<2;i++){const p={};fmt.formatToParts(new Date(t)).forEach(x=>p[x.type]=+x.value);t+=want-Date.UTC(p.year,p.month-1,p.day,p.hour%24,p.minute);}
+  return new Date(t);}
+const zstamp=x=>x.toISOString().replace(/[-:]/g,"").replace(/\.\d+/,"");
+const dplus=(s,n)=>{const [y,m,d]=s.split("-").map(Number),x=new Date(Date.UTC(y,m-1,d+n));return x.getUTCFullYear()+pad2(x.getUTCMonth()+1)+pad2(x.getUTCDate());};
+function calTimes(ev){const [y,m,d]=String(ev.date).split("-").map(Number);
+  if(ev.min==null)return {all:true,a:dplus(ev.date,0),b:dplus(ev.endDate&&ev.endDate>ev.date?ev.endDate:ev.date,1)};
+  const st=laUTC(y,m,d,ev.min<SH.LATE*60?ev.min+1440:ev.min);return {all:false,a:zstamp(st),b:zstamp(new Date(st.getTime()+(ev.dur||180)*6e4))};}
+const icsEsc=v=>String(v==null?"":v).replace(/\\/g,"\\\\").replace(/[,;]/g,c=>"\\"+c).replace(/\r?\n/g,"\\n");
+SH.cal={
+  apple:()=>/iPhone|iPad|iPod|Macintosh/.test(navigator.userAgent),
+  ics(ev){const t=calTimes(ev),u=ev.url||"";
+    return ["BEGIN:VCALENDAR","VERSION:2.0","PRODID:-//The Show Shack//EN","CALSCALE:GREGORIAN","BEGIN:VEVENT",
+      "UID:"+String(ev.uid||Date.now()).replace(/[^\w.:-]+/g,"-").slice(0,80)+"@showshack","DTSTAMP:"+zstamp(new Date()),
+      t.all?"DTSTART;VALUE=DATE:"+t.a:"DTSTART:"+t.a,t.all?"DTEND;VALUE=DATE:"+t.b:"DTEND:"+t.b,
+      "SUMMARY:"+icsEsc(ev.title),...(ev.location?["LOCATION:"+icsEsc(ev.location)]:[]),"DESCRIPTION:"+icsEsc(ev.desc||""),...(u?["URL:"+u]:[]),
+      ...(ev.alarm?["BEGIN:VALARM","TRIGGER:-PT"+ev.alarm+"M","ACTION:DISPLAY","DESCRIPTION:"+icsEsc(ev.title),"END:VALARM"]:[]),
+      "END:VEVENT","END:VCALENDAR"].join("\r\n");},
+  google(ev){const t=calTimes(ev),desc=[ev.desc,ev.url&&!String(ev.desc||"").includes(ev.url)?ev.url:""].filter(Boolean).join("\n");
+    return "https://calendar.google.com/calendar/render?action=TEMPLATE&text="+encodeURIComponent(ev.title||"")+"&dates="+t.a+"/"+t.b
+      +(t.all?"&ctz=America/Los_Angeles":"")+"&location="+encodeURIComponent(ev.location||"")+"&details="+encodeURIComponent(desc);},
+  // call straight from a tap (the new tab needs it). Returns false when there's no date to add.
+  add(ev){if(!ev||!/^\d{4}-\d\d-\d\d$/.test(String(ev.date||""))){SH.cal.say("No date for that yet");return false;}
+    if(SH.cal.apple()){const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([SH.cal.ics(ev)],{type:"text/calendar"}));
+      a.download=String(ev.title||"show").replace(/[^\w-]+/g,"-").replace(/^-+|-+$/g,"").slice(0,40)+".ics";document.body.appendChild(a);a.click();
+      setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove();},1500);SH.cal.say("Calendar file ready. Tap Add to put it in your calendar");}
+    else{const w=window.open(SH.cal.google(ev),"_blank");if(w)try{w.opener=null;}catch(e){}else location.href=SH.cal.google(ev);}
+    return true;},
+  say(m){if(window.NIGHT&&NIGHT.toast)NIGHT.toast(m);}
+};
+
 window.SH=SH;
 })();

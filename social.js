@@ -28,7 +28,10 @@ window.SHACK_ME=()=>prof?{name:String(prof.name||"").split(/\s+/)[0].slice(0,20)
 const pretty=c=>String(c||"").toLowerCase().replace(/-/g," ");
 
 /* ===== profile, friends, leaderboard ===== */
-let prof=null,friends=null,board=null,msg="",busy=false;
+let prof=null,friends=null,board=null,bper="all",msg="",busy=false;
+// leaderboard: signed in → ask as you (so your row is marked); signed out → the public call
+async function loadBoard(){if(C.user){const sb=await C.client();const {data,error}=await sb.rpc("leaderboard",{p_period:bper});if(error)throw error;board=data||[];}
+  else board=await SH.rpc("leaderboard",{p_period:bper});}
 const myBeen=()=>new Set(SH.store.get("radar-been",[])||[]);
 async function loadSocial(){if(!C.user)return;try{const sb=await C.client();
   const [p,f]=await Promise.all([sb.from("profiles").select("name,friend_code,on_leaderboard,share_ratings").maybeSingle(),sb.rpc("my_friends")]);
@@ -50,11 +53,14 @@ window.shackSocialHTML=()=>{const u=C.user;let h="";
       return `<li><b>${E(f.name)}</b><span>${b.length} venue${b.length===1?"":"s"} · ${common} in common${only?` · ${only} you haven't hit`:""}</span><button type="button" class="bso-x" data-so="rm" data-id="${E(f.friend_id)}" aria-label="Remove ${E(f.name)}">✕</button></li>`;}).join("")}</ul>`;
     else if(friends)h+=`<span class="bcloud-t">No friends yet. Send your invite link or trade codes.</span>`;
     if(friends&&friends.length)h+=feedHTML();
-    h+=`<label class="bso-t"><input type="checkbox" data-so-t="on_leaderboard"${prof.on_leaderboard?" checked":""}> Show me on the leaderboard (name + venue count)</label>
+    h+=`<label class="bso-t"><input type="checkbox" data-so-t="on_leaderboard"${prof.on_leaderboard?" checked":""}> Show me on the leaderboard (name, venues, nights planned and played)</label>
       <label class="bso-t"><input type="checkbox" data-so-t="share_ratings"${prof.share_ratings?" checked":""}> Share my star ratings on venue cards (never your notes)</label>`;}
   h+=`<button type="button" class="bpass-share" data-so="board" aria-expanded="${!!board}">🏆 ${board?"Hide":"SoCal"} leaderboard</button>`;
-  if(board)h+=board.length?`<ol class="bso-board">${board.map(r=>`<li${r.is_me?' class="me"':""}><b>${E(r.name)}</b><span>${r.venues} venue${r.venues===1?"":"s"}</span></li>`).join("")}</ol>`
-    :`<span class="bcloud-t">Nobody's on it yet. Sign in and turn it on to be first.</span>`;
+  if(board){const mo=bper==="month",n=(x,w)=>`${x} ${w}${x===1?"":"s"}`;
+    h+=`<div class="bso-per" role="group" aria-label="Leaderboard period"><button type="button" data-so="per" data-p="all" aria-pressed="${!mo}">All time</button><button type="button" data-so="per" data-p="month" aria-pressed="${mo}">This month</button></div>`;
+    h+=board.length?`<ol class="bso-board">${board.map(r=>`<li${r.is_me?' class="me"':""}><b>${E(r.name)}${r.is_me?" (you)":""}</b><span>${mo?`${n(r.played||0,"night")} out · ${r.planned||0} planned`:`${n(r.venues,"venue")} · ${r.played||0}/${r.planned||0} nights`}</span></li>`).join("")}</ol>
+      <span class="bcloud-t">${mo?"Nights out you've said happened this month, then nights planned.":"Venues stamped, then nights played / planned."} A night counts as planned once it has a date and a stop.</span>`
+      :`<span class="bcloud-t">${mo?"No nights planned this month yet. Plan one and you're on the board.":"Nobody's on it yet. Sign in and turn it on to be first."}</span>`;}
   if(msg)h+=`<span class="bcloud-s" aria-live="polite">${E(msg)}</span>`;
   return `<div class="bcloud bsocial" id="bSocial">${h}</div>`;};
 /* ===== what your friends are into: upcoming shows they starred, soonest first. Star one to join them. ===== */
@@ -93,7 +99,8 @@ function takePending(){let c=null;try{c=localStorage.getItem(PK);}catch(e){}if(!
 const errMsg=e=>{const m=String(e&&e.message||"");return /no one has/.test(m)?"No one has that code. Check it and try again.":/own code/.test(m)?"That's your own code 🙂":/cap:/.test(m)?"You've hit the limit for that.":/name/.test(m)?"Names need 1 to 30 characters.":"Something went wrong. Try again.";};
 
 document.addEventListener("click",async ev=>{const b=ev.target.closest("[data-so]");if(!b)return;ev.stopPropagation();ev.preventDefault();const a=b.dataset.so;
-  try{if(a==="board"){if(board){board=null;redraw();return;}board=await SH.rpc("leaderboard",{});redraw();return;}
+  try{if(a==="board"){if(board){board=null;redraw();return;}await loadBoard();redraw();return;}
+    if(a==="per"){bper=b.dataset.p==="month"?"month":"all";await loadBoard();redraw();return;}
     if(a==="invite"&&prof){const url=base()+"?get=1&by="+encodeURIComponent(String(prof.name||"").split(/\s+/)[0].slice(0,20))+"#F="+prof.friend_code,text=`Add me on The Show Shack so we can see who's going to what 🛖 My code: ${pretty(prof.friend_code)}`;
       if(navigator.share){try{await navigator.share({text,url});}catch(e){}return;}
       try{await navigator.clipboard.writeText(text+"\n"+url);b.textContent="Invite copied ✓";}catch(e){prompt("Copy your invite link",url);}return;}
@@ -101,19 +108,19 @@ document.addEventListener("click",async ev=>{const b=ev.target.closest("[data-so
       const sb=await C.client();const {data,error}=await sb.rpc("new_friend_code");if(error)throw error;prof.friend_code=data;msg=`Your new code: ${pretty(data)} ✓`;redraw();return;}
     if(a==="rm"){const f=(friends||[]).find(x=>x.friend_id===b.dataset.id);if(!confirm(`Remove ${f?f.name:"this friend"}? You'll both stop seeing each other.`))return;
       const sb=await C.client();const {error}=await sb.rpc("remove_friend",{p_friend:b.dataset.id});if(error)throw error;msg="Removed.";await loadSocial();return;}
-  }catch(e){msg=a==="board"?"Couldn't load the leaderboard.":errMsg(e);redraw();}},true);
+  }catch(e){msg=a==="board"||a==="per"?"Couldn't load the leaderboard.":errMsg(e);redraw();}},true);
 document.addEventListener("submit",async ev=>{const f=ev.target.closest("[data-so-form]");if(!f)return;ev.preventDefault();ev.stopPropagation();if(busy)return;busy=true;
   try{const sb=await C.client(),k=f.dataset.soForm;
     if(k==="name"){const name=f.n.value.trim();const {error}=await sb.from("profiles").insert({user_id:C.user.id,name});if(error)throw error;msg="Saved ✓";await loadSocial();takePending();}
     if(k==="rename"){const name=f.n.value.trim();if(!name||name===prof.name){msg=name?"That's already your name.":"Names need 1 to 30 characters.";redraw();busy=false;return;}
-      const {error}=await sb.from("profiles").update({name}).eq("user_id",C.user.id);if(error)throw error;prof.name=name;if(board)board=await SH.rpc("leaderboard",{});msg="Name changed ✓";redraw();
+      const {error}=await sb.from("profiles").update({name}).eq("user_id",C.user.id);if(error)throw error;prof.name=name;if(board)await loadBoard();msg="Name changed ✓";redraw();
       const h=document.getElementById("bYouName");if(h)h.textContent=name;}
     if(k==="add")await addFriend(f.c.value.trim());
   }catch(e){msg=errMsg(e);redraw();}busy=false;},true);
 document.addEventListener("change",async ev=>{const t=ev.target.closest("[data-so-t]");if(!t||!prof)return;ev.stopPropagation();const col=t.dataset.soT,on=t.checked;
   try{const sb=await C.client();const {error}=await sb.from("profiles").update({[col]:on}).eq("user_id",C.user.id);if(error)throw error;prof[col]=on;
     if(col==="share_ratings"){if(on)await syncRatings();else await sb.from("venue_ratings").delete().eq("user_id",C.user.id);SCORES=null;decorate();}
-    if(col==="on_leaderboard"&&board)board=await SH.rpc("leaderboard",{});msg="Saved ✓";
+    if(col==="on_leaderboard"&&board)await loadBoard();msg="Saved ✓";
   }catch(e){t.checked=!on;msg=errMsg(e);}redraw();},true);
 
 /* ===== public venue ratings: your 1–5 stars from the passport log, only if you opted in ===== */
