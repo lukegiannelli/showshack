@@ -53,8 +53,9 @@ function nightsSec(){const st=nightStats();if(!st.planned)return "";
   return `<div class="byou-nights" id="bYouNights"><p class="byou-nstat">🌙 <b>${st.planned}</b> night${st.planned===1?"":"s"} planned · <b>${st.played}</b> played${st.mPlayed?` · ${st.mPlayed} this month`:""}</p>
     ${ask?`<div class="byou-ask"><p>Did <b>${E(ask.p.t||(ask.p.s.find(x=>x.k==="show")||{}).n||"your night")}</b> happen? <span>${E(when)}</span></p><div class="bset-acts"><button type="button" data-ngo="${E(ask.id)}" data-g="1">🙌 We went</button><button type="button" data-ngo="${E(ask.id)}" data-g="0">Didn't happen</button></div></div>`:""}</div>`;}
 document.addEventListener("click",ev=>{const b=ev.target.closest("[data-ngo]");if(!b||!window.NIGHT)return;ev.preventDefault();ev.stopPropagation();
+  if(b.getAttribute("aria-pressed")==="true")return;   // already the answer
   const g=b.dataset.g==="1";NIGHT.answerNight(b.dataset.ngo,g);const el=$("bYouNights");if(el)el.outerHTML=nightsSec();
-  if(g)say(`🙌 Logged. That's ${nightStats().played} night${nightStats().played===1?"":"s"} out`);},true);
+  const n=nightStats().played;say(g?`🙌 Logged. That's ${n} night${n===1?"":"s"} out`:"Got it. It won't count as a night out");},true);
 // "More": the rarely-used sections fold away (remembered on this device)
 const MOREK="shack-you-more";
 const moreOpen=()=>{try{return localStorage.getItem(MOREK)==="1";}catch(e){return false;}};

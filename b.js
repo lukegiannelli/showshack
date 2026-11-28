@@ -639,11 +639,20 @@ function pastShows(k){const today=todayStr(),mine=(PSHOWS[k]||[]).map(x=>({...x,
   const starred=Object.entries(starVen).filter(([sk,o])=>o&&o.v===k&&o.d<today&&state.stars.has(sk)).map(([sk,o])=>({t:o.t||"A show you starred",d:o.d,star:1,id:sk}));
   return [...mine,...starred.filter(x=>!mine.some(m=>m.d===x.d&&m.t===x.t))].sort((a,b)=>b.d.localeCompare(a.d));}
 const NIMP=new Set(ld("shack-nimp",[]));
-function importNights(){if(!window.NIGHT||!NIGHT.allNights)return;const today=todayStr();let ch=false;
-  NIGHT.allNights().forEach(x=>{if(!x.p.d||x.p.d>=today)return;x.p.s.forEach((s,i)=>{if(s.k!=="show"||!s.p)return;const id="n:"+x.id+":"+i;if(NIMP.has(id))return;NIMP.add(id);ch=true;
+// past nights stamp their shows into the passport, unless you said the night didn't happen (night log in night.js).
+// An entry remembers (nb) when it was the one that stamped the venue, so "Didn't happen" can take the stamp back out.
+function importNights(){if(!window.NIGHT||!NIGHT.allNights)return;const today=todayStr(),L=NIGHT.nlog?NIGHT.nlog():{};let ch=false;
+  NIGHT.allNights().forEach(x=>{if(!x.p.d||x.p.d>=today||(L[x.id]&&L[x.id].g===0))return;x.p.s.forEach((s,i)=>{if(s.k!=="show"||!s.p)return;const id="n:"+x.id+":"+i;if(NIMP.has(id))return;NIMP.add(id);ch=true;
     const parts=s.p.split(", "),city=parts.length>1?parts.pop():"",k=parts.join(", ")+" · "+city;if(!city)return;
-    const a=PSHOWS[k]=PSHOWS[k]||[];if(!a.some(y=>y.d===x.p.d&&y.t===(s.n||"")))a.push({t:String(s.n||"A show from your night").slice(0,100),d:x.p.d,id});BEEN.add(k);});});
+    const a=PSHOWS[k]=PSHOWS[k]||[];if(!a.some(y=>y.d===x.p.d&&y.t===(s.n||""))){const nb=!BEEN.has(k);a.push({t:String(s.n||"A show from your night").slice(0,100),d:x.p.d,id,...(nb?{nb:1}:{})});}BEEN.add(k);});});
   if(ch){try{SH.store.put("shack-nimp",JSON.stringify([...NIMP]));}catch(e){}savePshows();saveBeen();}}
+// "Didn't happen": take that night's shows back out, and its stamps if the night was the only reason for them
+function unimportNight(nid){const pre="n:"+nid+":";let ch=false;
+  [...NIMP].forEach(id=>{if(id.startsWith(pre)){NIMP.delete(id);ch=true;}});   // forgotten, so "We went" later brings them back
+  Object.keys(PSHOWS).forEach(k=>{const a=PSHOWS[k],gone=a.filter(y=>String(y.id||"").startsWith(pre));if(!gone.length)return;
+    PSHOWS[k]=a.filter(y=>!gone.includes(y));if(!PSHOWS[k].length)delete PSHOWS[k];ch=true;
+    if(gone.some(y=>y.nb)&&!pastShows(k).length)BEEN.delete(k);});
+  if(ch){try{SH.store.put("shack-nimp",JSON.stringify([...NIMP]));}catch(e){}savePshows();saveBeen();}return ch;}
 const showCount=()=>[...BEEN].reduce((n,k)=>n+pastShows(k).length,0);
 const savePlog=()=>{try{SH.store.put("shack-plog",JSON.stringify(PLOG));}catch(e){}};
 function badges(infos){const bv=infos.filter(v=>BEEN.has(v.k)),n=BEEN.size,rg=new Set([...BEEN].map(regionOfK).filter(r=>r!=="Other")),cnt=f=>bv.filter(f).length;
@@ -865,6 +874,8 @@ function badgesNow(){const ks=new Set([...(state._up||[]).filter(e=>!PLACEISH.ha
 window.SHACK_PASS={shareYear:btn=>shareYear(btn),compare:btn=>comparLink(btn),get stamps(){return BEEN.size;},get shows(){return showCount();},
   badgesHtml(){const b=badgesNow(),on=b.filter(x=>x.on);return {earned:on.length,total:b.length,html:[...on,...b.filter(x=>!x.on).sort((p,q)=>q.have/q.need-p.have/p.need)].map(badgeHtml).join("")};},
   passHtml:()=>passSection(),
+  // night.js calls this when you answer "Did it happen?": went → stamp its shows, didn't → take them back out
+  nightAnswered(nid,went){try{if(went)importNights();else unimportNight(nid);prender();}catch(e){}},
   open(){if(window.SHACK_YOU)SHACK_YOU.open("pass");}};
 // the rest of the passport clicks (stamps, log, backup): on the You page, plus "Log a past show" on venue cards
 function passClicks2(ev){
