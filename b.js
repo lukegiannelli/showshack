@@ -121,7 +121,7 @@ function backSide(e){const pi=priceInfo(e),d=parseDay(e.start);
       ${window.SHACK_PV(e)}${lq?`<button type="button" class="bfb-listen" aria-expanded="false"><span class="lt">Listen on…</span></button>`:""}<button type="button" data-share="${esc(skey(e))}">Share</button></div>
     <p class="bpv-note" hidden></p>
     ${lq?`<div class="bfb-lm" hidden>${LISTEN(lq)}</div>`:""}
-    <div class="bfb-foot"><button type="button" class="bfb-full" data-full="${esc(hid(e))}">Full card</button><button type="button" class="bfb-hint">Flip back ↻</button></div>`;}
+    <div class="bfb-foot"><button type="button" class="bfb-full" data-full="${esc(hid(e))}" data-nd="${esc(e.start||"")}">Full card</button><button type="button" class="bfb-hint">Flip back ↻</button></div>`;}
 function flipCardHtml(e,tag){const front=cardHtml(e).replace(/^\s*<article id="[^"]*"/,'<article').replace(/class="card( flipped)?"/,'class="card"');
   const free=priceInfo(e).free;
   return `<div class="bfc" data-k="${esc(skey(e))}"><div class="bfc-in"><div class="bfc-f"><button type="button" class="bfc-sr sr-only">Flip ${esc(e.title)} for details</button>${tag?`<span class="bfc-tag">${tag}</span>`:""}${free?`<span class="bfc-free">FREE</span>`:""}${front}</div><div class="bfc-b" aria-hidden="true">${backSide(e)}</div></div></div>`;}
@@ -574,7 +574,7 @@ function openSheet(g){const e0=g.evs[0],name=g.k.split(" · ")[0],city=g.k.split
     const pr=pi.sold?"Sold out":pi.free?"Free":pi.donation?"Donation":pi.none?"":pi.est?"≈$"+Math.round(pi.lo):"From $"+Math.round(pi.lo);
     return `<div class="bms-row"><span class="bms-d">${esc(d.toLocaleDateString("en-US",{weekday:"short",month:"short",day:"numeric"}))}${e.time?" · "+esc(String(e.time).replace(/\s*\(.*\)/,"")):""}</span>
       <b>${esc(e.title)}</b><span class="bms-p">${esc(pr)}</span>
-      <span class="bms-a">${tix?`<a href="${esc(tix)}" target="_blank" rel="noopener">${tixWord(e,pi)} ↗</a>`:""}<button type="button" data-card="${esc(hid(e))}">Full card</button></span></div>`;}).join("");
+      <span class="bms-a">${tix?`<a href="${esc(tix)}" target="_blank" rel="noopener">${tixWord(e,pi)} ↗</a>`:""}<button type="button" data-card="${esc(hid(e))}" data-nd="${esc(e.start||"")}">Full card</button></span></div>`;}).join("");
   const more=g.evs.length>6?`<p class="bms-more">+${g.evs.length-6} more here</p>`:"";
   const pools=POOL.map(p=>({p,mi:miles(g.lat,g.lon,p.lat,p.lon)})).filter(x=>x.mi<=8).sort((a,b)=>a.mi-b.mi).slice(0,2);
   const near=(q,label,ic)=>`<a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(q+" near "+name+", "+city)}" target="_blank" rel="noopener">${ic} ${label}</a>`;
