@@ -201,7 +201,8 @@ function afterStop(p){return {cl:typeof p.til==="number"?p.til:undefined,k:grp(p
 const todayISO=()=>{const d=new Date();return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");};
 // capture phase so the flip cards / card toggles never see these taps
 document.addEventListener("click",ev=>{const b=ev.target.closest("[data-nadd],[data-naft]");if(!b)return;ev.stopPropagation();ev.preventDefault();
-  if(b.dataset.nadd){const e=evById(b.dataset.nadd);if(!e){toast("Couldn't find that show");return;}
+  if(b.dataset.nadd){let e=evById(b.dataset.nadd);if(!e){toast("Couldn't find that show");return;}
+    if(b.dataset.nd&&e.start!==b.dataset.nd)e={...e,start:b.dataset.nd};   // repeating events: the date on the card you tapped
     const st=showStop(e);
     if(plan.s.some(x=>x.k==="show"&&x.n===st.n&&x.p===st.p)){toast("Already in your night","Open",openPlan);return;}
     // the night already has a show on a different date: keep that one saved and start a fresh night with this show
@@ -213,7 +214,7 @@ document.addEventListener("click",ev=>{const b=ev.target.closest("[data-nadd],[d
       toast("Last night saved ✓ Started a new night","Undo",()=>{const i=NIGHTS.findIndex(x=>x.id===newIdNow);if(i>=0)NIGHTS.splice(i,1);putNights();useNight(prevId,prev);addStop(st,true);toast("Added to your earlier night instead","Open",openPlan);},6000);return;}
     if(addStop(st)){b.classList.add("done");b.textContent="✓ In your night";}}
   else{const p=allAfters()[+b.dataset.naft];if(p&&addStop(afterStop(p))){b.classList.add("done");b.textContent="✓ Added";}}},true);
-const addBtn=(h,noCal,nd)=>`<button type="button" class="nadd" data-nadd="${esc(h)}">＋ My night</button>${noCal?"":`<button type="button" class="ncal" data-ncal="${esc(h)}"${nd?` data-nd="${esc(nd)}"`:""} aria-label="Add to calendar">📅</button>`}`;
+const addBtn=(h,noCal,nd)=>`<button type="button" class="nadd" data-nadd="${esc(h)}"${nd?` data-nd="${esc(nd)}"`:""}>＋ My night</button>${noCal?"":`<button type="button" class="ncal" data-ncal="${esc(h)}"${nd?` data-nd="${esc(nd)}"`:""} aria-label="Add to calendar">📅</button>`}`;
 // 📅 / "+ Add to calendar" on any show: the shared calendar (SH.cal in core.js, event built by shackCalEv in app.js)
 document.addEventListener("click",ev=>{const b=ev.target.closest("[data-ncal]");if(!b)return;ev.stopPropagation();ev.preventDefault();let e=evById(b.dataset.ncal);
   if(e&&b.dataset.nd&&e.start!==b.dataset.nd)e={...e,start:b.dataset.nd};   // repeating events: the date on the card you tapped
@@ -221,7 +222,7 @@ document.addEventListener("click",ev=>{const b=ev.target.closest("[data-ncal]");
 // inject "+ My night" into flip-card backs, full cards, and map-sheet rows as they appear
 function inject(root){
   root.querySelectorAll(".bfb-foot:not([data-nx])").forEach(f=>{f.dataset.nx=1;const full=f.querySelector("[data-full]");if(full)full.insertAdjacentHTML("afterend",addBtn(full.dataset.full,false,full.dataset.nd));});
-  root.querySelectorAll("article.card[id] .links.wide:not([data-nx])").forEach(l=>{l.dataset.nx=1;const c=l.closest("article.card");if(!/^[ep]-/.test(c.id))return;l.insertAdjacentHTML("beforeend",addBtn(c.id,true));
+  root.querySelectorAll("article.card[id] .links.wide:not([data-nx])").forEach(l=>{l.dataset.nx=1;const c=l.closest("article.card");if(!/^[ep]-/.test(c.id))return;const ac=c.querySelector(".addcal[data-nd]");l.insertAdjacentHTML("beforeend",addBtn(c.id,true,ac&&ac.dataset.nd));
     const e=evById(c.id),pv=e&&window.SHACK_PV?window.SHACK_PV(e):"";if(pv)l.insertAdjacentHTML("beforeend",pv+'<p class="bpv-note" hidden></p>');});
   root.querySelectorAll(".bms-a:not([data-nx])").forEach(a=>{a.dataset.nx=1;const c=a.querySelector("[data-card]");if(c)a.insertAdjacentHTML("beforeend",addBtn(c.dataset.card,false,c.dataset.nd));});}
 let iq=0;new MutationObserver(()=>{if(iq)return;iq=1;queueMicrotask(()=>{iq=0;inject(document.body);});}).observe(document.body,{childList:true,subtree:true});
