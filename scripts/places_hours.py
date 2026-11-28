@@ -112,6 +112,24 @@ def summarize(roh):
     til = max(close.get(5, 0), close.get(6, 0)) or max(close.values())
     return ", ".join(parts), round(til / 60, 1)
 
+# ---- the full week, for "Open now" in the app: [[day, open, close], ...] with day 0 = Sunday and open/close in minutes
+# from that day's midnight (close can run past 1440 into the next day). [[0, 0, 10080]] = open 24/7. Same call as the
+# hours above, so it costs nothing extra.
+def week_of(roh):
+    periods = (roh or {}).get("periods") or []
+    if not periods: return None
+    if len(periods) == 1 and "close" not in periods[0]: return [[0, 0, 10080]]
+    out = []
+    for pr in periods:
+        o, c = pr.get("open"), pr.get("close")
+        if not o or "day" not in o: continue
+        om = o.get("hour", 0) * 60 + o.get("minute", 0)
+        if not c: out.append([o["day"], om, om + 1440]); continue
+        cm = ((c["day"] - o["day"]) % 7) * 1440 + c.get("hour", 0) * 60 + c.get("minute", 0)
+        if cm <= om: cm += 7 * 1440   # a period that wraps the whole week
+        out.append([o["day"], om, cm])
+    return sorted(out) or None
+
 def main():
     data = {f: json.load(open(f)) for f in FILES}
     todo = [(f, p) for f in FILES for p in data[f]["places"] if p.get("c") not in SKIP_C and not p.get("gone") and isinstance(p.get("lat"), (int, float)) and p.get("gmiss", 0) < 2]   # 2 misses = stop paying to look
@@ -136,10 +154,13 @@ def main():
                 print("  wrong place, dropping id:", p["n"], "→", (d.get("displayName") or {}).get("text")); p.pop("gid"); p["hu"] = TODAY.isoformat(); p["gmiss"] = p.get("gmiss", 0) + 1; continue
             st = d.get("businessStatus")
             if st == "CLOSED_PERMANENTLY": p["gone"] = 1; print("  closed for good:", p["n"])
-            elif st == "CLOSED_TEMPORARILY": p.update(h="Temporarily closed", til=0); p.pop("hq", None)
+            elif st == "CLOSED_TEMPORARILY": p.update(h="Temporarily closed", til=0); p.pop("hq", None); p.pop("wk", None)
             else:
                 h, til = summarize(d.get("regularOpeningHours"))
                 if h: p.update(h=h, til=til); p.pop("hq", None); p["hs"] = "g"
+                wk = week_of(d.get("regularOpeningHours"))
+                if wk: p["wk"] = wk
+                else: p.pop("wk", None)
                 gp = price_of(d)
                 if gp: p["gp"] = gp
                 else: p.pop("gp", None)   # Google dropped it: go back to the typical-price estimate

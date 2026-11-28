@@ -29,7 +29,11 @@ const tmin=t=>{t=String(t).trim().toLowerCase();if(t==="midnight")return 1440;if
   const m=/^(\d{1,2})(?::(\d\d))?\s*(am|pm)$/.exec(t);if(!m)return null;const v=(+m[1]%12+(m[3]==="pm"?12:0))*60+(+m[2]||0);return v<360?v+1440:v;};   // minutes; before 6 AM = after midnight
 const daySet=(a,b)=>{const i=DAYS.indexOf(a.slice(0,3).toLowerCase()),j=b?DAYS.indexOf(b.slice(0,3).toLowerCase()):i;if(i<0||j<0)return null;const out=new Set();for(let k=i;;k=(k+1)%7){out.add(k);if(k===j)break;}return out;};
 const DAYRX="(sun|mon|tue|wed|thu|fri|sat)[a-z]*";
-function openNow(p,at){const h=String(p.h||"");if(!h)return false;if(/24 hours/i.test(h))return true;
+function openNow(p,at){
+  // full weekly hours from Google (afters.json "wk", filled in by the daily hours run): exact, so it decides on its own
+  if(Array.isArray(p.wk)&&p.wk.length){const d=at||new Date(),w=d.getDay()*1440+d.getHours()*60+d.getMinutes();
+    return p.wk.some(([dy,o,c])=>{const a=dy*1440+o,b=dy*1440+c;return (w>=a&&w<b)||(w+10080>=a&&w+10080<b);});}
+  const h=String(p.h||"");if(!h)return false;if(/24 hours/i.test(h))return true;
   const d=at||new Date();let mins=d.getHours()*60+d.getMinutes(),dow=d.getDay();if(d.getHours()<6){mins+=1440;dow=(dow+6)%7;}
   const cl=new RegExp("closed\\s+"+DAYRX+"(?:\\s*[–-]\\s*"+DAYRX+")?","i").exec(h);if(cl){const ds=daySet(cl[1],cl[2]);if(ds&&ds.has(dow))return false;}
   const lead=new RegExp("^"+DAYRX+"(?:\\s*[–-]\\s*"+DAYRX+")?\\b","i").exec(h);if(lead){const ds=daySet(lead[1],lead[2]);if(ds&&!ds.has(dow))return false;}
@@ -223,7 +227,7 @@ function draw(){mount();const K=SCR(cur),all=list(cur);
   else{tb.innerHTML=tools?foodTools(all):"";tb.dataset.k=cur;}tb.hidden=!tools;
   $("bSpCount").textContent=xs.length+(xs.length===1?" spot":" spots")+(e?" · closest to the show":origin?" · closest first":"");
   const hint=origin?"":`<button type="button" class="spc-start" data-sstart>${ic("drive")}<span><b>See drive times</b><small>Set where you're starting from</small></span></button>`;
-  $("bSpList").innerHTML=hint+(nowOnly?`<p class="bsp-nownote">🟢 Going by listed hours. Most places only say when they close, so before 5 PM fewer show here. Check before you go.</p>`:"")
+  $("bSpList").innerHTML=hint+(nowOnly?`<p class="bsp-nownote">🟢 Going by listed hours.${xs.some(x=>!x.p.wk)?" Where we only know closing time, \"open now\" starts at 5 PM, so daytime shows fewer.":""} Check before you go.</p>`:"")
     +(xs.length?xs.map(x=>card(x,K.c)).join(""):AQ&&cur!=="chill"?`<p class="bnone">No ${cur==="after"?"afters":"food spots"} match “${esc(AQ)}”${cur==="after"&&showHits().length?" (pick a show above to plan around it)":""}. <button type="button" class="blink" data-aqx>Clear search</button></p>`
       :nowOnly?'<p class="bnone">None of these list hours that put them open right now.</p>':'<p class="bnone">Nothing here yet.</p>');}
 
