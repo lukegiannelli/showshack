@@ -91,7 +91,7 @@ function cleanStop(s){s=s||{};const k=TYPES[s.k]?s.k:"other";
   Object.keys(o).forEach(x=>{if(o[x]===""||o[x]==null)delete o[x];});o.k=k;return o;}
 function cleanPlan(p){p=p||{};return {v:1,t:S(p.t,70),d:/^\d{4}-\d\d-\d\d$/.test(p.d||"")?p.d:"",h:S(p.h,30),ph:S(p.ph,20).replace(/[^0-9+]/g,""),up:typeof p.up==="number"?p.up:0,s:(Array.isArray(p.s)?p.s:[]).slice(0,MAXS).map(cleanStop),
   r:(Array.isArray(p.r)?p.r:[]).slice(0,6).map(x=>({n:S(x&&x.n,30),s:Math.min(7,Math.max(1,Math.round(+(x&&x.s))||3)),f:S(x&&x.f,40)})),
-  b:(Array.isArray(p.b)?p.b:[]).slice(0,15).map(x=>({n:S(x&&x.n,30),a:num(x&&x.a),w:S(x&&x.w,40)})),
+  b:(Array.isArray(p.b)?p.b:[]).slice(0,15).map(x=>({n:S(x&&x.n,30),a:num(x&&x.a),w:S(x&&x.w,40),h:S(x&&x.h,31).replace(/[^A-Za-z0-9_$@-]/g,"")})),
   np:Math.min(30,Math.max(0,Math.round(+p.np)||0))};}
 function load(){try{return cleanPlan(JSON.parse(SH.store.raw(KEY)||"null")||{});}catch(e){return cleanPlan({});}}
 let plan=load();
@@ -149,7 +149,7 @@ const fmtD=d=>{if(!d)return "";const [y,m,x]=d.split("-").map(Number);return new
 const fmtUp=ms=>ms?new Date(ms).toLocaleString("en-US",{weekday:"short",month:"short",day:"numeric",hour:"numeric",minute:"2-digit"}):"";
 const dirQ=s=>s.a?[s.p||s.n,s.a].filter(Boolean).join(", "):(s.p||s.n||"");
 const dirUrl=s=>`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(dirQ(s))}`;
-const venmo=s=>`https://venmo.com/u/${encodeURIComponent(s.vh)}`;
+const venmo=(s,note)=>`https://venmo.com/${encodeURIComponent(s.vh)}?txn=pay${s.amt?"&amount="+s.amt:""}${note?"&note="+encodeURIComponent(note).replace(/%20/g,"+"):""}`;
 const cash=s=>`https://cash.app/$${encodeURIComponent(s.ch)}${s.amt?"/"+s.amt:""}`;
 function parseTime(txt){return SH.hhmmOfText(txt);}
 function goLine(s){if(!s.w)return "";const w=s.w==="drive"&&s.dr?`${esc(s.dr)} is driving`:GOW[s.w];return `${GO[s.w]} ${w}`;}
@@ -475,7 +475,7 @@ function sortStops(){let last=-1;const k=plan.s.map((x,i)=>{if(x.tm)last=SH.minO
 function meetFirst(){const m=plan.s.filter(x=>x.k==="meet");if(!m.length)return;const open=plan.s[openI];plan.s=[...m,...plan.s.filter(x=>x.k!=="meet")];if(open)openI=plan.s.indexOf(open);}
 function onInput(ev){const t=ev.target;
   if(t.dataset.rf){const row=t.closest("[data-ri]"),r=row&&plan.r&&plan.r[+row.dataset.ri];if(!r)return;r[t.dataset.rf]=t.dataset.rf==="s"?+t.value:t.value;plan.up=Date.now();save();
-    const sm=t.closest("details").querySelector("summary");if(sm)sm.textContent=ridesSummary(plan);return;}
+    const sm=t.closest("details").querySelector("summary");if(sm)sm.textContent=ridesSummary(plan);const co=$("bnCo2");if(co)co.innerHTML=co2Line(plan);return;}
   if(t.dataset.bf){const row=t.closest("[data-bi]"),b=row&&plan.b&&plan.b[+row.dataset.bi];if(!b)return;b[t.dataset.bf]=t.value;plan.up=Date.now();save();
     const o=$("bnSettle");if(o)o.innerHTML=settleHTML(plan);const np=t.closest("details").querySelector(".bn-np b");if(np)np.textContent=npOf(plan)+" people";return;}
   if(t.dataset.m){plan[t.dataset.m]=t.value;plan.up=Date.now();save();if(t.dataset.m==="d")t.parentNode.classList.toggle("empty",!t.value);return;}
@@ -487,7 +487,7 @@ async function onClick(ev){const b=ev.target.closest("button");if(!b)return;cons
   const focusLast=sel=>{const x=$("bNight").querySelectorAll(sel);if(x.length)x[x.length-1].focus();};
   if(d.radd){plan.r=plan.r||[];if(plan.r.length<6)plan.r.push({n:plan.r.length?"":plan.h||"",s:3,f:""});plan.up=Date.now();save();drawBuilder();focusLast("[data-ri] [data-rf=n]");return;}
   if(d.rdel!=null&&plan.r){plan.r.splice(+d.rdel,1);plan.up=Date.now();save();drawBuilder();return;}
-  if(d.badd){plan.b=plan.b||[];if(plan.b.length<15)plan.b.push({n:"",a:"",w:""});plan.up=Date.now();save();drawBuilder();focusLast("[data-bi] [data-bf=n]");return;}
+  if(d.badd){plan.b=plan.b||[];if(plan.b.length<15)plan.b.push({n:"",a:"",w:"",h:""});plan.up=Date.now();save();drawBuilder();focusLast("[data-bi] [data-bf=n]");return;}
   if(d.bdel!=null&&plan.b){plan.b.splice(+d.bdel,1);plan.up=Date.now();save();drawBuilder();return;}
   if(d.bnp){const named=new Set((plan.b||[]).filter(x=>x.n).map(x=>x.n.trim())).size;plan.np=Math.min(30,Math.max(Math.max(named,2),npOf(plan)+ +d.bnp));plan.up=Date.now();save();drawBuilder();return;}
   if(d.flip){flipTo(!flipped);return;}
@@ -527,12 +527,25 @@ function settle(p){const B=(p.b||[]).filter(x=>x.n&&+x.a>0);if(!B.length)return 
   B.forEach(x=>{const k=x.n.trim();paid[k]=(paid[k]||0)+(+x.a);});const names=Object.keys(paid),tot=names.reduce((t,k)=>t+paid[k],0);
   const np=Math.max(p.np||0,names.length,2),share=tot/np,others=np-names.length,r2=v=>Math.round(v*100)/100;
   const cred=names.map(k=>({k,v:paid[k]-share})).filter(x=>x.v>0.004).sort((a,b)=>b.v-a.v),debt=names.map(k=>({k,v:share-paid[k]})).filter(x=>x.v>0.004);
-  const lines=[];
-  for(const d of debt){for(const c of cred){if(d.v<=0.004)break;if(c.v<=0.004)continue;const m=Math.min(d.v,c.v);lines.push(`${d.k} → ${c.k} $${r2(m).toFixed(2)}`);d.v-=m;c.v-=m;}}
-  if(others>0){const left=cred.filter(c=>c.v>0.004);if(left.length)lines.unshift(`Everyone else (${others}): $${r2(share).toFixed(2)} each → ${left.map(c=>`${c.k}${left.length>1?" $"+r2(c.v/others).toFixed(2):""}`).join(", ")}`);}
-  return {tot:r2(tot),share:r2(share),np,lines};}
-const settleHTML=p=>{const st=settle(p);if(!st)return "";
-  return `<div class="bn-settled"><b>$${st.tot.toFixed(2)} total · $${st.share.toFixed(2)} each (${st.np} people)</b>${st.lines.length?`<ul>${st.lines.map(l=>`<li>${esc(l)}</li>`).join("")}</ul>`:"<p>All square ✓</p>"}</div>`;};
+  const tx=[];   // {from, to, amt}; from "" = each of "everyone else"
+  for(const d of debt){for(const c of cred){if(d.v<=0.004)break;if(c.v<=0.004)continue;const m=Math.min(d.v,c.v);tx.push({from:d.k,to:c.k,amt:r2(m)});d.v-=m;c.v-=m;}}
+  const left=others>0?cred.filter(c=>c.v>0.004):[];
+  const ev=left.map(c=>({from:"",to:c.k,amt:r2(left.length>1?c.v/others:share)}));
+  const lines=[...(ev.length?[`Everyone else (${others}): $${r2(share).toFixed(2)} each → ${left.map(c=>`${c.k}${left.length>1?" $"+r2(c.v/others).toFixed(2):""}`).join(", ")}`]:[]),...tx.map(t=>`${t.from} → ${t.to} $${t.amt.toFixed(2)}`)];
+  return {tot:r2(tot),share:r2(share),np,lines,pay:[...ev,...tx]};}
+// a payee's handle: the one typed on their Settle up row, else the host's / driver's Venmo or Cash App from the stops
+function payHandle(p,name){const n=String(name||"").trim().toLowerCase();if(!n)return null;
+  const own=(p.b||[]).find(x=>x.h&&String(x.n||"").trim().toLowerCase()===n);
+  if(own){const h=own.h;return h.startsWith("$")?{ch:h.slice(1)}:{vh:h.replace(/^@/,"")};}
+  const st=(p.s||[]).find(x=>(x.vh||x.ch)&&((x.dr&&x.dr.trim().toLowerCase()===n)||(p.h&&p.h.trim().toLowerCase()===n&&!x.dr)));
+  return st?(st.vh?{vh:st.vh}:{ch:st.ch}):null;}
+function payBtns(p,st){const note=`Show Shack: ${p.t||"our night"}`.slice(0,60),seen=new Set();
+  return st.pay.map(t=>{const h=payHandle(p,t.to);if(!h)return "";const k=t.to+"|"+t.amt;if(seen.has(k))return "";seen.add(k);
+    const who=esc(t.from||"Everyone else"),amt=t.amt.toFixed(2).replace(/\.00$/,"");
+    return h.vh?`<a class="nv-pay" href="${esc(venmo({vh:h.vh,amt},note))}" target="_blank" rel="noopener">${who}: pay ${esc(t.to)} $${amt} on Venmo</a>`
+      :`<a class="nv-pay" href="${esc(cash({ch:h.ch,amt}))}" target="_blank" rel="noopener">${who}: pay ${esc(t.to)} $${amt} on Cash App</a>`;}).join("");}
+const settleHTML=p=>{const st=settle(p);if(!st)return "";const btns=payBtns(p,st);
+  return `<div class="bn-settled"><b>$${st.tot.toFixed(2)} total · $${st.share.toFixed(2)} each (${st.np} people)</b>${st.lines.length?`<ul>${st.lines.map(l=>`<li>${esc(l)}</li>`).join("")}</ul>`:"<p>All square ✓</p>"}${btns?`<div class="bn-paybtns">${btns}</div><small>Pay buttons open Venmo or Cash App with the amount filled in: check the name and amount there before you send.</small>`:""}</div>`;};
 // nearest rail station to the show (stations.json, loaded the first time Rides shows) + its last-train note
 let STN=null,stnLoad=null;
 function loadStn(){if(STN||stnLoad)return;stnLoad=fetch("stations.json?v=1").then(r=>r.ok?r.json():{}).then(j=>{STN=(j&&j.stations)||[];const el=$("bnTrain");if(el)el.innerHTML=trainLine();}).catch(()=>{stnLoad=null;});}
@@ -541,18 +554,23 @@ function trainLine(){const s=plan.s.find(x=>x.k==="show"&&typeof x.la==="number"
   const where=esc((s.p||s.n||"the show").split(",")[0]);
   if(!best)return `🚆 No train station within 1.5 miles of ${where}. Carpool or rideshare.`;
   const last=LASTTRAIN[best.t.s]||"";return `🚆 <b>${esc(best.t.n)}</b> (${esc(best.t.s)}) is ${best.m<0.3?"a short walk":best.m.toFixed(1)+" mi"} from ${where}.${last?" "+esc(last)+".":""}`;}
+function co2Line(p){const R=ridesOf(p);if(!R.length)return "";const cap=R.reduce((t,x)=>t+1+x.s,0),ppl=p.np?Math.min(p.np,cap):cap,saved=ppl-R.length;if(saved<1)return "";
+  const s=(p.s||[]).find(x=>x.k==="show"&&typeof x.la==="number"),o=typeof origin!=="undefined"&&origin&&typeof origin.lat==="number"?origin:null;
+  const mi=s&&o?SH.roadMi(o.lat,o.lon,s.la,s.lo)*2:null,lbs=mi?Math.round(saved*mi*0.88):null;   // 400 g/mile ≈ 0.88 lb
+  return `🌱 ${R.length} car${R.length>1?"s":""} for ${ppl} people instead of ${ppl} cars: ${saved} fewer on the road${lbs?`, about ${lbs} lbs less CO₂ round trip`:""}${p.np?"":" (if the seats fill)"}.`;}
 function ridesSummary(p){const R=ridesOf(p),seats=R.reduce((t,x)=>t+x.s,0);return `🚗 Rides${R.length?` · ${R.length} car${R.length>1?"s":""}, ${seats} seat${seats===1?"":"s"}`:""}`;}
 function ridesBox(){const R=plan.r||[];
   return `<details class="bn-host bn-rides"${R.length?" open":""}><summary>${ridesSummary(plan)}</summary>
     ${R.map((x,i)=>`<div class="bn-ride" data-ri="${i}"><input data-rf="n" value="${esc(x.n)}" placeholder="Who's driving" maxlength="30" aria-label="Driver"><select data-rf="s" aria-label="Open seats">${[1,2,3,4,5,6,7].map(v=>`<option value="${v}"${+x.s===v?" selected":""}>${v} seat${v>1?"s":""}</option>`).join("")}</select><input data-rf="f" value="${esc(x.f)}" placeholder="Leaving from (optional)" maxlength="40" aria-label="Leaving from"><button type="button" class="bn-x" data-rdel="${i}" aria-label="Remove this car">✕</button></div>`).join("")}
     <button type="button" class="chip" data-radd="1"${R.length>=6?" disabled":""}>＋ Add a car</button>
     <p class="bn-hint" id="bnTrain">${trainLine()}</p>
+    <p class="bn-hint bn-co2" id="bnCo2">${co2Line(plan)}</p>
     <p class="bn-hint">Seats are open seats for riders. Friends see this on the Night Card, so they know who to ride with.</p></details>`;}
 const npOf=p=>Math.max(p.np||0,new Set((p.b||[]).filter(x=>x.n).map(x=>x.n.trim())).size,2);
 function settleBox(){const B=plan.b||[],st=settle(plan);
   return `<details class="bn-host bn-settle"${B.length?" open":""}><summary>💸 Settle up${st?` · $${st.tot.toFixed(0)} spent`:""}</summary>
     <p class="bn-hint">After the night: who paid for what. It splits everything evenly and says who sends whom.</p>
-    ${B.map((x,i)=>`<div class="bn-paid" data-bi="${i}"><input data-bf="n" value="${esc(x.n)}" placeholder="Who paid" maxlength="30" aria-label="Who paid"><input data-bf="a" value="${esc(x.a)}" type="number" inputmode="decimal" min="0" step="0.01" placeholder="$" aria-label="Amount"><input data-bf="w" value="${esc(x.w)}" placeholder="For (optional)" maxlength="40" aria-label="What for"><button type="button" class="bn-x" data-bdel="${i}" aria-label="Remove">✕</button></div>`).join("")}
+    ${B.map((x,i)=>`<div class="bn-paid" data-bi="${i}"><input data-bf="n" value="${esc(x.n)}" placeholder="Who paid" maxlength="30" aria-label="Who paid"><input data-bf="a" value="${esc(x.a)}" type="number" inputmode="decimal" min="0" step="0.01" placeholder="$" aria-label="Amount"><input data-bf="w" value="${esc(x.w)}" placeholder="For (optional)" maxlength="40" aria-label="What for"><input data-bf="h" value="${esc(x.h||"")}" placeholder="@venmo or $cashtag" maxlength="31" autocapitalize="off" autocomplete="off" spellcheck="false" aria-label="Their Venmo or Cash App (optional)"><button type="button" class="bn-x" data-bdel="${i}" aria-label="Remove">✕</button></div>`).join("")}
     <button type="button" class="chip" data-badd="1"${B.length>=15?" disabled":""}>＋ Add what someone paid</button>
     <div class="bn-np" role="group" aria-label="People splitting"><span>Split between</span><button type="button" data-bnp="-1" aria-label="Fewer people">−</button><b>${npOf(plan)} people</b><button type="button" data-bnp="1" aria-label="More people">＋</button></div>
     <div id="bnSettle">${settleHTML(plan)}</div></details>`;}
@@ -605,7 +623,7 @@ function view(p,preview,liveId){if(!$("nightView"))VOPENER=document.activeElemen
     <h1 class="nv-title">${esc(p.t||"Our night")}</h1><p class="nv-date">${esc(fmtD(p.d)||"Date TBD")}${p.h?` · planned by ${esc(p.h)}`:""}</p>
     ${p.up?`<p class="nv-up">Updated ${esc(fmtUp(p.up))}</p>`:""}
     <ol class="nv-line">${rows||'<li><div class="nv-b"><b>No stops yet</b></div></li>'}</ol>
-    ${ridesOf(p).length?`<div class="nv-extra"><b>🚗 Rides</b><span>${esc(ridesText(p))}</span></div>`:""}
+    ${ridesOf(p).length?`<div class="nv-extra"><b>🚗 Rides</b><span>${esc(ridesText(p))}</span>${co2Line(p)?`<small>${esc(co2Line(p))}</small>`:""}</div>`:""}
     ${settle(p)?`<div class="nv-extra"><b>💸 Settle up</b>${settleHTML(p)}</div>`:""}
     ${tot?`<button type="button" class="nv-sum" data-vflip="1">${D.approx?"≈ ":""}$${Math.round(tot)} each for the whole night <span>See the damage ↻</span></button>`:""}
     ${liveId?`<div class="nv-rsvp" id="nvRsvp">${rsvpHTML(liveId,[])}</div>`:""}
