@@ -176,3 +176,20 @@ html.rpop-on,html.rpop-on body{overflow:hidden}
 .spc-chk.old{color:#b5650d}
 :root[data-theme="light"] .spc-chk.old{color:#9a5206}
 @media (prefers-color-scheme:light){:root:not([data-theme="dark"]) .spc-chk.old{color:#9a5206}}
+/* Afters search: same box as Venues search, not sticky here (the chips sit right above it) */
+.ui-b .bsp-q{position:static;margin:0}
+/* Afters: shows suggested while you type, and the show you're planning around */
+.bsp-qx:empty{display:none}
+.bsp-sug{margin-top:8px;border:1px solid var(--line);border-radius:14px;overflow:hidden;background:color-mix(in srgb,var(--surface) 88%,transparent)}
+.bsp-sug p{margin:0;padding:8px 12px 4px;font:700 11.5px var(--mono);letter-spacing:.4px;text-transform:uppercase;color:var(--muted)}
+.bsp-sug button{display:flex;flex-direction:column;align-items:flex-start;width:100%;min-height:48px;padding:8px 12px;border:0;border-top:1px solid var(--line);background:none;color:var(--ink);text-align:left;font:600 14.5px var(--body);cursor:pointer}
+.bsp-sug button small{color:var(--muted);font:500 12.5px var(--body)}
+.bsp-sug button:hover,.bsp-sug button:focus-visible{background:color-mix(in srgb,#B48CFF 14%,transparent)}
+.bsp-around{display:flex;align-items:center;gap:8px;margin-top:8px;padding:8px 8px 8px 12px;border-radius:14px;border:1px solid color-mix(in srgb,#FF6FA5 45%,var(--line));background:color-mix(in srgb,#FF6FA5 10%,transparent);color:var(--ink);--ic:#FF6FA5}
+.bsp-around>span{flex:1;min-width:0;display:flex;align-items:center;gap:8px}
+.bsp-around>span>span{display:flex;flex-direction:column;min-width:0;font-size:14px}
+.bsp-around b{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bsp-around small{color:var(--muted);font-size:12.5px}
+.bsp-around button{flex:none;width:40px;height:40px;border-radius:999px;border:1px solid var(--line);background:none;color:var(--ink);font-size:15px;cursor:pointer}
+.bsp-qx .bft-row{margin-top:8px}
+.bsp-nownote{margin:0 0 10px;font-size:12.5px;color:var(--muted)}
